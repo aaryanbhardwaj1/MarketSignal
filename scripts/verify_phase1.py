@@ -26,6 +26,7 @@ import os
 import re
 import statistics
 import sys
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -104,7 +105,9 @@ def content_words(text: str, n: int) -> str:
 
 class Db:
     def __init__(self) -> None:
-        self.conn = psycopg.connect(DSN, autocommit=False)
+        # autocommit: each ``transaction()`` block below is a real, committed transaction
+        # (without it they are savepoints inside one implicit transaction that never commits).
+        self.conn = psycopg.connect(DSN, autocommit=True)
         self.ids = dict(self.conn.execute("SELECT code, id FROM workspaces").fetchall())
 
     def query(self, ws: str, sql: str, params: dict[str, Any] | None = None) -> list[Any]:
@@ -186,7 +189,13 @@ def retrieval_by_format(
     for fmt, candidates in sorted(by_format.items()):
         sentence = [f for f in candidates if f["anchor"]["type"] == "sentence"]
         rows = [f for f in candidates if f["anchor"]["type"] == "row"]
-        for fact in sentence[:2] + rows[:1]:
+        prose_rows = [
+            f
+            for f in rows
+            if isinstance(f["anchor"].get("value"), str) and " " in f["anchor"]["value"]
+        ]
+        numeric_rows = [f for f in rows if f not in prose_rows]
+        for fact in sentence[:2] + numeric_rows[:1] + prose_rows[:2]:
             handle = located[fact["fact_id"]][0] if located.get(fact["fact_id"]) else None
             entry: dict[str, Any] = {
                 "fact_id": fact["fact_id"],
@@ -200,6 +209,8 @@ def retrieval_by_format(
                 continue
             if fact["anchor"]["type"] == "sentence":
                 lex_q = content_words(fact["anchor"]["text"], 6)
+            elif fact in prose_rows:  # free-text cell: query it like prose
+                lex_q = content_words(str(fact["anchor"]["value"]), 6)
             else:
                 lex_q = str(fact["anchor"]["key_value"])
             lexical = search(api, "NORTHSTAR", lex_q, "lexical")
@@ -356,6 +367,45 @@ def handle_failures(api: httpx.Client) -> dict[str, int]:
     return cases
 
 
+def drop_workspace(db: Db, code: str) -> None:
+    """Delete a scratch workspace as ms_app, inside its own RLS scope."""
+    ws_id = db.conn.execute("SELECT id FROM workspaces WHERE code = %s", (code,)).fetchone()
+    if ws_id is None:
+        return
+    with db.conn.transaction():
+        db.conn.execute("SELECT set_config('app.workspace_id', %s, true)", (str(ws_id[0]),))
+        db.conn.execute("UPDATE sources SET current_version_id = NULL")
+        db.conn.execute("DELETE FROM source_versions")
+        db.conn.execute("DELETE FROM sources")
+        db.conn.execute("DELETE FROM workspace_corpus_state")
+        db.conn.execute("DELETE FROM workspaces WHERE id = %s", (ws_id[0],))
+
+
+def live_tombstone(api: httpx.Client, db: Db) -> dict[str, Any]:
+    """Upload -> ingest -> purge in a temporary workspace; the old handle must answer 410."""
+    code = "VERIFYTOMB"
+    drop_workspace(db, code)  # leftover from an interrupted run would shift the version
+    api.post("/api/workspaces", json={"code": code, "name": "phase-1 tombstone check"})
+    up = api.post(
+        f"/api/workspaces/{code}/sources",
+        files={"file": ("note.md", b"# Note\n\nTemporary evidence for the tombstone check.\n")},
+        data={"source_class": "internal", "source_code": "TMP-NOTE"},
+    ).json()
+    handle = f"{code}/TMP-NOTE@v1:S1.B1"
+    for _ in range(120):
+        versions = api.get(f"/api/workspaces/{code}/sources/{up['source_id']}").json()["versions"]
+        if versions[0]["status"] in ("ready", "ready_degraded", "failed"):
+            break
+        time.sleep(0.5)
+    before = resolve(api, code, handle).status_code
+    api.delete(f"/api/workspaces/{code}/sources/{up['source_id']}")
+    after = resolve(api, code, handle)
+    tombstone = after.json().get("error", {}).get("tombstone")
+    check(before == 200 and after.status_code == 410, f"tombstone: {before} -> {after.status_code}")
+    drop_workspace(db, code)
+    return {"before_delete": before, "after_delete": after.status_code, "tombstone": tombstone}
+
+
 def statistics_report(db: Db) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for ws in ("NORTHSTAR", "SOUTHPEAK"):
@@ -423,7 +473,10 @@ def main() -> int:
     iso = isolation(api, db, facts, census["handles"])
     print("5. handle failure contract")
     handles = handle_failures(api)
-    print("6. statistics")
+    print("6. live tombstone (purge -> 410)")
+    tomb = live_tombstone(api, db)
+    print(f"   {tomb['before_delete']} -> {tomb['after_delete']}")
+    print("7. statistics")
     stats = statistics_report(db)
     for ws, s in stats.items():
         print(
@@ -439,6 +492,7 @@ def main() -> int:
         "versioning": versioning,
         "isolation": iso,
         "handle_failures": handles,
+        "tombstone": tomb,
         "statistics": stats,
         "failures": failures,
     }

@@ -12,15 +12,45 @@
       "handle": "NORTHSTAR/CHANNEL-PERF@v1:R116",
       "anchor_type": "row",
       "lexical_query": "CP-2026-09-SOCIAL-GENZ",
+      "lexical_rank": null,
+      "dense_rank": null,
+      "retrieval_unit": false,
+      "resolved": true,
+      "locator_label": "Row 116",
+      "highlight": null
+    },
+    {
+      "fact_id": "NS-143",
+      "format": "csv",
+      "handle": "NORTHSTAR/SURVEY-2026@v1:R148",
+      "anchor_type": "row",
+      "lexical_query": "Your size medium fits like small",
       "lexical_rank": 1,
       "dense_rank": null,
       "retrieval_unit": true,
       "resolved": true,
-      "locator_label": "Row 116",
+      "locator_label": "Row 148",
       "highlight": {
-        "char_start": 11,
-        "char_end": 33,
-        "text": "CP-2026-09-SOCIAL-GENZ"
+        "char_start": 227,
+        "char_end": 352,
+        "text": "Your size medium fits like a small in the leggings and a large in the tees, so I end up ordering two sizes and returning one."
+      }
+    },
+    {
+      "fact_id": "NS-144",
+      "format": "csv",
+      "handle": "NORTHSTAR/SURVEY-2026@v1:R389",
+      "anchor_type": "row",
+      "lexical_query": "I would happily pay bit shoes",
+      "lexical_rank": 1,
+      "dense_rank": 4,
+      "retrieval_unit": true,
+      "resolved": true,
+      "locator_label": "Row 389",
+      "highlight": {
+        "char_start": 245,
+        "char_end": 366,
+        "text": "I would happily pay a bit more for shoes made to my foot, maybe 15% more, but only if they arrive as fast as normal ones."
       }
     },
     {
@@ -98,7 +128,7 @@
       "anchor_type": "sentence",
       "lexical_query": "Gen Z shoppers generated 21% Northstar",
       "lexical_rank": 1,
-      "dense_rank": 2,
+      "dense_rank": 4,
       "retrieval_unit": true,
       "resolved": true,
       "locator_label": "Page 1, Block 2",
@@ -253,6 +283,17 @@
     "unknown_version": 404,
     "foreign_prefix": 404
   },
+  "tombstone": {
+    "before_delete": 200,
+    "after_delete": 410,
+    "tombstone": {
+      "handle": "VERIFYTOMB/TMP-NOTE@v1:S1.B1",
+      "source_code": "TMP-NOTE",
+      "title": "note",
+      "version": 1,
+      "deleted_at": "2026-10-05T19:10:46.242469+00:00"
+    }
+  },
   "statistics": {
     "NORTHSTAR": {
       "uploads": 24,
@@ -267,13 +308,13 @@
       },
       "bytes": 808785,
       "parents": 2220,
-      "children": 1954,
-      "embeddings": 1954,
-      "total_ingest_ms": 50873.0,
-      "embed_ms": 44843.9,
-      "parse_ms": 1599.9,
-      "embed_children_per_s": 43.6,
-      "median_total_ms_per_source": 832.6500000000001,
+      "children": 1834,
+      "embeddings": 1834,
+      "total_ingest_ms": 48593.0,
+      "embed_ms": 42892.8,
+      "parse_ms": 1621.3,
+      "embed_children_per_s": 42.8,
+      "median_total_ms_per_source": 767.25,
       "sources": [
         {
           "source_code": "ANALYST-CALL",
@@ -284,12 +325,12 @@
           "parents": 2,
           "children": 9,
           "timings_ms": {
-            "chunk_ms": 9.5,
-            "embed_ms": 321.1,
-            "index_ms": 46.2,
-            "parse_ms": 9.6,
-            "total_ms": 392.0,
-            "health_ms": 5.6
+            "chunk_ms": 8.7,
+            "embed_ms": 344.7,
+            "index_ms": 52.2,
+            "parse_ms": 10.5,
+            "total_ms": 421.7,
+            "health_ms": 5.5
           }
         },
         {
@@ -301,12 +342,12 @@
           "parents": 26,
           "children": 32,
           "timings_ms": {
-            "chunk_ms": 20.1,
-            "embed_ms": 1396.8,
-            "index_ms": 74.8,
-            "parse_ms": 251.4,
-            "total_ms": 1752.4,
-            "health_ms": 9.4
+            "chunk_ms": 42.0,
+            "embed_ms": 1949.0,
+            "index_ms": 79.9,
+            "parse_ms": 263.1,
+            "total_ms": 2344.1,
+            "health_ms": 10.2
           }
         },
         {
@@ -318,12 +359,12 @@
           "parents": 55,
           "children": 55,
           "timings_ms": {
-            "chunk_ms": 15.7,
-            "embed_ms": 1254.4,
-            "index_ms": 110.1,
-            "parse_ms": 13.4,
-            "total_ms": 1400.7,
-            "health_ms": 7.0
+            "chunk_ms": 15.1,
+            "embed_ms": 1258.2,
+            "index_ms": 82.9,
+            "parse_ms": 12.3,
+            "total_ms": 1373.6,
+            "health_ms": 5.1
           }
         },
         {
@@ -333,14 +374,14 @@
           "status": "ready",
           "bytes": 16113,
           "parents": 121,
-          "children": 121,
+          "children": 1,
           "timings_ms": {
-            "chunk_ms": 31.1,
-            "embed_ms": 1913.6,
-            "index_ms": 149.2,
-            "parse_ms": 9.6,
-            "total_ms": 2109.8,
-            "health_ms": 6.3
+            "chunk_ms": 20.2,
+            "embed_ms": 30.1,
+            "index_ms": 29.2,
+            "parse_ms": 6.9,
+            "total_ms": 88.9,
+            "health_ms": 2.5
           }
         },
         {
@@ -352,12 +393,12 @@
           "parents": 8,
           "children": 8,
           "timings_ms": {
-            "chunk_ms": 10.1,
-            "embed_ms": 243.0,
-            "index_ms": 43.2,
-            "parse_ms": 11.6,
-            "total_ms": 313.1,
-            "health_ms": 5.2
+            "chunk_ms": 5.8,
+            "embed_ms": 268.7,
+            "index_ms": 46.3,
+            "parse_ms": 8.5,
+            "total_ms": 335.0,
+            "health_ms": 5.7
           }
         },
         {
@@ -369,12 +410,12 @@
           "parents": 17,
           "children": 7,
           "timings_ms": {
-            "chunk_ms": 5.7,
-            "embed_ms": 165.7,
-            "index_ms": 37.8,
-            "parse_ms": 6.4,
-            "total_ms": 226.7,
-            "health_ms": 11.1
+            "chunk_ms": 6.7,
+            "embed_ms": 192.2,
+            "index_ms": 41.3,
+            "parse_ms": 6.8,
+            "total_ms": 253.4,
+            "health_ms": 6.3
           }
         },
         {
@@ -386,12 +427,12 @@
           "parents": 9,
           "children": 10,
           "timings_ms": {
-            "chunk_ms": 9.0,
-            "embed_ms": 375.3,
-            "index_ms": 48.6,
-            "parse_ms": 11.5,
-            "total_ms": 451.1,
-            "health_ms": 6.7
+            "chunk_ms": 9.4,
+            "embed_ms": 379.4,
+            "index_ms": 40.2,
+            "parse_ms": 13.1,
+            "total_ms": 448.4,
+            "health_ms": 6.2
           }
         },
         {
@@ -403,12 +444,12 @@
           "parents": 10,
           "children": 13,
           "timings_ms": {
-            "chunk_ms": 9.4,
-            "embed_ms": 599.6,
-            "index_ms": 77.3,
+            "chunk_ms": 13.4,
+            "embed_ms": 593.8,
+            "index_ms": 57.9,
             "parse_ms": 36.6,
-            "total_ms": 729.3,
-            "health_ms": 6.4
+            "total_ms": 707.5,
+            "health_ms": 5.9
           }
         },
         {
@@ -420,12 +461,12 @@
           "parents": 16,
           "children": 21,
           "timings_ms": {
-            "chunk_ms": 19.4,
-            "embed_ms": 865.3,
-            "index_ms": 72.1,
-            "parse_ms": 255.4,
-            "total_ms": 1218.1,
-            "health_ms": 5.8
+            "chunk_ms": 20.6,
+            "embed_ms": 886.9,
+            "index_ms": 94.0,
+            "parse_ms": 245.9,
+            "total_ms": 1254.0,
+            "health_ms": 6.5
           }
         },
         {
@@ -437,12 +478,12 @@
           "parents": 19,
           "children": 23,
           "timings_ms": {
-            "chunk_ms": 17.7,
-            "embed_ms": 892.9,
-            "index_ms": 79.6,
-            "parse_ms": 154.1,
-            "total_ms": 1150.9,
-            "health_ms": 6.6
+            "chunk_ms": 19.9,
+            "embed_ms": 877.6,
+            "index_ms": 72.4,
+            "parse_ms": 170.8,
+            "total_ms": 1147.2,
+            "health_ms": 6.4
           }
         },
         {
@@ -454,12 +495,12 @@
           "parents": 75,
           "children": 75,
           "timings_ms": {
-            "chunk_ms": 18.3,
-            "embed_ms": 2412.0,
-            "index_ms": 164.3,
-            "parse_ms": 96.1,
-            "total_ms": 2698.1,
-            "health_ms": 7.4
+            "chunk_ms": 18.0,
+            "embed_ms": 2244.4,
+            "index_ms": 157.9,
+            "parse_ms": 98.1,
+            "total_ms": 2525.4,
+            "health_ms": 6.9
           }
         },
         {
@@ -471,12 +512,12 @@
           "parents": 14,
           "children": 16,
           "timings_ms": {
-            "chunk_ms": 16.1,
-            "embed_ms": 626.6,
-            "index_ms": 60.1,
-            "parse_ms": 138.1,
-            "total_ms": 847.6,
-            "health_ms": 6.7
+            "chunk_ms": 17.8,
+            "embed_ms": 617.6,
+            "index_ms": 54.8,
+            "parse_ms": 139.5,
+            "total_ms": 835.5,
+            "health_ms": 5.8
           }
         },
         {
@@ -488,11 +529,11 @@
           "parents": 13,
           "children": 13,
           "timings_ms": {
-            "chunk_ms": 11.6,
-            "embed_ms": 409.9,
-            "index_ms": 75.6,
-            "parse_ms": 9.7,
-            "total_ms": 512.9,
+            "chunk_ms": 7.7,
+            "embed_ms": 324.2,
+            "index_ms": 50.0,
+            "parse_ms": 9.6,
+            "total_ms": 397.5,
             "health_ms": 6.1
           }
         },
@@ -505,12 +546,12 @@
           "parents": 20,
           "children": 20,
           "timings_ms": {
-            "chunk_ms": 8.7,
-            "embed_ms": 322.9,
-            "index_ms": 75.1,
-            "parse_ms": 17.3,
-            "total_ms": 431.3,
-            "health_ms": 7.2
+            "chunk_ms": 8.1,
+            "embed_ms": 309.5,
+            "index_ms": 62.9,
+            "parse_ms": 17.2,
+            "total_ms": 404.8,
+            "health_ms": 7.1
           }
         },
         {
@@ -522,12 +563,12 @@
           "parents": 12,
           "children": 12,
           "timings_ms": {
-            "chunk_ms": 7.7,
-            "embed_ms": 346.2,
-            "index_ms": 51.7,
-            "parse_ms": 9.5,
-            "total_ms": 422.5,
-            "health_ms": 7.2
+            "chunk_ms": 7.2,
+            "embed_ms": 327.7,
+            "index_ms": 51.5,
+            "parse_ms": 8.5,
+            "total_ms": 400.8,
+            "health_ms": 5.9
           }
         },
         {
@@ -539,12 +580,12 @@
           "parents": 12,
           "children": 18,
           "timings_ms": {
-            "chunk_ms": 15.6,
-            "embed_ms": 750.7,
-            "index_ms": 59.0,
-            "parse_ms": 38.1,
-            "total_ms": 869.6,
-            "health_ms": 6.2
+            "chunk_ms": 13.5,
+            "embed_ms": 761.3,
+            "index_ms": 66.9,
+            "parse_ms": 33.4,
+            "total_ms": 883.0,
+            "health_ms": 8.0
           }
         },
         {
@@ -556,12 +597,12 @@
           "parents": 302,
           "children": 3,
           "timings_ms": {
-            "chunk_ms": 43.9,
-            "embed_ms": 290.7,
-            "index_ms": 73.6,
-            "parse_ms": 136.4,
-            "total_ms": 548.9,
-            "health_ms": 4.3
+            "chunk_ms": 41.8,
+            "embed_ms": 150.3,
+            "index_ms": 57.2,
+            "parse_ms": 142.6,
+            "total_ms": 395.3,
+            "health_ms": 3.4
           }
         },
         {
@@ -573,12 +614,12 @@
           "parents": 27,
           "children": 27,
           "timings_ms": {
-            "chunk_ms": 12.8,
-            "embed_ms": 797.8,
-            "index_ms": 71.0,
-            "parse_ms": 25.0,
-            "total_ms": 921.6,
-            "health_ms": 15.0
+            "chunk_ms": 11.0,
+            "embed_ms": 749.4,
+            "index_ms": 69.8,
+            "parse_ms": 30.9,
+            "total_ms": 870.2,
+            "health_ms": 9.2
           }
         },
         {
@@ -590,12 +631,12 @@
           "parents": 801,
           "children": 801,
           "timings_ms": {
-            "chunk_ms": 188.8,
-            "embed_ms": 12632.1,
-            "index_ms": 1077.1,
-            "parse_ms": 27.2,
-            "total_ms": 13946.3,
-            "health_ms": 21.1
+            "chunk_ms": 186.5,
+            "embed_ms": 12886.6,
+            "index_ms": 982.5,
+            "parse_ms": 26.7,
+            "total_ms": 14101.7,
+            "health_ms": 19.4
           }
         },
         {
@@ -607,12 +648,12 @@
           "parents": 14,
           "children": 16,
           "timings_ms": {
-            "chunk_ms": 11.8,
-            "embed_ms": 603.8,
-            "index_ms": 62.8,
-            "parse_ms": 133.5,
-            "total_ms": 817.7,
-            "health_ms": 5.8
+            "chunk_ms": 13.5,
+            "embed_ms": 611.3,
+            "index_ms": 63.7,
+            "parse_ms": 132.7,
+            "total_ms": 827.0,
+            "health_ms": 5.9
           }
         },
         {
@@ -624,12 +665,12 @@
           "parents": 601,
           "children": 601,
           "timings_ms": {
-            "chunk_ms": 188.5,
-            "embed_ms": 16194.9,
-            "index_ms": 821.1,
-            "parse_ms": 25.9,
-            "total_ms": 17247.3,
-            "health_ms": 16.8
+            "chunk_ms": 187.1,
+            "embed_ms": 15645.2,
+            "index_ms": 802.1,
+            "parse_ms": 28.2,
+            "total_ms": 16679.7,
+            "health_ms": 17.0
           }
         },
         {
@@ -641,12 +682,12 @@
           "parents": 20,
           "children": 20,
           "timings_ms": {
-            "chunk_ms": 8.7,
-            "embed_ms": 310.4,
-            "index_ms": 68.6,
-            "parse_ms": 18.9,
-            "total_ms": 418.2,
-            "health_ms": 11.6
+            "chunk_ms": 8.5,
+            "embed_ms": 320.8,
+            "index_ms": 78.0,
+            "parse_ms": 16.8,
+            "total_ms": 430.4,
+            "health_ms": 6.2
           }
         },
         {
@@ -658,12 +699,12 @@
           "parents": 13,
           "children": 13,
           "timings_ms": {
-            "chunk_ms": 7.3,
-            "embed_ms": 349.8,
-            "index_ms": 58.5,
+            "chunk_ms": 7.7,
+            "embed_ms": 406.8,
+            "index_ms": 30.8,
             "parse_ms": 9.1,
-            "total_ms": 430.8,
-            "health_ms": 6.0
+            "total_ms": 460.1,
+            "health_ms": 5.7
           }
         },
         {
@@ -675,12 +716,12 @@
           "parents": 13,
           "children": 20,
           "timings_ms": {
-            "chunk_ms": 19.0,
-            "embed_ms": 768.4,
-            "index_ms": 67.0,
-            "parse_ms": 155.5,
-            "total_ms": 1016.1,
-            "health_ms": 6.2
+            "chunk_ms": 17.1,
+            "embed_ms": 757.1,
+            "index_ms": 65.2,
+            "parse_ms": 153.5,
+            "total_ms": 1007.8,
+            "health_ms": 14.8
           }
         }
       ]
@@ -699,11 +740,11 @@
       "parents": 460,
       "children": 396,
       "embeddings": 396,
-      "total_ingest_ms": 11273.1,
-      "embed_ms": 9877.4,
-      "parse_ms": 268.4,
-      "embed_children_per_s": 40.1,
-      "median_total_ms_per_source": 819.85,
+      "total_ingest_ms": 10949.0,
+      "embed_ms": 9805.6,
+      "parse_ms": 234.8,
+      "embed_children_per_s": 40.4,
+      "median_total_ms_per_source": 828.9,
       "sources": [
         {
           "source_code": "BOARD-DECK",
@@ -714,12 +755,12 @@
           "parents": 22,
           "children": 22,
           "timings_ms": {
-            "chunk_ms": 9.0,
-            "embed_ms": 546.3,
-            "index_ms": 71.7,
-            "parse_ms": 21.4,
-            "total_ms": 654.7,
-            "health_ms": 6.3
+            "chunk_ms": 8.6,
+            "embed_ms": 555.1,
+            "index_ms": 70.5,
+            "parse_ms": 16.0,
+            "total_ms": 664.4,
+            "health_ms": 14.2
           }
         },
         {
@@ -731,12 +772,12 @@
           "parents": 18,
           "children": 19,
           "timings_ms": {
-            "chunk_ms": 12.5,
-            "embed_ms": 752.9,
-            "index_ms": 58.2,
-            "parse_ms": 146.3,
-            "total_ms": 985.0,
-            "health_ms": 15.1
+            "chunk_ms": 14.9,
+            "embed_ms": 783.7,
+            "index_ms": 55.3,
+            "parse_ms": 131.9,
+            "total_ms": 993.4,
+            "health_ms": 7.6
           }
         },
         {
@@ -748,12 +789,12 @@
           "parents": 67,
           "children": 2,
           "timings_ms": {
-            "chunk_ms": 12.4,
-            "embed_ms": 84.0,
-            "index_ms": 34.9,
-            "parse_ms": 11.9,
-            "total_ms": 148.0,
-            "health_ms": 4.8
+            "chunk_ms": 11.2,
+            "embed_ms": 41.3,
+            "index_ms": 33.8,
+            "parse_ms": 10.7,
+            "total_ms": 100.9,
+            "health_ms": 3.9
           }
         },
         {
@@ -765,12 +806,12 @@
           "parents": 44,
           "children": 44,
           "timings_ms": {
-            "chunk_ms": 15.3,
-            "embed_ms": 1248.9,
-            "index_ms": 102.0,
-            "parse_ms": 64.3,
-            "total_ms": 1438.2,
-            "health_ms": 7.6
+            "chunk_ms": 13.5,
+            "embed_ms": 1184.2,
+            "index_ms": 92.8,
+            "parse_ms": 54.5,
+            "total_ms": 1365.2,
+            "health_ms": 20.2
           }
         },
         {
@@ -782,12 +823,12 @@
           "parents": 8,
           "children": 8,
           "timings_ms": {
-            "chunk_ms": 9.1,
-            "embed_ms": 230.9,
-            "index_ms": 43.3,
-            "parse_ms": 10.8,
-            "total_ms": 299.3,
-            "health_ms": 5.2
+            "chunk_ms": 8.8,
+            "embed_ms": 229.8,
+            "index_ms": 44.3,
+            "parse_ms": 9.9,
+            "total_ms": 305.8,
+            "health_ms": 13.1
           }
         },
         {
@@ -799,12 +840,12 @@
           "parents": 301,
           "children": 301,
           "timings_ms": {
-            "chunk_ms": 87.1,
-            "embed_ms": 7014.4,
-            "index_ms": 601.5,
-            "parse_ms": 13.7,
-            "total_ms": 7747.9,
-            "health_ms": 31.2
+            "chunk_ms": 84.7,
+            "embed_ms": 7011.5,
+            "index_ms": 383.9,
+            "parse_ms": 11.8,
+            "total_ms": 7519.3,
+            "health_ms": 27.4
           }
         }
       ]
