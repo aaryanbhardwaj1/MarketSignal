@@ -80,5 +80,6 @@ asyncio_default_test_loop_scope = "session"
 testpaths = ["tests"]
 markers = [
   "integration: requires PostgreSQL (+pgvector) and Redis from docker compose",
+  "model: loads the real ONNX embedding model (~70 MB, cached under .cache/models)",
 ]
 addopts = "-ra --strict-markers"
