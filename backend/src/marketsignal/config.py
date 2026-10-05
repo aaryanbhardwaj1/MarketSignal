@@ -74,7 +74,8 @@ class Settings(BaseSettings):
     # ── Pipeline versions: part of provenance and of the idempotency key ──
     parser_version: str = "p1"
     structure_version: str = "s1"  # parent policy; changing it mints new source versions
-    chunking_policy_version: str = "c1"  # child policy; changing it rebuilds children only
+    chunking_policy_version: str = "c2"  # child policy; changing it rebuilds children only
+    # c2: identifier columns are never free text (numeric rows are not retrieval units)
 
     # ── Hierarchical chunking (ADR-0003) ──
     parent_max_tokens: int = Field(default=800, ge=64)

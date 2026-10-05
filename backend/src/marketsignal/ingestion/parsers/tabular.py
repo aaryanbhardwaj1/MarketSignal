@@ -44,7 +44,8 @@ from marketsignal.ingestion.validation import decode_text
 _NUMBER = re.compile(r"^[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?$")
 _ISO_DATE = re.compile(r"^\d{4}-\d{2}(-\d{2})?$")
 FREE_TEXT_MEAN_LEN = 20
-IDENTIFIER_MAX_LEN = 16
+IDENTIFIER_MAX_LEN = 64
+FREE_TEXT_MULTIWORD_SHARE = 0.5  # free text is prose: most values have several words
 NUMERIC_SHARE = 0.9
 
 
@@ -93,10 +94,21 @@ def _profile(name: str, values: list[Any], max_levels: int) -> ColumnProfile:
             name, "categorical", "constant", len(present), distinct, (str(present[0]),)
         )
     mean_len = sum(len(str(v)) for v in present) / len(present)
-    if mean_len > FREE_TEXT_MEAN_LEN:
-        return ColumnProfile(name, "text", "free_text", len(present), distinct)
-    if distinct == len(present) and mean_len <= IDENTIFIER_MAX_LEN and len(present) > 1:
+    tokens_only = all(not any(ch.isspace() for ch in str(v)) for v in present)
+    # Identifiers first: unique, whitespace-free tokens of any length (e.g. CP-2025-10-SITE-GENZ)
+    # must never be mistaken for free text, or every numeric row would become a retrieval unit.
+    if (
+        distinct == len(present)
+        and len(present) > 1
+        and tokens_only
+        and mean_len <= IDENTIFIER_MAX_LEN
+    ):
         return ColumnProfile(name, "text", "identifier", len(present), distinct)
+    multi_word = (
+        sum(" " in str(v).strip() for v in present) / len(present) >= FREE_TEXT_MULTIWORD_SHARE
+    )
+    if mean_len > FREE_TEXT_MEAN_LEN and multi_word:
+        return ColumnProfile(name, "text", "free_text", len(present), distinct)
     levels = tuple(level for level, _ in Counter(map(str, present)).most_common(max_levels))
     return ColumnProfile(name, "categorical", "context", len(present), distinct, levels)
 

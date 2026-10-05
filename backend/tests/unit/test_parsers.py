@@ -179,6 +179,23 @@ def test_csv_rows_summary_original_text_and_free_text_span() -> None:
     )
 
 
+def test_long_identifier_columns_are_not_free_text() -> None:
+    data = make_csv(
+        [
+            ["record_id", "channel", "orders"],
+            ["CP-2025-10-SITE-GENZ", "Brand Site", "17218"],
+            ["CP-2025-10-SITE-MILL", "Brand Site", "23186"],
+            ["CP-2025-11-APPS-GENZ", "Mobile App", "9120"],
+        ]
+    )
+    parsed = parse_source(SourceType.CSV, data, title="Channels", tokenizer=TOK, settings=SETTINGS)
+    (table,) = parsed.tables
+    assert {c.name: c.role for c in table.columns}["record_id"] == "identifier"
+    rows = [p for p in parsed.parents if p.kind is ParentKind.ROW]
+    assert rows
+    assert all(not p.index_children for p in rows)  # numeric rows: resolvable, not retrieval units
+
+
 def test_xlsx_sheets_and_excel_row_numbers() -> None:
     data = make_xlsx(
         {
