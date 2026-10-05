@@ -32,7 +32,7 @@ All of this happened **before any retrieval run**. Provenance is `llm_draft_agen
 ### Rules
 
 - **Dev** is for tuning. **Test** is frozen: `run --split test` is refused without `--milestone "<reason>"`, and each test run is appended to `test-split-log.jsonl`.
-- **Baseline reports** under `reports/` are never regenerated after later changes.
+- **Recorded runs** (baselines and every Phase 2 iteration) live in `baselines/` and are never regenerated after later changes. `reports/` is gitignored scratch output.
 - **Integrity.** `integrity` checks, against the ingested corpus, that:
   - every handle resolves through the production resolver;
   - each parent still contains its anchor;

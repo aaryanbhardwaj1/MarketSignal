@@ -1,0 +1,3492 @@
+{
+ "run": {
+  "git": "1c38c66",
+  "at": "2026-10-05T20:56:47+00:00",
+  "config_hash": "e88b58608b22af3a"
+ },
+ "split": "dev",
+ "dataset": {
+  "dataset_version": "retrieval-v0",
+  "corpus_sha256": "d68f6473052e5a39ab0ab6d86f9bed984a45658f4342b2935b6046cd0d3f2ec5",
+  "ledger_sha256": "95e9bb87bae7157e47f1ff006dcd43886046a973420ac56ca61e2cb3d538e79d",
+  "items_sha256": "8519fbe778771927c145d1126ae246a3ec2004a2831a95a2a10b333775d823dd"
+ },
+ "arms": {
+  "baseline-dense": {
+   "metrics": {
+    "n": 44,
+    "recall@1": 0.5189393939393939,
+    "hit@1": 0.5681818181818182,
+    "recall@3": 0.6856060606060607,
+    "hit@3": 0.75,
+    "recall@5": 0.6856060606060607,
+    "hit@5": 0.75,
+    "recall@10": 0.7803030303030304,
+    "hit@10": 0.8181818181818182,
+    "recall@20": 0.8333333333333333,
+    "hit@20": 0.8636363636363636,
+    "mrr": 0.661751443001443,
+    "mrr@10": 0.6572871572871573
+   },
+   "intervals": {
+    "hit@1": {
+     "estimate": 0.5681818181818182,
+     "low": 0.4222414699362943,
+     "high": 0.703172765914822
+    },
+    "recall@1": {
+     "estimate": 0.5189393939393939,
+     "low": 0.3824810606060607,
+     "high": 0.6590909090909091
+    },
+    "hit@5": {
+     "estimate": 0.75,
+     "low": 0.6055943364104086,
+     "high": 0.8542578617103511
+    },
+    "recall@5": {
+     "estimate": 0.6856060606060607,
+     "low": 0.5568181818181818,
+     "high": 0.8106060606060606
+    },
+    "hit@10": {
+     "estimate": 0.8181818181818182,
+     "low": 0.6803944911281533,
+     "high": 0.9048719428437227
+    },
+    "recall@10": {
+     "estimate": 0.7803030303030304,
+     "low": 0.6590909090909091,
+     "high": 0.8901515151515151
+    },
+    "hit@20": {
+     "estimate": 0.8636363636363636,
+     "low": 0.7329054695148456,
+     "high": 0.9359704550244412
+    },
+    "recall@20": {
+     "estimate": 0.8333333333333333,
+     "low": 0.7234848484848485,
+     "high": 0.9318181818181818
+    },
+    "mrr": {
+     "estimate": 0.661751443001443,
+     "low": 0.5389599116161616,
+     "high": 0.7807122564935064
+    }
+   },
+   "latency_ms": {
+    "dense_ms": {
+     "p50": 4.87,
+     "p95": 7.29
+    },
+    "embed_ms": {
+     "p50": 5.71,
+     "p95": 8.07
+    },
+    "total_ms": {
+     "p50": 10.76,
+     "p95": 13.88
+    },
+    "wall_ms": {
+     "p50": 11.17,
+     "p95": 14.25
+    }
+   },
+   "flags": {},
+   "config": {
+    "arm": "baseline-dense",
+    "lane": "smoke.dense_search",
+    "child_k": 100,
+    "model": "bge-small-en-v1.5",
+    "query_instruction": null,
+    "ef_search": 100
+   },
+   "by_category": {
+    "ambiguous_distractor": {
+     "n": 4,
+     "hit@1": 2,
+     "recall@1": 0.5,
+     "hit@5": 2,
+     "recall@5": 0.5,
+     "hit@10": 2,
+     "recall@10": 0.5,
+     "mrr": 0.518
+    },
+    "cross_format": {
+     "n": 4,
+     "hit@1": 4,
+     "recall@1": 0.458,
+     "hit@5": 4,
+     "recall@5": 0.667,
+     "hit@10": 4,
+     "recall@10": 0.792,
+     "mrr": 1.0
+    },
+    "customer_free_text": {
+     "n": 5,
+     "hit@1": 3,
+     "recall@1": 0.6,
+     "hit@5": 4,
+     "recall@5": 0.8,
+     "hit@10": 5,
+     "recall@10": 1.0,
+     "mrr": 0.722
+    },
+    "enumeration": {
+     "n": 3,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 3,
+     "recall@5": 0.5,
+     "hit@10": 3,
+     "recall@10": 0.722,
+     "mrr": 0.389
+    },
+    "exact_number": {
+     "n": 7,
+     "hit@1": 5,
+     "recall@1": 0.714,
+     "hit@5": 5,
+     "recall@5": 0.714,
+     "hit@10": 5,
+     "recall@10": 0.714,
+     "mrr": 0.714
+    },
+    "keyword_sensitive": {
+     "n": 4,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 2,
+     "recall@10": 0.5,
+     "mrr": 0.077
+    },
+    "named_entity": {
+     "n": 3,
+     "hit@1": 2,
+     "recall@1": 0.667,
+     "hit@5": 3,
+     "recall@5": 1.0,
+     "hit@10": 3,
+     "recall@10": 1.0,
+     "mrr": 0.833
+    },
+    "semantic_paraphrase": {
+     "n": 5,
+     "hit@1": 2,
+     "recall@1": 0.4,
+     "hit@5": 3,
+     "recall@5": 0.6,
+     "hit@10": 3,
+     "recall@10": 0.6,
+     "mrr": 0.492
+    },
+    "single_source_fact": {
+     "n": 6,
+     "hit@1": 4,
+     "recall@1": 0.667,
+     "hit@5": 6,
+     "recall@5": 1.0,
+     "hit@10": 6,
+     "recall@10": 1.0,
+     "mrr": 0.833
+    },
+    "versioning": {
+     "n": 3,
+     "hit@1": 3,
+     "recall@1": 1.0,
+     "hit@5": 3,
+     "recall@5": 1.0,
+     "hit@10": 3,
+     "recall@10": 1.0,
+     "mrr": 1.0
+    }
+   },
+   "by_format": {
+    "csv": {
+     "n": 7,
+     "hit@1": 1,
+     "recall@1": 0.071,
+     "hit@5": 2,
+     "recall@5": 0.143,
+     "hit@10": 5,
+     "recall@10": 0.571,
+     "mrr": 0.251
+    },
+    "docx": {
+     "n": 9,
+     "hit@1": 6,
+     "recall@1": 0.556,
+     "hit@5": 9,
+     "recall@5": 0.889,
+     "hit@10": 9,
+     "recall@10": 0.944,
+     "mrr": 0.796
+    },
+    "markdown": {
+     "n": 8,
+     "hit@1": 5,
+     "recall@1": 0.562,
+     "hit@5": 7,
+     "recall@5": 0.688,
+     "hit@10": 7,
+     "recall@10": 0.833,
+     "mrr": 0.734
+    },
+    "pdf": {
+     "n": 8,
+     "hit@1": 7,
+     "recall@1": 0.729,
+     "hit@5": 7,
+     "recall@5": 0.833,
+     "hit@10": 7,
+     "recall@10": 0.833,
+     "mrr": 0.885
+    },
+    "pptx": {
+     "n": 9,
+     "hit@1": 5,
+     "recall@1": 0.426,
+     "hit@5": 9,
+     "recall@5": 0.833,
+     "hit@10": 9,
+     "recall@10": 0.87,
+     "mrr": 0.778
+    },
+    "text": {
+     "n": 3,
+     "hit@1": 3,
+     "recall@1": 1.0,
+     "hit@5": 3,
+     "recall@5": 1.0,
+     "hit@10": 3,
+     "recall@10": 1.0,
+     "mrr": 1.0
+    },
+    "xlsx": {
+     "n": 7,
+     "hit@1": 3,
+     "recall@1": 0.333,
+     "hit@5": 3,
+     "recall@5": 0.381,
+     "hit@10": 3,
+     "recall@10": 0.381,
+     "mrr": 0.439
+    }
+   },
+   "by_overlap_bin": {
+    "high": {
+     "n": 2,
+     "hit@1": 1,
+     "recall@1": 0.167,
+     "hit@5": 1,
+     "recall@5": 0.333,
+     "hit@10": 1,
+     "recall@10": 0.333,
+     "mrr": 0.5
+    },
+    "low": {
+     "n": 13,
+     "hit@1": 3,
+     "recall@1": 0.231,
+     "hit@5": 9,
+     "recall@5": 0.628,
+     "hit@10": 9,
+     "recall@10": 0.654,
+     "mrr": 0.438
+    },
+    "mid": {
+     "n": 29,
+     "hit@1": 21,
+     "recall@1": 0.672,
+     "hit@5": 23,
+     "recall@5": 0.736,
+     "hit@10": 26,
+     "recall@10": 0.868,
+     "mrr": 0.773
+    }
+   },
+   "distractors": [
+    {
+     "item_id": "R0-009",
+     "question": "Gen Z conversion rate on the Social Shop channel, September 2026",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-024",
+     "question": "NS-KR2 return rate",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-050",
+     "question": "Social Shop momentum check: how fast did it grow quarter over quarter in Q2 FY26, and what was its Gen Z conversion rate in September 2026?",
+     "true_rank": 1,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-058",
+     "question": "Return rate for the second-generation Knit Runner, not the original model?",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-059",
+     "question": "Where did Gen Z net promoter score land in Q2 FY26?",
+     "true_rank": 1,
+     "best_distractor_rank": 21,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-060",
+     "question": "How large is the 2026 US athletic footwear market for Gen Z shoppers specifically, in the category sizing workbook?",
+     "true_rank": 14,
+     "best_distractor_rank": 28,
+     "distractor_wins": false
+    }
+   ],
+   "items": [
+    {
+     "item_id": "R0-001",
+     "fact_ranks": {
+      "NS-083": 1
+     },
+     "top": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL10",
+      "NORTHSTAR/Q3-REVIEW@v1:SL10.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL14",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL15.N1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.82,
+      "dense_ms": 5.17,
+      "total_ms": 11.0,
+      "wall_ms": 11.78
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-002",
+     "fact_ranks": {
+      "NS-101": 1
+     },
+     "top": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B8",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL15",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL9.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL12.N1",
+      "NORTHSTAR/PACE-DECK@v1:SL12",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/PACE-DECK@v1:SL2",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B1"
+     ],
+     "timings_ms": {
+      "embed_ms": 8.14,
+      "dense_ms": 7.33,
+      "total_ms": 15.49,
+      "wall_ms": 15.98
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-004",
+     "fact_ranks": {
+      "NS-112": 1
+     },
+     "top": [
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P5.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL4",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R36",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R37",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R34",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R35",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R33",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R32",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R19",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R18",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL9.N1",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R55"
+     ],
+     "timings_ms": {
+      "embed_ms": 7.01,
+      "dense_ms": 5.44,
+      "total_ms": 12.47,
+      "wall_ms": 12.85
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-005",
+     "fact_ranks": {
+      "NS-094": 2
+     },
+     "top": [
+      "NORTHSTAR/PACE-DECK@v1:SL9",
+      "NORTHSTAR/PACE-DECK@v1:SL9.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4",
+      "NORTHSTAR/PACE-WEB@v1:S1.B10",
+      "NORTHSTAR/PACE-WEB@v1:S1.B5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/PACE-WEB@v1:S1.B2",
+      "NORTHSTAR/PACE-WEB@v1:S1.B6",
+      "NORTHSTAR/PACE-WEB@v1:S1.B7",
+      "NORTHSTAR/PACE-WEB@v1:S1.B3",
+      "NORTHSTAR/PACE-WEB@v1:S1.B4",
+      "NORTHSTAR/PACE-DECK@v1:SL8.N1",
+      "NORTHSTAR/PACE-DECK@v1:SL10",
+      "NORTHSTAR/PACE-WEB@v1:S1.B12",
+      "NORTHSTAR/PACE-WEB@v1:S1.B1",
+      "NORTHSTAR/PACE-DECK@v1:SL2",
+      "NORTHSTAR/PACE-DECK@v1:SL5",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5",
+      "NORTHSTAR/PACE-DECK@v1:SL1"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.24,
+      "dense_ms": 4.71,
+      "total_ms": 8.97,
+      "wall_ms": 9.33
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-006",
+     "fact_ranks": {
+      "NS-073": 1
+     },
+     "top": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S1.B1",
+      "NORTHSTAR/INTERVIEWS@v1:S1.B1",
+      "NORTHSTAR/INTERVIEWS@v1:S2.B1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL5.N1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+      "NORTHSTAR/Q3-REVIEW@v1:SL7"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.0,
+      "dense_ms": 4.65,
+      "total_ms": 9.66,
+      "wall_ms": 10.01
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-008",
+     "fact_ranks": {
+      "NS-125": 1
+     },
+     "top": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R298",
+      "NORTHSTAR/SURVEY-2026@v1:R483",
+      "NORTHSTAR/SURVEY-2026@v1:R501",
+      "NORTHSTAR/SURVEY-2026@v1:R457",
+      "NORTHSTAR/SURVEY-2026@v1:R26",
+      "NORTHSTAR/SURVEY-2026@v1:R423",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4",
+      "NORTHSTAR/SURVEY-2026@v1:R331",
+      "NORTHSTAR/SURVEY-2026@v1:R237",
+      "NORTHSTAR/SURVEY-2026@v1:R166",
+      "NORTHSTAR/SURVEY-2026@v1:R455",
+      "NORTHSTAR/SURVEY-2026@v1:R430",
+      "NORTHSTAR/SURVEY-2026@v1:R265",
+      "NORTHSTAR/SURVEY-2026@v1:R577",
+      "NORTHSTAR/SURVEY-2026@v1:R109"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.32,
+      "dense_ms": 4.67,
+      "total_ms": 9.0,
+      "wall_ms": 9.31
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-009",
+     "fact_ranks": {
+      "NS-140": null
+     },
+     "top": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL5",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL7",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL5.N1",
+      "NORTHSTAR/PACE-DECK@v1:SL4",
+      "NORTHSTAR/SURVEY-2026@v1:R457",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R173",
+      "NORTHSTAR/SURVEY-2026@v1:R570",
+      "NORTHSTAR/SURVEY-2026@v1:R542"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.3,
+      "dense_ms": 5.21,
+      "total_ms": 9.52,
+      "wall_ms": 9.88
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-011",
+     "fact_ranks": {
+      "NS-080": 1
+     },
+     "top": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R298",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+      "NORTHSTAR/CHANNEL-PERF@v1:T1",
+      "NORTHSTAR/SURVEY-2026@v1:R295",
+      "NORTHSTAR/SURVEY-2026@v1:R577",
+      "NORTHSTAR/SURVEY-2026@v1:R400",
+      "NORTHSTAR/SURVEY-2026@v1:R237",
+      "NORTHSTAR/SURVEY-2026@v1:R483",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2.N1",
+      "NORTHSTAR/SURVEY-2026@v1:R423",
+      "NORTHSTAR/SURVEY-2026@v1:R331",
+      "NORTHSTAR/SURVEY-2026@v1:R501",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.26,
+      "dense_ms": 4.98,
+      "total_ms": 10.25,
+      "wall_ms": 10.66
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-013",
+     "fact_ranks": {
+      "NS-100": 1
+     },
+     "top": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL5.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL15",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.34,
+      "dense_ms": 6.13,
+      "total_ms": 10.48,
+      "wall_ms": 10.87
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-014",
+     "fact_ranks": {
+      "NS-110": 1
+     },
+     "top": [
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B5",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13",
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B6",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B1",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B4",
+      "NORTHSTAR/KINETIC-AR@v1:P1.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B13",
+      "NORTHSTAR/KINETIC-AR@v1:P1.B1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.38,
+      "dense_ms": 4.96,
+      "total_ms": 10.36,
+      "wall_ms": 10.69
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-016",
+     "fact_ranks": {
+      "NS-052": 1
+     },
+     "top": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B6",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+      "NORTHSTAR/Q3-REVIEW@v1:SL10.N1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+      "NORTHSTAR/Q3-REVIEW@v1:SL11",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B10",
+      "NORTHSTAR/Q3-REVIEW@v1:SL10",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B7",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B5",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.01,
+      "dense_ms": 4.7,
+      "total_ms": 9.73,
+      "wall_ms": 10.07
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-017",
+     "fact_ranks": {
+      "SP-C06": null
+     },
+     "top": [
+      "SOUTHPEAK/SURVEY-2026@v1:R211",
+      "SOUTHPEAK/SURVEY-2026@v1:R184",
+      "SOUTHPEAK/SURVEY-2026@v1:R103",
+      "SOUTHPEAK/SURVEY-2026@v1:R294",
+      "SOUTHPEAK/SURVEY-2026@v1:R156",
+      "SOUTHPEAK/SURVEY-2026@v1:R289",
+      "SOUTHPEAK/SURVEY-2026@v1:R234",
+      "SOUTHPEAK/SURVEY-2026@v1:R240",
+      "SOUTHPEAK/SURVEY-2026@v1:R225",
+      "SOUTHPEAK/SURVEY-2026@v1:R270",
+      "SOUTHPEAK/SURVEY-2026@v1:R266",
+      "SOUTHPEAK/SURVEY-2026@v1:R32",
+      "SOUTHPEAK/SURVEY-2026@v1:R167",
+      "SOUTHPEAK/SURVEY-2026@v1:R171",
+      "SOUTHPEAK/SURVEY-2026@v1:R166",
+      "SOUTHPEAK/SURVEY-2026@v1:R181",
+      "SOUTHPEAK/SURVEY-2026@v1:R5",
+      "SOUTHPEAK/SURVEY-2026@v1:R161",
+      "SOUTHPEAK/SURVEY-2026@v1:R117",
+      "SOUTHPEAK/SURVEY-2026@v1:R264"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.55,
+      "dense_ms": 4.61,
+      "total_ms": 9.17,
+      "wall_ms": 9.51
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-018",
+     "fact_ranks": {
+      "NS-104": 1
+     },
+     "top": [
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B4",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL9.N1",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL9",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL6",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/REVIEWS@v1:R663",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL14",
+      "NORTHSTAR/REVIEWS@v1:R71",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B10",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B5",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+      "NORTHSTAR/REVIEWS@v1:R21",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+      "NORTHSTAR/REVIEWS@v1:R537",
+      "NORTHSTAR/REVIEWS@v1:R760"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.17,
+      "dense_ms": 4.83,
+      "total_ms": 10.02,
+      "wall_ms": 10.34
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-019",
+     "fact_ranks": {
+      "NS-094": 2
+     },
+     "top": [
+      "NORTHSTAR/PACE-DECK@v1:SL9",
+      "NORTHSTAR/PACE-DECK@v1:SL9.N1",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B5",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B5",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL14",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B3",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+      "NORTHSTAR/Q3-REVIEW@v1:SL12.N1",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL9.N1",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B3"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.01,
+      "dense_ms": 4.6,
+      "total_ms": 9.63,
+      "wall_ms": 9.98
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-020",
+     "fact_ranks": {
+      "NS-105": 1
+     },
+     "top": [
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B5",
+      "NORTHSTAR/KINETIC-AR@v1:P1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1",
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B2",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+      "NORTHSTAR/REVIEWS@v1:R154",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL11",
+      "NORTHSTAR/INTERVIEWS@v1:S9.Q2",
+      "NORTHSTAR/REVIEWS@v1:R382",
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B12",
+      "NORTHSTAR/REVIEWS@v1:R501",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+      "NORTHSTAR/REVIEWS@v1:R439",
+      "NORTHSTAR/REVIEWS@v1:R169",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B7"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.02,
+      "dense_ms": 4.73,
+      "total_ms": 9.77,
+      "wall_ms": 10.07
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-024",
+     "fact_ranks": {
+      "NS-120": null
+     },
+     "top": [
+      "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+      "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL8",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B6",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/REVIEWS@v1:R360",
+      "NORTHSTAR/PACE-DECK@v1:SL3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+      "NORTHSTAR/CHANNEL-PERF@v1:T1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B10"
+     ],
+     "timings_ms": {
+      "embed_ms": 3.04,
+      "dense_ms": 4.73,
+      "total_ms": 7.79,
+      "wall_ms": 8.11
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-026",
+     "fact_ranks": {
+      "NS-144": 6
+     },
+     "top": [
+      "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+      "NORTHSTAR/INTERVIEWS@v1:S9.Q1",
+      "NORTHSTAR/KINETIC-AR@v1:P1.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R478",
+      "NORTHSTAR/SURVEY-2026@v1:R389",
+      "NORTHSTAR/SURVEY-2026@v1:R442",
+      "NORTHSTAR/SURVEY-2026@v1:R218",
+      "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+      "NORTHSTAR/INTERVIEWS@v1:S7.Q4",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R438",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R437",
+      "NORTHSTAR/SURVEY-2026@v1:R33",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R595",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.3,
+      "dense_ms": 4.7,
+      "total_ms": 9.01,
+      "wall_ms": 9.36
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-027",
+     "fact_ranks": {
+      "NS-148": null
+     },
+     "top": [
+      "NORTHSTAR/REVIEWS@v1:R574",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+      "NORTHSTAR/REVIEWS@v1:R683",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/REVIEWS@v1:R401",
+      "NORTHSTAR/REVIEWS@v1:R394",
+      "NORTHSTAR/SURVEY-2026@v1:R24",
+      "NORTHSTAR/REVIEWS@v1:R693",
+      "NORTHSTAR/REVIEWS@v1:R122",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+      "NORTHSTAR/REVIEWS@v1:R629",
+      "NORTHSTAR/SURVEY-2026@v1:R303",
+      "NORTHSTAR/SURVEY-2026@v1:R179",
+      "NORTHSTAR/REVIEWS@v1:R770",
+      "NORTHSTAR/SURVEY-2026@v1:R378",
+      "NORTHSTAR/REVIEWS@v1:R29",
+      "NORTHSTAR/REVIEWS@v1:R492",
+      "NORTHSTAR/REVIEWS@v1:R382",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R255"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.17,
+      "dense_ms": 4.91,
+      "total_ms": 10.09,
+      "wall_ms": 10.48
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-029",
+     "fact_ranks": {
+      "NS-146": 7
+     },
+     "top": [
+      "NORTHSTAR/SURVEY-2026@v1:T1",
+      "NORTHSTAR/SURVEY-2026@v1:R478",
+      "NORTHSTAR/SURVEY-2026@v1:R577",
+      "NORTHSTAR/SURVEY-2026@v1:R361",
+      "NORTHSTAR/SURVEY-2026@v1:R303",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P3.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R63",
+      "NORTHSTAR/SURVEY-2026@v1:R272",
+      "NORTHSTAR/SURVEY-2026@v1:R58",
+      "NORTHSTAR/SURVEY-2026@v1:R408",
+      "NORTHSTAR/SURVEY-2026@v1:R173",
+      "NORTHSTAR/SURVEY-2026@v1:R489",
+      "NORTHSTAR/SURVEY-2026@v1:R406",
+      "NORTHSTAR/SURVEY-2026@v1:R567",
+      "NORTHSTAR/SURVEY-2026@v1:R270",
+      "NORTHSTAR/SURVEY-2026@v1:R542",
+      "NORTHSTAR/SURVEY-2026@v1:R423",
+      "NORTHSTAR/SURVEY-2026@v1:R255",
+      "NORTHSTAR/SURVEY-2026@v1:R316",
+      "NORTHSTAR/SURVEY-2026@v1:R495"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.28,
+      "dense_ms": 7.09,
+      "total_ms": 11.39,
+      "wall_ms": 11.83
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-032",
+     "fact_ranks": {
+      "SP-C04": 2
+     },
+     "top": [
+      "SOUTHPEAK/BOARD-DECK@v1:SL6",
+      "SOUTHPEAK/BOARD-DECK@v1:SL6.N1",
+      "SOUTHPEAK/BOARD-DECK@v1:SL4.N1",
+      "SOUTHPEAK/BOARD-DECK@v1:SL2",
+      "SOUTHPEAK/SURVEY-2026@v1:R266",
+      "SOUTHPEAK/SURVEY-2026@v1:R28",
+      "SOUTHPEAK/SURVEY-2026@v1:R117",
+      "SOUTHPEAK/SURVEY-2026@v1:R274",
+      "SOUTHPEAK/SURVEY-2026@v1:R240",
+      "SOUTHPEAK/SURVEY-2026@v1:R16",
+      "SOUTHPEAK/SURVEY-2026@v1:R154",
+      "SOUTHPEAK/SURVEY-2026@v1:R194",
+      "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B2",
+      "SOUTHPEAK/SURVEY-2026@v1:R183",
+      "SOUTHPEAK/SURVEY-2026@v1:R288",
+      "SOUTHPEAK/SURVEY-2026@v1:R74",
+      "SOUTHPEAK/SURVEY-2026@v1:R47",
+      "SOUTHPEAK/SURVEY-2026@v1:R13",
+      "SOUTHPEAK/BOARD-DECK@v1:SL4",
+      "SOUTHPEAK/BOARD-DECK@v1:SL1"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.37,
+      "dense_ms": 3.88,
+      "total_ms": 10.26,
+      "wall_ms": 10.68
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-034",
+     "fact_ranks": {
+      "NS-146": 9
+     },
+     "top": [
+      "NORTHSTAR/SUPPORT-THEMES@v1:P3.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R179",
+      "NORTHSTAR/SURVEY-2026@v1:R478",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B5",
+      "NORTHSTAR/SURVEY-2026@v1:R359",
+      "NORTHSTAR/SURVEY-2026@v1:R32",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+      "NORTHSTAR/REVIEWS@v1:R541",
+      "NORTHSTAR/SURVEY-2026@v1:R63",
+      "NORTHSTAR/SURVEY-2026@v1:R576",
+      "NORTHSTAR/SURVEY-2026@v1:R77",
+      "NORTHSTAR/SURVEY-2026@v1:R207",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B4",
+      "NORTHSTAR/SURVEY-2026@v1:R577",
+      "NORTHSTAR/REVIEWS@v1:R495",
+      "NORTHSTAR/SURVEY-2026@v1:R18",
+      "NORTHSTAR/SURVEY-2026@v1:R58",
+      "NORTHSTAR/SURVEY-2026@v1:R411",
+      "NORTHSTAR/SURVEY-2026@v1:R493",
+      "NORTHSTAR/REVIEWS@v1:R219"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.92,
+      "dense_ms": 5.12,
+      "total_ms": 11.06,
+      "wall_ms": 11.42
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-035",
+     "fact_ranks": {
+      "NS-066": 1
+     },
+     "top": [
+      "NORTHSTAR/INTERVIEWS@v1:S14.Q1",
+      "NORTHSTAR/INTERVIEWS@v1:S14.Q2",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL12.N1",
+      "NORTHSTAR/INTERVIEWS@v1:S14.B1",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL12",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+      "NORTHSTAR/INTERVIEWS@v1:S10.Q4",
+      "NORTHSTAR/INTERVIEWS@v1:S14.Q3",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL9.N1",
+      "NORTHSTAR/INTERVIEWS@v1:S4.Q2",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL10",
+      "NORTHSTAR/REVIEWS@v1:R209",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+      "NORTHSTAR/INTERVIEWS@v1:S5.Q5"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.59,
+      "dense_ms": 5.45,
+      "total_ms": 10.06,
+      "wall_ms": 10.47
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-036",
+     "fact_ranks": {
+      "NS-070": 1
+     },
+     "top": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL9",
+      "NORTHSTAR/SURVEY-2026@v1:R504",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R291",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7",
+      "NORTHSTAR/INTERVIEWS@v1:S5.Q2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R334",
+      "NORTHSTAR/SURVEY-2026@v1:R303"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.45,
+      "dense_ms": 5.04,
+      "total_ms": 11.5,
+      "wall_ms": 11.98
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-037",
+     "fact_ranks": {
+      "NS-072": 2
+     },
+     "top": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B5",
+      "NORTHSTAR/PACE-DECK@v1:SL9",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B3",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B5",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B4",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B1"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.2,
+      "dense_ms": 6.09,
+      "total_ms": 11.32,
+      "wall_ms": 11.74
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-038",
+     "fact_ranks": {
+      "NS-012": 1
+     },
+     "top": [
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL8",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+      "NORTHSTAR/REVIEWS@v1:R413",
+      "NORTHSTAR/REVIEWS@v1:R197",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R509",
+      "NORTHSTAR/REVIEWS@v1:R360",
+      "NORTHSTAR/REVIEWS@v1:R172",
+      "NORTHSTAR/SURVEY-2026@v1:R211",
+      "NORTHSTAR/SURVEY-2026@v1:R43",
+      "NORTHSTAR/SURVEY-2026@v1:R522",
+      "NORTHSTAR/REVIEWS@v1:R631",
+      "NORTHSTAR/SURVEY-2026@v1:R503",
+      "NORTHSTAR/SURVEY-2026@v1:R299",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+      "NORTHSTAR/REVIEWS@v1:R29",
+      "NORTHSTAR/REVIEWS@v1:R70",
+      "NORTHSTAR/SURVEY-2026@v1:R482"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.38,
+      "dense_ms": 4.76,
+      "total_ms": 11.16,
+      "wall_ms": 11.57
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-040",
+     "fact_ranks": {
+      "NS-005": 12
+     },
+     "top": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+      "NORTHSTAR/INTERVIEWS@v1:S5.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R33",
+      "NORTHSTAR/PACE-DECK@v1:SL4.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL10.N1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R478",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL11",
+      "NORTHSTAR/SURVEY-2026@v1:R87"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.68,
+      "dense_ms": 4.53,
+      "total_ms": 10.23,
+      "wall_ms": 10.59
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-042",
+     "fact_ranks": {
+      "NS-040": 1
+     },
+     "top": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+      "NORTHSTAR/PACE-DECK@v1:SL4.N1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B3",
+      "NORTHSTAR/INTERVIEWS@v1:S3.Q2",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B4",
+      "NORTHSTAR/Q3-REVIEW@v1:SL6.N1",
+      "NORTHSTAR/SURVEY-2026@v1:R542",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B3",
+      "NORTHSTAR/INTERVIEWS@v1:S9.Q4",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B3",
+      "NORTHSTAR/INTERVIEWS@v1:S8.Q4",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/SURVEY-2026@v1:R388",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R173"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.32,
+      "dense_ms": 5.01,
+      "total_ms": 11.35,
+      "wall_ms": 11.76
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-044",
+     "fact_ranks": {
+      "NS-112": 1
+     },
+     "top": [
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P5.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/PACE-DECK@v1:SL12.N1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R33",
+      "NORTHSTAR/KINETIC-AR@v1:P1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P5.B1",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL11.N1"
+     ],
+     "timings_ms": {
+      "embed_ms": 7.5,
+      "dense_ms": 5.31,
+      "total_ms": 12.82,
+      "wall_ms": 13.25
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-045",
+     "fact_ranks": {
+      "NS-102": 24
+     },
+     "top": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/PACE-DECK@v1:SL2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL15",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P5.B2",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B8",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL12.N1",
+      "NORTHSTAR/PACE-DECK@v1:SL12",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B1",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B1",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B8"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.5,
+      "dense_ms": 4.67,
+      "total_ms": 11.19,
+      "wall_ms": 11.54
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-046",
+     "fact_ranks": {
+      "NS-054": 3
+     },
+     "top": [
+      "NORTHSTAR/PACE-DECK@v1:SL9.N1",
+      "NORTHSTAR/INTERVIEWS@v1:S9.Q2",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B7",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B4",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL11.N1",
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B12",
+      "NORTHSTAR/Q3-REVIEW@v1:SL11",
+      "NORTHSTAR/PACE-WEB@v1:S1.B2",
+      "NORTHSTAR/REVIEWS@v1:R154",
+      "NORTHSTAR/REVIEWS@v1:R382",
+      "NORTHSTAR/PACE-DECK@v1:SL5",
+      "NORTHSTAR/REVIEWS@v1:R360",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B5",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B4",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B3",
+      "NORTHSTAR/REVIEWS@v1:R683"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.84,
+      "dense_ms": 4.96,
+      "total_ms": 11.81,
+      "wall_ms": 12.2
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-048",
+     "fact_ranks": {
+      "NS-012": 2,
+      "NS-123": null,
+      "NS-082": 1
+     },
+     "top": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL8",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+      "NORTHSTAR/SURVEY-2026@v1:R211",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+      "NORTHSTAR/SURVEY-2026@v1:R131",
+      "NORTHSTAR/Q3-REVIEW@v1:SL14",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+      "NORTHSTAR/REVIEWS@v1:R360",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B4",
+      "NORTHSTAR/REVIEWS@v1:R197",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+      "NORTHSTAR/SURVEY-2026@v1:R499",
+      "NORTHSTAR/SURVEY-2026@v1:R299",
+      "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+      "NORTHSTAR/SURVEY-2026@v1:R509"
+     ],
+     "timings_ms": {
+      "embed_ms": 8.93,
+      "dense_ms": 4.6,
+      "total_ms": 13.54,
+      "wall_ms": 13.93
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-049",
+     "fact_ranks": {
+      "NS-054": 1,
+      "NS-105": 8
+     },
+     "top": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B7",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B10",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+      "NORTHSTAR/Q3-REVIEW@v1:SL11",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/SURVEY-2026@v1:R389",
+      "NORTHSTAR/REVIEWS@v1:R154",
+      "NORTHSTAR/REVIEWS@v1:R49",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B5",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+      "NORTHSTAR/REVIEWS@v1:R382",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B5",
+      "NORTHSTAR/Q3-REVIEW@v1:SL10"
+     ],
+     "timings_ms": {
+      "embed_ms": 7.36,
+      "dense_ms": 4.63,
+      "total_ms": 12.0,
+      "wall_ms": 12.39
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-050",
+     "fact_ranks": {
+      "NS-085": 1,
+      "NS-140": null
+     },
+     "top": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL5",
+      "NORTHSTAR/Q3-REVIEW@v1:SL5.N1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+      "NORTHSTAR/PACE-DECK@v1:SL4",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL7",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B4",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B1",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+      "NORTHSTAR/PACE-DECK@v1:SL12",
+      "NORTHSTAR/PACE-DECK@v1:SL3",
+      "NORTHSTAR/SURVEY-2026@v1:R542"
+     ],
+     "timings_ms": {
+      "embed_ms": 7.65,
+      "dense_ms": 4.61,
+      "total_ms": 12.28,
+      "wall_ms": 12.69
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-051",
+     "fact_ranks": {
+      "NS-004": 3,
+      "NS-070": 1
+     },
+     "top": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL6.N1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL6",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R303",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B4",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3"
+     ],
+     "timings_ms": {
+      "embed_ms": 9.16,
+      "dense_ms": 4.61,
+      "total_ms": 13.79,
+      "wall_ms": 14.17
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-053",
+     "fact_ranks": {
+      "NS-104": 7,
+      "NS-105": 2,
+      "NS-094": 14
+     },
+     "top": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13",
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B2",
+      "NORTHSTAR/KINETIC-AR@v1:P1.B3",
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B3",
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B4",
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B7",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+      "NORTHSTAR/PACE-WEB@v1:S1.B6",
+      "NORTHSTAR/PACE-DECK@v1:SL9",
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B5",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL9",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B6",
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B8",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL6",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL9.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B1"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.07,
+      "dense_ms": 4.63,
+      "total_ms": 10.71,
+      "wall_ms": 11.08
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-055",
+     "fact_ranks": {
+      "NS-063": 3,
+      "NS-146": null
+     },
+     "top": [
+      "NORTHSTAR/SURVEY-2026@v1:R478",
+      "NORTHSTAR/SURVEY-2026@v1:R207",
+      "NORTHSTAR/INTERVIEWS@v1:S11.Q1",
+      "NORTHSTAR/SURVEY-2026@v1:R77",
+      "NORTHSTAR/SURVEY-2026@v1:R437",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+      "NORTHSTAR/SURVEY-2026@v1:R105",
+      "NORTHSTAR/SURVEY-2026@v1:R25",
+      "NORTHSTAR/SURVEY-2026@v1:R593",
+      "NORTHSTAR/SURVEY-2026@v1:R411",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/INTERVIEWS@v1:S6.Q4",
+      "NORTHSTAR/INTERVIEWS@v1:S8.Q4",
+      "NORTHSTAR/SURVEY-2026@v1:R244",
+      "NORTHSTAR/SURVEY-2026@v1:R508",
+      "NORTHSTAR/SURVEY-2026@v1:R33",
+      "NORTHSTAR/SURVEY-2026@v1:R177",
+      "NORTHSTAR/SURVEY-2026@v1:R92",
+      "NORTHSTAR/SURVEY-2026@v1:R427",
+      "NORTHSTAR/SURVEY-2026@v1:R197"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.39,
+      "dense_ms": 4.65,
+      "total_ms": 11.05,
+      "wall_ms": 11.41
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-056",
+     "fact_ranks": {
+      "NS-100": 6,
+      "NS-101": 3,
+      "NS-102": 3
+     },
+     "top": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B8",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2.N1",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL15",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL14",
+      "NORTHSTAR/Q3-REVIEW@v1:SL15.N1",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL12.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+      "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+      "NORTHSTAR/PACE-DECK@v1:SL2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL5.N1"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.21,
+      "dense_ms": 5.47,
+      "total_ms": 9.7,
+      "wall_ms": 10.15
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-058",
+     "fact_ranks": {
+      "NS-120": null
+     },
+     "top": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL8",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/REVIEWS@v1:R360",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+      "NORTHSTAR/REVIEWS@v1:R172",
+      "NORTHSTAR/REVIEWS@v1:R197",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL14",
+      "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+      "NORTHSTAR/REVIEWS@v1:R631",
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B6",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+      "NORTHSTAR/REVIEWS@v1:R326",
+      "NORTHSTAR/SURVEY-2026@v1:R131",
+      "NORTHSTAR/SURVEY-2026@v1:R211",
+      "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B3"
+     ],
+     "timings_ms": {
+      "embed_ms": 4.43,
+      "dense_ms": 5.95,
+      "total_ms": 10.4,
+      "wall_ms": 11.15
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-059",
+     "fact_ranks": {
+      "NS-086": 1
+     },
+     "top": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+      "NORTHSTAR/PACE-DECK@v1:SL4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL6",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL7",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL5.N1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.68,
+      "dense_ms": 5.15,
+      "total_ms": 10.84,
+      "wall_ms": 11.3
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-060",
+     "fact_ranks": {
+      "NS-129": 14
+     },
+     "top": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R19",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R18",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R16",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R14",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R15",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R7",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R6",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R36",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R37",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B1",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R4",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R3",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R2",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R34",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R35",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R33"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.11,
+      "dense_ms": 4.67,
+      "total_ms": 10.8,
+      "wall_ms": 11.19
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-061",
+     "fact_ranks": {
+      "NS-127": 1
+     },
+     "top": [
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.T1",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R5",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL5.N1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/PACE-DECK@v1:SL4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B4",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.77,
+      "dense_ms": 4.82,
+      "total_ms": 10.6,
+      "wall_ms": 10.97
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-062",
+     "fact_ranks": {
+      "NS-035": 1
+     },
+     "top": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R19",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R18",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B1",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R7",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R6",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3"
+     ],
+     "timings_ms": {
+      "embed_ms": 6.08,
+      "dense_ms": 7.95,
+      "total_ms": 14.05,
+      "wall_ms": 14.44
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-063",
+     "fact_ranks": {
+      "NS-036": 1
+     },
+     "top": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/GENZ-TRENDS@v2:P5.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL6",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R11",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R10",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B1",
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R12"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.79,
+      "dense_ms": 7.02,
+      "total_ms": 12.83,
+      "wall_ms": 13.26
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    },
+    {
+     "item_id": "R0-064",
+     "fact_ranks": {
+      "NS-038": 1
+     },
+     "top": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B2",
+      "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL10.N1",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL6",
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+      "NORTHSTAR/GENZ-TRENDS@v2:P5.B1"
+     ],
+     "timings_ms": {
+      "embed_ms": 5.74,
+      "dense_ms": 8.14,
+      "total_ms": 13.9,
+      "wall_ms": 14.26
+     },
+     "flags": [],
+     "detail": {
+      "dense_children": 100
+     }
+    }
+   ]
+  },
+  "baseline-lexical": {
+   "metrics": {
+    "n": 44,
+    "recall@1": 0.045454545454545456,
+    "hit@1": 0.045454545454545456,
+    "recall@3": 0.045454545454545456,
+    "hit@3": 0.045454545454545456,
+    "recall@5": 0.045454545454545456,
+    "hit@5": 0.045454545454545456,
+    "recall@10": 0.045454545454545456,
+    "hit@10": 0.045454545454545456,
+    "recall@20": 0.045454545454545456,
+    "hit@20": 0.045454545454545456,
+    "mrr": 0.045454545454545456,
+    "mrr@10": 0.045454545454545456
+   },
+   "intervals": {
+    "hit@1": {
+     "estimate": 0.045454545454545456,
+     "low": 0.012555109949594967,
+     "high": 0.15134998437629657
+    },
+    "recall@1": {
+     "estimate": 0.045454545454545456,
+     "low": 0.0,
+     "high": 0.11363636363636363
+    },
+    "hit@5": {
+     "estimate": 0.045454545454545456,
+     "low": 0.012555109949594967,
+     "high": 0.15134998437629657
+    },
+    "recall@5": {
+     "estimate": 0.045454545454545456,
+     "low": 0.0,
+     "high": 0.11363636363636363
+    },
+    "hit@10": {
+     "estimate": 0.045454545454545456,
+     "low": 0.012555109949594967,
+     "high": 0.15134998437629657
+    },
+    "recall@10": {
+     "estimate": 0.045454545454545456,
+     "low": 0.0,
+     "high": 0.11363636363636363
+    },
+    "hit@20": {
+     "estimate": 0.045454545454545456,
+     "low": 0.012555109949594967,
+     "high": 0.15134998437629657
+    },
+    "recall@20": {
+     "estimate": 0.045454545454545456,
+     "low": 0.0,
+     "high": 0.11363636363636363
+    },
+    "mrr": {
+     "estimate": 0.045454545454545456,
+     "low": 0.0,
+     "high": 0.11363636363636363
+    }
+   },
+   "latency_ms": {
+    "lexical_ms": {
+     "p50": 2.16,
+     "p95": 2.65
+    },
+    "total_ms": {
+     "p50": 2.16,
+     "p95": 2.65
+    },
+    "wall_ms": {
+     "p50": 2.43,
+     "p95": 2.93
+    }
+   },
+   "flags": {},
+   "config": {
+    "arm": "baseline-lexical",
+    "lane": "smoke.lexical_search",
+    "child_k": 100
+   },
+   "by_category": {
+    "ambiguous_distractor": {
+     "n": 4,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "cross_format": {
+     "n": 4,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "customer_free_text": {
+     "n": 5,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "enumeration": {
+     "n": 3,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "exact_number": {
+     "n": 7,
+     "hit@1": 2,
+     "recall@1": 0.286,
+     "hit@5": 2,
+     "recall@5": 0.286,
+     "hit@10": 2,
+     "recall@10": 0.286,
+     "mrr": 0.286
+    },
+    "keyword_sensitive": {
+     "n": 4,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "named_entity": {
+     "n": 3,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "semantic_paraphrase": {
+     "n": 5,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "single_source_fact": {
+     "n": 6,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "versioning": {
+     "n": 3,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    }
+   },
+   "by_format": {
+    "csv": {
+     "n": 7,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "docx": {
+     "n": 9,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "markdown": {
+     "n": 8,
+     "hit@1": 1,
+     "recall@1": 0.125,
+     "hit@5": 1,
+     "recall@5": 0.125,
+     "hit@10": 1,
+     "recall@10": 0.125,
+     "mrr": 0.125
+    },
+    "pdf": {
+     "n": 8,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "pptx": {
+     "n": 9,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "text": {
+     "n": 3,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "xlsx": {
+     "n": 7,
+     "hit@1": 1,
+     "recall@1": 0.143,
+     "hit@5": 1,
+     "recall@5": 0.143,
+     "hit@10": 1,
+     "recall@10": 0.143,
+     "mrr": 0.143
+    }
+   },
+   "by_overlap_bin": {
+    "high": {
+     "n": 2,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "low": {
+     "n": 13,
+     "hit@1": 0,
+     "recall@1": 0.0,
+     "hit@5": 0,
+     "recall@5": 0.0,
+     "hit@10": 0,
+     "recall@10": 0.0,
+     "mrr": 0.0
+    },
+    "mid": {
+     "n": 29,
+     "hit@1": 2,
+     "recall@1": 0.069,
+     "hit@5": 2,
+     "recall@5": 0.069,
+     "hit@10": 2,
+     "recall@10": 0.069,
+     "mrr": 0.069
+    }
+   },
+   "distractors": [
+    {
+     "item_id": "R0-009",
+     "question": "Gen Z conversion rate on the Social Shop channel, September 2026",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-024",
+     "question": "NS-KR2 return rate",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-050",
+     "question": "Social Shop momentum check: how fast did it grow quarter over quarter in Q2 FY26, and what was its Gen Z conversion rate in September 2026?",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-058",
+     "question": "Return rate for the second-generation Knit Runner, not the original model?",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-059",
+     "question": "Where did Gen Z net promoter score land in Q2 FY26?",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    },
+    {
+     "item_id": "R0-060",
+     "question": "How large is the 2026 US athletic footwear market for Gen Z shoppers specifically, in the category sizing workbook?",
+     "true_rank": null,
+     "best_distractor_rank": null,
+     "distractor_wins": false
+    }
+   ],
+   "items": [
+    {
+     "item_id": "R0-001",
+     "fact_ranks": {
+      "NS-083": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.55,
+      "total_ms": 2.55,
+      "wall_ms": 2.82
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-002",
+     "fact_ranks": {
+      "NS-101": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.42,
+      "total_ms": 2.42,
+      "wall_ms": 2.71
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-004",
+     "fact_ranks": {
+      "NS-112": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.66,
+      "total_ms": 2.66,
+      "wall_ms": 2.94
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-005",
+     "fact_ranks": {
+      "NS-094": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.56,
+      "total_ms": 2.56,
+      "wall_ms": 2.81
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-006",
+     "fact_ranks": {
+      "NS-073": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.58,
+      "total_ms": 2.58,
+      "wall_ms": 2.84
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-008",
+     "fact_ranks": {
+      "NS-125": 1
+     },
+     "top": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2"
+     ],
+     "timings_ms": {
+      "lexical_ms": 2.59,
+      "total_ms": 2.59,
+      "wall_ms": 2.85
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 2
+     }
+    },
+    {
+     "item_id": "R0-009",
+     "fact_ranks": {
+      "NS-140": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.35,
+      "total_ms": 2.35,
+      "wall_ms": 2.65
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-011",
+     "fact_ranks": {
+      "NS-080": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.51,
+      "total_ms": 2.51,
+      "wall_ms": 2.78
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-013",
+     "fact_ranks": {
+      "NS-100": 1
+     },
+     "top": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7"
+     ],
+     "timings_ms": {
+      "lexical_ms": 2.44,
+      "total_ms": 2.44,
+      "wall_ms": 2.7
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 1
+     }
+    },
+    {
+     "item_id": "R0-014",
+     "fact_ranks": {
+      "NS-110": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.26,
+      "total_ms": 2.26,
+      "wall_ms": 2.55
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-016",
+     "fact_ranks": {
+      "NS-052": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.29,
+      "total_ms": 2.29,
+      "wall_ms": 2.6
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-017",
+     "fact_ranks": {
+      "SP-C06": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 1.97,
+      "total_ms": 1.97,
+      "wall_ms": 2.24
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-018",
+     "fact_ranks": {
+      "NS-104": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.21,
+      "total_ms": 2.21,
+      "wall_ms": 2.49
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-019",
+     "fact_ranks": {
+      "NS-094": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.25,
+      "total_ms": 2.25,
+      "wall_ms": 2.53
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-020",
+     "fact_ranks": {
+      "NS-105": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.22,
+      "total_ms": 2.22,
+      "wall_ms": 2.5
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-024",
+     "fact_ranks": {
+      "NS-120": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.18,
+      "total_ms": 2.18,
+      "wall_ms": 2.46
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-026",
+     "fact_ranks": {
+      "NS-144": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.17,
+      "total_ms": 2.17,
+      "wall_ms": 2.45
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-027",
+     "fact_ranks": {
+      "NS-148": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.09,
+      "total_ms": 2.09,
+      "wall_ms": 2.35
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-029",
+     "fact_ranks": {
+      "NS-146": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.05,
+      "total_ms": 2.05,
+      "wall_ms": 2.3
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-032",
+     "fact_ranks": {
+      "SP-C04": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 1.95,
+      "total_ms": 1.95,
+      "wall_ms": 2.26
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-034",
+     "fact_ranks": {
+      "NS-146": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.2,
+      "total_ms": 2.2,
+      "wall_ms": 2.49
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-035",
+     "fact_ranks": {
+      "NS-066": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.09,
+      "total_ms": 2.09,
+      "wall_ms": 2.38
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-036",
+     "fact_ranks": {
+      "NS-070": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.13,
+      "total_ms": 2.13,
+      "wall_ms": 2.41
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-037",
+     "fact_ranks": {
+      "NS-072": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.02,
+      "total_ms": 2.02,
+      "wall_ms": 2.28
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-038",
+     "fact_ranks": {
+      "NS-012": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.04,
+      "total_ms": 2.04,
+      "wall_ms": 2.32
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-040",
+     "fact_ranks": {
+      "NS-005": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.0,
+      "total_ms": 2.0,
+      "wall_ms": 2.3
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-042",
+     "fact_ranks": {
+      "NS-040": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.03,
+      "total_ms": 2.03,
+      "wall_ms": 2.29
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-044",
+     "fact_ranks": {
+      "NS-112": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.07,
+      "total_ms": 2.07,
+      "wall_ms": 2.33
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-045",
+     "fact_ranks": {
+      "NS-102": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.01,
+      "total_ms": 2.01,
+      "wall_ms": 2.28
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-046",
+     "fact_ranks": {
+      "NS-054": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.07,
+      "total_ms": 2.07,
+      "wall_ms": 2.36
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-048",
+     "fact_ranks": {
+      "NS-012": null,
+      "NS-123": null,
+      "NS-082": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.13,
+      "total_ms": 2.13,
+      "wall_ms": 2.41
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-049",
+     "fact_ranks": {
+      "NS-054": null,
+      "NS-105": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.15,
+      "total_ms": 2.15,
+      "wall_ms": 2.41
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-050",
+     "fact_ranks": {
+      "NS-085": null,
+      "NS-140": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.06,
+      "total_ms": 2.06,
+      "wall_ms": 2.35
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-051",
+     "fact_ranks": {
+      "NS-004": null,
+      "NS-070": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.09,
+      "total_ms": 2.09,
+      "wall_ms": 2.36
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-053",
+     "fact_ranks": {
+      "NS-104": null,
+      "NS-105": null,
+      "NS-094": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.04,
+      "total_ms": 2.04,
+      "wall_ms": 2.33
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-055",
+     "fact_ranks": {
+      "NS-063": null,
+      "NS-146": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.17,
+      "total_ms": 2.17,
+      "wall_ms": 2.45
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-056",
+     "fact_ranks": {
+      "NS-100": null,
+      "NS-101": null,
+      "NS-102": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 1.98,
+      "total_ms": 1.98,
+      "wall_ms": 2.29
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-058",
+     "fact_ranks": {
+      "NS-120": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.38,
+      "total_ms": 2.38,
+      "wall_ms": 2.68
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-059",
+     "fact_ranks": {
+      "NS-086": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.82,
+      "total_ms": 2.82,
+      "wall_ms": 3.34
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-060",
+     "fact_ranks": {
+      "NS-129": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.78,
+      "total_ms": 2.78,
+      "wall_ms": 3.15
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-061",
+     "fact_ranks": {
+      "NS-127": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.21,
+      "total_ms": 2.21,
+      "wall_ms": 2.47
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-062",
+     "fact_ranks": {
+      "NS-035": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 2.09,
+      "total_ms": 2.09,
+      "wall_ms": 2.35
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-063",
+     "fact_ranks": {
+      "NS-036": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 1.92,
+      "total_ms": 1.92,
+      "wall_ms": 2.18
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    },
+    {
+     "item_id": "R0-064",
+     "fact_ranks": {
+      "NS-038": null
+     },
+     "top": [],
+     "timings_ms": {
+      "lexical_ms": 1.96,
+      "total_ms": 1.96,
+      "wall_ms": 2.21
+     },
+     "flags": [],
+     "detail": {
+      "lexical_children": 0
+     }
+    }
+   ]
+  }
+ },
+ "comparisons": {
+  "baseline-dense->baseline-lexical": {
+   "n": 44,
+   "hit@1": {
+    "only_reference": 23,
+    "only_other": 0,
+    "p_value": 0.0
+   },
+   "hit@5": {
+    "only_reference": 31,
+    "only_other": 0,
+    "p_value": 0.0
+   },
+   "hit@10": {
+    "only_reference": 34,
+    "only_other": 0,
+    "p_value": 0.0
+   },
+   "hit@20": {
+    "only_reference": 36,
+    "only_other": 0,
+    "p_value": 0.0
+   },
+   "mrr_diff": {
+    "estimate": -0.6162968975468975,
+    "low": -0.7406655844155844,
+    "high": -0.49039502164502163
+   },
+   "recall@10_diff": {
+    "estimate": -0.7348484848484849,
+    "low": -0.8522727272727273,
+    "high": -0.6098484848484849
+   }
+  }
+ },
+ "failures": {
+  "baseline-dense|baseline-lexical": {
+   "baseline-dense_only": {
+    "count": 34,
+    "examples": [
+     {
+      "item_id": "R0-001",
+      "question": "What did Northstar leadership decide about a national rollout of personalization at the Q3 strategy review?",
+      "category": "single_source_fact",
+      "overlap": 0.444,
+      "expected": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL14.N1"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-083": 1
+       },
+       "baseline-lexical": {
+        "NS-083": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+        "NORTHSTAR/Q3-REVIEW@v1:SL1",
+        "NORTHSTAR/Q3-REVIEW@v1:SL2"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-002",
+      "question": "When does the FY27 planning memo propose introducing the cross-category Fit Promise free exchange guarantee?",
+      "category": "single_source_fact",
+      "overlap": 0.667,
+      "expected": [
+       "NORTHSTAR/FY27-MEMO@v1:S1.B6"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-101": 1
+       },
+       "baseline-lexical": {
+        "NS-101": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+        "NORTHSTAR/FY27-MEMO@v1:S1.B8",
+        "NORTHSTAR/FY27-MEMO@v1:S1.B9"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-004",
+      "question": "What ceiling does the consumer panel analyst expect personalized shoes to stay under, as a share of US athletic footwear units, through 2028?",
+      "category": "single_source_fact",
+      "overlap": 0.5,
+      "expected": [
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-112": 1
+       },
+       "baseline-lexical": {
+        "NS-112": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+        "NORTHSTAR/GENZ-TRENDS@v2:P5.B2",
+        "NORTHSTAR/WTP-STUDY@v1:P1.B2"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-005",
+      "question": "Why does Pace & Co. stay away from offering customized products?",
+      "category": "single_source_fact",
+      "overlap": 0.0,
+      "expected": [
+       "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4",
+       "NORTHSTAR/PACE-DECK@v1:SL9.N1"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-094": 2
+       },
+       "baseline-lexical": {
+        "NS-094": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/PACE-DECK@v1:SL9",
+        "NORTHSTAR/PACE-DECK@v1:SL9.N1",
+        "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-006",
+      "question": "Who took part in the Northstar Gen Z focus group, and where and when was it held?",
+      "category": "single_source_fact",
+      "overlap": 0.375,
+      "expected": [
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-073": 1
+       },
+       "baseline-lexical": {
+        "NS-073": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+        "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S1.B1",
+        "NORTHSTAR/INTERVIEWS@v1:S1.B1"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-011",
+      "question": "How much net revenue did Northstar book in Q2 FY26 according to the Q3 strategy review?",
+      "category": "exact_number",
+      "overlap": 0.4,
+      "expected": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL3"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-080": 1
+       },
+       "baseline-lexical": {
+        "NS-080": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/Q3-REVIEW@v1:SL3",
+        "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+        "NORTHSTAR/Q3-REVIEW@v1:SL2"
+       ],
+       "baseline-lexical": []
+      }
+     }
+    ],
+    "all_ids": [
+     "R0-001",
+     "R0-002",
+     "R0-004",
+     "R0-005",
+     "R0-006",
+     "R0-011",
+     "R0-014",
+     "R0-016",
+     "R0-018",
+     "R0-019",
+     "R0-020",
+     "R0-026",
+     "R0-029",
+     "R0-032",
+     "R0-034",
+     "R0-035",
+     "R0-036",
+     "R0-037",
+     "R0-038",
+     "R0-042",
+     "R0-044",
+     "R0-046",
+     "R0-048",
+     "R0-049",
+     "R0-050",
+     "R0-051",
+     "R0-053",
+     "R0-055",
+     "R0-056",
+     "R0-059",
+     "R0-061",
+     "R0-062",
+     "R0-063",
+     "R0-064"
+    ]
+   },
+   "both_miss": {
+    "count": 8,
+    "examples": [
+     {
+      "item_id": "R0-009",
+      "question": "Gen Z conversion rate on the Social Shop channel, September 2026",
+      "category": "exact_number",
+      "overlap": 0.444,
+      "expected": [
+       "NORTHSTAR/CHANNEL-PERF@v1:R116"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-140": null
+       },
+       "baseline-lexical": {
+        "NS-140": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/Q3-REVIEW@v1:SL5",
+        "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+        "NORTHSTAR/FY27-MEMO@v1:S1.B5"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-017",
+      "question": "What was Southpeak's marketplace conversion rate in September 2026?",
+      "category": "exact_number",
+      "overlap": 0.429,
+      "expected": [
+       "SOUTHPEAK/CHANNEL-DATA@v1:SH1.R59"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "SP-C06": null
+       },
+       "baseline-lexical": {
+        "SP-C06": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "SOUTHPEAK/SURVEY-2026@v1:R211",
+        "SOUTHPEAK/SURVEY-2026@v1:R184",
+        "SOUTHPEAK/SURVEY-2026@v1:R103"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-024",
+      "question": "NS-KR2 return rate",
+      "category": "keyword_sensitive",
+      "overlap": 1.0,
+      "expected": [
+       "NORTHSTAR/PRODUCT-PERF@v1:SH2.R2"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-120": null
+       },
+       "baseline-lexical": {
+        "NS-120": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+        "NORTHSTAR/Q3-REVIEW@v1:SL3",
+        "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-027",
+      "question": "Pull up review RV-00655 \u2014 what was the customer's experience?",
+      "category": "keyword_sensitive",
+      "overlap": 0.5,
+      "expected": [
+       "NORTHSTAR/REVIEWS@v1:R656"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-148": null
+       },
+       "baseline-lexical": {
+        "NS-148": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/REVIEWS@v1:R574",
+        "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+        "NORTHSTAR/REVIEWS@v1:R683"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-040",
+      "question": "Rather than fighting for the pro-athlete crowd, what reputation is the company trying to own with younger shoppers?",
+      "category": "semantic_paraphrase",
+      "overlap": 0.091,
+      "expected": [
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-005": 12
+       },
+       "baseline-lexical": {
+        "NS-005": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+        "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+        "NORTHSTAR/GENZ-TRENDS@v2:P4.B1"
+       ],
+       "baseline-lexical": []
+      }
+     },
+     {
+      "item_id": "R0-045",
+      "question": "Under what condition does the strategy team's next-year plan say bespoke products should move beyond a small trial?",
+      "category": "semantic_paraphrase",
+      "overlap": 0.0,
+      "expected": [
+       "NORTHSTAR/FY27-MEMO@v1:S1.B6"
+      ],
+      "ranks": {
+       "baseline-dense": {
+        "NS-102": 24
+       },
+       "baseline-lexical": {
+        "NS-102": null
+       }
+      },
+      "top3": {
+       "baseline-dense": [
+        "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+        "NORTHSTAR/PACE-DECK@v1:SL2",
+        "NORTHSTAR/Q3-REVIEW@v1:SL15"
+       ],
+       "baseline-lexical": []
+      }
+     }
+    ],
+    "all_ids": [
+     "R0-009",
+     "R0-017",
+     "R0-024",
+     "R0-027",
+     "R0-040",
+     "R0-045",
+     "R0-058",
+     "R0-060"
+    ]
+   }
+  }
+ }
+}
