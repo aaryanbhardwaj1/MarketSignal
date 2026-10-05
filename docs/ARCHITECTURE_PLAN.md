@@ -586,7 +586,7 @@ Cell references resolve through row handle + column name. The column appears in 
 | Resolvable by backend code | One resolver (§16). No model is involved. |
 | Stable | Parents are immutable per version (§4.2). Chunk tuning never touches handles. Parser or structure changes mint new versions. |
 | Associated with workspace and source | Syntactically (prefix) and in the database (composite FKs). |
-| Safe to render | The alphabet is `[A-Z0-9/@:.-]`, so no markdown or HTML can be expressed. |
+| Safe to render | The alphabet is `[A-Z0-9v/@:.-]` (the lowercase `v` appears only in the `@v` version marker), so no markdown or HTML can be expressed. |
 | Invalid ⇒ rejected | `MALFORMED_HANDLE`. Never fuzzy-matched. |
 | Valid ⇒ exact evidence | Parent text + locator + provenance. `parent_content_hash` is stored with every citation, so drift is detectable ("evidence changed"). |
 

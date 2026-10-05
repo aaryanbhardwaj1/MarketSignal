@@ -27,7 +27,7 @@ unit   = kind [1-9][0-9]{0,6};  kind = SL|SH|P|B|S|N|R|Q|T
 ```
 
 - Pure function of workspace code, source code, version and structural locator; `AQ` = `sha256(normalized_spec ‖ source_version_id)[:12]`.
-- Alphabet `[A-Z0-9/@:.-]`: no markdown or HTML can be expressed. `unique(workspace_id, handle)` in the database.
+- Alphabet `[A-Z0-9v/@:.-]` (lowercase `v` only in the `@v` marker): no markdown or HTML can be expressed. `unique(workspace_id, handle)` in the database.
 - One resolver (§16): parse → workspace must match scope (else NOT_FOUND, revealing nothing) → `source_versions` (purged → `410 SOURCE_DELETED`) → `parent_chunks` or `analytic_results`. Malformed → `MALFORMED_HANDLE`; **never fuzzy-matched**.
 
 **Alias layer.** At pack time each item gets `E1..En` for this run only (pack ≤ 12 items). Evidence is delimited as `<evidence alias="E3" class="…">` with server-set attributes. The model may emit only `[E\d{1,2}]`.
