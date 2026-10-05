@@ -95,6 +95,18 @@ def _decided(path: Path) -> frozenset[tuple[str, str]]:
     return frozenset(pairs)
 
 
+async def _index_state(settings: Settings, codes: set[str]) -> dict[str, Any]:
+    from marketsignal.evaluation.gold import index_state, load_workspace
+
+    engine = create_engine(settings)
+    try:
+        factory = create_session_factory(engine)
+        workspaces = {code: await load_workspace(factory, code) for code in sorted(codes)}
+        return await index_state(factory, workspaces)
+    finally:
+        await engine.dispose()
+
+
 def _reference(name: str | None, suffix: str, arms: dict[str, Arm]) -> str:
     """The reference arm; a pipeline arm name given without the run's --suffix gets it added."""
     if name is None:
@@ -206,11 +218,13 @@ async def _run(args: argparse.Namespace, settings: Settings) -> int:
     ledger = corpus.load_ledger()
     fact_formats = {f["fact_id"]: f["source_type"] for f in ledger["facts"]}
     configs = {name: arm.config() for name, arm in arms.items()}
+    index = await _index_state(settings, {i.workspace for i in items})
     run_info: dict[str, Any] = {
         "git": _git_sha(),
         "at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "index": index,  # what was actually queried (pipeline versions of active versions)
         "config_hash": corpus.config_hash(
-            {"arms": configs, "dataset": dataset.manifest.get("items_sha256")}
+            {"arms": configs, "dataset": dataset.manifest.get("items_sha256"), "index": index}
         ),
     }
     if args.milestone:
@@ -290,6 +304,9 @@ async def _reachability(args: argparse.Namespace, settings: Settings) -> int:
     from marketsignal.db.session import scoped_session
     from marketsignal.evaluation.runner import _scopes
 
+    if args.split == "test" and not args.milestone:
+        print("refusing to inspect the frozen test split without --milestone", file=sys.stderr)
+        return 2
     dataset = load_frozen(args.dataset)
     engine = create_engine(settings)
     try:
@@ -307,8 +324,8 @@ async def _reachability(args: argparse.Namespace, settings: Settings) -> int:
                 with_children |= {r[0] for r in rows.all()}
     finally:
         await engine.dispose()
-    out: dict[str, Any] = {"items": {}}
-    for item in dataset.items:
+    out: dict[str, Any] = {"split": args.split, "items": {}}
+    for item in dataset.split(args.split):
         facts = {
             f.fact_id: any(h in with_children for h in f.handles()) for f in item.required_facts
         }
@@ -319,18 +336,29 @@ async def _reachability(args: argparse.Namespace, settings: Settings) -> int:
             "fully_reachable": all(facts.values()),
             "any_reachable": any(facts.values()),
         }
-    for split in ("dev", "test"):
-        members = [v for v in out["items"].values() if v["split"] == split]
-        out[split] = {
-            "items": len(members),
-            "fully_reachable": sum(1 for v in members if v["fully_reachable"]),
-            "unreachable_items": sorted(
-                k for k, v in out["items"].items() if v["split"] == split and not v["any_reachable"]
-            ),
-        }
+    members = list(out["items"].values())
+    out["summary"] = {
+        "items": len(members),
+        "fully_reachable": sum(1 for v in members if v["fully_reachable"]),
+        "unreachable_items": sorted(k for k, v in out["items"].items() if not v["any_reachable"]),
+    }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
-    print(json.dumps({k: out[k] for k in ("dev", "test")}, indent=1))
+    if args.split == "test":
+        with TEST_LOG.open("a", encoding="utf-8") as log:
+            log.write(
+                json.dumps(
+                    {
+                        "git": _git_sha(),
+                        "at": datetime.now(UTC).isoformat(timespec="seconds"),
+                        "command": "reachability",
+                        "milestone": args.milestone,
+                        "out": str(args.out),
+                    }
+                )
+                + "\n"
+            )
+    print(json.dumps(out["summary"], indent=1))
     return 0
 
 
@@ -356,7 +384,20 @@ def _compare(args: argparse.Namespace) -> int:
     name_b, b = load(args.b)
     sa = {i["item_id"]: ItemScore(i["item_id"], i["fact_ranks"]) for i in a["items"]}
     sb = {i["item_id"]: ItemScore(i["item_id"], i["fact_ranks"]) for i in b["items"]}
+    report_a = json.loads(Path(args.a.rpartition(":")[0]).read_text(encoding="utf-8"))
+    report_b = json.loads(Path(args.b.rpartition(":")[0]).read_text(encoding="utf-8"))
+    if report_a["split"] != report_b["split"] or (
+        report_a["dataset"].get("items_sha256") != report_b["dataset"].get("items_sha256")
+    ):
+        print("refusing to compare runs over different splits or datasets", file=sys.stderr)
+        return 2
     ids = sorted(sa.keys() & sb.keys())
+    if not ids or len(ids) != len(sa) or len(ids) != len(sb):
+        print(
+            f"refusing: item sets differ ({len(sa)} vs {len(sb)}, {len(ids)} shared)",
+            file=sys.stderr,
+        )
+        return 2
     out: dict[str, Any] = {"a": args.a, "b": args.b, "n": len(ids)}
     for k in (1, 5, 10, 20):
         test = mcnemar_exact([sa[i].hit_at(k) for i in ids], [sb[i].hit_at(k) for i in ids])
@@ -438,6 +479,8 @@ def main(argv: list[str] | None = None) -> int:
     p_reach = sub.add_parser("reachability")
     p_reach.add_argument("--dataset", type=Path, default=DATASET_DIR / "frozen.json")
     p_reach.add_argument("--out", type=Path, required=True)
+    p_reach.add_argument("--split", choices=("dev", "test"), default="dev")
+    p_reach.add_argument("--milestone")
     sub.add_parser("seed")
     p_gate = sub.add_parser("gate")
     p_gate.add_argument("--results", type=Path, required=True)

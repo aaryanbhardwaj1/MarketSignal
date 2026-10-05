@@ -16,10 +16,9 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from marketsignal.config import Settings
 from marketsignal.db.scope import WorkspaceScope
+from marketsignal.db.session import SessionFactory, scoped_session
 from marketsignal.evaluation.metrics import dedupe_parents
 from marketsignal.providers.embeddings import Embedder
 from marketsignal.retrieval.pipeline import RetrievalService
@@ -41,7 +40,9 @@ class Arm(Protocol):
 
     def config(self) -> dict[str, Any]: ...
 
-    async def run(self, session: AsyncSession, scope: WorkspaceScope, query: str) -> ArmOutput: ...
+    async def run(
+        self, factory: SessionFactory, scope: WorkspaceScope, query: str
+    ) -> ArmOutput: ...
 
 
 def _ms(start: float) -> float:
@@ -57,9 +58,10 @@ class BaselineLexicalArm:
     def config(self) -> dict[str, Any]:
         return {"arm": self.name, "lane": "smoke.lexical_search", "child_k": BASELINE_CHILD_K}
 
-    async def run(self, session: AsyncSession, scope: WorkspaceScope, query: str) -> ArmOutput:
+    async def run(self, factory: SessionFactory, scope: WorkspaceScope, query: str) -> ArmOutput:
         start = time.perf_counter()
-        hits = await lexical_search(session, scope.workspace_id, query, BASELINE_CHILD_K)
+        async with scoped_session(factory, scope) as session:
+            hits = await lexical_search(session, scope.workspace_id, query, BASELINE_CHILD_K)
         sql_ms = _ms(start)
         parents = dedupe_parents([h.handle for h in hits])
         return ArmOutput(
@@ -87,21 +89,22 @@ class BaselineDenseArm:
             "ef_search": self.settings.hnsw_ef_search,
         }
 
-    async def run(self, session: AsyncSession, scope: WorkspaceScope, query: str) -> ArmOutput:
+    async def run(self, factory: SessionFactory, scope: WorkspaceScope, query: str) -> ArmOutput:
         start = time.perf_counter()
         embedder = self.embedder_factory()
         vector = await asyncio.to_thread(embedder.embed_query, query)
         embed_ms = _ms(start)
         sql_start = time.perf_counter()
-        hits = await dense_search(
-            session,
-            scope.workspace_id,
-            vector,
-            model_id=embedder.model_id,
-            dimensions=self.settings.embed_dimensions,
-            k=BASELINE_CHILD_K,
-            ef_search=self.settings.hnsw_ef_search,
-        )
+        async with scoped_session(factory, scope) as session:
+            hits = await dense_search(
+                session,
+                scope.workspace_id,
+                vector,
+                model_id=embedder.model_id,
+                dimensions=self.settings.embed_dimensions,
+                k=BASELINE_CHILD_K,
+                ef_search=self.settings.hnsw_ef_search,
+            )
         sql_ms = _ms(sql_start)
         parents = dedupe_parents([h.handle for h in hits])
         return ArmOutput(
@@ -125,8 +128,8 @@ class PipelineArm:
             **self.service.config.as_dict(),
         }
 
-    async def run(self, session: AsyncSession, scope: WorkspaceScope, query: str) -> ArmOutput:
-        result = await self.service.search(session, scope, query)
+    async def run(self, factory: SessionFactory, scope: WorkspaceScope, query: str) -> ArmOutput:
+        result = await self.service.search(factory, scope, query)
         top = result.parents[:KEEP_DETAIL]
         detail = {
             "lanes": {p.handle: {a.lane: a.rank for a in p.anchors} for p in top},

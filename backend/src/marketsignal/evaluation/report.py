@@ -315,8 +315,9 @@ def render_markdown(report: Mapping[str, Any], title: str) -> str:
         rows = arm["distractors"]
         wins = [r for r in rows if r["distractor_wins"]]
         lines.append(
-            f"- **{name}**: distractor above the true parent in {len(wins)}/{len(rows)}"
-            " items with a ledger distractor"
+            f"- **{name}**: a ledger distractor ranked above the item's best-ranked required"
+            f" parent in {len(wins)}/{len(rows)} items with a distractor (multi-fact items are"
+            " compared with their best fact, not per fact)"
         )
         for r in wins:
             lines.append(

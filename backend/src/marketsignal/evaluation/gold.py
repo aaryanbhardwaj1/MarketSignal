@@ -269,4 +269,61 @@ async def integrity_problems(
             for handle in required.handles():
                 if not handle.startswith(f"{item.workspace}/"):
                     problems.append(f"{item.id}: {handle} belongs to another workspace")
+                elif handle not in ws.parents:
+                    # Resolvable is not enough: superseded or soft-deleted parents still resolve,
+                    # but no lane can return them, so the item would silently score zero.
+                    problems.append(f"{item.id}: {handle} is not an active parent")
+            for handle in required.also_satisfied_by:
+                parent = ws.parents.get(handle)
+                if parent is not None and not parent_contains_anchor_or_forms(fact, parent.text):
+                    problems.append(f"{item.id}: alternate {handle} no longer states the fact")
+    problems += await index_state_problems(factory, workspaces, dataset.manifest)
+    return problems
+
+
+def parent_contains_anchor_or_forms(fact: dict[str, Any], text_: str) -> bool:
+    """Alternates were accepted because they state the fact; at minimum they must still contain
+    every surface form that qualified them for review."""
+    forms = [str(f).lower() for f in fact.get("surface_forms") or []]
+    return all(f in text_.lower() for f in forms)
+
+
+async def index_state(
+    factory: SessionFactory, workspaces: dict[str, WorkspaceCorpus]
+) -> dict[str, list[dict[str, Any]]]:
+    """Pipeline versions of the active versions actually present in each workspace."""
+    out: dict[str, list[dict[str, Any]]] = {}
+    for code, ws in workspaces.items():
+        async with scoped_session(factory, ws.scope) as session:
+            rows = await session.execute(
+                text(
+                    "SELECT DISTINCT v.parser_version, v.structure_version, "
+                    "v.chunking_policy_version, v.embedding_model FROM sources s "
+                    "JOIN source_versions v ON v.id = s.current_version_id "
+                    "WHERE s.deleted_at IS NULL ORDER BY 1, 2, 3, 4"
+                )
+            )
+            out[code] = [
+                {"parser": r[0], "structure": r[1], "chunking": r[2], "embedding_model": r[3]}
+                for r in rows.all()
+            ]
+    return out
+
+
+async def index_state_problems(
+    factory: SessionFactory, workspaces: dict[str, WorkspaceCorpus], manifest: dict[str, Any]
+) -> list[str]:
+    """Parents (and so gold handles) depend on parser and structure versions; the chunking
+    policy only changes children, so it is recorded with each run but not enforced here."""
+    problems: list[str] = []
+    for code, states in (await index_state(factory, workspaces)).items():
+        for state in states:
+            if state["parser"] != manifest.get("parser_version") or state["structure"] != (
+                manifest.get("structure_version")
+            ):
+                problems.append(
+                    f"{code}: index built with parser {state['parser']}/structure "
+                    f"{state['structure']}, dataset frozen with "
+                    f"{manifest.get('parser_version')}/{manifest.get('structure_version')}"
+                )
     return problems

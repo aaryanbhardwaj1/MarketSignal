@@ -21,7 +21,6 @@ from sqlalchemy import event, text
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from marketsignal.db.scope import WorkspaceScope
-from marketsignal.db.session import scoped_session
 from marketsignal.evaluation.dataset import GoldItem
 from marketsignal.evaluation.stats import percentile
 from marketsignal.retrieval.pipeline import RetrievalService
@@ -118,8 +117,7 @@ async def profile_lanes(
         factory = create_session_factory(app_engine)
         for item in items:
             before = len(capture.statements)
-            async with scoped_session(factory, scopes[item.workspace]) as session:
-                await service.search(session, scopes[item.workspace], item.question)
+            await service.search(factory, scopes[item.workspace], item.question)
             factory_items.append((item, capture.statements[before:]))
     finally:
         event.remove(app_engine.sync_engine, "before_cursor_execute", capture.hook)

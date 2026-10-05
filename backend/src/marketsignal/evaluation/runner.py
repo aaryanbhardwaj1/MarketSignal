@@ -15,7 +15,7 @@ from typing import Any
 from sqlalchemy import text
 
 from marketsignal.db.scope import WorkspaceScope
-from marketsignal.db.session import SessionFactory, scoped_session, unscoped_session
+from marketsignal.db.session import SessionFactory, unscoped_session
 from marketsignal.evaluation.arms import Arm
 from marketsignal.evaluation.dataset import Dataset, GoldItem
 from marketsignal.evaluation.metrics import ItemScore, score_item
@@ -57,14 +57,12 @@ async def _scopes(factory: SessionFactory, codes: set[str]) -> dict[str, Workspa
 async def run_arm(arm: Arm, items: Sequence[GoldItem], factory: SessionFactory) -> list[ItemRun]:
     scopes = await _scopes(factory, {i.workspace for i in items})
     warm_scope = scopes[items[0].workspace]
-    async with scoped_session(factory, warm_scope) as session:
-        await arm.run(session, warm_scope, WARMUP_QUERY)
+    await arm.run(factory, warm_scope, WARMUP_QUERY)
     runs: list[ItemRun] = []
     for item in items:
         scope = scopes[item.workspace]
         start = time.perf_counter()
-        async with scoped_session(factory, scope) as session:
-            out = await arm.run(session, scope, item.question)
+        out = await arm.run(factory, scope, item.question)
         wall = round((time.perf_counter() - start) * 1000, 2)
         timings = {**out.timings_ms, "wall_ms": wall}
         runs.append(
