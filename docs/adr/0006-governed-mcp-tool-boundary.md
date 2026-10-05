@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 4a/4b, preceded by a Phase 0 spike (MCP v2 mount + JWT + loopback client call) (this ADR is updated with measurements when the component is built)
+- **Implementation:** Planned — Phase 4a/4b. **Phase 0 spike passed** (`docs/spikes/0001-mcp-sdk-v2.md`; executable record `backend/tests/spikes/test_mcp_v2_spike.py`): FastAPI mount, HS256 capability-token verification, claims via `get_access_token()`, `Context` hidden from the schema, structured outputs.
 - **Related:** plan §2.1, §17, §18, §23, §24, §28; ADR-0002 (hybrid retrieval), ADR-0004 (evidence handles), ADR-0005 (cross-encoder reranker), ADR-0007 (agent state machine), ADR-0009 (workspace isolation); approved deviation D3 (and D9, tool allowlist)
 
 ## Context
