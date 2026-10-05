@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 import threading
+import time
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Protocol
@@ -67,6 +68,8 @@ class FastEmbedEmbedder:
         self._batch_size = batch_size
         self._model: Any = None
         self._lock = threading.Lock()
+        self._failed_at: float | None = None
+        self.load_retry_cooldown_s = 30.0
 
     @property
     def model_id(self) -> str:
@@ -79,6 +82,12 @@ class FastEmbedEmbedder:
     def _load(self) -> Any:
         with self._lock:
             if self._model is None:
+                # A failed load is not retried on every request (each attempt can mean a model
+                # download); callers degrade immediately until the cooldown has passed.
+                if self._failed_at is not None and (
+                    time.monotonic() - self._failed_at < self.load_retry_cooldown_s
+                ):
+                    raise EmbedderUnavailableError("model load failed recently; cooling down")
                 try:
                     from fastembed import TextEmbedding
 
@@ -88,6 +97,7 @@ class FastEmbedEmbedder:
                     )
                     onnx_lifecycle.register(self)
                 except Exception as exc:
+                    self._failed_at = time.monotonic()
                     raise EmbedderUnavailableError(f"cannot load {self._model_name}") from exc
             return self._model
 

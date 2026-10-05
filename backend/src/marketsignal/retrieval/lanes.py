@@ -43,7 +43,7 @@ _MAX_QUERY_CHARS = 1000
 
 _ACTIVE_VERSIONS = """
 SELECT v.id FROM sources s JOIN source_versions v ON v.id = s.current_version_id
-WHERE s.deleted_at IS NULL AND v.status IN ('ready', 'ready_degraded')
+WHERE s.workspace_id = :ws AND s.deleted_at IS NULL AND v.status IN ('ready', 'ready_degraded')
   AND (cardinality(CAST(:codes AS text[])) = 0 OR s.source_code = ANY(CAST(:codes AS text[])))
 ORDER BY v.id
 """
@@ -84,7 +84,9 @@ class LaneScope:
 async def lane_scope(
     session: AsyncSession, workspace_id: uuid.UUID, filters: RetrievalFilters
 ) -> LaneScope:
-    rows = await session.execute(text(_ACTIVE_VERSIONS), {"codes": list(filters.source_codes)})
+    rows = await session.execute(
+        text(_ACTIVE_VERSIONS), {"ws": workspace_id, "codes": list(filters.source_codes)}
+    )
     return LaneScope(workspace_id, tuple(r[0] for r in rows.all()), filters)
 
 
@@ -179,7 +181,8 @@ _DF_SQL = (
     "SELECT c.tsv_body FROM child_chunks c "
     "JOIN sources s ON s.current_version_id = c.source_version_id "
     "JOIN source_versions v ON v.id = c.source_version_id "
-    "WHERE s.deleted_at IS NULL AND v.status IN ('ready', 'ready_degraded')"
+    "WHERE c.workspace_id = app.current_workspace() AND s.deleted_at IS NULL "
+    "AND v.status IN ('ready', 'ready_degraded')"
 )
 
 
@@ -194,14 +197,10 @@ class DocumentFrequencies:
         self._max = max_entries
         self._cache: OrderedDict[tuple[uuid.UUID, int], tuple[int, dict[str, int]]] = OrderedDict()
 
-    async def get(self, session: AsyncSession, scope: LaneScope) -> tuple[int, dict[str, int]]:
-        version = (
-            await session.execute(
-                text("SELECT version FROM workspace_corpus_state WHERE workspace_id = :ws"),
-                {"ws": scope.workspace_id},
-            )
-        ).scalar_one_or_none() or 0
-        key = (scope.workspace_id, int(version))
+    async def get(
+        self, session: AsyncSession, scope: LaneScope, corpus_version: int
+    ) -> tuple[int, dict[str, int]]:
+        key = (scope.workspace_id, int(corpus_version))
         if key in self._cache:
             self._cache.move_to_end(key)
             return self._cache[key]

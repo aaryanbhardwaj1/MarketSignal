@@ -16,11 +16,12 @@ from fastapi import APIRouter, Query, Request
 from sqlalchemy import text
 
 from marketsignal.api.deps import Factory, Scope, SettingsDep
+from marketsignal.api.errors import AppError
 from marketsignal.db.session import scoped_session
 from marketsignal.domain.enums import Confidentiality, SourceClass
 from marketsignal.retrieval.pipeline import RetrievalService
 from marketsignal.retrieval.traces import persist_trace
-from marketsignal.retrieval.types import ParentCandidate, RetrievalFilters
+from marketsignal.retrieval.types import InvalidFiltersError, ParentCandidate, RetrievalFilters
 
 router = APIRouter(prefix="/api/workspaces/{ws}/search", tags=["search"])
 SNIPPET_CONTEXT = 120
@@ -78,13 +79,13 @@ async def search(
 ) -> dict[str, Any]:
     base: RetrievalService = request.app.state.retrieval_service
     service = base.with_config(base.config.with_(**MODES[mode])) if MODES[mode] else base
-    filters = RetrievalFilters(
-        source_classes=tuple(c.value for c in source_class or ()),
-        source_codes=tuple(source or ()),
-        max_confidentiality=max_confidentiality,
-    )
-    async with scoped_session(factory, scope) as session:
-        result = await service.search(session, scope, q, filters)
+    try:
+        filters = RetrievalFilters.of(
+            (c.value for c in source_class or ()), source or (), max_confidentiality
+        )
+    except InvalidFiltersError as exc:
+        raise AppError(422, "VALIDATION_ERROR", str(exc)) from exc
+    result = await service.search(factory, scope, q, filters, top_k=k)
     trace_id = (
         await persist_trace(factory, scope, result, origin="api")
         if settings.retrieval_trace_persist

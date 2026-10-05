@@ -113,7 +113,9 @@ class Settings(BaseSettings):
     retrieval_pool_size: int = Field(default=20, ge=1)  # rerank pool, Recall@pool
     retrieval_top_k: int = Field(default=10, ge=1)
     retrieval_dense_exact: bool = False  # exact scan instead of HNSW (CI gate, ANN check)
-    embed_query_instruction: str = ""  # bge retrieval instruction: decided by the Phase 2 A/B
+    embed_query_instruction: str = ""  # bge retrieval instruction: A/B'd in Phase 2, not adopted
+    embed_query_timeout_s: float = Field(default=5.0, gt=0)  # then lexical-only, flagged
+    model_load_retry_cooldown_s: float = Field(default=30.0, ge=0)  # after a failed model load
     query_embedding_cache_size: int = Field(default=512, ge=0)
     lexical_df_prune: float = Field(default=0.9, gt=0, le=1)  # drop near-universal terms
     lexical_phrase_bonus: float = Field(default=1.0, ge=0)

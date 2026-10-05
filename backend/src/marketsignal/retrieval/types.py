@@ -8,11 +8,12 @@ carries its *anchor* child (the child responsible for its strongest match) and t
 from __future__ import annotations
 
 import uuid
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field, replace
 from typing import Any
 
 from marketsignal.config import Settings
-from marketsignal.domain.enums import Confidentiality
+from marketsignal.domain.enums import Confidentiality, SourceClass
 
 CONFIDENTIALITY_ORDER = (
     Confidentiality.PUBLIC,
@@ -26,11 +27,36 @@ def allowed_confidentiality(maximum: Confidentiality) -> list[str]:
     return [c.value for c in CONFIDENTIALITY_ORDER[: CONFIDENTIALITY_ORDER.index(maximum) + 1]]
 
 
+MAX_SOURCE_CODES = 20
+
+
+class InvalidFiltersError(ValueError):
+    """A request's filters are malformed (unknown class, too many sources)."""
+
+
 @dataclass(frozen=True, slots=True)
 class RetrievalFilters:
     source_classes: tuple[str, ...] = ()
     source_codes: tuple[str, ...] = ()
     max_confidentiality: Confidentiality = Confidentiality.RESTRICTED
+
+    @classmethod
+    def of(
+        cls,
+        source_classes: Iterable[str] = (),
+        source_codes: Iterable[str] = (),
+        max_confidentiality: Confidentiality = Confidentiality.RESTRICTED,
+    ) -> RetrievalFilters:
+        """De-duplicated (order kept) and bounded: each class is at most one lane partition, and
+        the source list is capped, so one request cannot fan out into unbounded lane queries."""
+        classes = tuple(dict.fromkeys(source_classes))
+        known = {c.value for c in SourceClass}
+        if any(c not in known for c in classes):
+            raise InvalidFiltersError("unknown source class")
+        codes = tuple(dict.fromkeys(source_codes))
+        if len(codes) > MAX_SOURCE_CODES:
+            raise InvalidFiltersError(f"at most {MAX_SOURCE_CODES} sources per request")
+        return cls(classes, codes, max_confidentiality)
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,6 +75,7 @@ class RetrievalConfig:
     dense_exact: bool = False
     ef_search: int = 100
     query_instruction: str = ""
+    embed_timeout_s: float = 5.0
     lexical_df_prune: float = 0.9
     lexical_phrase_bonus: float = 1.0
     rerank: bool = True
@@ -77,6 +104,7 @@ class RetrievalConfig:
             dense_exact=s.retrieval_dense_exact,
             ef_search=s.hnsw_ef_search,
             query_instruction=s.embed_query_instruction,
+            embed_timeout_s=s.embed_query_timeout_s,
             lexical_df_prune=s.lexical_df_prune,
             lexical_phrase_bonus=s.lexical_phrase_bonus,
             rerank=s.rerank_enabled,
@@ -153,6 +181,7 @@ class StageTrace:
 
     query: str
     config_hash: str
+    corpus_version: int | None = None  # read in the retrieval transaction, stored with the trace
     stages: dict[str, Any] = field(default_factory=dict)
     timings_ms: dict[str, float] = field(default_factory=dict)
     flags: list[str] = field(default_factory=list)

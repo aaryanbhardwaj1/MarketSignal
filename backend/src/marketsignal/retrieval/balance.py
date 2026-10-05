@@ -80,14 +80,36 @@ def class_floor(
     top_k: int,
     decisions: BalanceDecisions,
 ) -> list[ParentCandidate]:
-    out = list(ranked)
-    for source_class in classes:
-        if any(p.source_class == source_class for p in out[:top_k]):
+    """Each requested class absent from the top-k gets its best parent into the top-k. Room is
+    made by demoting the lowest-ranked top-k parents whose removal does not leave another
+    requested class unrepresented; a promotion never displaces an earlier promotion. When no
+    such room exists the promotion is skipped (and not reported as made)."""
+    requested = list(dict.fromkeys(classes))
+    top, rest = list(ranked[:top_k]), list(ranked[top_k:])
+    promoted: list[ParentCandidate] = []
+
+    def represented(source_class: str, pool: Sequence[ParentCandidate]) -> int:
+        return sum(1 for p in pool if p.source_class == source_class)
+
+    for source_class in requested:
+        if represented(source_class, top + promoted):
             continue
-        best = next((p for p in out[top_k:] if p.source_class == source_class), None)
+        best = next((p for p in rest if p.source_class == source_class), None)
         if best is None:
             continue
-        out.remove(best)
-        out.insert(max(0, top_k - 1), best)
-        decisions.class_promoted.append(best.handle)
-    return out
+        victim = next(
+            (
+                i
+                for i in range(len(top) - 1, -1, -1)
+                if top[i].source_class not in requested
+                or represented(top[i].source_class, top + promoted) > 1
+            ),
+            None,
+        )
+        if victim is None:
+            continue
+        rest.remove(best)
+        rest.insert(0, top.pop(victim))
+        promoted.append(best)
+    decisions.class_promoted.extend(p.handle for p in promoted)
+    return top + promoted + rest

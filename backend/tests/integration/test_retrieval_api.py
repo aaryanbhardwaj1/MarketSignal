@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from marketsignal.providers.embeddings import FailingEmbedder, HashEmbedder
 from marketsignal.providers.rerankers import FailingReranker, KeywordReranker
-from marketsignal.retrieval.pipeline import LEXICAL_FALLBACK, RetrievalService
+from marketsignal.retrieval.pipeline import DENSE_UNAVAILABLE, LEXICAL_FALLBACK, RetrievalService
 from marketsignal.retrieval.rerank import RERANKER_UNAVAILABLE, RerankExecutor
 from marketsignal.retrieval.types import RetrievalConfig
 from tests.fixtures.factories import make_csv, make_docx
@@ -28,14 +28,16 @@ CANARY_A = "Zephyrine lattice stitching reduced seam failures by 31 percent."
 CANARY_B = "Quorvex tread compound lowered outsole wear by 44 percent."
 
 
-def _install(h: Harness, *, reranker: Any = None, embedder: Any = None) -> None:
+def _install(
+    h: Harness, *, reranker: Any = None, embedder: Any = None, embed_timeout_s: float = 5.0
+) -> None:
     app = h.client._transport.app  # type: ignore[attr-defined]
     app.state.query_embedder = lambda: embedder or HashEmbedder(model_id="hash-test")
     previous: RerankExecutor = app.state.rerank_executor
     app.state.rerank_executor = RerankExecutor(reranker or KeywordReranker())
     previous.shutdown()  # the app lifespan shuts down whichever executor is installed last
     app.state.retrieval_service = RetrievalService(
-        RetrievalConfig(embed_model_id="hash-test"),
+        RetrievalConfig(embed_model_id="hash-test", embed_timeout_s=embed_timeout_s),
         embedder=lambda: app.state.query_embedder(),
         rerank_executor=app.state.rerank_executor,
     )
@@ -339,3 +341,70 @@ async def test_rankings_are_identical_across_re_ingestion(harness: Harness) -> N
         b = await _search(harness, ws_b, "leggings sizing small", mode=mode, k=20)
         strip = lambda body, ws: [i["handle"].removeprefix(f"{ws}/") for i in body["items"]]  # noqa: E731
         assert strip(a, ws_a) == strip(b, ws_b), mode
+
+
+class _SlowEmbedder(HashEmbedder):
+    def embed_query(self, text: str) -> Any:
+        import time
+
+        time.sleep(1.0)
+        return super().embed_query(text)
+
+
+async def test_degradation_flags_are_specific_and_embedding_times_out(
+    harness: Harness,  # noqa: F811
+) -> None:
+    _install(harness)
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, CANARY_A)
+    _install(harness, embedder=FailingEmbedder())
+    dense_only = await _search(harness, ws, "Zephyrine lattice", mode="dense")
+    assert dense_only["flags"] == [DENSE_UNAVAILABLE]
+    assert dense_only["items"] == []
+    _install(harness, embedder=_SlowEmbedder(model_id="hash-test"), embed_timeout_s=0.2)
+    slow = await _search(harness, ws, "Zephyrine lattice stitching")
+    assert LEXICAL_FALLBACK in slow["flags"]
+    assert slow["items"][0]["handle"].startswith(f"{ws}/MEMO@v1:")
+
+
+async def test_trace_records_the_corpus_version_retrieval_used(
+    harness: Harness,  # noqa: F811
+    app_engine: AsyncEngine,
+) -> None:
+    _install(harness)
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, CANARY_A)
+    body = await _search(harness, ws, "leggings")
+    async with app_engine.begin() as conn:
+        await conn.execute(
+            text(
+                "SELECT set_config('app.workspace_id', "
+                "(SELECT id::text FROM workspaces WHERE code = :c), true)"
+            ),
+            {"c": ws},
+        )
+        stored, current = (
+            await conn.execute(
+                text(
+                    "SELECT t.corpus_version, s.version FROM retrieval_traces t "
+                    "JOIN workspace_corpus_state s ON s.workspace_id = t.workspace_id "
+                    "WHERE t.id = CAST(:id AS uuid)"
+                ),
+                {"id": body["trace_id"]},
+            )
+        ).one()
+    assert stored == current > 0
+
+
+async def test_filter_lists_are_deduplicated_and_bounded(harness: Harness) -> None:  # noqa: F811
+    _install(harness)
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, CANARY_A)
+    repeated = await _search(harness, ws, "leggings", source_class=["customer"] * 50)
+    assert repeated["items"]
+    too_many = await harness.client.get(
+        f"/api/workspaces/{ws}/search",
+        params={"q": "x", "source": [f"S{i}" for i in range(21)]},
+    )
+    assert too_many.status_code == 422
+    assert too_many.json()["error"]["code"] == "VALIDATION_ERROR"

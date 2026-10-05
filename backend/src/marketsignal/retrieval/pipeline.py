@@ -21,9 +21,11 @@ from collections.abc import Callable, Sequence
 from dataclasses import replace
 from typing import Any
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from marketsignal.db.scope import WorkspaceScope
+from marketsignal.db.session import SessionFactory, scoped_session
 from marketsignal.providers.embeddings import Embedder, EmbedderUnavailableError, Vector
 from marketsignal.retrieval import balance as bal
 from marketsignal.retrieval.fusion import rrf_fuse
@@ -47,24 +49,28 @@ from marketsignal.retrieval.types import (
     StageTrace,
 )
 
-LEXICAL_FALLBACK = "RETRIEVAL_LEXICAL_FALLBACK"
+LEXICAL_FALLBACK = "RETRIEVAL_LEXICAL_FALLBACK"  # embedder down, lexical lane still serves
+DENSE_UNAVAILABLE = "RETRIEVAL_DENSE_UNAVAILABLE"  # embedder down and no lexical lane configured
 TRACE_LANE_LIMIT = 100
+CacheKey = tuple[str, str, str, str]
 
 
 class QueryEmbeddingCache:
-    """In-process LRU keyed by (model, instruction, query) - repeated queries skip the model."""
+    """In-process LRU keyed by (workspace, model, instruction, query) - repeated queries skip the
+    model. The workspace is part of the key so a cache hit (visible in timings) never reveals
+    that another workspace asked the same question."""
 
     def __init__(self, max_entries: int) -> None:
         self._max = max_entries
-        self._data: OrderedDict[tuple[str, str, str], Vector] = OrderedDict()
+        self._data: OrderedDict[CacheKey, Vector] = OrderedDict()
 
-    def get(self, key: tuple[str, str, str]) -> Vector | None:
+    def get(self, key: CacheKey) -> Vector | None:
         if key in self._data:
             self._data.move_to_end(key)
             return self._data[key]
         return None
 
-    def put(self, key: tuple[str, str, str], value: Vector) -> None:
+    def put(self, key: CacheKey, value: Vector) -> None:
         if self._max <= 0:
             return
         self._data[key] = value
@@ -145,36 +151,42 @@ class RetrievalService:
             query_cache=self._qcache,
         )
 
-    async def _query_vector(self, query: str) -> tuple[Vector, bool]:
+    async def _query_vector(
+        self, scope: WorkspaceScope, query: str, trace: StageTrace
+    ) -> Vector | None:
+        """Embed the query with no database session open; None (and a flag) on failure."""
         assert self._embedder is not None
-        embedder = self._embedder()
-        key = (embedder.model_id, self.config.query_instruction, query)
-        cached = self._qcache.get(key)
-        if cached is not None:
-            return cached, True
-        vector = await asyncio.to_thread(
-            embedder.embed_query, f"{self.config.query_instruction}{query}"
-        )
+        start = time.perf_counter()
+        try:
+            embedder = self._embedder()
+            key = (str(scope.workspace_id), embedder.model_id, self.config.query_instruction, query)
+            cached = self._qcache.get(key)
+            if cached is not None:
+                trace.stages["query_embedding"] = {"cache_hit": True}
+                return cached
+            vector = await asyncio.wait_for(
+                asyncio.to_thread(embedder.embed_query, f"{self.config.query_instruction}{query}"),
+                timeout=self.config.embed_timeout_s,
+            )
+        except (EmbedderUnavailableError, TimeoutError):
+            trace.flags.append(LEXICAL_FALLBACK if self.config.use_lexical else DENSE_UNAVAILABLE)
+            return None
+        finally:
+            trace.timings_ms["embed_ms"] = _ms(start)
         self._qcache.put(key, vector)
-        return vector, False
+        trace.stages["query_embedding"] = {"cache_hit": False}
+        return vector
 
-    def _class_partitions(self, filters: RetrievalFilters) -> list[tuple[str, ...] | None]:
-        if len(filters.source_classes) >= 2:
-            return [(c,) for c in filters.source_classes]
+    @staticmethod
+    def _class_partitions(filters: RetrievalFilters) -> list[tuple[str, ...] | None]:
+        classes = tuple(dict.fromkeys(filters.source_classes))
+        if len(classes) >= 2:
+            return [(c,) for c in classes]
         return [None]
 
     async def _dense(
-        self, session: AsyncSession, scope: LaneScope, query: str, trace: StageTrace
+        self, session: AsyncSession, scope: LaneScope, vector: Vector, trace: StageTrace
     ) -> list[ChildHit]:
-        start = time.perf_counter()
-        try:
-            vector, hit = await self._query_vector(query)
-        except EmbedderUnavailableError:
-            trace.flags.append(LEXICAL_FALLBACK)
-            trace.timings_ms["embed_ms"] = _ms(start)
-            return []
-        trace.timings_ms["embed_ms"] = _ms(start)
-        trace.stages["query_embedding"] = {"cache_hit": hit}
         start = time.perf_counter()
         partitions = self._class_partitions(scope.filters)
         k = self.config.lane_k if partitions == [None] else self.config.class_lane_k
@@ -198,10 +210,15 @@ class RetrievalService:
         return hits
 
     async def _lexical(
-        self, session: AsyncSession, scope: LaneScope, query: str, trace: StageTrace
+        self,
+        session: AsyncSession,
+        scope: LaneScope,
+        query: str,
+        corpus_version: int,
+        trace: StageTrace,
     ) -> list[ChildHit]:
         start = time.perf_counter()
-        stats = await self._df.get(session, scope)
+        stats = await self._df.get(session, scope, corpus_version)
         lq = await build_lexical_query(session, query, stats, df_prune=self.config.lexical_df_prune)
         trace.timings_ms["lexical_prep_ms"] = _ms(start)
         start = time.perf_counter()
@@ -232,43 +249,71 @@ class RetrievalService:
 
     async def search(
         self,
-        session: AsyncSession,
+        factory: SessionFactory,
         scope: WorkspaceScope,
         query: str,
         filters: RetrievalFilters | None = None,
+        *,
+        top_k: int | None = None,
     ) -> RetrievalResult:
+        """Three phases, so model inference never holds a database connection:
+        (1) embed the query - no session; (2) one short scoped session for the lanes, fusion and
+        pool hydration; (3) rerank and balance - no session."""
         cfg = self.config
+        cutoff = top_k or cfg.top_k
         filters = filters or RetrievalFilters()
         trace = StageTrace(query=query, config_hash=self.config_hash)
         total = time.perf_counter()
-        lanes_scope = await lane_scope(session, scope.workspace_id, filters)
-        trace.stages["active_versions"] = len(lanes_scope.active_version_ids)
 
-        lanes: dict[str, list[ChildHit]] = {}
+        vector = None
         if cfg.use_dense and self._embedder is not None:
-            lanes[DENSE] = await self._dense(session, lanes_scope, query, trace)
-        if cfg.use_lexical:
-            lanes[LEXICAL] = await self._lexical(session, lanes_scope, query, trace)
+            vector = await self._query_vector(scope, query, trace)
 
-        start = time.perf_counter()
-        weights = {DENSE: cfg.dense_weight, LEXICAL: cfg.lexical_weight}
-        fused = rrf_fuse({k: v for k, v in lanes.items() if v}, weights, cfg.rrf_k)
-        decisions = bal.BalanceDecisions()
-        if cfg.balance:
-            pool = bal.cap_pool(fused, cfg.pool_size, cfg.balance_pool_source_cap, decisions)
-        else:
-            pool = list(fused[: cfg.pool_size])
+        hydrated = None
+        async with scoped_session(factory, scope) as session:
+            lanes_scope = await lane_scope(session, scope.workspace_id, filters)
+            corpus_version = int(
+                (
+                    await session.execute(
+                        text("SELECT version FROM workspace_corpus_state WHERE workspace_id = :ws"),
+                        {"ws": scope.workspace_id},
+                    )
+                ).scalar_one_or_none()
+                or 0
+            )
+            trace.corpus_version = corpus_version
+            trace.stages["active_versions"] = len(lanes_scope.active_version_ids)
+            lanes: dict[str, list[ChildHit]] = {}
+            if vector is not None:
+                lanes[DENSE] = await self._dense(session, lanes_scope, vector, trace)
+            if cfg.use_lexical:
+                lanes[LEXICAL] = await self._lexical(
+                    session, lanes_scope, query, corpus_version, trace
+                )
+
+            start = time.perf_counter()
+            weights = {DENSE: cfg.dense_weight, LEXICAL: cfg.lexical_weight}
+            fused = rrf_fuse({k: v for k, v in lanes.items() if v}, weights, cfg.rrf_k)
+            decisions = bal.BalanceDecisions()
+            if cfg.balance:
+                pool = bal.cap_pool(fused, cfg.pool_size, cfg.balance_pool_source_cap, decisions)
+            else:
+                pool = list(fused[: cfg.pool_size])
+            trace.timings_ms["fusion_ms"] = _ms(start)
+
+            if cfg.rerank and self._rerank is not None and pool:
+                start = time.perf_counter()
+                hydrated = await hydrate(session, pool)
+                trace.timings_ms["hydrate_ms"] = _ms(start)
+        # Session closed: the connection is back in the pool before any model inference.
+
         pooled = {p.parent_id for p in pool}
         tail = [p for p in fused if p.parent_id not in pooled]
-        trace.timings_ms["fusion_ms"] = _ms(start)
-        trace.stages["fused"] = _parent_trace(fused[: max(cfg.pool_size * 2, cfg.top_k)])
+        trace.stages["fused"] = _parent_trace(fused[: max(cfg.pool_size * 2, cutoff)])
         trace.stages["pool"] = [p.handle for p in pool]
 
         ranked = pool
-        if cfg.rerank and self._rerank is not None and pool:
-            start = time.perf_counter()
-            hydrated = await hydrate(session, pool)
-            trace.timings_ms["hydrate_ms"] = _ms(start)
+        if hydrated is not None and self._rerank is not None:
             # A purge can commit between fusion and hydration (READ COMMITTED): drop vanished
             # parents - their handles now resolve to 410 - instead of failing the query.
             vanished = [p.handle for p in pool if p.parent_id not in hydrated.parents]
@@ -279,10 +324,16 @@ class RetrievalService:
             outcome = await rerank_pool(self._rerank, query, pool, hydrated, cfg)
             trace.timings_ms["rerank_ms"] = _ms(start)
             ranked = outcome.ordered
+            handles = {p.parent_id: p.handle for p in pool}
             trace.stages["rerank"] = {
                 "model": self._rerank.reranker.model_id,
                 "pairs": [
-                    {"handle_id": str(p.parent_id), "kind": p.kind, "score": round(s, 4)}
+                    {
+                        "handle": handles.get(p.parent_id),
+                        "kind": p.kind,
+                        "child_id": str(p.child_id) if p.child_id else None,
+                        "score": round(s, 4),
+                    }
                     for p, s in zip(outcome.pairs, outcome.scores, strict=False)
                 ],
                 "pair_count": len(outcome.pairs),
@@ -298,10 +349,12 @@ class RetrievalService:
                 ordered,
                 cfg.balance_per_source_max,
                 decisions,
-                single_source=len(filters.source_codes) == 1,
+                single_source=len(set(filters.source_codes)) == 1,
             )
             if filters.source_classes:
-                ordered = bal.class_floor(ordered, filters.source_classes, cfg.top_k, decisions)
+                ordered = bal.class_floor(
+                    ordered, tuple(dict.fromkeys(filters.source_classes)), cutoff, decisions
+                )
             trace.timings_ms["balance_ms"] = _ms(start)
             trace.stages["balance"] = {
                 "pool_skipped": decisions.pool_skipped,
@@ -309,7 +362,7 @@ class RetrievalService:
                 "class_promoted": decisions.class_promoted,
             }
         final = tuple(replace(p, rank=i) for i, p in enumerate(ordered, start=1))
-        trace.stages["final"] = _parent_trace(final[: max(cfg.top_k, cfg.pool_size)])
+        trace.stages["final"] = _parent_trace(final[: max(cutoff, cfg.pool_size)])
         trace.timings_ms["total_ms"] = _ms(total)
         return RetrievalResult(parents=final, trace=trace)
 

@@ -19,7 +19,7 @@ import asyncio
 import uuid
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -105,10 +105,12 @@ def build_pairs(
     return pairs
 
 
-def max_p(pairs: Sequence[Pair], scores: Sequence[float]) -> dict[uuid.UUID, float]:
-    best: dict[uuid.UUID, float] = {}
+def max_p(pairs: Sequence[Pair], scores: Sequence[float]) -> dict[uuid.UUID, tuple[float, Pair]]:
+    """Per parent: the best pair score (MaxP) and the pair that produced it."""
+    best: dict[uuid.UUID, tuple[float, Pair]] = {}
     for pair, score in zip(pairs, scores, strict=True):
-        best[pair.parent_id] = max(score, best.get(pair.parent_id, float("-inf")))
+        if pair.parent_id not in best or score > best[pair.parent_id][0]:
+            best[pair.parent_id] = (score, pair)
     return best
 
 
@@ -155,7 +157,7 @@ async def rerank_pool(
     except Exception as exc:  # any reranker bug degrades, never fails the query
         return RerankOutcome(list(pool), pairs, [], RERANKER_UNAVAILABLE, type(exc).__name__)
     best = max_p(pairs, scores)
-    rescored = [_with_score(p, best.get(p.parent_id)) for p in pool]
+    rescored = [_rescored(p, best.get(p.parent_id)) for p in pool]
     # Unscored parents (beyond the pair budget) keep fused order after the scored ones.
     ordered = sorted(
         rescored,
@@ -164,7 +166,14 @@ async def rerank_pool(
     return RerankOutcome(ordered, pairs, list(scores), None, None)
 
 
-def _with_score(parent: ParentCandidate, score: float | None) -> ParentCandidate:
-    from dataclasses import replace
-
-    return replace(parent, rerank_score=score)
+def _rescored(parent: ParentCandidate, best: tuple[float, Pair] | None) -> ParentCandidate:
+    """Set the MaxP score; when an anchor pair won, make that anchor the parent's best anchor,
+    so the highlighted span is the passage the cross-encoder actually ranked."""
+    if best is None:
+        return replace(parent, rerank_score=None)
+    score, pair = best
+    anchors = parent.anchors
+    if pair.child_id is not None:
+        winner = [a for a in anchors if a.child_id == pair.child_id]
+        anchors = tuple(winner[:1]) + tuple(a for a in anchors if a.child_id != pair.child_id)
+    return replace(parent, rerank_score=score, anchors=anchors)

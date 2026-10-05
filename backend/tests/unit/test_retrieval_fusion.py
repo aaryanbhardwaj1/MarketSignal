@@ -21,7 +21,8 @@ from marketsignal.retrieval.rerank import (
 )
 from marketsignal.retrieval.types import ChildHit, ParentCandidate, RetrievalConfig
 
-PARENTS = {name: uuid.uuid5(uuid.NAMESPACE_URL, name) for name in "PQRSTUVWXYZ"}
+NAMES = "PQRSTUVWXYZABCDEFGHIJKLMNO"
+PARENTS = {name: uuid.uuid5(uuid.NAMESPACE_URL, name) for name in NAMES}
 
 
 def hit(lane: str, rank: int, parent: str, child: int, source: str = "SRC") -> ChildHit:
@@ -157,7 +158,9 @@ def test_pair_budget_is_respected() -> None:
 def test_max_p_takes_the_best_pair_per_parent() -> None:
     large = _candidate("Q", hit("dense", 1, "Q", 1), hit("lexical", 1, "Q", 2))
     pairs = build_pairs([large], _hydrated(large, tokens=900), RetrievalConfig())
-    assert max_p(pairs, [0.2, 3.5]) == {large.parent_id: 3.5}
+    best = max_p(pairs, [0.2, 3.5])
+    assert best[large.parent_id][0] == 3.5
+    assert best[large.parent_id][1] is pairs[1]
 
 
 def _pool() -> tuple[list[ParentCandidate], Hydrated]:
@@ -208,7 +211,7 @@ def test_reranker_failure_or_timeout_keeps_fused_order_and_flags(
 
 
 def _ranked(*sources: str) -> list[ParentCandidate]:
-    names = "PQRSTUVWXYZ"
+    names = NAMES
     out = []
     for i, source in enumerate(sources):
         c = _candidate(names[i], hit("dense", i + 1, names[i], 1, source=source), fused_rank=i + 1)
@@ -253,3 +256,61 @@ def test_parents_purged_before_hydration_are_skipped_not_fatal() -> None:
     vanished = _candidate("Q", hit("dense", 2, "Q", 1), fused_rank=2)
     pairs = build_pairs([vanished, present], _hydrated(present, tokens=10), RetrievalConfig())
     assert [p.parent_id for p in pairs] == [present.parent_id]
+
+
+def test_the_maxp_winning_anchor_becomes_the_highlighted_anchor() -> None:
+    """Dense ranks window 1 first by RRF; the cross-encoder prefers the lexical window: the
+    returned anchor (highlight) must be the window the reranker actually scored highest."""
+    large = _candidate("Q", hit("dense", 1, "Q", 1), hit("lexical", 4, "Q", 7))
+    assert large.best_anchor().lane == "dense"
+    hydrated = _hydrated(large, tokens=900)
+    hydrated.children[large.anchors[1].child_id] = ("knit upper fraying after six weeks", "")
+    executor = RerankExecutor(KeywordReranker())
+    outcome = asyncio.run(
+        rerank_pool(executor, "knit upper fraying", [large], hydrated, RetrievalConfig())
+    )
+    executor.shutdown()
+    assert outcome.ordered[0].best_anchor().lane == "lexical"
+    assert outcome.ordered[0].best_anchor().child_rank == 4
+
+
+def test_class_floor_handles_several_missing_classes_without_evicting_promotions() -> None:
+    ranked = _ranked(*[f"C{i}" for i in range(12)], "COMP", "INT")
+    ranked = [
+        ParentCandidate(**{**_fields(p), "source_class": "customer"}) for p in ranked[:12]
+    ] + [
+        ParentCandidate(**{**_fields(ranked[12]), "source_class": "competitor"}),
+        ParentCandidate(**{**_fields(ranked[13]), "source_class": "internal"}),
+    ]
+    decisions = bal.BalanceDecisions()
+    out = bal.class_floor(ranked, ["customer", "competitor", "internal"], 10, decisions)
+    top = [p.source_class for p in out[:10]]
+    assert top.count("competitor") == 1
+    assert top.count("internal") == 1
+    assert top.count("customer") == 8
+    assert len(out) == len(ranked)
+    assert decisions.class_promoted == [ranked[12].handle, ranked[13].handle]
+
+
+def test_class_floor_never_evicts_another_requested_class_sole_representative() -> None:
+    ranked = _ranked("A", "B")
+    ranked = [
+        ParentCandidate(**{**_fields(ranked[0]), "source_class": "competitor"}),
+        ParentCandidate(**{**_fields(ranked[1]), "source_class": "internal"}),
+    ]
+    decisions = bal.BalanceDecisions()
+    out = bal.class_floor(ranked, ["competitor", "internal"], 1, decisions)
+    assert out[0].source_class == "competitor"  # no room without emptying competitor
+    assert decisions.class_promoted == []
+
+
+def test_filters_are_deduplicated_and_bounded() -> None:
+    from marketsignal.retrieval.types import InvalidFiltersError, RetrievalFilters
+
+    f = RetrievalFilters.of(["market", "market", "customer", "market"], ["A", "A"])
+    assert f.source_classes == ("market", "customer")
+    assert f.source_codes == ("A",)
+    with pytest.raises(InvalidFiltersError):
+        RetrievalFilters.of(["not-a-class"])
+    with pytest.raises(InvalidFiltersError):
+        RetrievalFilters.of([], [f"S{i}" for i in range(21)])

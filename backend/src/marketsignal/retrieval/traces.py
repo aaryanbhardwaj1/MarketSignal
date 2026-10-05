@@ -40,7 +40,7 @@ async def persist_trace(
                         "INSERT INTO retrieval_traces (workspace_id, query_run_id, tool_run_id, "
                         "origin, query, config_hash, corpus_version, result_handles, stages, "
                         "timings, flags) VALUES (:ws, :qr, :tr, :origin, :q, :ch, "
-                        "(SELECT version FROM workspace_corpus_state WHERE workspace_id = :ws), "
+                        ":cv, "
                         ":handles, CAST(:stages AS jsonb), CAST(:timings AS jsonb), :flags) "
                         "RETURNING id"
                     ),
@@ -51,6 +51,7 @@ async def persist_trace(
                         "origin": origin,
                         "q": trace.query[:MAX_QUERY_CHARS],
                         "ch": trace.config_hash,
+                        "cv": trace.corpus_version,
                         "handles": [p.handle for p in result.parents[:50]],
                         "stages": json.dumps(trace.stages, default=str),
                         "timings": json.dumps(trace.timings_ms),
