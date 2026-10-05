@@ -90,6 +90,7 @@ Each column is profiled and given a role.
 | `numeric`, `date` | Typed values |
 
 - **Row parent text** is `col: value; col: value; …`, rendered from the **original cell text**, so `007` stays `007`.
+- **Row child text** (policy `c3`, Phase 2): `{table} | {identifier=…, context=…} | {free-text col}: <verbatim>`. Identifier columns (review or respondent ids, record ids) are included so lookups by id match lexically; the span still covers only the verbatim cell. `row_child_identifiers=false` with `chunking_policy_version=c2` reproduces the previous policy.
 - **Retrieval units.** A row is a retrieval unit only if it has a free-text cell. Its child's span covers exactly the verbatim cell inside the parent. Purely numeric rows are resolvable parents with no child (ADR-0003).
 - **Table summaries.** Each table gets one summary parent and one summary child, listing columns, roles and the top values of up to `table_summary_max_levels` (12) levels.
 - **Analytics data.** `dataset_tables` and `dataset_rows` keep typed values and the row handle for the Phase 5 analytics tool.
@@ -206,12 +207,14 @@ Every API error uses the envelope `{"error": {"code", "message", …}}`. This in
 |---|---|---|
 | `parser_version` | `p1` | by design (ADR-0003): mints a new version over the same bytes; old handles stay resolvable |
 | `structure_version` | `s1` | same as above: parents are defined by structure |
-| `chunking_policy_version` | `c2` | by design: rebuilds children, embeddings and tsv only; parent handles and hashes are unchanged |
+| `chunking_policy_version` | `c3` | by design: rebuilds children, embeddings and tsv only; parent handles and hashes are unchanged |
 | `embed_model_id` | `bge-small-en-v1.5` | adds rows for the new model; the HNSW index is per model |
 
 The versions are recorded on every version and returned in provenance. The reindex job that acts on a change is not built in Phase 1; it arrives with Phase 7 tuning.
 
 `c1` → `c2` (Phase 1): identifier columns are never classified as free text. Under `c1`, long `record_id`s made every numeric channel row a retrieval unit.
+
+`c2` → `c3` (Phase 2): row children carry the row's identifier columns (see *Tabular rows*); measured on dev, then approved.
 
 ## Configuration
 
@@ -228,4 +231,4 @@ make seed          # uploads the Northstar/Southpeak corpus through the real API
 uv --directory backend run python ../scripts/verify_phase1.py   # Phase 1 exit verification
 ```
 
-`GET /api/workspaces/{ws}/dev/search?q=&mode=lexical|dense` is a Phase 1 smoke search for verification only. It is not the Phase 2 retrieval pipeline: there is no fusion, reranking or parent collapse.
+`GET /api/workspaces/{ws}/dev/search?q=&mode=lexical|dense` is the Phase 1 smoke search, kept unchanged because it is the recorded Phase 2 baseline. Production search is `GET /api/workspaces/{ws}/search` (see `docs/RETRIEVAL_DEEP_DIVE.md`).

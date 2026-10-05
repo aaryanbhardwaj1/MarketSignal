@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 2 (reranker, MaxP, fallback); Phase 3 (Render CPU spike sets timeout and pool) (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 2 implemented and measured** (fastembed MiniLM-L-6 cross-encoder, MaxP, pair budget, bounded pool, timeout and fallback); Phase 3 target-instance spike sets the production timeout
 - **Related:** plan §15, §13, §5, §28, §32, §33, §35; ADR-0002, ADR-0003; no approved deviation
 
 ## Context
@@ -64,3 +64,26 @@ Rerank the fused pool with **fastembed `Xenova/ms-marco-MiniLM-L-6-v2`** (ONNX, 
 - Phase 2 ablation: hybrid vs hybrid + rerank, on Recall@k and MRR after reranking against Recall@pool, with CIs and paired tests.
 - Load test (Phase 8): 20 concurrent runs plus ingestion, p50/p95 per stage including rerank.
 - Prometheus stage-latency histograms and degradation counters in production.
+
+## Implementation notes (Phase 2, 2026-10-05)
+
+- **Built as decided.**
+  - `providers/rerankers.py` wraps the `Reranker` interface (fastembed `TextCrossEncoder`, lazy ONNX load). Test doubles: failing, slow and keyword rerankers.
+  - `retrieval/rerank.py`:
+    - one pair for parents ≤ 350 tokens; otherwise up to 2 distinct lane-anchor pairs;
+    - passages capped at 2,000 characters before tokenizer truncation;
+    - MaxP, with at most 40 pairs taken in fused order;
+    - a bounded `ThreadPoolExecutor` (`rerank_concurrency`, default 1), wrapped in `asyncio.wait_for(rerank_timeout_s)`, default 8 s locally.
+  - **On exception or timeout:** keep the fused order and set `RERANKER_UNAVAILABLE`. A parent purged between fusion and hydration is dropped instead of failing the query (found by a concurrent-purge test).
+  - Executors are joined on shutdown.
+- **Measured** (M2 CPU, pool 20):
+  - Rerank p50 597 ms, p95 855 ms; about 90% of request latency.
+  - **Dev: ΔMRR +0.123 [+0.038, +0.215] vs hybrid**, hit@1 54.5 → 70.5.
+  - **Test: hit@1 38.1 → 42.9, but hit@10 76.2 → 57.1** and MRR unchanged (0.490 → 0.488).
+- **The domain risk this ADR named is real.** On test, MS MARCO MiniLM demotes exact-identifier lookups (respondent R0147: 1 → 12) and near-duplicate customer verbatims (SP-C05: 3 → 19), while lifting narrative facts to rank 1. It does not treat an exact id as decisive and cannot separate hundreds of similar complaints.
+- **Decision.** The frozen Phase 2 configuration keeps the reranker, as decided on dev; the test split was not used for tuning.
+- **Next iterations** (dev-measured, with new dev items and a fresh test split):
+  - fuse the rerank rank with the RRF rank instead of replacing the order;
+  - exact-match protection;
+  - `bge-reranker-base`.
+- **Not yet done.** The target-instance timeout and hosted-reranker decision belong to the Phase 3 spike. Reranked runs also slowed the next query's lane SQL (dense about 4 ms → 13 ms), consistent with ONNX Runtime worker threads spinning after inference; this is to be measured on the target.

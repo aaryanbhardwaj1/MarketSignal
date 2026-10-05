@@ -102,3 +102,15 @@ Non-tenant tables are explicit: `workspaces` and `workspace_members` are read on
   - A guard test fails if the suite would touch the development database.
   - The first version of this change did not rewrite the URLs, so tests ran against the development database. It was found when the native dev worker picked up a test job, and fixed with the guard test.
 - **Purge vs worker.** Worker writes share-lock the source row inside the workspace scope, so the purge/ingest serialisation (ADR-0016) also runs under RLS.
+
+## Implementation status (Phase 2)
+
+- **`retrieval_traces`** (migration 0003) is a tenant table with ENABLE + FORCE RLS. UPDATE is revoked from `ms_app`; DELETE stays for the Phase 8 retention job. It holds no document text. It is covered by every isolation test (scoped reads, unscoped fail-closed, foreign-workspace writes rejected, append-only).
+- **Catalog guard:** `test_every_table_with_workspace_id_is_rls_protected` fails if any table with a `workspace_id` column lacks ENABLE + FORCE RLS and a policy.
+- **Search isolation:** tested in every mode (full, hybrid, dense, lexical) with canary content in two workspaces, plus trace visibility across workspaces. The lanes add an explicit `workspace_id` predicate to RLS.
+- **RLS × GIN, measured** (`eval/baselines/phase2/rls-profile`, `EXPLAIN ANALYZE` of the exact lane SQL for 44 dev queries):
+  - Under forced RLS the lexical lane **never uses the GIN index** (0/44). Postgres will not use the non-leakproof `@@` operator as an index condition ahead of the security qual, so it scans the workspace's ~2,330 active children through the btree.
+  - Without RLS (superuser control) GIN is used 44/44 and scans ~1,300 rows.
+  - Execution time is the same: p50 11.6 vs 11.2 ms, p95 20.8 vs 19.6 ms, because IDF scoring dominates.
+  - **The RLS model is unchanged.** If a workspace's active children ever make the scan dominant, the documented options are a reviewed leakproof wrapper, partitioning by workspace, or a dedicated search role.
+- **IDF cache:** keyed by (workspace id, corpus version), and computed by `ts_stat` under the workspace scope, so one workspace's document frequencies never influence another's.

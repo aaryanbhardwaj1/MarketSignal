@@ -121,6 +121,12 @@ These refine the plan without changing the approved evidence, versioning, parent
 | 1 | Retry, purge execution | Retry re-queues the same failed version; purge is synchronous; re-uploading to a deleted source restores it with the next version | 0016 |
 | 1 | Purge vs in-flight ingestion (follow-up) | Every worker write share-locks the source; a purge at any point wins and the version stays `purged` | 0016 |
 | 1 | Integration tests against the service database | A dedicated `marketsignal_test` database, created by the init script, with a guard test | 0009 |
+| 2 | Lexical/dense ties broken by `child_id` (§11) | Ties break on (parent handle, child ordinal): child ids are random per ingestion and made rankings differ across re-seeds | 0002 |
+| 2 | Query embedding uses the bge instruction (§12) | A/B on dev: no benefit (dense hit@10 −3 items), so not used | 0012 |
+| 2 | Source/class balancing in the default pipeline (§15) | Built, measured net negative on dev (single-source questions), off by default; revisit with agent-supplied source/class requests | 0002 |
+| 2 | Row child text `{table} \| {context} \| {free text}` | Policy c3: the row's identifier columns are added to the row child text (ID lookups); measured, then approved | 0003 |
+| 2 | Retrieval within one request transaction | Three phases: query embedding and reranking run outside any DB session; lanes, fusion and hydration in one short session | 0005 |
+| 2 | CI gate Recall@10 ≥ 0.85 on test (§27) | Not met on v0 (test 57.1% frozen config, 76.2% hybrid; ceiling 81% from numeric rows); CI runs a dev regression gate | 0013 |
 
 ---
 

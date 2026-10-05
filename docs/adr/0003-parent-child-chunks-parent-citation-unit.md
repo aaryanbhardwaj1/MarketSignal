@@ -98,3 +98,16 @@ Structured files add a second problem: one child per spreadsheet row floods the 
   - all 111 fact-ledger anchors resolve to exactly one parent;
   - for sampled facts in every format, the resolved parent text and locator are exact, and `text[char_start:char_end] == highlight.text`;
   - a free-text survey row (`NORTHSTAR/SURVEY-2026@v1:R148`) is retrieved lexically at rank 1, with its highlight covering exactly the verbatim cell.
+
+## Implementation notes (Phase 2, 2026-10-05)
+
+- **Child policy c3** (measured, approved 2026-10-05). Row children's retrieval text is prefixed with the row's **identifier** columns, e.g. `review_id=RV-00655`, so lookups by id match lexically.
+  - Child text only: parent text, handles and spans are unchanged, so gold labels and citations are unaffected.
+  - `row_child_identifiers=false` with `chunking_policy_version=c2` reproduces c2.
+  - Experiment (separate database, dev): lexical RV-00655 26 → 2 and R0062 21 → 1; hybrid ΔMRR +0.046 [+0.007, +0.095]; no regression in reranked arms.
+  - Side effect on test: dense-only hit@10 57.1 → 47.6, because identifiers change row embedding text. Hybrid compensates (76.2).
+- **Numeric rows remain child-less**, as approved: they are analytics, Phase 5. Their cost is now measured: 4/44 dev and 4/21 test retrieval items depend only on numeric-row facts, which caps hit@k at about 91% on dev and 81% on test. Reports show both the full set and the lane-reachable subset.
+- **Anchor propagation, the first part of D1.**
+  - Every search result carries its anchor child id and `char_start/char_end`. A test resolves every returned anchor through the evidence API and checks the highlight equals the parent slice.
+  - `retrieval_traces` records per-lane children (id, handle, rank, score, span), fused parents with lane anchors, and the final anchor.
+  - The evidence pool, pack and stored citation cards follow in Phase 3.

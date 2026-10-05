@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** **Phase 1 implemented** (fastembed embedder, per-model table and HNSW index, ingest cache); query instruction and dense retrieval SQL in Phase 2 (see notes)
+- **Implementation:** **Phase 1–2 implemented** (embedder, per-model table and HNSW index, ingest cache, production dense lane); query-instruction A/B done (not adopted)
 - **Related:** plan §0.2 (A3), §4, §5, §6 (`chunk_embeddings`), §7, §8, §9, §12, §22, §24, §26, §28, §30, §32; ADR-0001 (Postgres + pgvector), ADR-0002 (hybrid retrieval), ADR-0003 (parent/child chunks), ADR-0005 (local cross-encoder), ADR-0011 (answer cache / corpus_version), ADR-0013 (evaluation); no approved deviation
 
 ## Context
@@ -95,3 +95,17 @@ Dense retrieval needs an embedding model at ingest time (every child chunk) and 
 - **Hosted-embedder refusal** is not applicable yet: only the local embedder exists.
 - **Phase 1 smoke dense query** (`retrieval/smoke.py`, dev-only endpoint) already follows the canonical form: an explicit transaction with `set_config('hnsw.ef_search', …, true)` and `hnsw.iterative_scan = relaxed_order`, a `MATERIALIZED` CTE, and `ORDER BY distance + 0`. The full filtered query is built in Phase 2.
 - **Measured throughput** (laptop CPU, batch 64, cold cache): **40–43 children/s**. Embedding is about 88% of ingestion time, so a warm cache makes re-ingestion nearly free. Dense self-retrieval passes the health check on every seed version.
+
+## Implementation notes (Phase 2, 2026-10-05)
+
+- **Query instruction A/B** (dev, all else constant; `04-bge-instruction-dev`):
+  - With BGE's "Represent this sentence for searching relevant passages: " the dense lane's hit@10 fell 81.8 → 75.0 (3 items lost, 0 gained, p = 0.25), and ΔMRR was +0.006 [−0.028, +0.041].
+  - Hybrid + rerank did not change at all.
+  - There is no evidence of benefit, so **not adopted**: `embed_query_instruction` stays empty. It is query-side only, so no re-embedding was needed. The setting remains for a future A/B on gold v1.
+- **Production dense lane** (`retrieval/lanes.py`):
+  - canonical SQL with the filters inside the `MATERIALIZED` CTE, transaction-local `hnsw.ef_search` and `iterative_scan`, and `ORDER BY distance + 0, handle, ordinal`;
+  - `retrieval_dense_exact` disables index scans for the CI gate;
+  - an in-process query-embedding LRU (`query_embedding_cache_size`).
+  - It reproduces the Phase 1 baseline's top-20 exactly on all 44 dev items.
+- **ANN vs exact, measured with EXPLAIN.** At about 2,200 children per corpus the planner **never chooses HNSW**, with or without RLS. It uses the `(workspace_id, source_version_id)` btree plus exact distances in about 1.6 ms. HNSW is valid (chosen when sequential scans are discouraged) and serves the scaling story. ANN and exact results are identical at this size.
+- **Ingest re-embedding** for `ready_degraded` versions is still not built; it is not needed by any Phase 2 decision. Policy c3 changed child text, which was handled by re-seeding through the upload API (cache hits for unchanged text).

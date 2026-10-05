@@ -83,3 +83,16 @@ Dense query contract (§7): runs inside an explicit transaction, sets `hnsw.ef_s
 - **Lexical search** uses generated, stored `tsvector` columns on `child_chunks`: `tsv` weights the heading A and the body D, and `tsv_body` holds the body only. `tsv` has a GIN index.
 - **Measured on the seed corpus** (30 uploads, 994 KB): 2,680 parents, 2,230 children and 2,230 embeddings. Total ingestion time is about 60 s on a laptop CPU, of which embedding is about 88% (`docs/phase-reports/phase-1.md`).
 - **Not yet measured:** RLS × GIN/HNSW query cost under load. That belongs to Phase 2 retrieval, where the real queries are built.
+
+## Implementation notes (Phase 2)
+
+- **Index sizes at the demo corpus** (2,680 parents, 2,230 children and embeddings across two workspaces):
+
+  | Object | Size |
+  |---|---|
+  | `child_chunks` | 3.3 MB |
+  | GIN `child_chunks_tsv` | 2.2 MB |
+  | `chunk_embeddings` | 4.5 MB |
+  | HNSW `chunk_embeddings_hnsw_bge_small_en_v1_5` | 4.5 MB |
+
+- **Measured lane SQL under RLS:** dense p50 1.6 ms, lexical p50 11.6 ms. One Postgres instance comfortably serves retrieval at this scale.

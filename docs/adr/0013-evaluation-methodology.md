@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Phase 1 implemented: world model, deterministic seed generator, fact ledger (111 facts), real-API seeding and anchor census. Phase 2: `freeze-gold`, gold v0, retrieval runner, CI smoke. Phase 7: gold v1, calibration, generation metrics.
+- **Implementation:** Phase 1–2 implemented: world model, corpus, ledger, freeze-gold, gold v0 (65 items, grouped dev/test), retrieval runner with statistics, integrity in CI, dev gate. Phase 7: gold v1, calibration, generation metrics.
 - **Related:** plan §0.3 (D4), §7, §26, §27, §29, §30, §35, §38; ADR-0002 (hybrid retrieval), ADR-0003 (parent is the citation unit), ADR-0004 (evidence handles), ADR-0012 (embeddings), ADR-0015 (modes and the agent ablation), ADR-0017 (fictional corpus), ADR-0019 (testing strategy); approved deviation D4
 
 ## Context
@@ -121,3 +121,23 @@ The project's claims (hybrid beats dense-only, reranking helps, the agent is wor
   - The ledger includes superseded pairs (v1 → v2), distractors and an injection carrier for later security evaluation.
 - **Seeding** goes through the real upload API (`scripts/seed.py`), the same path user documents take.
 - **Anchor census** (`scripts/verify_phase1.py`). All 111 anchors are located in **exactly one** parent of the ingested corpus: 0 missing, 0 ambiguous. This is the basis for Phase 2's `freeze-gold`, which will write the resolved handles into gold v0.
+
+## Implementation notes (Phase 2, 2026-10-05)
+
+- **Gold v0** (`eval/datasets/retrieval-v0`) has 65 items in 10 categories.
+  - Questions were drafted by four independent writer agents from an **anchor-free fact digest**, with no documents and no retrieval code, then critic-vetted per batch and curated from a 71-item pool.
+  - `freeze-gold` located every anchor in exactly one active parent.
+  - 16 surface-form alternates were judged by two independent judges, unanimous on every pair; 10 accepted.
+  - Provenance: `llm_draft_agent_reviewed`; human review is pending.
+- **Split:** grouped 70/30 by union-find over shared facts, ledger-related facts and shared parents, stratified by category: 44 dev / 21 test in 40 groups. Leakage checks run offline (unit test) and in `integrity`.
+- **Pins:** `items_sha256`, `corpus_sha256` and `ledger_sha256`, checked in CI.
+- **Integrity in CI:** the `retrieval-eval` job seeds a fresh database through the real upload API, then resolves every gold handle with the production resolver and checks anchor containment, content hash and workspace.
+- **Runner** (`python -m marketsignal.evaluation`):
+  - Arms are `RetrievalConfig` variants of the production service. Children map to distinct parents before scoring.
+  - Statistics: Wilson CIs for hit rates, bootstrap CIs (10,000 resamples, fixed seed) for recall and MRR, exact McNemar for paired hit@k, paired bootstrap for ΔMRR and Δrecall@10.
+  - Every report breaks results down by category, source format and overlap bin.
+  - A `compare` command pairs arms across runs; `profile` and `reachability` are diagnostics.
+- **Test-split discipline.** `run --split test` requires `--milestone`, and each run is logged in `eval/test-split-log.jsonl`. The Phase 2 milestone ran once (two logged invocations: the untouched c2 index for baselines, and c3 for the final arms).
+- **Deviation: no ablation set.** The ledger-generated "ablation set" of about 250 template queries was **not** built in Phase 2; the curated v0 was the only instrument.
+- **Deviation: sample size.** At n = 21, the test split distinguishes only large effects. **Gold v1 (~120 items) and a fresh test split are needed** before Phase 7 tuning, because the v0 test split has now been seen once.
+- **Gate status.** The plan's Recall@10 ≥ 0.85 on test is **not met**: 57.1% for the frozen config, 76.2% for hybrid without rerank. The ceiling at this corpus is 81%, because 4/21 test items are numeric-row-only. The CI gate is therefore a *regression* gate on dev (floors just below the recorded result), not the spec target.
