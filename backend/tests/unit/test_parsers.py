@@ -248,3 +248,33 @@ def test_plain_text_paragraphs() -> None:
 def test_locator_kinds_only_use_grammar_units() -> None:
     parents = parse(SourceType.DOCX, make_docx([("h1", "A"), ("p", "x")]))
     assert all(isinstance(kind, LocatorKind) for p in parents for kind, _ in p.locator)
+
+
+def test_row_child_identifier_experiment_changes_only_child_text() -> None:
+    csv = make_csv(
+        [
+            ["review_id", "segment", "review_text"],
+            ["RV-00655", "Gen Z", "Loved the custom heel initials but delivery took three weeks."],
+            ["RV-00656", "Gen Z", "The knit upper split after a month of daily runs, sadly."],
+        ]
+    )
+    off = parse_source(
+        SourceType.CSV, csv, title="Reviews", tokenizer=RegexTokenizer(), settings=SETTINGS
+    )
+    on = parse_source(
+        SourceType.CSV,
+        csv,
+        title="Reviews",
+        tokenizer=RegexTokenizer(),
+        settings=Settings(env="test", row_child_identifiers=True),
+    )
+    rows_off = [p for p in off.parents if p.kind is ParentKind.ROW]
+    rows_on = [p for p in on.parents if p.kind is ParentKind.ROW]
+    assert [p.text for p in rows_off] == [p.text for p in rows_on]  # parents unchanged
+    assert [p.locator for p in rows_off] == [p.locator for p in rows_on]  # handles unchanged
+    first_off, first_on = rows_off[0].row_child, rows_on[0].row_child
+    assert first_off is not None
+    assert first_on is not None
+    assert "RV-00655" not in first_off.text
+    assert "review_id=RV-00655" in first_on.text
+    assert (first_off.char_start, first_off.char_end) == (first_on.char_start, first_on.char_end)

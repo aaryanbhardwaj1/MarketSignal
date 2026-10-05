@@ -188,10 +188,18 @@ def _build_table(
         row_child = None
         if free_span is not None:
             start, end, column, verbatim = free_span
+            identifiers = (
+                [f"{n}={originals[n]}" for n in header if roles[n] == "identifier" and originals[n]]
+                if settings.row_child_identifiers
+                else []
+            )
             context = ", ".join(
-                f"{n}={values[n]}"
-                for n in header
-                if roles[n] == "context" and values[n] is not None
+                identifiers
+                + [
+                    f"{n}={values[n]}"
+                    for n in header
+                    if roles[n] == "context" and values[n] is not None
+                ]
             )
             retrieval = " | ".join(p for p in (f"{title} > {sheet_name}", context) if p)
             row_child = RowChildSpec(f"{retrieval} | {column}: {verbatim}", start, end)

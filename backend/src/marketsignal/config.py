@@ -75,6 +75,10 @@ class Settings(BaseSettings):
     parser_version: str = "p1"
     structure_version: str = "s1"  # parent policy; changing it mints new source versions
     chunking_policy_version: str = "c2"  # child policy; changing it rebuilds children only
+    # Experiment switch (Phase 2, off = policy c2): prefix row children's retrieval text with the
+    # row's identifier columns (e.g. review_id=RV-00655) so ID lookups can match lexically. Child
+    # text only - parent text, handles and spans are unchanged. Pair with a new policy version.
+    row_child_identifiers: bool = False
     # c2: identifier columns are never free text (numeric rows are not retrieval units)
 
     # ── Hierarchical chunking (ADR-0003) ──
