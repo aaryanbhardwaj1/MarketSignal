@@ -45,6 +45,13 @@ def main() -> int:
             return 1
         print(f"workspace {ws['code']}: {'created' if response.status_code == 201 else 'exists'}")
 
+    for ws in manifest["workspaces"]:
+        if client.get(f"/api/workspaces/{ws['code']}/sources").json():
+            # Re-uploading v1 bytes after v2 is a revert (ADR-0016) and mints new versions: the
+            # seed corpus is only ever loaded into empty workspaces (use `make reset-db`).
+            print(f"workspace {ws['code']} already has sources; not seeding", file=sys.stderr)
+            return 1
+
     started = time.perf_counter()
     uploads: list[dict[str, Any]] = []
     for item in sorted(manifest["uploads"], key=lambda u: u["upload_order"]):

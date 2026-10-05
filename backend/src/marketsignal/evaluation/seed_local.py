@@ -35,6 +35,11 @@ async def seed_in_process(settings: Settings) -> dict[str, Any]:
             AsyncClient(transport=ASGITransport(app=app), base_url="http://seed") as client,
         ):
             for ws in manifest["workspaces"]:
+                existing = await client.get(f"/api/workspaces/{ws['code']}/sources")
+                if existing.status_code == 200 and existing.json():
+                    # Re-uploading v1 bytes after v2 is a *revert* (ADR-0016) and would mint new
+                    # versions; the seed corpus must only ever be loaded into an empty workspace.
+                    raise RuntimeError(f"workspace {ws['code']} already has sources; not seeding")
                 response = await client.post(
                     "/api/workspaces",
                     json={"code": ws["code"], "name": ws["name"], "description": ws["description"]},

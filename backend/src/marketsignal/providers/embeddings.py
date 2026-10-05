@@ -22,6 +22,8 @@ from typing import Any, Protocol
 import numpy as np
 import numpy.typing as npt
 
+from marketsignal.providers import onnx_lifecycle
+
 Vector = npt.NDArray[np.float32]
 
 
@@ -84,9 +86,15 @@ class FastEmbedEmbedder:
                     self._model = TextEmbedding(
                         self._model_name, cache_dir=str(self._cache_dir), threads=self._threads
                     )
+                    onnx_lifecycle.register(self)
                 except Exception as exc:
                     raise EmbedderUnavailableError(f"cannot load {self._model_name}") from exc
             return self._model
+
+    def release(self) -> None:
+        """Drop the ONNX session (see ``onnx_lifecycle``); it reloads lazily if used again."""
+        with self._lock:
+            self._model = None
 
     @property
     def tokenizer(self) -> Any:

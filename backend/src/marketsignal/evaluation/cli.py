@@ -95,6 +95,17 @@ def _decided(path: Path) -> frozenset[tuple[str, str]]:
     return frozenset(pairs)
 
 
+def _reference(name: str | None, suffix: str, arms: dict[str, Arm]) -> str:
+    """The reference arm; a pipeline arm name given without the run's --suffix gets it added."""
+    if name is None:
+        return next(iter(arms))
+    if name not in arms and f"{name}{suffix}" in arms:
+        return f"{name}{suffix}"
+    if name not in arms:
+        raise SystemExit(f"reference arm {name!r} is not among {sorted(arms)}")
+    return name
+
+
 def _parse_overrides(pairs: list[str]) -> dict[str, Any]:
     """``--set key=value`` -> RetrievalConfig overrides (value parsed as JSON, else string)."""
     fields = RetrievalConfig.__dataclass_fields__
@@ -207,7 +218,7 @@ async def _run(args: argparse.Namespace, settings: Settings) -> int:
     report = build_report(
         results,
         split=args.split,
-        reference=args.reference or next(iter(arms)),
+        reference=_reference(args.reference, args.suffix, arms),
         fact_formats=fact_formats,
         manifest=dataset.manifest,
         arm_configs=configs,

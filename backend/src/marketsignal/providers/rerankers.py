@@ -14,6 +14,8 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Protocol
 
+from marketsignal.providers import onnx_lifecycle
+
 
 class RerankerUnavailableError(RuntimeError):
     """The reranker could not load or failed; callers keep the fused order."""
@@ -53,9 +55,15 @@ class FastEmbedCrossEncoder:
                     self._model = TextCrossEncoder(
                         self._model_name, cache_dir=str(self._cache_dir), threads=self._threads
                     )
+                    onnx_lifecycle.register(self)
                 except Exception as exc:
                     raise RerankerUnavailableError(f"cannot load {self._model_name}") from exc
             return self._model
+
+    def release(self) -> None:
+        """Drop the ONNX session (see ``onnx_lifecycle``); it reloads lazily if used again."""
+        with self._lock:
+            self._model = None
 
     def score(self, query: str, passages: Sequence[str]) -> list[float]:
         if not passages:
