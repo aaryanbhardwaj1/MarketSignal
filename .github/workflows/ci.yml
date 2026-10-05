@@ -99,7 +99,7 @@ jobs:
         run: uv run pytest
 
   frontend:
-    name: frontend (lint, types, build)
+    name: frontend (lint, types, tests, build)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -117,6 +117,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
+      - run: pnpm test
       - run: pnpm build
         env:
           NEXT_TELEMETRY_DISABLED: "1"
