@@ -95,6 +95,21 @@ _UPDATABLE = frozenset(
 )
 
 
+async def lock_live_source(session: AsyncSession, source_id: uuid.UUID) -> bool:
+    """Share-lock the source row; False if it has been purged.
+
+    Purge takes ``FOR UPDATE`` on the same row, so a worker transaction that holds this lock
+    either commits before the purge starts (and the purge then deletes what it wrote) or sees
+    ``deleted_at`` and writes nothing.
+    """
+    deleted_at = (
+        await session.execute(
+            text("SELECT deleted_at FROM sources WHERE id = :s FOR SHARE"), {"s": source_id}
+        )
+    ).scalar_one()
+    return deleted_at is None
+
+
 async def load_blob(session: AsyncSession, version_id: uuid.UUID) -> bytes:
     row = await session.execute(
         text("SELECT bytes FROM source_blobs WHERE source_version_id = :id"), {"id": version_id}

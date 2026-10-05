@@ -4,7 +4,8 @@ Runs in the worker (ADR-0010), scoped to the version's workspace from the job ar
 Stages update the visible status: parsing -> chunking -> embedding -> indexing -> ready |
 ready_degraded | failed | superseded. Content is written while the version is *not yet active*;
 a health check runs against that inactive version; only then does a small, guarded "flip"
-transaction make it current (and supersede the previous version, ADR-0016).
+transaction make it current (and supersede the previous version, ADR-0016). A source purged
+mid-flight stops the job and its version stays ``purged``.
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from marketsignal.config import Settings
 from marketsignal.db.scope import WorkspaceScope
@@ -35,6 +37,10 @@ from marketsignal.telemetry.logging import get_logger
 
 log = get_logger(__name__)
 ACTOR = "ingestion-worker"
+
+
+class SourcePurgedError(Exception):
+    """The source was purged while this version was in flight; the purge owns its state."""
 
 
 @dataclass
@@ -116,30 +122,30 @@ async def ingest_version(deps: IngestionDeps, scope: WorkspaceScope, version_id:
 
     try:
         return await _run(deps, scope, version, data, timer)
+    except SourcePurgedError:
+        log.info("ingest_source_purged", version_id=str(version_id))
+        return VersionStatus.PURGED.value
     except IngestionError as exc:
-        await _fail(deps, scope, version_id, exc.code, exc.message, timer)
-        return VersionStatus.FAILED.value
+        return await _fail(deps, scope, version, exc.code, exc.message, timer)
     except TimeoutError:
-        await _fail(
+        return await _fail(
             deps,
             scope,
-            version_id,
+            version,
             IngestErrorCode.PARSE_TIMEOUT.value,
             "parsing exceeded the time limit",
             timer,
         )
-        return VersionStatus.FAILED.value
     except Exception:
         log.exception("ingestion_failed", version_id=str(version_id))
-        await _fail(
+        return await _fail(
             deps,
             scope,
-            version_id,
+            version,
             IngestErrorCode.INGEST_EXTRACT_FAILED.value,
             "unexpected ingestion error",
             timer,
         )
-        return VersionStatus.FAILED.value
 
 
 async def _run(
@@ -160,7 +166,7 @@ async def _run(
     timer.lap("parse")
     if not parsed.parents:
         raise IngestionError(IngestErrorCode.EMPTY_DOCUMENT.value, "no content found")
-    await _status(deps, scope, version.id, VersionStatus.CHUNKING)
+    await _status(deps, scope, version, VersionStatus.CHUNKING)
 
     handles = assign_handles(scope, version, parsed.parents)
     sheet_names = {
@@ -174,7 +180,7 @@ async def _run(
         parsed.parents, deps.tokenizer, settings.child_window_tokens, settings.child_overlap_tokens
     )
     timer.lap("chunk")
-    await _status(deps, scope, version.id, VersionStatus.EMBEDDING)
+    await _status(deps, scope, version, VersionStatus.EMBEDDING)
 
     inputs = [embed_input(version.title, c) for c in children]
     warnings = list(parsed.warnings)
@@ -190,6 +196,7 @@ async def _run(
         timer.marks["embed_cache_misses"] = deps.embedder.last_misses
 
     async with scoped_session(deps.session_factory, scope) as session:
+        await _ensure_live(session, version)
         await repo.set_status(session, version.id, VersionStatus.INDEXING)
         parent_ids = await repo.insert_parents(
             session,
@@ -251,11 +258,18 @@ async def _run(
     return await _flip(deps, scope, version, final, warnings, health, timer, children)
 
 
+async def _ensure_live(session: AsyncSession, version: repo.VersionRow) -> None:
+    """Every worker write first share-locks the source; a purged source stops the job."""
+    if not await repo.lock_live_source(session, version.source_id):
+        raise SourcePurgedError
+
+
 async def _status(
-    deps: IngestionDeps, scope: WorkspaceScope, version_id: uuid.UUID, status: VersionStatus
+    deps: IngestionDeps, scope: WorkspaceScope, version: repo.VersionRow, status: VersionStatus
 ) -> None:
     async with scoped_session(deps.session_factory, scope) as session:
-        await repo.set_status(session, version_id, status)
+        await _ensure_live(session, version)
+        await repo.set_status(session, version.id, status)
         await session.commit()
 
 
@@ -293,17 +307,9 @@ async def _flip(
             "embedding_model": deps.embedder.model_id if final is VersionStatus.READY else None,
         }
         if deleted_at is not None:
-            await repo.delete_version_content(session, version.id)
-            await repo.set_status(
-                session,
-                version.id,
-                VersionStatus.FAILED,
-                error_code=IngestErrorCode.SOURCE_DELETED.value,
-                error_detail="source was deleted during ingestion",
-                **common,
-            )
-            await session.commit()
-            return VersionStatus.FAILED.value
+            # Purged after indexing committed: the purge already removed this version's content
+            # and marked it purged. Never activate it and never overwrite that state.
+            raise SourcePurgedError
         if current_id is None or current_version < version.version:
             if current_id is not None:
                 await repo.set_status(session, current_id, VersionStatus.SUPERSEDED)
@@ -338,17 +344,19 @@ async def _flip(
 async def _fail(
     deps: IngestionDeps,
     scope: WorkspaceScope,
-    version_id: uuid.UUID,
+    version: repo.VersionRow,
     code: str,
     message: str,
     timer: _Timer,
-) -> None:
+) -> str:
     timer.total()
     async with scoped_session(deps.session_factory, scope) as session:
-        await repo.delete_version_content(session, version_id)
+        if not await repo.lock_live_source(session, version.source_id):
+            return VersionStatus.PURGED.value  # the purge already removed content and set status
+        await repo.delete_version_content(session, version.id)
         await repo.set_status(
             session,
-            version_id,
+            version.id,
             VersionStatus.FAILED,
             error_code=code,
             error_detail=message[:500],
@@ -359,7 +367,8 @@ async def _fail(
             scope.workspace_id,
             ACTOR,
             "source_version.failed",
-            str(version_id),
+            str(version.id),
             {"error_code": code},
         )
         await session.commit()
+    return VersionStatus.FAILED.value

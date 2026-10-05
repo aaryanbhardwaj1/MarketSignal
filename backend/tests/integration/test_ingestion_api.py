@@ -7,8 +7,9 @@ model is exercised in ``test_model_ingestion.py`` and the seeded-corpus verifica
 
 from __future__ import annotations
 
+import asyncio
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Sequence
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import quote
@@ -21,9 +22,10 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from marketsignal.api.app import create_app
 from marketsignal.config import Settings
 from marketsignal.db.engine import create_engine, create_session_factory
+from marketsignal.ingestion import pipeline
 from marketsignal.ingestion.pipeline import IngestionDeps
 from marketsignal.ingestion.tokenizer import RegexTokenizer
-from marketsignal.providers.embeddings import Embedder, FailingEmbedder, HashEmbedder
+from marketsignal.providers.embeddings import Embedder, FailingEmbedder, HashEmbedder, Vector
 from marketsignal.worker import app as worker
 from tests.fixtures.factories import make_csv, make_docx, make_pdf, make_pptx, make_xlsx
 from tests.integration.conftest import new_workspace_code, purge_workspace
@@ -360,3 +362,121 @@ async def test_failed_job_handoff_rolls_back_the_upload(
             )
         ).scalar_one()
     assert jobs == 0
+
+
+# Every table that can hold document-derived content (ADR-0016 purge contract). Rows are cast
+# whole to text so a canary in any column (cell values, profiles, payloads) is found.
+CONTENT_SWEEP = """
+SELECT 'parent_chunks', count(*) FROM parent_chunks t WHERE CAST(t AS text) LIKE :pat
+UNION ALL SELECT 'child_chunks', count(*) FROM child_chunks t WHERE CAST(t AS text) LIKE :pat
+UNION ALL SELECT 'dataset_tables', count(*) FROM dataset_tables t WHERE CAST(t AS text) LIKE :pat
+UNION ALL SELECT 'dataset_rows', count(*) FROM dataset_rows t WHERE CAST(t AS text) LIKE :pat
+UNION ALL SELECT 'audit_events', count(*) FROM audit_events t WHERE CAST(t AS text) LIKE :pat
+UNION ALL SELECT 'chunk_embeddings', count(*) FROM chunk_embeddings
+UNION ALL SELECT 'source_blobs', count(*) FROM source_blobs
+UNION ALL SELECT 'live_versions', count(*) FROM source_versions
+    WHERE status <> 'purged' OR content_hash IS NOT NULL OR original_filename IS NOT NULL
+"""
+CANARY = "%Fit inconsistency across categories%"
+
+
+async def _content_sweep(app_engine: AsyncEngine, ws: str) -> dict[str, int]:
+    """Counts as ms_app inside the workspace scope (RLS applies, as in production)."""
+    async with app_engine.begin() as conn:
+        await conn.execute(
+            text(
+                "SELECT set_config('app.workspace_id', "
+                "(SELECT id::text FROM workspaces WHERE code = :c), true)"
+            ),
+            {"c": ws},
+        )
+        rows = (await conn.execute(text(CONTENT_SWEEP), {"pat": CANARY})).all()
+    return {str(name): int(count) for name, count in rows}
+
+
+async def test_purge_removes_canary_from_every_table(
+    harness: Harness, app_engine: AsyncEngine
+) -> None:
+    ws = await harness.create_workspace()
+    uploads = [
+        ("memo.md", "MEMO"),
+        ("survey.csv", "SURVEY"),  # rows + dataset tables + a free-text row child
+    ]
+    ids = []
+    for filename, code in uploads:
+        response = await harness.upload(ws, filename, FORMATS[filename](), source_code=code)
+        ids.append(response.json()["source_id"])
+    await harness.drain()
+    before = await _content_sweep(app_engine, ws)
+    # Non-vacuous: the canary really is in each content table before the purge.
+    for table in ("parent_chunks", "child_chunks", "dataset_rows", "chunk_embeddings"):
+        assert before[table] > 0, (table, before)
+    assert before["source_blobs"] == 2
+
+    for source_id in ids:
+        assert (
+            await harness.client.delete(f"/api/workspaces/{ws}/sources/{source_id}")
+        ).status_code == 200
+    after = await _content_sweep(app_engine, ws)
+    assert after == dict.fromkeys(after, 0), after
+    for _, code in uploads:
+        locator = "S1.B1" if code == "MEMO" else "R1"
+        tomb = await harness.client.get(f"/api/workspaces/{ws}/evidence/{ws}/{code}@v1:{locator}")
+        assert tomb.status_code == 410, tomb.text
+
+
+async def test_purge_before_the_job_runs(harness: Harness, app_engine: AsyncEngine) -> None:
+    ws = await harness.create_workspace()
+    body = (await harness.upload(ws, "survey.csv", FORMATS["survey.csv"](), source_code="S")).json()
+    assert (
+        await harness.client.delete(f"/api/workspaces/{ws}/sources/{body['source_id']}")
+    ).status_code == 200
+    await harness.drain()  # the queued job finds a purged version and leaves it alone
+    sweep = await _content_sweep(app_engine, ws)
+    assert sweep == dict.fromkeys(sweep, 0), sweep
+
+
+@pytest.mark.parametrize("stage", ["embedding", "health_check", "flip"])
+async def test_purge_mid_ingestion_never_activates_or_resurrects(
+    harness: Harness, app_engine: AsyncEngine, monkeypatch: pytest.MonkeyPatch, stage: str
+) -> None:
+    """A purge that lands while the worker is mid-flight wins: the version stays ``purged``,
+    nothing the worker wrote survives, and the handle is a tombstone. Each stage exercises a
+    different guard: the indexing transaction, the failure path, and the activation flip."""
+    ws = await harness.create_workspace()
+    source: dict[str, str] = {}
+
+    async def purge() -> None:
+        response = await harness.client.delete(f"/api/workspaces/{ws}/sources/{source['id']}")
+        assert response.status_code == 200, response.text
+
+    if stage == "embedding":  # purge commits before the indexing transaction starts
+        loop = asyncio.get_running_loop()
+
+        class PurgingEmbedder(HashEmbedder):
+            def embed_passages(self, texts: Sequence[str]) -> list[Vector]:
+                asyncio.run_coroutine_threadsafe(purge(), loop).result(timeout=30)
+                return super().embed_passages(texts)
+
+        worker.set_deps(_deps(harness.settings, PurgingEmbedder(model_id="hash-test")))
+    else:
+        original = pipeline.check_version_health
+
+        async def purge_around_health(*args: Any, **kwargs: Any) -> Any:
+            if stage == "health_check":  # content vanishes -> health fails -> failure path
+                await purge()
+                return await original(*args, **kwargs)
+            result = await original(*args, **kwargs)  # healthy, then purged before the flip
+            await purge()
+            return result
+
+        monkeypatch.setattr(pipeline, "check_version_health", purge_around_health)
+
+    body = (await harness.upload(ws, "survey.csv", FORMATS["survey.csv"](), source_code="S")).json()
+    source["id"] = body["source_id"]
+    await harness.drain()
+
+    sweep = await _content_sweep(app_engine, ws)
+    assert sweep == dict.fromkeys(sweep, 0), sweep
+    tomb = await harness.client.get(f"/api/workspaces/{ws}/evidence/{ws}/S@v1:R1")
+    assert tomb.status_code == 410, tomb.text
