@@ -126,14 +126,16 @@ async def test_real_model_spans_and_paraphrase_retrieval(
     async with app_engine.begin() as conn:
         await conn.execute(
             text(
-                "SELECT set_config('app.workspace_id', (SELECT id::text FROM workspaces WHERE code = :c), true)"
+                "SELECT set_config('app.workspace_id', "
+                "(SELECT id::text FROM workspaces WHERE code = :c), true)"
             ),
             {"c": ws},
         )
         mismatches = (
             await conn.execute(
                 text(
-                    "SELECT count(*) FROM child_chunks c JOIN parent_chunks p ON p.id = c.parent_id "
+                    "SELECT count(*) FROM child_chunks c "
+                    "JOIN parent_chunks p ON p.id = c.parent_id "
                     "WHERE c.kind = 'window' AND substr(p.text, c.char_start + 1, "
                     "c.char_end - c.char_start) <> c.text"
                 )
