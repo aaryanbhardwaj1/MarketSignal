@@ -8,7 +8,6 @@ before any settings object is created. CI sets ``MS_TEST_DATABASE`` to its own f
 from __future__ import annotations
 
 import os
-import re
 
 import pytest
 
@@ -19,8 +18,13 @@ _DEFAULTS = {
 }
 
 
-def _with_database(url: str, database: str) -> str:
-    return re.sub(r"/[^/?]+(\?|$)", f"/{database}\\1", url, count=1) if "://" in url else url
+def with_database(url: str, database: str) -> str:
+    """Replace the database name (last path segment) of a DSN, keeping any query string."""
+    head, sep, tail = url.rpartition("/")
+    if not sep or "@" not in head:
+        return url
+    _, qsep, query = tail.partition("?")
+    return f"{head}/{database}{qsep}{query}"
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -28,7 +32,6 @@ def pytest_configure(config: pytest.Config) -> None:
     for var in _URL_VARS:
         value = os.environ.get(var) or _DEFAULTS.get(var)
         if value:
-            scheme, rest = value.split("://", 1)
-            os.environ[var] = f"{scheme}://{_with_database(rest, database)}"
+            os.environ[var] = with_database(value, database)
     os.environ.setdefault("MS_ENV", "test")
     os.environ.setdefault("MS_LOG_JSON", "false")
