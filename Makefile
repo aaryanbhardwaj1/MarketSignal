@@ -46,6 +46,18 @@ migrate: ## Apply migrations as the schema-owner role
 api: ## Run the API natively with reload on :8000
 	$(UV) run uvicorn marketsignal.api.app:create_app --factory --reload --port 8000
 
+.PHONY: worker
+worker: ## Run the ingestion worker natively (Procrastinate)
+	$(UV) run procrastinate --app=marketsignal.worker.app.app worker --queues=ingestion
+
+.PHONY: seed
+seed: ## Load the synthetic seed corpus through the real upload API (needs api + worker)
+	$(UV) run python ../scripts/seed.py
+
+.PHONY: seed-check
+seed-check: ## Verify the seed corpus is byte-identical to its generator and self-consistent
+	$(UV) run python ../seed_data/generator/verify.py
+
 .PHONY: lint
 lint: ## Ruff lint + format check
 	$(UV) run ruff check .
