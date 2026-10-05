@@ -5,7 +5,9 @@ Both lanes:
 * add an explicit ``workspace_id`` predicate on top of RLS (defence in depth, and it lets the
   planner use the ``(workspace_id, source_version_id)`` index);
 * apply the request filters (source classes, source codes, maximum confidentiality);
-* return children in a deterministic order - every ranked query ends ``…, child_id``;
+* return children in a deterministic order - every ranked query ends ``…, parent handle, child
+  ordinal``: stable identities, so a re-ingested corpus ranks ties identically (child ids are
+  random per ingestion and were the Phase 2 tiebreak until measured otherwise);
 * return the anchor metadata (child id, parent handle, ``char_start/char_end``) so a parent
   result can be highlighted at the exact span that matched.
 
@@ -121,7 +123,8 @@ async def dense_lane(
     classes: tuple[str, ...] | None = None,
 ) -> list[ChildHit]:
     """Canonical dense query (plan §7): transaction-local HNSW settings, MATERIALIZED CTE with
-    all filters inside it, ``ORDER BY distance + 0, child_id`` outside (needed on PG17+).
+    all filters inside it, ``ORDER BY distance + 0, handle, ordinal`` outside (``+ 0`` is
+    needed on PG17+).
     ``exact`` disables index scans for this transaction, forcing an exact (sequential) scan."""
     if not scope.active_version_ids:
         return []
@@ -143,7 +146,7 @@ async def dense_lane(
             f"  ORDER BY distance LIMIT :k) "
             f"SELECT {_HIT_COLUMNS}, 1 - d.distance AS score FROM dense d "
             f"JOIN child_chunks c ON c.id = d.child_id {_HIT_JOINS} "
-            f"ORDER BY d.distance + 0, c.id"
+            f"ORDER BY d.distance + 0, p.handle, c.ordinal"
         ),
         {"q": vector_literal(query_vector), "m": model_id, "k": k, **scope.params(classes)},
     )
@@ -273,18 +276,18 @@ async def lexical_lane(
             "  SELECT string_agg(quote_literal(l), ' | ')::tsquery AS q "
             "  FROM unnest(CAST(:lexemes AS text[])) l"
             "), scored AS ("
-            "  SELECT c.id, "
+            "  SELECT c.id, p.handle, c.ordinal, "
             "    (SELECT coalesce(sum(t.idf), 0) FROM terms t WHERE c.tsv @@ t.q) "
             "    + :bonus * (SELECT count(*) FROM phrases ph "
             "                WHERE numnode(ph.q) > 0 AND c.tsv @@ ph.q) AS score, "
             "    ts_rank_cd('{0.1,0.2,0.3,0.3}', c.tsv, (SELECT q FROM anyq), 1) AS tiebreak "
-            "  FROM child_chunks c "
+            "  FROM child_chunks c JOIN parent_chunks p ON p.id = c.parent_id "
             f"  WHERE {_CHILD_FILTER} AND c.tsv @@ (SELECT q FROM anyq) "
-            "  ORDER BY score DESC, tiebreak DESC, c.id LIMIT :k"
+            "  ORDER BY score DESC, tiebreak DESC, p.handle, c.ordinal LIMIT :k"
             ") "
             f"SELECT {_HIT_COLUMNS}, sc.score FROM scored sc "
             f"JOIN child_chunks c ON c.id = sc.id {_HIT_JOINS} "
-            "ORDER BY sc.score DESC, sc.tiebreak DESC, c.id"
+            "ORDER BY sc.score DESC, sc.tiebreak DESC, sc.handle, sc.ordinal"
         ),
         {
             "lexemes": list(lq.lexemes),

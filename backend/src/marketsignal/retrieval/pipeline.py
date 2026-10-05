@@ -315,7 +315,8 @@ class RetrievalService:
 
 
 def _merge_partitions(hits: list[ChildHit]) -> list[ChildHit]:
-    """Per-class partitions concatenated: one lane order by score, then child id; ranks renumbered.
+    """Per-class partitions concatenated: one lane order by score, then handle and span start
+    (stable across re-ingestion); ranks renumbered.
     (A single partition keeps its SQL order, which includes the lexical tiebreak.)"""
-    ordered = sorted(hits, key=lambda h: (-h.score, str(h.child_id)))
+    ordered = sorted(hits, key=lambda h: (-h.score, h.parent_handle, h.char_start))
     return [replace(h, rank=i) for i, h in enumerate(ordered, start=1)]

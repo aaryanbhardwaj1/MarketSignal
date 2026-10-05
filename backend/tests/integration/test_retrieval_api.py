@@ -317,3 +317,25 @@ async def test_docx_and_rows_are_searchable(harness: Harness) -> None:  # noqa: 
     assert body["items"][0]["source_code"] == "INT"
     rows = await _search(harness, ws, "leggings run small tees", mode="lexical")
     assert rows["items"][0]["handle"] == f"{ws}/SURVEY@v1:R2"
+
+
+async def test_rankings_are_identical_across_re_ingestion(harness: Harness) -> None:  # noqa: F811
+    """Ties break on parent handle + child ordinal, not on random child ids: the same corpus
+    ingested twice (two workspaces, different ids) must rank identically in every mode."""
+    _install(harness)
+    rows = [["id", "segment", "comment"]] + [
+        [f"S{i}", "Gen Z", f"Sizing runs small on the leggings, said shopper {name}."]
+        for i, name in enumerate(["ana", "ben", "cal", "dee", "eli", "fay", "gus", "hal"], 1)
+    ]
+    ws_a, ws_b = await harness.create_workspace(), await harness.create_workspace()
+    for ws in (ws_a, ws_b):
+        await harness.upload(ws, "survey.csv", make_csv(rows), source_code="SURVEY")
+        await harness.upload(
+            ws, "memo.md", _md("Sizing notes: leggings run small."), source_code="M"
+        )
+        await harness.drain()
+    for mode in ("lexical", "dense", "hybrid", "full"):
+        a = await _search(harness, ws_a, "leggings sizing small", mode=mode, k=20)
+        b = await _search(harness, ws_b, "leggings sizing small", mode=mode, k=20)
+        strip = lambda body, ws: [i["handle"].removeprefix(f"{ws}/") for i in body["items"]]  # noqa: E731
+        assert strip(a, ws_a) == strip(b, ws_b), mode
