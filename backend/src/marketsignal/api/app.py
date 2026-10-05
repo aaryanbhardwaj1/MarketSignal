@@ -14,11 +14,16 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from redis.asyncio import Redis
 
 from marketsignal.api.errors import install_error_handlers
-from marketsignal.api.routers import dev, evidence, health, sources, workspaces
+from marketsignal.api.routers import dev, evidence, health, search, sources, workspaces
 from marketsignal.config import Settings, get_settings
 from marketsignal.db.engine import create_engine, create_session_factory
 from marketsignal.health import role_is_privileged
 from marketsignal.providers.embeddings import Embedder, FastEmbedEmbedder
+from marketsignal.providers.rerankers import FastEmbedCrossEncoder
+from marketsignal.retrieval.lanes import DocumentFrequencies
+from marketsignal.retrieval.pipeline import QueryEmbeddingCache, RetrievalService
+from marketsignal.retrieval.rerank import RerankExecutor
+from marketsignal.retrieval.types import RetrievalConfig
 from marketsignal.telemetry.logging import configure_logging, get_logger
 
 log = get_logger(__name__)
@@ -83,6 +88,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     finally:
         if app.state.redis is not None:
             await app.state.redis.aclose()
+        app.state.rerank_executor.shutdown()
         await app.state.engine.dispose()
 
 
@@ -102,6 +108,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.state.defer_job = defer_ingestion
     app.state.query_embedder = _lazy_query_embedder(settings)
+    app.state.rerank_executor = RerankExecutor(
+        FastEmbedCrossEncoder(
+            settings.rerank_model_name, settings.model_cache_dir, threads=settings.rerank_threads
+        ),
+        settings.rerank_concurrency,
+    )
+    # Models load lazily on first use; the embedder is looked up per call so tests can swap it.
+    app.state.retrieval_service = RetrievalService(
+        RetrievalConfig.from_settings(settings),
+        embedder=lambda: app.state.query_embedder(),
+        rerank_executor=app.state.rerank_executor,
+        df_cache=DocumentFrequencies(settings.lexical_idf_cache_size),
+        query_cache=QueryEmbeddingCache(settings.query_embedding_cache_size),
+    )
     install_error_handlers(app)
 
     app.add_middleware(
@@ -139,6 +159,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(workspaces.router)
     app.include_router(sources.router)
     app.include_router(evidence.router)
+    app.include_router(search.router)
     if settings.env != "prod" and settings.dev_endpoints_enabled:
         app.include_router(dev.router)
     return app

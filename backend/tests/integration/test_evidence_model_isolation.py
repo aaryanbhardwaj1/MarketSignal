@@ -32,6 +32,7 @@ TENANT_TABLES = (
     "dataset_tables",
     "dataset_rows",
     "audit_events",
+    "retrieval_traces",
 )
 SHA = hashlib.sha256(b"x").hexdigest()
 VEC = "[" + ",".join(["0.05"] * 384) + "]"
@@ -124,6 +125,13 @@ async def _seed_chain(engine: AsyncEngine, ws: uuid.UUID, code: str) -> Chain:
             ),
             {"ws": ws},
         )
+        await conn.execute(
+            text(
+                "INSERT INTO retrieval_traces (workspace_id, origin, query, config_hash, stages) "
+                "VALUES (:ws, 'api', 'q', 'h', '{}'::jsonb)"
+            ),
+            {"ws": ws},
+        )
     return Chain(ws, source_id, version_id, parent_id, child_id, table_id)
 
 
@@ -187,6 +195,8 @@ FOREIGN_WRITES: dict[str, str] = {
     "VALUES (:b, 'X', 'x', 'csv')",
     "source_versions": "UPDATE source_versions SET status = 'failed' WHERE workspace_id = :b",
     "audit_events": "INSERT INTO audit_events (workspace_id, actor, action) VALUES (:b, 'x', 'x')",
+    "retrieval_traces": "INSERT INTO retrieval_traces (workspace_id, origin, query, config_hash, "
+    "stages) VALUES (:b, 'api', 'q', 'h', '{}'::jsonb)",
     "dataset_tables": "INSERT INTO dataset_tables (workspace_id, source_version_id, sheet_ordinal, "
     "name, header_row, columns, row_count) VALUES (:b, :bv, 9, 'x', 1, '[]', 0)",
 }
@@ -253,7 +263,12 @@ async def test_cross_tenant_references_are_rejected_by_composite_fks(
 
 
 @pytest.mark.parametrize(
-    "statement", ["UPDATE audit_events SET action = 'x'", "DELETE FROM audit_events"]
+    "statement",
+    [
+        "UPDATE audit_events SET action = 'x'",
+        "DELETE FROM audit_events",
+        "UPDATE retrieval_traces SET query = 'x'",  # traces are append-only (retention deletes)
+    ],
 )
 async def test_audit_trail_is_append_only_for_app_role(
     app_engine: AsyncEngine, chains: tuple[Chain, Chain], statement: str
@@ -296,3 +311,24 @@ async def test_live_content_idempotency_index(
         h=SHA,
         status="failed",
     )
+
+
+async def test_every_table_with_workspace_id_is_rls_protected(owner_engine: AsyncEngine) -> None:
+    """Catalog guard: a new tenant table cannot ship without ENABLE + FORCE RLS and a policy."""
+    async with owner_engine.connect() as conn:
+        rows = (
+            await conn.execute(
+                text(
+                    "SELECT c.relname, c.relrowsecurity, c.relforcerowsecurity, "
+                    "(SELECT count(*) FROM pg_policy p WHERE p.polrelid = c.oid) "
+                    "FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                    "JOIN pg_attribute a ON a.attrelid = c.oid AND a.attname = 'workspace_id' "
+                    "WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p') "
+                    "AND c.relname NOT IN ('workspace_members')"
+                )
+            )
+        ).all()
+    tables = {r[0] for r in rows}
+    assert set(TENANT_TABLES) <= tables
+    unprotected = [r[0] for r in rows if not (r[1] and r[2] and r[3] > 0)]
+    assert unprotected == []
