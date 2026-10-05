@@ -1,0 +1,1649 @@
+{
+ "dataset_version": "retrieval-v0",
+ "description": "Phase 2 curated retrieval set. Questions drafted by four independent writer agents that saw only an anchor-free fact digest (no rendered documents, no retrieval code), vetted by an adversarial critic agent per batch, curated from a 71-item pool (6 near-duplicates dropped). Human review pending.",
+ "items": [
+  {
+   "id": "R0-001",
+   "question": "What did Northstar leadership decide about a national rollout of personalization at the Q3 strategy review?",
+   "workspace": "NORTHSTAR",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "NS-083",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "decision",
+    "distractor_nearby",
+    "pptx"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The FY27 memo also makes a personalization recommendation (limited test), so the retriever must pick the leadership decision from the Q3 deck rather than the memo.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 1
+   }
+  },
+  {
+   "id": "R0-002",
+   "question": "When does the FY27 planning memo propose introducing the cross-category Fit Promise free exchange guarantee?",
+   "workspace": "NORTHSTAR",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "NS-101",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "has_identifier",
+    "markdown",
+    "timing"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Fit is a pervasive theme across survey, focus group and support docs, so the answer must come from the specific memo recommendation rather than any fit-related passage.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 2
+   }
+  },
+  {
+   "id": "R0-003",
+   "question": "Where and over what dates did Northstar's spring 2026 personalization pilot run, and how many customers did it reach?",
+   "workspace": "NORTHSTAR",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "NS-053",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "docx",
+    "number",
+    "study_method"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Many pilot outcome passages (repeat rate, uptake, returns, wait time) compete for the same query terms. Only the scope passage gives the stores and channels, the dates and the reach.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "fix",
+    "pool_index": 3
+   }
+  },
+  {
+   "id": "R0-004",
+   "question": "What ceiling does the consumer panel analyst expect personalized shoes to stay under, as a share of US athletic footwear units, through 2028?",
+   "workspace": "NORTHSTAR",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "NS-112",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "forecast",
+    "text"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Category sizing gives a dollar figure for personalized footwear, so the retriever must favor the analyst's unit-share forecast in the call notes over the xlsx market size.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 4
+   }
+  },
+  {
+   "id": "R0-005",
+   "question": "Why does Pace & Co. stay away from offering customized products?",
+   "workspace": "NORTHSTAR",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "NS-094",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4"
+     ]
+    }
+   ],
+   "tags": [
+    "competitor",
+    "low_overlap",
+    "pptx"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Vantage and Kinetic Lab both describe their personalization offers, so the retriever must isolate Pace & Co.'s investor update rationale (drop calendar and price point).",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 5
+   }
+  },
+  {
+   "id": "R0-006",
+   "question": "Who took part in the Northstar Gen Z focus group, and where and when was it held?",
+   "workspace": "NORTHSTAR",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "NS-073",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "docx",
+    "study_method"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Focus group findings passages (cart abandonment, point ranking) share vocabulary, but only the setup passage gives city, date and participant profile.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 6
+   }
+  },
+  {
+   "id": "R0-007",
+   "question": "Which markets is Southpeak planning to pilot its 48 hour delivery promise in?",
+   "workspace": "SOUTHPEAK",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "SP-C07",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "canary",
+    "markdown",
+    "workspace_scoped"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Northstar documents discuss fast delivery heavily (three-day essential, two-day trainers), so a correctly scoped retriever must return only the Southpeak planning note.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 7
+   }
+  },
+  {
+   "id": "R0-008",
+   "question": "What is Northstar's FY26 latest estimate for net revenue?",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-125",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ]
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "number",
+    "row",
+    "xlsx"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The FY25 actual revenue row in the same financial summary is a near-miss that a retriever could return instead of the FY26 LE row.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 8
+   }
+  },
+  {
+   "id": "R0-009",
+   "question": "Gen Z conversion rate on the Social Shop channel, September 2026",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-140",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "csv",
+    "distractor_nearby",
+    "number",
+    "row"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The millennial Social Shop conversion row for the same month sits in the same CSV, so the segment must be matched exactly.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 9
+   }
+  },
+  {
+   "id": "R0-010",
+   "question": "What was the Gen Z return rate on Northstar's brand site in August 2026?",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-142",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "csv",
+    "number",
+    "row"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Return rates appear for many entities (Knit Runner 2, pilot items, Kinetic Lab), so the retriever must match channel, segment and month in a single CSV row.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 10
+   }
+  },
+  {
+   "id": "R0-011",
+   "question": "How much net revenue did Northstar book in Q2 FY26 according to the Q3 strategy review?",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-080",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "number",
+    "pptx"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Annual revenue figures (FY25 actual, FY26 LE) and competitor revenues compete, so the quarterly figure from the slide deck must be retrieved specifically.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 11
+   }
+  },
+  {
+   "id": "R0-012",
+   "question": "In Q3 2026, what was the median first response time for customer contacts arriving via social channels?",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-013",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "number",
+    "pdf"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Other Q3 support metrics (sizing share, WISMO ratio, ticket counts) live in the same PDF, so the retriever must land on the response-time passage.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 12
+   }
+  },
+  {
+   "id": "R0-013",
+   "question": "What total Gen Z marketing budget does the FY27 planning memo propose?",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-100",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "markdown",
+    "money",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The same sentence carries a 40% reallocation figure, and other dollar figures (pilot costs, revenues) abound, testing that the budget amount is surfaced.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 13
+   }
+  },
+  {
+   "id": "R0-014",
+   "question": "Once remakes are included, what return rate do the panel analyst's channel checks estimate for Kinetic Lab?",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-110",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "contradiction",
+    "number",
+    "text"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Kinetic Lab's own annual report claims a much lower return rate, so the retriever must prefer the analyst call notes over the company claim.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 14
+   }
+  },
+  {
+   "id": "R0-015",
+   "question": "Running Footwear gross margin for August 2026",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-122",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "number",
+    "row",
+    "xlsx"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Company-level FY26 gross margin and Kinetic Lab's gross margin are nearby alternatives, so the category and month must both be matched.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 15
+   }
+  },
+  {
+   "id": "R0-016",
+   "question": "At what rate were personalized items returned during the personalization pilot, compared with comparable standard items?",
+   "workspace": "NORTHSTAR",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "NS-052",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ]
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "docx",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Kinetic Lab's claimed return rate on customized midsoles is a semantically close competitor figure the retriever must not confuse with Northstar's pilot result.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 16
+   }
+  },
+  {
+   "id": "R0-017",
+   "question": "What was Southpeak's marketplace conversion rate in September 2026?",
+   "workspace": "SOUTHPEAK",
+   "category": "exact_number",
+   "required_facts": [
+    {
+     "fact_id": "SP-C06",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "canary",
+    "number",
+    "workspace_scoped",
+    "xlsx"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Northstar has a parallel September 2026 conversion figure for its Social Shop, so workspace scoping must keep the Southpeak channel data row on top.",
+   "authoring": {
+    "writer": "facts-numbers",
+    "critic_verdict": "keep",
+    "pool_index": 17
+   }
+  },
+  {
+   "id": "R0-018",
+   "question": "Which rival limits shoe personalization to a fixed menu of colorway options on its flagship racer?",
+   "workspace": "NORTHSTAR",
+   "category": "named_entity",
+   "required_facts": [
+    {
+     "fact_id": "NS-104",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+     ]
+    }
+   ],
+   "tags": [
+    "competitor",
+    "low_overlap"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Kinetic Lab is the obvious personalization competitor, so a retriever must find the Vantage Athletic web snapshot rather than the many Kinetic Lab customization passages.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 18
+   }
+  },
+  {
+   "id": "R0-019",
+   "question": "Is there a competitor that has deliberately stayed out of customization, and what reasons does it give?",
+   "workspace": "NORTHSTAR",
+   "category": "named_entity",
+   "required_facts": [
+    {
+     "fact_id": "NS-094",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4"
+     ]
+    }
+   ],
+   "tags": [
+    "competitor",
+    "low_overlap"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The answer (Pace & Co.) sits in an investor deck, among many customization passages about Kinetic Lab, Vantage and Northstar's own pilot that are about offering customization, not avoiding it.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 19
+   }
+  },
+  {
+   "id": "R0-020",
+   "question": "Which competitor makes every pair to order from a smartphone foot scan, and how long does delivery take?",
+   "workspace": "NORTHSTAR",
+   "category": "named_entity",
+   "required_facts": [
+    {
+     "fact_id": "NS-105",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3"
+     ]
+    }
+   ],
+   "tags": [
+    "competitor",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Foot scanning also shows up in Vantage's Fit Lab gait scanning, Maya R.'s interview and Kinetic Lab's rescan pricing, so the retriever has to find the build-to-order lead-time passage specifically.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 20
+   }
+  },
+  {
+   "id": "R0-021",
+   "question": "What is Northstar's best-selling product by units so far in FY26?",
+   "workspace": "NORTHSTAR",
+   "category": "named_entity",
+   "required_facts": [
+    {
+     "fact_id": "NS-121",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "product",
+    "row"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The answer is one spreadsheet row in the product performance workbook, and the many Knit Runner 2 passages could pull ranking toward the most-discussed product rather than the top seller.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 21
+   }
+  },
+  {
+   "id": "R0-022",
+   "question": "Which Gen Z customer group is Northstar's biggest and also spends the most per order?",
+   "workspace": "NORTHSTAR",
+   "category": "named_entity",
+   "required_facts": [
+    {
+     "fact_id": "NS-007",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL7"
+     ]
+    }
+   ],
+   "tags": [
+    "low_overlap",
+    "segment"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The segment list fact and survey verbatims that also name segments are nearby, but only one passage ties the largest share to the highest average order value.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 22
+   }
+  },
+  {
+   "id": "R0-023",
+   "question": "Which Northstar product had a big chunk of its Q3 2026 returns blamed on running small?",
+   "workspace": "NORTHSTAR",
+   "category": "named_entity",
+   "required_facts": [
+    {
+     "fact_id": "NS-124",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "product",
+    "row"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Return-reason passages are dominated by Knit Runner 2 durability, so the retriever has to find the single Switchback Trail sizing row (41% of its Q3 2026 returns because it runs small).",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "fix",
+    "pool_index": 23
+   }
+  },
+  {
+   "id": "R0-024",
+   "question": "NS-KR2 return rate",
+   "workspace": "NORTHSTAR",
+   "category": "keyword_sensitive",
+   "required_facts": [
+    {
+     "fact_id": "NS-120",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "has_identifier",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The original Knit Runner (NS-KR1) has a near-identical row with a different return rate, so only an exact SKU match gives the right figure.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 24
+   }
+  },
+  {
+   "id": "R0-025",
+   "question": "What did survey respondent R0147 say about sizing?",
+   "workspace": "NORTHSTAR",
+   "category": "keyword_sensitive",
+   "required_facts": [
+    {
+     "fact_id": "NS-143",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "customer_free_text",
+    "has_identifier"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Many survey verbatims discuss fit, so the retriever must match the exact respondent ID rather than general sizing content.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 25
+   }
+  },
+  {
+   "id": "R0-026",
+   "question": "R0388 comment on paying more for made-to-foot shoes",
+   "workspace": "NORTHSTAR",
+   "category": "keyword_sensitive",
+   "required_facts": [
+    {
+     "fact_id": "NS-144",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "has_identifier"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Willingness-to-pay content is heavy in the WTP study and interviews (e.g. Maya R.), so only the respondent ID points to the single survey row.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 26
+   }
+  },
+  {
+   "id": "R0-027",
+   "question": "Pull up review RV-00655 — what was the customer's experience?",
+   "workspace": "NORTHSTAR",
+   "category": "keyword_sensitive",
+   "required_facts": [
+    {
+     "fact_id": "NS-148",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "customer_free_text",
+    "has_identifier"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Personalization wait-time complaints also appear in interviews (Sam K.) and pilot results, so exact review-ID matching is needed among 800 review rows.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 27
+   }
+  },
+  {
+   "id": "R0-028",
+   "question": "RV-00412 Knit Runner 2 durability complaint details",
+   "workspace": "NORTHSTAR",
+   "category": "keyword_sensitive",
+   "required_facts": [
+    {
+     "fact_id": "NS-147",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "has_identifier"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Knit Runner 2 fraying appears in support tickets, an interview and a survey verbatim, so the review ID is the only reliable discriminator.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 28
+   }
+  },
+  {
+   "id": "R0-029",
+   "question": "What does survey respondent R0062 want shown on product pages?",
+   "workspace": "NORTHSTAR",
+   "category": "keyword_sensitive",
+   "required_facts": [
+    {
+     "fact_id": "NS-146",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "customer_free_text",
+    "has_identifier"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Sustainability transparency is also voiced by interviewee Lena O. and trend-report figures, so the respondent ID must anchor retrieval.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 29
+   }
+  },
+  {
+   "id": "R0-030",
+   "question": "How many stores have Vantage's Fit Lab, and how many scans has it done?",
+   "workspace": "NORTHSTAR",
+   "category": "keyword_sensitive",
+   "required_facts": [
+    {
+     "fact_id": "NS-091",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "competitor",
+    "exact_name",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "'Fit Lab' is an exact product name that could be confused with Northstar's own fit initiatives (Fit Promise, fit guarantee), and many other passages say 'fit'.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 30
+   }
+  },
+  {
+   "id": "R0-031",
+   "question": "What do Southpeak's survey respondents name as their top issue?",
+   "workspace": "SOUTHPEAK",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "SP-C02",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "workspace_scoped"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Northstar has an almost identical fact on fit inconsistency as the top pain point, so a correct answer depends on staying in the Southpeak workspace.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 32
+   }
+  },
+  {
+   "id": "R0-032",
+   "question": "How many members did Southpeak's loyalty program have at the end of Q2, and what happened to repeat purchase?",
+   "workspace": "SOUTHPEAK",
+   "category": "single_source_fact",
+   "required_facts": [
+    {
+     "fact_id": "SP-C04",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "number",
+    "workspace_scoped"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Northstar's personalization pilot also reports repeat-purchase rates, so a retriever that leaks across workspaces would return the wrong client's figures.",
+   "authoring": {
+    "writer": "entities-keywords",
+    "critic_verdict": "keep",
+    "pool_index": 33
+   }
+  },
+  {
+   "id": "R0-033",
+   "question": "What did survey respondent R0147 say about how they buy leggings and tees?",
+   "workspace": "NORTHSTAR",
+   "category": "customer_free_text",
+   "required_facts": [
+    {
+     "fact_id": "NS-143",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "has_identifier",
+    "row",
+    "verbatim"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The answer sits in a single survey CSV row keyed by respondent id, and interview quote NS-060 (Jordan T., inconsistent sizes) covers the same theme without matching the id.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 35
+   }
+  },
+  {
+   "id": "R0-034",
+   "question": "Which survey verbatim asks for recycled content and factory locations to be listed on product pages, and which respondent gave it?",
+   "workspace": "NORTHSTAR",
+   "category": "customer_free_text",
+   "required_facts": [
+    {
+     "fact_id": "NS-146",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "row",
+    "verbatim"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The retriever has to find the respondent id from the content of a row, while Lena O.'s interview quote about sustainability transparency competes for the same topic.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 36
+   }
+  },
+  {
+   "id": "R0-035",
+   "question": "Why did interviewee Sam K. stop using the custom colorway tool?",
+   "workspace": "NORTHSTAR",
+   "category": "customer_free_text",
+   "required_facts": [
+    {
+     "fact_id": "NS-066",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "named_person",
+    "quote"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "An interview Q&A has to be matched by a person's name, while review RV-00655 and pilot fact NS-054 make similar points about wait times.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 39
+   }
+  },
+  {
+   "id": "R0-036",
+   "question": "Gen Z focus group: how many participants had left a cart because a size chart didn't line up with a brand they already wear?",
+   "workspace": "NORTHSTAR",
+   "category": "customer_free_text",
+   "required_facts": [
+    {
+     "fact_id": "NS-070",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "focus_group",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The count is phrased as 'seven of ten' in prose, and survey and support fit metrics (27%, 31%) are nearby percentages that could be returned instead.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 40
+   }
+  },
+  {
+   "id": "R0-037",
+   "question": "In the focus group, under what framing did customization actually get participants excited?",
+   "workspace": "NORTHSTAR",
+   "category": "customer_free_text",
+   "required_facts": [
+    {
+     "fact_id": "NS-072",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "contradiction",
+    "focus_group",
+    "quote"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The same focus group also ranked personalization below fit, delivery and materials when spending points (NS-071), so a retriever may return the opposite finding.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 41
+   }
+  },
+  {
+   "id": "R0-038",
+   "question": "How many Q3 2026 support tickets were about Knit Runner 2 upper wear, and where on the shoe did the damage usually appear?",
+   "workspace": "NORTHSTAR",
+   "category": "customer_free_text",
+   "required_facts": [
+    {
+     "fact_id": "NS-012",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "number",
+    "support_themes"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The product performance file lists a different Q3 count (2,960 returns for upper wear), so the retriever must tell support tickets apart from returns.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 42
+   }
+  },
+  {
+   "id": "R0-039",
+   "question": "What did Southpeak respondent SP-R0207 say about boot sizing?",
+   "workspace": "SOUTHPEAK",
+   "category": "customer_free_text",
+   "required_facts": [
+    {
+     "fact_id": "SP-C05",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "has_identifier",
+    "row",
+    "workspace_scoped"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Sizing complaints run through the Northstar corpus too, so this item checks that retrieval stays inside the Southpeak workspace and matches the id.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 43
+   }
+  },
+  {
+   "id": "R0-040",
+   "question": "Rather than fighting for the pro-athlete crowd, what reputation is the company trying to own with younger shoppers?",
+   "workspace": "NORTHSTAR",
+   "category": "semantic_paraphrase",
+   "required_facts": [
+    {
+     "fact_id": "NS-005",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "low_overlap",
+    "positioning"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "It avoids 'dependable', 'fit', 'position' and 'elite', so the answer has to be matched on meaning alone.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 44
+   }
+  },
+  {
+   "id": "R0-041",
+   "question": "How slowly did the care team typically get back to people who messaged through social apps last quarter, compared with the goal they had set?",
+   "workspace": "NORTHSTAR",
+   "category": "semantic_paraphrase",
+   "required_facts": [
+    {
+     "fact_id": "NS-013",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "low_overlap",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "'Get back to' and 'goal' stand in for 'median first response time' and 'target', which tests whether paraphrase reaches a support metric.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 45
+   }
+  },
+  {
+   "id": "R0-042",
+   "question": "What portion of young shoppers put more faith in fellow buyers' opinions and influencer demos than in what companies say in their ads?",
+   "workspace": "NORTHSTAR",
+   "category": "semantic_paraphrase",
+   "required_facts": [
+    {
+     "fact_id": "NS-040",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "low_overlap",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "'Fellow buyers' opinions' and 'influencer demos' replace 'peer reviews' and 'creator try on videos', so retrieval has to bridge those terms.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 46
+   }
+  },
+  {
+   "id": "R0-043",
+   "question": "What slice of young buyers' sneaker purchases still happens at shops dedicated to runners?",
+   "workspace": "NORTHSTAR",
+   "category": "semantic_paraphrase",
+   "required_facts": [
+    {
+     "fact_id": "NS-109",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "low_overlap",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "It describes 'specialty running stores' indirectly, and the same channel-shift note has other channel shares (34% vs 22%) that could be returned instead.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 47
+   }
+  },
+  {
+   "id": "R0-044",
+   "question": "How large a share of American sneaker volume does the consumer-panel expert think tailored products will reach by 2028?",
+   "workspace": "NORTHSTAR",
+   "category": "semantic_paraphrase",
+   "required_facts": [
+    {
+     "fact_id": "NS-112",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "forecast",
+    "low_overlap"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "'Tailored products' and 'sneaker volume' stand in for 'personalization' and 'footwear units', and the $1.1B personalized market size (NS-130) is a nearby wrong answer.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 49
+   }
+  },
+  {
+   "id": "R0-045",
+   "question": "Under what condition does the strategy team's next-year plan say bespoke products should move beyond a small trial?",
+   "workspace": "NORTHSTAR",
+   "category": "semantic_paraphrase",
+   "required_facts": [
+    {
+     "fact_id": "NS-102",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "low_overlap",
+    "recommendation"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The leadership pause in the Q3 review (NS-083) is a similar decision, but only the memo gives the condition that repeat purchase must beat control.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 50
+   }
+  },
+  {
+   "id": "R0-046",
+   "question": "During the spring trial, how long did shoppers wait to receive their custom pairs, and what share said that delay stopped them from buying again?",
+   "workspace": "NORTHSTAR",
+   "category": "semantic_paraphrase",
+   "required_facts": [
+    {
+     "fact_id": "NS-054",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "low_overlap",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "It rephrases the pilot exit-survey finding without 'personalized' or 'reorder', and Sam K.'s and RV-00655's wait complaints are nearby.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 51
+   }
+  },
+  {
+   "id": "R0-047",
+   "question": "In the trade-off exercise, how did shoppers weigh getting a shoe shaped to their foot against picking their own colors?",
+   "workspace": "NORTHSTAR",
+   "category": "semantic_paraphrase",
+   "required_facts": [
+    {
+     "fact_id": "NS-043",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/WTP-STUDY@v1:P3.B2"
+     ]
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "low_overlap",
+    "wtp"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "'Trade-off exercise' stands for 'conjoint' and colors for 'colorways', and the colorway-only premium distractor (NS-D02) from the same study is nearby.",
+   "authoring": {
+    "writer": "voice-semantic",
+    "critic_verdict": "keep",
+    "pool_index": 52
+   }
+  },
+  {
+   "id": "R0-048",
+   "question": "How big is the Knit Runner 2 upper-wear problem? I need the Q3 support ticket count, the Q3 durability return count, and the Q2 dollar cost of returns and replacements.",
+   "workspace": "NORTHSTAR",
+   "category": "cross_format",
+   "required_facts": [
+    {
+     "fact_id": "NS-012",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-123",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-082",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "cross_format",
+    "number",
+    "pdf",
+    "pptx",
+    "xlsx"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The three figures sit in a support-themes PDF, a product-performance spreadsheet and a strategy-review slide, so a retriever has to pull from three formats and must not settle for the similar Knit Runner review and verbatim snippets.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 53
+   }
+  },
+  {
+   "id": "R0-049",
+   "question": "Compare the average wait for personalized pairs in Northstar's spring pilot with the delivery window Kinetic Lab quotes for its build-to-order shoes.",
+   "workspace": "NORTHSTAR",
+   "category": "cross_format",
+   "required_facts": [
+    {
+     "fact_id": "NS-054",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-105",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3"
+     ]
+    }
+   ],
+   "tags": [
+    "competitor",
+    "cross_format",
+    "docx",
+    "markdown",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "It joins a pilot readout docx with a competitor web snapshot in markdown, and interview and review mentions of 12- and 13-day waits are nearby and could crowd out the pilot's official figure.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 54
+   }
+  },
+  {
+   "id": "R0-050",
+   "question": "Social Shop momentum check: how fast did it grow quarter over quarter in Q2 FY26, and what was its Gen Z conversion rate in September 2026?",
+   "workspace": "NORTHSTAR",
+   "category": "cross_format",
+   "required_facts": [
+    {
+     "fact_id": "NS-085",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-140",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "cross_format",
+    "csv",
+    "distractor_nearby",
+    "number",
+    "pptx",
+    "row"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "It combines a slide-level growth claim with one row of the channel CSV, and the millennial conversion row for the same channel and month sits right beside the target.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 55
+   }
+  },
+  {
+   "id": "R0-051",
+   "question": "What percentage of Gen Z survey respondents name fit inconsistency as their number one pain point, and how many of the focus group participants had dropped a cart because a size chart didn't match a brand they already own?",
+   "workspace": "NORTHSTAR",
+   "category": "cross_format",
+   "required_facts": [
+    {
+     "fact_id": "NS-004",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-070",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "cross_format",
+    "distractor_nearby",
+    "docx",
+    "number",
+    "pdf"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "It needs a strategy PDF figure and a focus-group docx count, while the 28-and-older fit figure and the support-contact sizing share are near-miss numbers.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 56
+   }
+  },
+  {
+   "id": "R0-052",
+   "question": "For Southpeak, what share of survey respondents say inconsistent fit between boots and trail runners is their top issue, and what did respondent SP-R0207 say about boot sizing?",
+   "workspace": "SOUTHPEAK",
+   "category": "cross_format",
+   "required_facts": [
+    {
+     "fact_id": "SP-C02",
+     "grade": 2
+    },
+    {
+     "fact_id": "SP-C05",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "cross_format",
+    "csv",
+    "has_identifier",
+    "pdf",
+    "workspace_scoped"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "It is scoped to the Southpeak workspace and pairs a PDF statistic with a CSV verbatim, while the Northstar workspace has a very similar fit-inconsistency pain point that must not leak in.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 57
+   }
+  },
+  {
+   "id": "R0-053",
+   "question": "How does each of the three tracked competitors (Vantage Athletic, Kinetic Lab, Pace & Co.) approach product customization?",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "required_facts": [
+    {
+     "fact_id": "NS-104",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+     ]
+    },
+    {
+     "fact_id": "NS-105",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3"
+     ]
+    },
+    {
+     "fact_id": "NS-094",
+     "grade": 2,
+     "also_satisfied_by": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4"
+     ]
+    }
+   ],
+   "tags": [
+    "competitor",
+    "enumeration",
+    "multi_source"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "A complete answer needs one stance per competitor from three separate documents, including Pace's choice not to customize at all, which a retriever ranking by 'customization offer' may miss.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 58
+   }
+  },
+  {
+   "id": "R0-054",
+   "question": "Pull every individual customer voice (interviewees, survey verbatims, product reviews) describing the knit upper on their running shoes fraying, splitting or tearing early.",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "required_facts": [
+    {
+     "fact_id": "NS-062",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-145",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-147",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "customer_free_text",
+    "enumeration",
+    "has_identifier"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The three quotes are spread across an interview docx, a survey CSV and a reviews CSV in different wording, and one of them never names the model. The aggregate ticket and return counts (NS-012, NS-123) and the Q2 cost (NS-082) are near-misses because they are not individual voices.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "fix",
+    "pool_index": 59
+   }
+  },
+  {
+   "id": "R0-055",
+   "question": "Which individual customers (interviewees or survey respondents) want brands to disclose where their shoes are made or how much recycled material goes into them?",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "required_facts": [
+    {
+     "fact_id": "NS-063",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-146",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "customer_free_text",
+    "enumeration",
+    "low_overlap"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The two matching voices are an interviewee and a survey respondent who phrase it differently. The focus group's group-level 'materials honesty' ranking (NS-071) and the market-level sustainability-influence percentages (NS-032/NS-037) are tempting but wrong matches.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "fix",
+    "pool_index": 60
+   }
+  },
+  {
+   "id": "R0-056",
+   "question": "What are the main recommendations in the FY27 planning memo?",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "required_facts": [
+    {
+     "fact_id": "NS-100",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-101",
+     "grade": 2
+    },
+    {
+     "fact_id": "NS-102",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "enumeration",
+    "strategy"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "A complete answer needs all three recommendations (budget, Fit Promise, personalization test), and the memo also holds an all-customer NPS figure that is not a recommendation.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 61
+   }
+  },
+  {
+   "id": "R0-057",
+   "question": "In the willingness-to-pay study, what share of Gen Z respondents say they'd accept a 15% markup for footwear tailored to their fit (fit, not colorway)?",
+   "workspace": "NORTHSTAR",
+   "category": "ambiguous_distractor",
+   "required_facts": [
+    {
+     "fact_id": "NS-041",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "contradiction",
+    "distractor_nearby",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Near-misses abound: the millennial figure and the Gen Z colorway-only figure for the same 15% premium, plus the pilot's revealed 9% uptake that contradicts the stated number.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 62
+   }
+  },
+  {
+   "id": "R0-058",
+   "question": "Return rate for the second-generation Knit Runner, not the original model?",
+   "workspace": "NORTHSTAR",
+   "category": "ambiguous_distractor",
+   "required_facts": [
+    {
+     "fact_id": "NS-120",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "number",
+    "row"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The original Knit Runner row in the same spreadsheet has a near-identical name and attribute, so the retriever has to tell the generations apart.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 63
+   }
+  },
+  {
+   "id": "R0-059",
+   "question": "Where did Gen Z net promoter score land in Q2 FY26?",
+   "workspace": "NORTHSTAR",
+   "category": "ambiguous_distractor",
+   "required_facts": [
+    {
+     "fact_id": "NS-086",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The FY27 memo reports an all-customer Q2 NPS of 31, so a retriever matching 'NPS Q2' can surface the wrong population.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 64
+   }
+  },
+  {
+   "id": "R0-060",
+   "question": "How large is the 2026 US athletic footwear market for Gen Z shoppers specifically, in the category sizing workbook?",
+   "workspace": "NORTHSTAR",
+   "category": "ambiguous_distractor",
+   "required_facts": [
+    {
+     "fact_id": "NS-129",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "distractor_nearby",
+    "number",
+    "row"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The same workbook sizes the millennial footwear market and the Gen Z personalized-footwear subset for 2026, both of which are near-miss rows.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 65
+   }
+  },
+  {
+   "id": "R0-061",
+   "question": "Using finance's strict 18-to-27 age definition, what portion of FY25 net revenue came from Gen Z?",
+   "workspace": "NORTHSTAR",
+   "category": "ambiguous_distractor",
+   "required_facts": [
+    {
+     "fact_id": "NS-127",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "contradiction",
+    "definition",
+    "number"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The brand team reports a conflicting 21% under a looser loyalty definition, so the question specifies which definition is meant.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 66
+   }
+  },
+  {
+   "id": "R0-062",
+   "question": "Latest read on what share of Gen Z athletic footwear purchases happen through social commerce platforms, per the Gen Z trends report?",
+   "workspace": "NORTHSTAR",
+   "category": "versioning",
+   "required_facts": [
+    {
+     "fact_id": "NS-035",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "number",
+    "superseded"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The 2025 edition's older 17% figure is superseded but worded almost identically, and a channel-shift note gives a different marketplace-plus-social spend share.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 67
+   }
+  },
+  {
+   "id": "R0-063",
+   "question": "After the most recent restatement, what is the 2025 US Gen Z athletic apparel market worth?",
+   "workspace": "NORTHSTAR",
+   "category": "versioning",
+   "required_facts": [
+    {
+     "fact_id": "NS-036",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "number",
+    "restatement",
+    "superseded"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "Both editions describe the same 2025 market year with different values, so only the version, not the year, tells the current figure from the stale one.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 68
+   }
+  },
+  {
+   "id": "R0-064",
+   "question": "How many athletic brands do Gen Z shoppers typically weigh before buying, according to the newest edition of the trends research?",
+   "workspace": "NORTHSTAR",
+   "category": "versioning",
+   "required_facts": [
+    {
+     "fact_id": "NS-038",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "number",
+    "superseded"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "The older edition's 4.1-brand figure is a superseded twin with nearly the same phrasing.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "keep",
+    "pool_index": 69
+   }
+  },
+  {
+   "id": "R0-065",
+   "question": "Current figure: what share of Gen Z say eco or green claims affect which sports brand they pick?",
+   "workspace": "NORTHSTAR",
+   "category": "versioning",
+   "required_facts": [
+    {
+     "fact_id": "NS-037",
+     "grade": 2
+    }
+   ],
+   "tags": [
+    "low_overlap",
+    "number",
+    "superseded"
+   ],
+   "provenance": "llm_draft_agent_reviewed",
+   "rationale": "It paraphrases away from 'sustainability' and 'athletic', and the 2025 edition's higher 62% figure (NS-032) is a superseded near-duplicate that only the version separates.",
+   "authoring": {
+    "writer": "multi-hard",
+    "critic_verdict": "fix",
+    "pool_index": 70
+   }
+  }
+ ]
+}

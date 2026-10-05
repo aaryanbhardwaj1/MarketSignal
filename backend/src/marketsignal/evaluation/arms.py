@@ -1,0 +1,110 @@
+"""Evaluation arms: a named retrieval configuration that turns a query into ranked parents.
+
+Every arm returns *distinct parent handles* in rank order (children are mapped to their parent,
+first occurrence wins - plan §26), plus stage timings, degradation flags and per-lane detail for
+failure analysis. Arms run the production code paths; they never re-implement retrieval.
+
+``baseline-dense`` and ``baseline-lexical`` are the Phase 1 smoke lanes exactly as shipped
+(``retrieval/smoke.py``, unchanged): they are the untouched baselines of the Phase 2 report.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import time
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any, Protocol
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from marketsignal.config import Settings
+from marketsignal.db.scope import WorkspaceScope
+from marketsignal.evaluation.metrics import dedupe_parents
+from marketsignal.providers.embeddings import Embedder
+from marketsignal.retrieval.smoke import dense_search, lexical_search
+
+BASELINE_CHILD_K = 100  # plan §13 lane depth; deep enough to fill 20 distinct parents
+
+
+@dataclass(frozen=True, slots=True)
+class ArmOutput:
+    parents: list[str]
+    timings_ms: dict[str, float]
+    flags: tuple[str, ...] = ()
+    detail: dict[str, Any] = field(default_factory=dict)
+
+
+class Arm(Protocol):
+    name: str
+
+    def config(self) -> dict[str, Any]: ...
+
+    async def run(self, session: AsyncSession, scope: WorkspaceScope, query: str) -> ArmOutput: ...
+
+
+def _ms(start: float) -> float:
+    return round((time.perf_counter() - start) * 1000, 2)
+
+
+@dataclass
+class BaselineLexicalArm:
+    """Phase 1 smoke lexical lane: ``websearch_to_tsquery`` (AND semantics) + ``ts_rank_cd``."""
+
+    name: str = "baseline-lexical"
+
+    def config(self) -> dict[str, Any]:
+        return {"arm": self.name, "lane": "smoke.lexical_search", "child_k": BASELINE_CHILD_K}
+
+    async def run(self, session: AsyncSession, scope: WorkspaceScope, query: str) -> ArmOutput:
+        start = time.perf_counter()
+        hits = await lexical_search(session, scope.workspace_id, query, BASELINE_CHILD_K)
+        sql_ms = _ms(start)
+        parents = dedupe_parents([h.handle for h in hits])
+        return ArmOutput(
+            parents,
+            {"lexical_ms": sql_ms, "total_ms": sql_ms},
+            detail={"lexical_children": len(hits)},
+        )
+
+
+@dataclass
+class BaselineDenseArm:
+    """Phase 1 smoke dense lane: bge-small without a query instruction, HNSW + iterative scan."""
+
+    embedder_factory: Callable[[], Embedder]
+    settings: Settings
+    name: str = "baseline-dense"
+
+    def config(self) -> dict[str, Any]:
+        return {
+            "arm": self.name,
+            "lane": "smoke.dense_search",
+            "child_k": BASELINE_CHILD_K,
+            "model": self.settings.embed_model_id,
+            "query_instruction": None,
+            "ef_search": self.settings.hnsw_ef_search,
+        }
+
+    async def run(self, session: AsyncSession, scope: WorkspaceScope, query: str) -> ArmOutput:
+        start = time.perf_counter()
+        embedder = self.embedder_factory()
+        vector = await asyncio.to_thread(embedder.embed_query, query)
+        embed_ms = _ms(start)
+        sql_start = time.perf_counter()
+        hits = await dense_search(
+            session,
+            scope.workspace_id,
+            vector,
+            model_id=embedder.model_id,
+            dimensions=self.settings.embed_dimensions,
+            k=BASELINE_CHILD_K,
+            ef_search=self.settings.hnsw_ef_search,
+        )
+        sql_ms = _ms(sql_start)
+        parents = dedupe_parents([h.handle for h in hits])
+        return ArmOutput(
+            parents,
+            {"embed_ms": embed_ms, "dense_ms": sql_ms, "total_ms": _ms(start)},
+            detail={"dense_children": len(hits)},
+        )

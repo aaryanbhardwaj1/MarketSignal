@@ -10,8 +10,8 @@ paths = ['''\.env\.example$''']
 regexes = ['''(?i)changeme''', '''(?i)placeholder''', '''dev-only-insecure-[a-z0-9-]+''']
 
 [[allowlists]]
-description = "Fact-ledger row anchors: the field name 'key_value' trips the generic API-key rule"
+description = "Fact-ledger row anchors (and eval files derived from the ledger): the field name 'key_value' trips the generic API-key rule"
 condition = "AND"
-paths = ['''^seed_data/fact_ledger\.json$''']
+paths = ['''^seed_data/fact_ledger\.json$''', '''^eval/datasets/[a-z0-9-]+/[a-z0-9-]+\.json$''']
 regexTarget = "line"
 regexes = ['''^\s*"key_value": "[A-Z0-9-]{1,40}",?\s*$''']

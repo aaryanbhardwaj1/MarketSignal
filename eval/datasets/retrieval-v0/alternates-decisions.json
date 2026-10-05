@@ -1,0 +1,492 @@
+{
+ "method": "two independent judges per (fact, candidate) pair; accepted only if both say the candidate states the same fact (entity, metric, value, period, definition)",
+ "prefilter_dropped": {
+  "NS-038": [
+   "NORTHSTAR/CHANNEL-PERF@v1:R104",
+   "NORTHSTAR/CHANNEL-PERF@v1:R118",
+   "NORTHSTAR/CHANNEL-PERF@v1:R14",
+   "NORTHSTAR/CHANNEL-PERF@v1:R24",
+   "NORTHSTAR/CHANNEL-PERF@v1:R35",
+   "NORTHSTAR/CHANNEL-PERF@v1:R38",
+   "NORTHSTAR/CHANNEL-PERF@v1:R4",
+   "NORTHSTAR/CHANNEL-PERF@v1:R5",
+   "NORTHSTAR/CHANNEL-PERF@v1:R54",
+   "NORTHSTAR/CHANNEL-PERF@v1:R55",
+   "NORTHSTAR/CHANNEL-PERF@v1:R64",
+   "NORTHSTAR/CHANNEL-PERF@v1:R65",
+   "NORTHSTAR/CHANNEL-PERF@v1:R99",
+   "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3",
+   "NORTHSTAR/PRODUCT-PERF@v1:SH1.R103",
+   "NORTHSTAR/PRODUCT-PERF@v1:SH1.R55",
+   "NORTHSTAR/PRODUCT-PERF@v1:SH1.R61",
+   "NORTHSTAR/PRODUCT-PERF@v1:SH2.R19",
+   "NORTHSTAR/PRODUCT-PERF@v1:SH2.R5"
+  ],
+  "NS-086": [
+   "NORTHSTAR/SURVEY-2026@v1:R108",
+   "NORTHSTAR/SURVEY-2026@v1:R114",
+   "NORTHSTAR/SURVEY-2026@v1:R122",
+   "NORTHSTAR/SURVEY-2026@v1:R123",
+   "NORTHSTAR/SURVEY-2026@v1:R126",
+   "NORTHSTAR/SURVEY-2026@v1:R129",
+   "NORTHSTAR/SURVEY-2026@v1:R130",
+   "NORTHSTAR/SURVEY-2026@v1:R131",
+   "NORTHSTAR/SURVEY-2026@v1:R132",
+   "NORTHSTAR/SURVEY-2026@v1:R135",
+   "NORTHSTAR/SURVEY-2026@v1:R138",
+   "NORTHSTAR/SURVEY-2026@v1:R140",
+   "NORTHSTAR/SURVEY-2026@v1:R141",
+   "NORTHSTAR/SURVEY-2026@v1:R145",
+   "NORTHSTAR/SURVEY-2026@v1:R147",
+   "NORTHSTAR/SURVEY-2026@v1:R151",
+   "NORTHSTAR/SURVEY-2026@v1:R152",
+   "NORTHSTAR/SURVEY-2026@v1:R153",
+   "NORTHSTAR/SURVEY-2026@v1:R154",
+   "NORTHSTAR/SURVEY-2026@v1:R155",
+   "NORTHSTAR/SURVEY-2026@v1:R16",
+   "NORTHSTAR/SURVEY-2026@v1:R165",
+   "NORTHSTAR/SURVEY-2026@v1:R173",
+   "NORTHSTAR/SURVEY-2026@v1:R174",
+   "NORTHSTAR/SURVEY-2026@v1:R176",
+   "NORTHSTAR/SURVEY-2026@v1:R183",
+   "NORTHSTAR/SURVEY-2026@v1:R185",
+   "NORTHSTAR/SURVEY-2026@v1:R188",
+   "NORTHSTAR/SURVEY-2026@v1:R190",
+   "NORTHSTAR/SURVEY-2026@v1:R194",
+   "NORTHSTAR/SURVEY-2026@v1:R196",
+   "NORTHSTAR/SURVEY-2026@v1:R197",
+   "NORTHSTAR/SURVEY-2026@v1:R204",
+   "NORTHSTAR/SURVEY-2026@v1:R209",
+   "NORTHSTAR/SURVEY-2026@v1:R210",
+   "NORTHSTAR/SURVEY-2026@v1:R211",
+   "NORTHSTAR/SURVEY-2026@v1:R214",
+   "NORTHSTAR/SURVEY-2026@v1:R221",
+   "NORTHSTAR/SURVEY-2026@v1:R222",
+   "NORTHSTAR/SURVEY-2026@v1:R223",
+   "NORTHSTAR/SURVEY-2026@v1:R224",
+   "NORTHSTAR/SURVEY-2026@v1:R225",
+   "NORTHSTAR/SURVEY-2026@v1:R226",
+   "NORTHSTAR/SURVEY-2026@v1:R227",
+   "NORTHSTAR/SURVEY-2026@v1:R228",
+   "NORTHSTAR/SURVEY-2026@v1:R229",
+   "NORTHSTAR/SURVEY-2026@v1:R23",
+   "NORTHSTAR/SURVEY-2026@v1:R230",
+   "NORTHSTAR/SURVEY-2026@v1:R233",
+   "NORTHSTAR/SURVEY-2026@v1:R237",
+   "NORTHSTAR/SURVEY-2026@v1:R24",
+   "NORTHSTAR/SURVEY-2026@v1:R240",
+   "NORTHSTAR/SURVEY-2026@v1:R243",
+   "NORTHSTAR/SURVEY-2026@v1:R246",
+   "NORTHSTAR/SURVEY-2026@v1:R25",
+   "NORTHSTAR/SURVEY-2026@v1:R255",
+   "NORTHSTAR/SURVEY-2026@v1:R260",
+   "NORTHSTAR/SURVEY-2026@v1:R265",
+   "NORTHSTAR/SURVEY-2026@v1:R266",
+   "NORTHSTAR/SURVEY-2026@v1:R267",
+   "NORTHSTAR/SURVEY-2026@v1:R268",
+   "NORTHSTAR/SURVEY-2026@v1:R280",
+   "NORTHSTAR/SURVEY-2026@v1:R281",
+   "NORTHSTAR/SURVEY-2026@v1:R284",
+   "NORTHSTAR/SURVEY-2026@v1:R29",
+   "NORTHSTAR/SURVEY-2026@v1:R291",
+   "NORTHSTAR/SURVEY-2026@v1:R296",
+   "NORTHSTAR/SURVEY-2026@v1:R297",
+   "NORTHSTAR/SURVEY-2026@v1:R3",
+   "NORTHSTAR/SURVEY-2026@v1:R30",
+   "NORTHSTAR/SURVEY-2026@v1:R305",
+   "NORTHSTAR/SURVEY-2026@v1:R31",
+   "NORTHSTAR/SURVEY-2026@v1:R310",
+   "NORTHSTAR/SURVEY-2026@v1:R315",
+   "NORTHSTAR/SURVEY-2026@v1:R316",
+   "NORTHSTAR/SURVEY-2026@v1:R317",
+   "NORTHSTAR/SURVEY-2026@v1:R319",
+   "NORTHSTAR/SURVEY-2026@v1:R322",
+   "NORTHSTAR/SURVEY-2026@v1:R323",
+   "NORTHSTAR/SURVEY-2026@v1:R324",
+   "NORTHSTAR/SURVEY-2026@v1:R325",
+   "NORTHSTAR/SURVEY-2026@v1:R327",
+   "NORTHSTAR/SURVEY-2026@v1:R328",
+   "NORTHSTAR/SURVEY-2026@v1:R339",
+   "NORTHSTAR/SURVEY-2026@v1:R34",
+   "NORTHSTAR/SURVEY-2026@v1:R349",
+   "NORTHSTAR/SURVEY-2026@v1:R35",
+   "NORTHSTAR/SURVEY-2026@v1:R353",
+   "NORTHSTAR/SURVEY-2026@v1:R356",
+   "NORTHSTAR/SURVEY-2026@v1:R359",
+   "NORTHSTAR/SURVEY-2026@v1:R36",
+   "NORTHSTAR/SURVEY-2026@v1:R362",
+   "NORTHSTAR/SURVEY-2026@v1:R363",
+   "NORTHSTAR/SURVEY-2026@v1:R364",
+   "NORTHSTAR/SURVEY-2026@v1:R365",
+   "NORTHSTAR/SURVEY-2026@v1:R369",
+   "NORTHSTAR/SURVEY-2026@v1:R370",
+   "NORTHSTAR/SURVEY-2026@v1:R374",
+   "NORTHSTAR/SURVEY-2026@v1:R378",
+   "NORTHSTAR/SURVEY-2026@v1:R381",
+   "NORTHSTAR/SURVEY-2026@v1:R383",
+   "NORTHSTAR/SURVEY-2026@v1:R390",
+   "NORTHSTAR/SURVEY-2026@v1:R398",
+   "NORTHSTAR/SURVEY-2026@v1:R400",
+   "NORTHSTAR/SURVEY-2026@v1:R406",
+   "NORTHSTAR/SURVEY-2026@v1:R407",
+   "NORTHSTAR/SURVEY-2026@v1:R411",
+   "NORTHSTAR/SURVEY-2026@v1:R419",
+   "NORTHSTAR/SURVEY-2026@v1:R42",
+   "NORTHSTAR/SURVEY-2026@v1:R423",
+   "NORTHSTAR/SURVEY-2026@v1:R433",
+   "NORTHSTAR/SURVEY-2026@v1:R434",
+   "NORTHSTAR/SURVEY-2026@v1:R440",
+   "NORTHSTAR/SURVEY-2026@v1:R447",
+   "NORTHSTAR/SURVEY-2026@v1:R449",
+   "NORTHSTAR/SURVEY-2026@v1:R450",
+   "NORTHSTAR/SURVEY-2026@v1:R456",
+   "NORTHSTAR/SURVEY-2026@v1:R459",
+   "NORTHSTAR/SURVEY-2026@v1:R469",
+   "NORTHSTAR/SURVEY-2026@v1:R478",
+   "NORTHSTAR/SURVEY-2026@v1:R482",
+   "NORTHSTAR/SURVEY-2026@v1:R487",
+   "NORTHSTAR/SURVEY-2026@v1:R49",
+   "NORTHSTAR/SURVEY-2026@v1:R495",
+   "NORTHSTAR/SURVEY-2026@v1:R498",
+   "NORTHSTAR/SURVEY-2026@v1:R499",
+   "NORTHSTAR/SURVEY-2026@v1:R500",
+   "NORTHSTAR/SURVEY-2026@v1:R501",
+   "NORTHSTAR/SURVEY-2026@v1:R507",
+   "NORTHSTAR/SURVEY-2026@v1:R511",
+   "NORTHSTAR/SURVEY-2026@v1:R518",
+   "NORTHSTAR/SURVEY-2026@v1:R521",
+   "NORTHSTAR/SURVEY-2026@v1:R522",
+   "NORTHSTAR/SURVEY-2026@v1:R523",
+   "NORTHSTAR/SURVEY-2026@v1:R526",
+   "NORTHSTAR/SURVEY-2026@v1:R53",
+   "NORTHSTAR/SURVEY-2026@v1:R538",
+   "NORTHSTAR/SURVEY-2026@v1:R54",
+   "NORTHSTAR/SURVEY-2026@v1:R542",
+   "NORTHSTAR/SURVEY-2026@v1:R550",
+   "NORTHSTAR/SURVEY-2026@v1:R556",
+   "NORTHSTAR/SURVEY-2026@v1:R557",
+   "NORTHSTAR/SURVEY-2026@v1:R560",
+   "NORTHSTAR/SURVEY-2026@v1:R562",
+   "NORTHSTAR/SURVEY-2026@v1:R565",
+   "NORTHSTAR/SURVEY-2026@v1:R569",
+   "NORTHSTAR/SURVEY-2026@v1:R57",
+   "NORTHSTAR/SURVEY-2026@v1:R571",
+   "NORTHSTAR/SURVEY-2026@v1:R572",
+   "NORTHSTAR/SURVEY-2026@v1:R573",
+   "NORTHSTAR/SURVEY-2026@v1:R577",
+   "NORTHSTAR/SURVEY-2026@v1:R583",
+   "NORTHSTAR/SURVEY-2026@v1:R584",
+   "NORTHSTAR/SURVEY-2026@v1:R591",
+   "NORTHSTAR/SURVEY-2026@v1:R596",
+   "NORTHSTAR/SURVEY-2026@v1:R601",
+   "NORTHSTAR/SURVEY-2026@v1:R63",
+   "NORTHSTAR/SURVEY-2026@v1:R65",
+   "NORTHSTAR/SURVEY-2026@v1:R7",
+   "NORTHSTAR/SURVEY-2026@v1:R74",
+   "NORTHSTAR/SURVEY-2026@v1:R75",
+   "NORTHSTAR/SURVEY-2026@v1:R8",
+   "NORTHSTAR/SURVEY-2026@v1:R80",
+   "NORTHSTAR/SURVEY-2026@v1:R81",
+   "NORTHSTAR/SURVEY-2026@v1:R87",
+   "NORTHSTAR/SURVEY-2026@v1:R88",
+   "NORTHSTAR/SURVEY-2026@v1:R92",
+   "NORTHSTAR/SURVEY-2026@v1:R97"
+  ]
+ },
+ "decisions": [
+  {
+   "fact_id": "NS-094",
+   "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4",
+   "items": [
+    "R0-005",
+    "R0-019",
+    "R0-053"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "The candidate passage says outright that \"Pace deliberately avoids customization\". That matches the fact on entity (Pace & Co.), attribute (stance on customization) and value (avoids customization), so a reader would give the same answer about Pace's stance. The passage does not link that choice to the calendar or price point as the reason. It also gives $38 as the core legging price, not the average price point. Both are details of the reasoning behind the stance, not the stance itself."
+    },
+    {
+     "states_fact": true,
+     "reason": "The candidate says outright that \"Pace deliberately avoids customization\", so the entity, the attribute (stance on customization) and the value all match. It also gives the context behind the stance: the $38 core price, a range that turns every two weeks, and competing on price and speed. Asked about Pace's stance on customization, a reader would give the same answer, \"avoids customization\". The candidate does not explicitly state the causal link (customization would break the drop calendar and price point). Even so, citing it for the stance is accurate and not misleading."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-125",
+   "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+   "items": [
+    "R0-008"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "The candidate names the same entity (Northstar Athletics), the same metric (net revenue), the same period and basis (FY26 latest estimate) and the same value ($612.0 million), so a reader of this passage alone gives the same answer."
+    },
+    {
+     "states_fact": true,
+     "reason": "The candidate says Northstar Athletics' net revenue is on track to reach \"a latest estimate of $612.0 million in FY26\", up from $571.0 million in FY25. That is the same entity, metric, value, period and latest-estimate basis as the gold parent, so citing it for this fact would be correct."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-125",
+   "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+   "items": [
+    "R0-008"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "The candidate says Northstar's FY26 latest estimate for net revenue is $612.0 million. That matches the planted fact on every point: same entity (Northstar, from the passage handle), same metric (net revenue), same period and estimate type (FY26 latest estimate), and same value and unit ($612.0 million)."
+    },
+    {
+     "states_fact": true,
+     "reason": "The candidate passage says directly that the Northstar FY26 latest estimate of net revenue is $612.0 million. That matches the planted fact on entity, metric (net revenue), period and estimate type (FY26 latest estimate), and value. It also shows the same FY25 base of $571.0 million and about 7% growth as the gold passage."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-125",
+   "handle": "NORTHSTAR/Q3-REVIEW@v1:SL3",
+   "items": [
+    "R0-008"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "Candidate states 'FY26 latest estimate remains $612.0 million' within a net revenue context (preceded by Q2 FY26 net revenue, paired with gross margin %), matching period (FY26 LE), metric (net revenue, implied by context), value ($612.0M) and unit. Entity name is not in the text, but the gold parent likewise omits it; a reader would answer the same value."
+    },
+    {
+     "states_fact": true,
+     "reason": "The candidate is a Northstar results slide whose subject is net revenue. It says \"FY26 latest estimate remains $612.0 million\" right after the net revenue lines, so it gives the same metric (FY26 LE net revenue), the same value ($612.0M) and the same period as the planted fact. Citing it for this fact would be correct. One caveat: the line does not repeat the words \"net revenue\"; the reading relies on the slide's headline context."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-140",
+   "handle": "NORTHSTAR/CHANNEL-PERF@v1:R107",
+   "items": [
+    "R0-009",
+    "R0-050"
+   ],
+   "accepted": false,
+   "verdicts": [
+    {
+     "states_fact": false,
+     "reason": "Candidate gives Social Shop conversion for the Millennial segment in August 2026 (2.0%), not the Gen Z segment in September 2026 (3.4%). The segment, period and value all differ."
+    },
+    {
+     "states_fact": false,
+     "reason": "Candidate is the Social Shop Millennial record for August 2026 (conversion 2.0%), not Gen Z for September 2026 at 3.4%. The segment, period and value all differ."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-052",
+   "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+   "items": [
+    "R0-016"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "The pilot results table has the row 'Return rate | 11% | 16% standard items' in the Personalized vs Comparison columns. The entity matches (the personalization pilot's personalized items), as do the metric (return rate), the value (11%) and the comparator (16% for standard items). Nothing in it conflicts with the gold passage on period or definition, so a reader could answer the same way from the candidate alone."
+    },
+    {
+     "states_fact": true,
+     "reason": "The candidate is the summary table of the same Northstar personalization pilot. Its 'Return rate | 11% | 16% standard items' row gives the same metric, the same value (11%), and the same comparison (16% for standard items). The figures come from the pilot's full-window reporting data. The table leaves out the gold passage's warning about exchange-only terms, but citing it for this exact return-rate fact is still correct."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-104",
+   "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+   "items": [
+    "R0-018",
+    "R0-053"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "The candidate says \"Its personalization is limited to a choice of 12 preset colorways on its flagship racer\", and \"Its\" refers to Vantage Athletic. The entity, the attribute (personalization offer), the value (12 preset colorways) and the scope (flagship racer only) all match the planted fact."
+    },
+    {
+     "states_fact": true,
+     "reason": "Candidate explicitly states Vantage Athletic's personalization is limited to a choice of 12 preset colorways on its flagship racer: same entity, attribute, value, and scope (\"limited to\" matches \"only\")."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-105",
+   "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+   "items": [
+    "R0-020",
+    "R0-049",
+    "R0-053"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "The candidate passage states the fact on its own. The entity is the same: Kinetic Lab. The build model is the same: shoes are built to order from a phone foot scan. The value is the same: it \"promises delivery in 14 to 21 days\", which matches the gold passage's wording. No period, population or definition conflicts. The other figures in the passage (revenue, price, margin, returns) don't change this fact."
+    },
+    {
+     "states_fact": true,
+     "reason": "The candidate names the same entity, Kinetic Lab. It says Kinetic Lab builds shoes to order from a phone foot scan and promises delivery in 14 to 21 days, which is the same build-to-order lead time and value as the gold passage. A reader could answer a question about the lead time correctly from this passage alone. The extra metrics in it (revenue, price, margin, return rate) do not change or contradict the fact."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-007",
+   "handle": "NORTHSTAR/Q3-REVIEW@v1:SL7",
+   "items": [
+    "R0-022"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "Same entity (Studio Social), same population (the slide is titled 'Gen Z segment mix' and its table column is 'Share of Gen Z'), same share (31%), and the passage calls it the largest segment with the highest average order value at $94. All parts of the fact match."
+    },
+    {
+     "states_fact": true,
+     "reason": "The slide is titled 'Gen Z segment mix' and says Studio Social is the largest segment with the highest AOV of $94. Its table gives Studio Social a 31% 'Share of Gen Z'. That matches the fact on entity, population (Gen Z customers), share and AOV."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-005",
+   "handle": "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+   "items": [
+    "R0-040"
+   ],
+   "accepted": false,
+   "verdicts": [
+    {
+     "states_fact": false,
+     "reason": "The candidate calls 'the dependable fit brand for everyday athletes' the open space on the competitive map. It never says Northstar intends to take that position. Its population is 'everyday athletes', not 'active Gen Z consumers', and it leaves out the contrast with competing on elite performance. Northstar's positioning has to be inferred, and the target population is different, so read literally it does not state the fact."
+    },
+    {
+     "states_fact": false,
+     "reason": "The candidate calls 'the dependable fit brand for everyday athletes' the open space on the competitive map. It never says Northstar intends to take that position. It names a different group ('everyday athletes', not active Gen Z consumers), and it does not contrast the choice with competing on elite performance. Citing it for the stated positioning decision would be misleading."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-043",
+   "handle": "NORTHSTAR/WTP-STUDY@v1:P3.B2",
+   "items": [
+    "R0-047"
+   ],
+   "accepted": true,
+   "verdicts": [
+    {
+     "states_fact": true,
+     "reason": "The candidate gives conjoint relative-importance scores of 45% for personalized fit and 15% for personalized colorway. It then says outright that \"fit personalization is worth about three times the value of colorway alone.\" That matches the fact on every point: the metric (fit compared with colorway in the conjoint), the value (about 3x) and the population (the same study's respondents, with Gen Z subgroups mentioned). A reader with only this passage would give the same answer."
+    },
+    {
+     "states_fact": true,
+     "reason": "The candidate reports the same conjoint result: relative importance is 45% for personalized fit and 15% for personalized colorway. It then says outright that \"fit personalization is worth about three times the value of colorway alone.\" It is the same study, the same respondents (Gen Z, split into cohorts), the same two attributes and the same ratio of about 3x, so citing it for this fact would be correct."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-063",
+   "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P6.B1",
+   "items": [
+    "R0-055"
+   ],
+   "accepted": false,
+   "verdicts": [
+    {
+     "states_fact": false,
+     "reason": "The candidate is a brand-strategy pillar committing to disclose recycled content and production locations. It never mentions Lena O. or Interview 9, and it does not say that a consumer assumes green claims are marketing. It touches the same topic, but the entity and attribute do not match."
+    },
+    {
+     "states_fact": false,
+     "reason": "The candidate is a brand-strategy commitment to disclose recycled content and production locations with no vague green claims. The fact is about what one interviewee, Lena O. in Interview 9, believes: she assumes green claims are marketing when a brand cannot say where a shoe is made or what is recycled in it. The candidate covers the same topic but has a different entity (the brand's strategy, not the interviewee) and never mentions her view, so citing it for this fact would be wrong."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-086",
+   "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+   "items": [
+    "R0-059"
+   ],
+   "accepted": false,
+   "verdicts": [
+    {
+     "states_fact": false,
+     "reason": "The candidate passage gives a Gen Z NPS of 22, which matches the entity and value. It does not state the period: Q2 FY26 is never mentioned, and neither is the drop from 28 in Q1. Its figure comes from a 400-respondent survey and is framed as a comparison with older customers, not as a quarterly tracking result. A reader of this passage alone could not say that 22 is the Q2 FY26 score or that it fell from 28, so the period/definition match is unconfirmed and the label is false."
+    },
+    {
+     "states_fact": false,
+     "reason": "The candidate does give a Gen Z NPS of 22, but it comes from a brand-strategy survey (400 Gen Z respondents) and names no period. It never says Q2 FY26 and does not mention the drop from 28 in Q1. From the candidate alone, a reader can't tell that 22 is the Q2 FY26 figure. Citing it as the quarterly trend metric could mislead, because it may be a different survey measure that only happens to share the number."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-086",
+   "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+   "items": [
+    "R0-059"
+   ],
+   "accepted": false,
+   "verdicts": [
+    {
+     "states_fact": false,
+     "reason": "The candidate matches on entity (Northstar Gen Z), metric (NPS) and value (22): it says \"Gen Z NPS, currently 22\". It does not give the period. It never says Q2 FY26, and it says nothing about the Q1 figure of 28 or a decline. A reader given only this passage could not say the 22 applies to Q2 FY26, or that NPS fell from 28. The period matters for this fact, and with this much doubt the default is false."
+    },
+    {
+     "states_fact": false,
+     "reason": "Candidate says 'Gen Z NPS, currently 22' as a tracking baseline but never ties it to Q2 FY26 and omits the decline from 28 in Q1. A reader could not confirm the period or the quarter-over-quarter fall from this passage alone, so citing it for the specific Q2 FY26 fact would be under-specified; defaulting to false under uncertainty."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-086",
+   "handle": "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+   "items": [
+    "R0-059"
+   ],
+   "accepted": false,
+   "verdicts": [
+    {
+     "states_fact": false,
+     "reason": "The entity and value match: Gen Z NPS is 22. The period does not. The candidate never ties the Gen Z figure of 22 to Q2 FY26. It attributes it only to a \"May survey\", and the passage never says which fiscal year or quarter May falls in. \"Q2\" appears only for the all-customer NPS of 31. The candidate also leaves out the comparison to Q1 (28), so it does not say NPS fell. Under a literal reading the period is not established, so the answer is false."
+    },
+    {
+     "states_fact": false,
+     "reason": "The candidate gives Gen Z NPS of 22, but it never ties that number to Q2 FY26. The only explicit 'in Q2' belongs to the all-customer NPS of 31, and the passage is framed around a 'May survey' with no fiscal year. It also leaves out the fall from 28 in Q1, which is the core claim of the fact. An analyst citing this passage for 'Gen Z NPS fell to 22 in Q2 FY26 from 28 in Q1' would be inferring the period and could not support the decline. The period is ambiguous and the change is missing, so the answer defaults to false."
+    }
+   ]
+  },
+  {
+   "fact_id": "NS-086",
+   "handle": "NORTHSTAR/SURVEY-2026@v1:T1",
+   "items": [
+    "R0-059"
+   ],
+   "accepted": false,
+   "verdicts": [
+    {
+     "states_fact": false,
+     "reason": "The candidate is only a schema description of the survey table. It lists the columns (including nps and age_group) but gives no Gen Z NPS value, no 22 or 28, and no Q1/Q2 FY26 period. It touches the topic but does not state the fact."
+    },
+    {
+     "states_fact": false,
+     "reason": "The candidate only describes the survey table's structure: its columns, including a numeric nps column, and its age groups. It gives no NPS value for Gen Z. It does not mention Q2 FY26 or the drop from 28 to 22. It covers the topic but does not state the fact."
+    }
+   ]
+  }
+ ]
+}
