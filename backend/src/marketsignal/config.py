@@ -96,9 +96,37 @@ class Settings(BaseSettings):
     health_sample_size: int = Field(default=5, ge=0)
     health_dense_top_k: int = Field(default=5, ge=1)
 
-    # ── Dense smoke search (Phase 1 verification only; Phase 2 replaces it) ──
+    # ── Dense search (smoke lanes and production dense lane) ──
     hnsw_ef_search: int = Field(default=100, ge=1)
     dev_endpoints_enabled: bool = True  # forced off when env == "prod"
+
+    # ── Retrieval (plan §11-15, ADR-0002/0005); every value is tunable, Phase 2 measures them ──
+    retrieval_lane_k: int = Field(default=100, ge=1)  # children per lane (§13)
+    retrieval_class_lane_k: int = Field(default=40, ge=1)  # per-class lanes, >= 2 classes (§12)
+    retrieval_rrf_k: int = Field(default=60, ge=1)  # Cormack et al. 2009
+    retrieval_dense_weight: float = Field(default=1.0, ge=0)
+    retrieval_lexical_weight: float = Field(default=1.0, ge=0)
+    retrieval_pool_size: int = Field(default=20, ge=1)  # rerank pool, Recall@pool
+    retrieval_top_k: int = Field(default=10, ge=1)
+    retrieval_dense_exact: bool = False  # exact scan instead of HNSW (CI gate, ANN check)
+    embed_query_instruction: str = ""  # bge retrieval instruction: decided by the Phase 2 A/B
+    query_embedding_cache_size: int = Field(default=512, ge=0)
+    lexical_df_prune: float = Field(default=0.9, gt=0, le=1)  # drop near-universal terms
+    lexical_phrase_bonus: float = Field(default=1.0, ge=0)
+    lexical_idf_cache_size: int = Field(default=32, ge=1)  # (workspace, corpus_version) entries
+    rerank_enabled: bool = True
+    rerank_model_name: str = "Xenova/ms-marco-MiniLM-L-6-v2"
+    rerank_max_pairs: int = Field(default=40, ge=1)
+    rerank_parent_max_tokens: int = Field(default=350, ge=1)  # larger parents: anchor pairs
+    rerank_anchors_per_parent: int = Field(default=2, ge=1)
+    rerank_max_chars: int = Field(default=2000, ge=100)  # passage cap before tokenizer truncation
+    rerank_timeout_s: float = Field(default=8.0, gt=0)  # set from target p95 at the deploy spike
+    rerank_threads: int | None = None  # onnxruntime intra-op threads (None: runtime default)
+    rerank_concurrency: int = Field(default=1, ge=1)  # simultaneous rerank calls per process
+    balance_enabled: bool = False  # decided by the Phase 2 measurement
+    balance_per_source_max: int = Field(default=3, ge=1)  # final list (§15)
+    balance_pool_source_cap: int = Field(default=7, ge=1)  # fused pool, about 1/3 of 20 (§13)
+    retrieval_trace_persist: bool = True
 
 
 @lru_cache(maxsize=1)

@@ -22,6 +22,7 @@ from marketsignal.config import Settings
 from marketsignal.db.scope import WorkspaceScope
 from marketsignal.evaluation.metrics import dedupe_parents
 from marketsignal.providers.embeddings import Embedder
+from marketsignal.retrieval.pipeline import RetrievalService
 from marketsignal.retrieval.smoke import dense_search, lexical_search
 
 BASELINE_CHILD_K = 100  # plan §13 lane depth; deep enough to fill 20 distinct parents
@@ -108,3 +109,46 @@ class BaselineDenseArm:
             {"embed_ms": embed_ms, "dense_ms": sql_ms, "total_ms": _ms(start)},
             detail={"dense_children": len(hits)},
         )
+
+
+@dataclass
+class PipelineArm:
+    """The production ``RetrievalService`` under one configuration."""
+
+    service: RetrievalService
+    name: str
+
+    def config(self) -> dict[str, Any]:
+        return {
+            "arm": self.name,
+            "config_hash": self.service.config_hash,
+            **self.service.config.as_dict(),
+        }
+
+    async def run(self, session: AsyncSession, scope: WorkspaceScope, query: str) -> ArmOutput:
+        result = await self.service.search(session, scope, query)
+        top = result.parents[:KEEP_DETAIL]
+        detail = {
+            "lanes": {p.handle: {a.lane: a.rank for a in p.anchors} for p in top},
+            "rerank": {p.handle: p.rerank_score for p in top if p.rerank_score is not None},
+            "fused_rank": {p.handle: p.fused_rank for p in top},
+        }
+        if "balance" in result.trace.stages:
+            detail["balance"] = result.trace.stages["balance"]
+        return ArmOutput(
+            [p.handle for p in result.parents],
+            dict(result.trace.timings_ms),
+            result.flags,
+            detail,
+        )
+
+
+KEEP_DETAIL = 20
+PIPELINE_ARMS: dict[str, dict[str, Any]] = {
+    "dense": {"use_lexical": False, "rerank": False, "balance": False},
+    "lexical": {"use_dense": False, "rerank": False, "balance": False},
+    "hybrid": {"rerank": False, "balance": False},
+    "hybrid-rerank": {"rerank": True, "balance": False},
+    "hybrid-rerank-balance": {"rerank": True, "balance": True},
+    "hybrid-balance": {"rerank": False, "balance": True},
+}

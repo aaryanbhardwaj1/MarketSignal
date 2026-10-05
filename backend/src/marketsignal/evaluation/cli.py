@@ -23,12 +23,23 @@ from typing import Any
 from marketsignal.config import Settings, get_settings
 from marketsignal.db.engine import create_engine, create_session_factory
 from marketsignal.evaluation import corpus
-from marketsignal.evaluation.arms import Arm, BaselineDenseArm, BaselineLexicalArm
+from marketsignal.evaluation.arms import (
+    PIPELINE_ARMS,
+    Arm,
+    BaselineDenseArm,
+    BaselineLexicalArm,
+    PipelineArm,
+)
 from marketsignal.evaluation.dataset import load_frozen, load_items, write_frozen
 from marketsignal.evaluation.gold import freeze, integrity_problems
 from marketsignal.evaluation.report import build_report, write_report
 from marketsignal.evaluation.runner import run_arm, select
 from marketsignal.providers.embeddings import Embedder, FastEmbedEmbedder
+from marketsignal.providers.rerankers import FastEmbedCrossEncoder
+from marketsignal.retrieval.lanes import DocumentFrequencies
+from marketsignal.retrieval.pipeline import QueryEmbeddingCache, RetrievalService
+from marketsignal.retrieval.rerank import RerankExecutor
+from marketsignal.retrieval.types import RetrievalConfig
 
 DATASET_DIR = corpus.EVAL_DIR / "datasets" / "retrieval-v0"
 TEST_LOG = corpus.EVAL_DIR / "test-split-log.jsonl"
@@ -84,6 +95,37 @@ def _decided(path: Path) -> frozenset[tuple[str, str]]:
     return frozenset(pairs)
 
 
+def _parse_overrides(pairs: list[str]) -> dict[str, Any]:
+    """``--set key=value`` -> RetrievalConfig overrides (value parsed as JSON, else string)."""
+    fields = RetrievalConfig.__dataclass_fields__
+    out: dict[str, Any] = {}
+    for pair in pairs:
+        key, _, raw = pair.partition("=")
+        if key not in fields:
+            raise SystemExit(f"unknown retrieval setting: {key}")
+        try:
+            out[key] = json.loads(raw)
+        except json.JSONDecodeError:
+            out[key] = raw
+    return out
+
+
+def _service(
+    settings: Settings, embedder: Callable[[], Embedder], overrides: dict[str, Any]
+) -> RetrievalService:
+    config = RetrievalConfig.from_settings(settings).with_(**overrides)
+    reranker = FastEmbedCrossEncoder(
+        config.rerank_model, settings.model_cache_dir, threads=settings.rerank_threads
+    )
+    return RetrievalService(
+        config,
+        embedder=embedder,
+        rerank_executor=RerankExecutor(reranker, settings.rerank_concurrency),
+        df_cache=DocumentFrequencies(settings.lexical_idf_cache_size),
+        query_cache=QueryEmbeddingCache(0),  # eval measures real embedding latency
+    )
+
+
 async def _freeze(args: argparse.Namespace, settings: Settings) -> int:
     engine = create_engine(settings)
     try:
@@ -130,11 +172,20 @@ async def _run(args: argparse.Namespace, settings: Settings) -> int:
     items = select(dataset, args.split)
     embedder = _embedder_factory(settings)
     arm_names = [a.strip() for a in args.arms.split(",") if a.strip()]
-    unknown = [a for a in arm_names if a not in ARMS]
+    unknown = [a for a in arm_names if a not in ARMS and a not in PIPELINE_ARMS]
     if unknown:
-        print(f"unknown arms: {unknown}; known: {sorted(ARMS)}", file=sys.stderr)
+        known = sorted([*ARMS, *PIPELINE_ARMS])
+        print(f"unknown arms: {unknown}; known: {known}", file=sys.stderr)
         return 2
-    arms = {name: ARMS[name](settings, embedder) for name in arm_names}
+    overrides = _parse_overrides(args.set or [])
+    service = _service(settings, embedder, overrides)
+    arms: dict[str, Arm] = {}
+    for name in arm_names:
+        if name in PIPELINE_ARMS:
+            variant = service.with_config(service.config.with_(**PIPELINE_ARMS[name]))
+            arms[f"{name}{args.suffix}"] = PipelineArm(variant, f"{name}{args.suffix}")
+        else:
+            arms[name] = ARMS[name](settings, embedder)
     engine = create_engine(settings)
     try:
         factory = create_session_factory(engine)
@@ -156,7 +207,7 @@ async def _run(args: argparse.Namespace, settings: Settings) -> int:
     report = build_report(
         results,
         split=args.split,
-        reference=args.reference or arm_names[0],
+        reference=args.reference or next(iter(arms)),
         fact_formats=fact_formats,
         manifest=dataset.manifest,
         arm_configs=configs,
@@ -194,6 +245,8 @@ def main(argv: list[str] | None = None) -> int:
     p_run.add_argument("--out", type=Path, required=True)
     p_run.add_argument("--title", default="Retrieval evaluation")
     p_run.add_argument("--milestone")
+    p_run.add_argument("--set", action="append", help="RetrievalConfig override key=value")
+    p_run.add_argument("--suffix", default="", help="appended to pipeline arm names")
     args = parser.parse_args(argv)
     settings = get_settings()
     handler = {"freeze": _freeze, "integrity": _integrity, "run": _run}[args.command]
