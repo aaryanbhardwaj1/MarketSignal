@@ -1,0 +1,118 @@
+# ── Secrets & local environment ───────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+.secrets/
+
+# ── Non-public material (must never enter this repo) ─────────────────────────
+# Generic rules only. Machine-specific patterns belong in .git/info/exclude and in
+# scripts/safety-denylist.local (both untracked); see scripts/check_repo_safety.sh.
+*.zip
+*.heic
+*.HEIC
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.dmg
+*.local
+private/
+*-private/
+reference_material/
+confidential/
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+.python-version.local
+*.egg-info/
+.eggs/
+build/
+dist/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.import_linter_cache/
+
+# ── Node / Next.js ────────────────────────────────────────────────────────────
+node_modules/
+.next/
+out/
+.turbo/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+playwright-report/
+test-results/
+blob-report/
+
+# ── Caches: models, embeddings, tool caches ──────────────────────────────────
+.cache/
+**/.cache/
+/models/
+/local_models/
+*.onnx
+*.safetensors
+*.bin
+hf_cache/
+.fastembed_cache/
+fastembed_cache/
+
+# ── Databases, volumes, uploads ───────────────────────────────────────────────
+/data/
+pgdata/
+postgres-data/
+redis-data/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+uploads/
+tmp/
+temp/
+
+# ── Evaluation artifacts (reports are generated; committed baselines live in eval/baselines) ──
+eval/reports/*
+!eval/reports/.gitkeep
+eval/runs/
+*.eval.jsonl.tmp
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── IDE / OS ──────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+__MACOSX/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.claude/
+.cursor/

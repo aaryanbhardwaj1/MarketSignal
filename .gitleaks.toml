@@ -1,0 +1,16 @@
+# gitleaks configuration: default rule set plus project allowlist.
+title = "MarketSignal gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Placeholder values in example configuration and test fixtures"
+paths = [
+  '''\.env\.example$''',
+]
+regexes = [
+  '''(?i)changeme''',
+  '''(?i)placeholder''',
+  '''dev-only-insecure-[a-z0-9-]+''',
+]
