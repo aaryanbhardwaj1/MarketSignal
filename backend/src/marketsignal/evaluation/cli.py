@@ -354,10 +354,14 @@ def _compare(args: argparse.Namespace) -> int:
             "only_b": test.only_b,
             "p": round(test.p_value, 4),
         }
-    for metric, fn in (
-        ("mrr", lambda s: s.reciprocal_rank()),
-        ("recall@10", lambda s: s.recall_at(10)),
-    ):
+
+    def mrr(s: ItemScore) -> float:
+        return s.reciprocal_rank()
+
+    def recall10(s: ItemScore) -> float:
+        return s.recall_at(10)
+
+    for metric, fn in (("mrr", mrr), ("recall@10", recall10)):
         diff = paired_bootstrap_diff([fn(sa[i]) for i in ids], [fn(sb[i]) for i in ids])
         out[f"{metric}_diff_b_minus_a"] = diff.as_dict()
     out["changed_items"] = {
