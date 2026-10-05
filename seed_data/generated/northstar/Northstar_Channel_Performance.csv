@@ -1,0 +1,121 @@
+record_id,month,channel,segment,sessions,orders,conversion_rate_pct,net_sales_usd,aov_usd,return_rate_pct,data_notice
+CP-2025-10-SITE-GENZ,2025-10,Brand Site,Gen Z,782627,17218,2.2,1527237,88.7,19.7,Fictional data created for the MarketSignal demo.
+CP-2025-10-SITE-MILL,2025-10,Brand Site,Millennial,799528,23186,2.9,2383521,102.8,16.4,Fictional data created for the MarketSignal demo.
+CP-2025-10-APP-GENZ,2025-10,App,Gen Z,418954,15082,3.6,1346823,89.3,14.6,Fictional data created for the MarketSignal demo.
+CP-2025-10-APP-MILL,2025-10,App,Millennial,263450,9484,3.6,1019530,107.5,11.8,Fictional data created for the MarketSignal demo.
+CP-2025-10-SOCIAL-GENZ,2025-10,Social Shop,Gen Z,93484,2711,2.9,173504,64.0,18.1,Fictional data created for the MarketSignal demo.
+CP-2025-10-SOCIAL-MILL,2025-10,Social Shop,Millennial,28322,566,2.0,36620,64.7,14.5,Fictional data created for the MarketSignal demo.
+CP-2025-10-MARKET-GENZ,2025-10,Marketplace,Gen Z,494757,21275,4.3,1495632,70.3,16.1,Fictional data created for the MarketSignal demo.
+CP-2025-10-MARKET-MILL,2025-10,Marketplace,Millennial,622733,27400,4.4,2205700,80.5,13.1,Fictional data created for the MarketSignal demo.
+CP-2025-10-STORES-GENZ,2025-10,Stores,Gen Z,400225,71240,17.8,5570968,78.2,8.2,Fictional data created for the MarketSignal demo.
+CP-2025-10-STORES-MILL,2025-10,Stores,Millennial,431101,96998,22.5,8448526,87.1,7.6,Fictional data created for the MarketSignal demo.
+CP-2025-11-SITE-GENZ,2025-11,Brand Site,Gen Z,892162,18735,2.1,1644933,87.8,20.3,Fictional data created for the MarketSignal demo.
+CP-2025-11-SITE-MILL,2025-11,Brand Site,Millennial,821405,24642,3.0,2685978,109.0,15.9,Fictional data created for the MarketSignal demo.
+CP-2025-11-APP-GENZ,2025-11,App,Gen Z,476857,17167,3.6,1594814,92.9,13.9,Fictional data created for the MarketSignal demo.
+CP-2025-11-APP-MILL,2025-11,App,Millennial,278844,11154,4.0,1163362,104.3,11.6,Fictional data created for the MarketSignal demo.
+CP-2025-11-SOCIAL-GENZ,2025-11,Social Shop,Gen Z,108263,3031,2.8,186710,61.6,18.8,Fictional data created for the MarketSignal demo.
+CP-2025-11-SOCIAL-MILL,2025-11,Social Shop,Millennial,38099,724,1.9,48508,67.0,13.8,Fictional data created for the MarketSignal demo.
+CP-2025-11-MARKET-GENZ,2025-11,Marketplace,Gen Z,607165,26715,4.4,1992939,74.6,15.6,Fictional data created for the MarketSignal demo.
+CP-2025-11-MARKET-MILL,2025-11,Marketplace,Millennial,719280,30929,4.3,2492877,80.6,12.5,Fictional data created for the MarketSignal demo.
+CP-2025-11-STORES-GENZ,2025-11,Stores,Gen Z,400520,70892,17.7,5579200,78.7,8.3,Fictional data created for the MarketSignal demo.
+CP-2025-11-STORES-MILL,2025-11,Stores,Millennial,519043,113151,21.8,10036494,88.7,6.9,Fictional data created for the MarketSignal demo.
+CP-2025-12-SITE-GENZ,2025-12,Brand Site,Gen Z,875008,21875,2.5,1984062,90.7,18.0,Fictional data created for the MarketSignal demo.
+CP-2025-12-SITE-MILL,2025-12,Brand Site,Millennial,856604,25698,3.0,2703430,105.2,14.6,Fictional data created for the MarketSignal demo.
+CP-2025-12-APP-GENZ,2025-12,App,Gen Z,463694,16693,3.6,1617552,96.9,14.0,Fictional data created for the MarketSignal demo.
+CP-2025-12-APP-MILL,2025-12,App,Millennial,309202,12059,3.9,1351814,112.1,11.3,Fictional data created for the MarketSignal demo.
+CP-2025-12-SOCIAL-GENZ,2025-12,Social Shop,Gen Z,124060,3722,3.0,218854,58.8,16.5,Fictional data created for the MarketSignal demo.
+CP-2025-12-SOCIAL-MILL,2025-12,Social Shop,Millennial,39164,705,1.8,44979,63.8,15.1,Fictional data created for the MarketSignal demo.
+CP-2025-12-MARKET-GENZ,2025-12,Marketplace,Gen Z,597850,22718,3.8,1687947,74.3,16.6,Fictional data created for the MarketSignal demo.
+CP-2025-12-MARKET-MILL,2025-12,Marketplace,Millennial,653941,30735,4.7,2701606,87.9,13.8,Fictional data created for the MarketSignal demo.
+CP-2025-12-STORES-GENZ,2025-12,Stores,Gen Z,405214,69292,17.1,5377059,77.6,8.2,Fictional data created for the MarketSignal demo.
+CP-2025-12-STORES-MILL,2025-12,Stores,Millennial,487962,108328,22.2,9717022,89.7,7.4,Fictional data created for the MarketSignal demo.
+CP-2026-01-SITE-GENZ,2026-01,Brand Site,Gen Z,743403,17842,2.4,1496944,83.9,18.2,Fictional data created for the MarketSignal demo.
+CP-2026-01-SITE-MILL,2026-01,Brand Site,Millennial,741645,21508,2.9,2168006,100.8,15.2,Fictional data created for the MarketSignal demo.
+CP-2026-01-APP-GENZ,2026-01,App,Gen Z,389174,14399,3.7,1310309,91.0,14.3,Fictional data created for the MarketSignal demo.
+CP-2026-01-APP-MILL,2026-01,App,Millennial,249802,8993,3.6,949661,105.6,11.2,Fictional data created for the MarketSignal demo.
+CP-2026-01-SOCIAL-GENZ,2026-01,Social Shop,Gen Z,124751,3368,2.7,215215,63.9,17.8,Fictional data created for the MarketSignal demo.
+CP-2026-01-SOCIAL-MILL,2026-01,Social Shop,Millennial,38919,701,1.8,44864,64.0,13.8,Fictional data created for the MarketSignal demo.
+CP-2026-01-MARKET-GENZ,2026-01,Marketplace,Gen Z,466586,18197,3.9,1339299,73.6,16.3,Fictional data created for the MarketSignal demo.
+CP-2026-01-MARKET-MILL,2026-01,Marketplace,Millennial,600420,27019,4.5,2199347,81.4,13.7,Fictional data created for the MarketSignal demo.
+CP-2026-01-STORES-GENZ,2026-01,Stores,Gen Z,336376,59539,17.7,4804797,80.7,7.8,Fictional data created for the MarketSignal demo.
+CP-2026-01-STORES-MILL,2026-01,Stores,Millennial,407006,88727,21.8,8366956,94.3,7.6,Fictional data created for the MarketSignal demo.
+CP-2026-02-SITE-GENZ,2026-02,Brand Site,Gen Z,790110,18963,2.4,1663055,87.7,20.8,Fictional data created for the MarketSignal demo.
+CP-2026-02-SITE-MILL,2026-02,Brand Site,Millennial,711689,19927,2.8,2118240,106.3,17.0,Fictional data created for the MarketSignal demo.
+CP-2026-02-APP-GENZ,2026-02,App,Gen Z,418077,14633,3.5,1390135,95.0,15.0,Fictional data created for the MarketSignal demo.
+CP-2026-02-APP-MILL,2026-02,App,Millennial,255872,9723,3.8,1033555,106.3,11.8,Fictional data created for the MarketSignal demo.
+CP-2026-02-SOCIAL-GENZ,2026-02,Social Shop,Gen Z,132994,3724,2.8,217482,58.4,17.7,Fictional data created for the MarketSignal demo.
+CP-2026-02-SOCIAL-MILL,2026-02,Social Shop,Millennial,42574,766,1.8,52241,68.2,14.6,Fictional data created for the MarketSignal demo.
+CP-2026-02-MARKET-GENZ,2026-02,Marketplace,Gen Z,490165,20587,4.2,1541966,74.9,15.1,Fictional data created for the MarketSignal demo.
+CP-2026-02-MARKET-MILL,2026-02,Marketplace,Millennial,568094,26700,4.7,2274840,85.2,12.6,Fictional data created for the MarketSignal demo.
+CP-2026-02-STORES-GENZ,2026-02,Stores,Gen Z,355854,70459,19.8,5664904,80.4,8.7,Fictional data created for the MarketSignal demo.
+CP-2026-02-STORES-MILL,2026-02,Stores,Millennial,394731,82894,21.0,7609669,91.8,6.6,Fictional data created for the MarketSignal demo.
+CP-2026-03-SITE-GENZ,2026-03,Brand Site,Gen Z,836995,19251,2.3,1726815,89.7,19.8,Fictional data created for the MarketSignal demo.
+CP-2026-03-SITE-MILL,2026-03,Brand Site,Millennial,794046,24615,3.1,2628882,106.8,15.7,Fictional data created for the MarketSignal demo.
+CP-2026-03-APP-GENZ,2026-03,App,Gen Z,436066,15698,3.6,1403401,89.4,15.1,Fictional data created for the MarketSignal demo.
+CP-2026-03-APP-MILL,2026-03,App,Millennial,280300,10091,3.6,1071664,106.2,11.6,Fictional data created for the MarketSignal demo.
+CP-2026-03-SOCIAL-GENZ,2026-03,Social Shop,Gen Z,159523,4786,3.0,299604,62.6,19.0,Fictional data created for the MarketSignal demo.
+CP-2026-03-SOCIAL-MILL,2026-03,Social Shop,Millennial,46171,877,1.9,57356,65.4,13.8,Fictional data created for the MarketSignal demo.
+CP-2026-03-MARKET-GENZ,2026-03,Marketplace,Gen Z,548616,21945,4.0,1643681,74.9,17.0,Fictional data created for the MarketSignal demo.
+CP-2026-03-MARKET-MILL,2026-03,Marketplace,Millennial,657452,29585,4.5,2600522,87.9,12.7,Fictional data created for the MarketSignal demo.
+CP-2026-03-STORES-GENZ,2026-03,Stores,Gen Z,362518,64166,17.7,5043448,78.6,8.8,Fictional data created for the MarketSignal demo.
+CP-2026-03-STORES-MILL,2026-03,Stores,Millennial,454343,101773,22.4,9383471,92.2,7.3,Fictional data created for the MarketSignal demo.
+CP-2026-04-SITE-GENZ,2026-04,Brand Site,Gen Z,819755,19674,2.4,1815910,92.3,20.3,Fictional data created for the MarketSignal demo.
+CP-2026-04-SITE-MILL,2026-04,Brand Site,Millennial,825898,24777,3.0,2695738,108.8,16.3,Fictional data created for the MarketSignal demo.
+CP-2026-04-APP-GENZ,2026-04,App,Gen Z,425399,15314,3.6,1430328,93.4,13.9,Fictional data created for the MarketSignal demo.
+CP-2026-04-APP-MILL,2026-04,App,Millennial,265723,9566,3.6,982428,102.7,12.0,Fictional data created for the MarketSignal demo.
+CP-2026-04-SOCIAL-GENZ,2026-04,Social Shop,Gen Z,298379,8653,2.9,509662,58.9,16.9,Fictional data created for the MarketSignal demo.
+CP-2026-04-SOCIAL-MILL,2026-04,Social Shop,Millennial,81659,1470,1.8,100107,68.1,14.5,Fictional data created for the MarketSignal demo.
+CP-2026-04-MARKET-GENZ,2026-04,Marketplace,Gen Z,553883,22155,4.0,1533126,69.2,15.1,Fictional data created for the MarketSignal demo.
+CP-2026-04-MARKET-MILL,2026-04,Marketplace,Millennial,599428,29372,4.9,2364446,80.5,12.8,Fictional data created for the MarketSignal demo.
+CP-2026-04-STORES-GENZ,2026-04,Stores,Gen Z,385029,65840,17.1,5300120,80.5,8.2,Fictional data created for the MarketSignal demo.
+CP-2026-04-STORES-MILL,2026-04,Stores,Millennial,443064,91271,20.6,8068356,88.4,6.7,Fictional data created for the MarketSignal demo.
+CP-2026-05-SITE-GENZ,2026-05,Brand Site,Gen Z,812650,19504,2.4,1638336,84.0,20.3,Fictional data created for the MarketSignal demo.
+CP-2026-05-SITE-MILL,2026-05,Brand Site,Millennial,834953,23379,2.8,2510905,107.4,15.1,Fictional data created for the MarketSignal demo.
+CP-2026-05-APP-GENZ,2026-05,App,Gen Z,456414,16887,3.7,1594133,94.4,14.3,Fictional data created for the MarketSignal demo.
+CP-2026-05-APP-MILL,2026-05,App,Millennial,282616,11022,3.9,1241077,112.6,11.1,Fictional data created for the MarketSignal demo.
+CP-2026-05-SOCIAL-GENZ,2026-05,Social Shop,Gen Z,325042,9426,2.9,578756,61.4,17.7,Fictional data created for the MarketSignal demo.
+CP-2026-05-SOCIAL-MILL,2026-05,Social Shop,Millennial,96917,1841,1.9,121138,65.8,14.1,Fictional data created for the MarketSignal demo.
+CP-2026-05-MARKET-GENZ,2026-05,Marketplace,Gen Z,523337,22503,4.3,1575210,70.0,14.9,Fictional data created for the MarketSignal demo.
+CP-2026-05-MARKET-MILL,2026-05,Marketplace,Millennial,625590,30654,4.9,2571871,83.9,13.5,Fictional data created for the MarketSignal demo.
+CP-2026-05-STORES-GENZ,2026-05,Stores,Gen Z,364204,67378,18.5,5457618,81.0,8.0,Fictional data created for the MarketSignal demo.
+CP-2026-05-STORES-MILL,2026-05,Stores,Millennial,430946,99118,23.0,8573707,86.5,7.0,Fictional data created for the MarketSignal demo.
+CP-2026-06-SITE-GENZ,2026-06,Brand Site,Gen Z,848901,21223,2.5,1784854,84.1,19.8,Fictional data created for the MarketSignal demo.
+CP-2026-06-SITE-MILL,2026-06,Brand Site,Millennial,787349,23620,3.0,2354914,99.7,15.9,Fictional data created for the MarketSignal demo.
+CP-2026-06-APP-GENZ,2026-06,App,Gen Z,432195,15127,3.5,1470344,97.2,14.7,Fictional data created for the MarketSignal demo.
+CP-2026-06-APP-MILL,2026-06,App,Millennial,282953,10469,3.7,1117042,106.7,11.8,Fictional data created for the MarketSignal demo.
+CP-2026-06-SOCIAL-GENZ,2026-06,Social Shop,Gen Z,396794,11110,2.8,702152,63.2,16.8,Fictional data created for the MarketSignal demo.
+CP-2026-06-SOCIAL-MILL,2026-06,Social Shop,Millennial,102349,2047,2.0,134283,65.6,15.4,Fictional data created for the MarketSignal demo.
+CP-2026-06-MARKET-GENZ,2026-06,Marketplace,Gen Z,564399,24834,4.4,1790531,72.1,15.7,Fictional data created for the MarketSignal demo.
+CP-2026-06-MARKET-MILL,2026-06,Marketplace,Millennial,633743,27251,4.3,2204606,80.9,12.8,Fictional data created for the MarketSignal demo.
+CP-2026-06-STORES-GENZ,2026-06,Stores,Gen Z,382119,68399,17.9,5506120,80.5,8.6,Fictional data created for the MarketSignal demo.
+CP-2026-06-STORES-MILL,2026-06,Stores,Millennial,429821,100148,23.3,9413912,94.0,7.0,Fictional data created for the MarketSignal demo.
+CP-2026-07-SITE-GENZ,2026-07,Brand Site,Gen Z,914693,19209,2.1,1748019,91.0,19.1,Fictional data created for the MarketSignal demo.
+CP-2026-07-SITE-MILL,2026-07,Brand Site,Millennial,767287,23019,3.0,2472241,107.4,16.7,Fictional data created for the MarketSignal demo.
+CP-2026-07-APP-GENZ,2026-07,App,Gen Z,477469,16234,3.4,1446449,89.1,15.2,Fictional data created for the MarketSignal demo.
+CP-2026-07-APP-MILL,2026-07,App,Millennial,284010,11360,4.0,1279136,112.6,11.8,Fictional data created for the MarketSignal demo.
+CP-2026-07-SOCIAL-GENZ,2026-07,Social Shop,Gen Z,280674,8140,2.9,506308,62.2,16.4,Fictional data created for the MarketSignal demo.
+CP-2026-07-SOCIAL-MILL,2026-07,Social Shop,Millennial,73214,1318,1.8,86065,65.3,13.7,Fictional data created for the MarketSignal demo.
+CP-2026-07-MARKET-GENZ,2026-07,Marketplace,Gen Z,559183,22927,4.1,1703476,74.3,15.9,Fictional data created for the MarketSignal demo.
+CP-2026-07-MARKET-MILL,2026-07,Marketplace,Millennial,620711,30415,4.9,2670437,87.8,13.6,Fictional data created for the MarketSignal demo.
+CP-2026-07-STORES-GENZ,2026-07,Stores,Gen Z,350241,69348,19.8,5249644,75.7,8.1,Fictional data created for the MarketSignal demo.
+CP-2026-07-STORES-MILL,2026-07,Stores,Millennial,442073,99024,22.4,9001282,90.9,7.5,Fictional data created for the MarketSignal demo.
+CP-2026-08-SITE-GENZ,2026-08,Brand Site,Gen Z,852792,19614,2.3,1645615,83.9,21.3,Fictional data created for the MarketSignal demo.
+CP-2026-08-SITE-MILL,2026-08,Brand Site,Millennial,829994,24070,2.9,2488838,103.4,15.0,Fictional data created for the MarketSignal demo.
+CP-2026-08-APP-GENZ,2026-08,App,Gen Z,435987,15696,3.6,1406362,89.6,14.6,Fictional data created for the MarketSignal demo.
+CP-2026-08-APP-MILL,2026-08,App,Millennial,302021,12685,4.2,1324314,104.4,11.3,Fictional data created for the MarketSignal demo.
+CP-2026-08-SOCIAL-GENZ,2026-08,Social Shop,Gen Z,294619,8544,2.9,540835,63.3,18.5,Fictional data created for the MarketSignal demo.
+CP-2026-08-SOCIAL-MILL,2026-08,Social Shop,Millennial,75964,1519,2.0,96305,63.4,14.2,Fictional data created for the MarketSignal demo.
+CP-2026-08-MARKET-GENZ,2026-08,Marketplace,Gen Z,523328,20410,3.9,1471561,72.1,16.3,Fictional data created for the MarketSignal demo.
+CP-2026-08-MARKET-MILL,2026-08,Marketplace,Millennial,661284,32403,4.9,2601961,80.3,13.2,Fictional data created for the MarketSignal demo.
+CP-2026-08-STORES-GENZ,2026-08,Stores,Gen Z,381040,72017,18.9,5451687,75.7,8.5,Fictional data created for the MarketSignal demo.
+CP-2026-08-STORES-MILL,2026-08,Stores,Millennial,439126,89582,20.4,8331126,93.0,6.8,Fictional data created for the MarketSignal demo.
+CP-2026-09-SITE-GENZ,2026-09,Brand Site,Gen Z,824208,18133,2.2,1590264,87.7,18.6,Fictional data created for the MarketSignal demo.
+CP-2026-09-SITE-MILL,2026-09,Brand Site,Millennial,855312,26515,3.1,2887484,108.9,15.1,Fictional data created for the MarketSignal demo.
+CP-2026-09-APP-GENZ,2026-09,App,Gen Z,481900,16866,3.5,1619136,96.0,13.1,Fictional data created for the MarketSignal demo.
+CP-2026-09-APP-MILL,2026-09,App,Millennial,308504,12649,4.1,1415423,111.9,12.6,Fictional data created for the MarketSignal demo.
+CP-2026-09-SOCIAL-GENZ,2026-09,Social Shop,Gen Z,341165,11600,3.4,714560,61.6,16.5,Fictional data created for the MarketSignal demo.
+CP-2026-09-SOCIAL-MILL,2026-09,Social Shop,Millennial,83253,1748,2.1,109774,62.8,14.0,Fictional data created for the MarketSignal demo.
+CP-2026-09-MARKET-GENZ,2026-09,Marketplace,Gen Z,565064,22603,4.0,1663581,73.6,15.1,Fictional data created for the MarketSignal demo.
+CP-2026-09-MARKET-MILL,2026-09,Marketplace,Millennial,653130,30044,4.6,2442577,81.3,13.5,Fictional data created for the MarketSignal demo.
+CP-2026-09-STORES-GENZ,2026-09,Stores,Gen Z,367670,66916,18.2,5420196,81.0,8.3,Fictional data created for the MarketSignal demo.
+CP-2026-09-STORES-MILL,2026-09,Stores,Millennial,418296,96208,23.0,8629858,89.7,7.1,Fictional data created for the MarketSignal demo.

@@ -1,0 +1,35 @@
+Northstar Consumer Panel Analyst Call Notes
+
+Call with Brightline Panel Research
+
+Notes taken by the Northstar insights team
+
+August 2026
+
+Internal - not for distribution
+
+Fictional data created for the MarketSignal demo.
+
+Call notes - August 12, 2026
+
+Attendees were Marcus T., senior analyst at Brightline Panel Research, and Dana R., Imani K. and Leo P. from the Northstar insights team. The call covered how Gen Z shoppers return and reorder athletic products, what the vendor's channel checks say about Kinetic Lab, and the outlook for personalization and social commerce. These notes are a summary of what was said and have not been reviewed by Brightline.
+
+Marcus began with a caveat that applies to everything below. The panel is a consumer panel of several thousand active athletic shoppers who report their purchases and returns through an app, and its figures are more reliable for direction and relative comparisons than for exact levels. He asked that we treat any number as an estimate.
+
+On Gen Z return behaviour, Marcus said the main finding in the panel this year is how different young shoppers are in apparel. Panel data show Gen Z shoppers return athletic apparel at roughly 1.5 times the rate of shoppers over 35. He said the difference is concentrated in leggings, tops and anything sized across several brands, and is much smaller in footwear, where all age groups return at more similar rates. Imani asked whether this reflects bracketing, where a shopper orders two sizes intending to return one. Marcus said yes, bracketing is common and the panel shows that Gen Z shoppers are more likely to order multiple sizes and colors in a single basket, and that they describe returns as part of the shopping process rather than as a failure.
+
+Dana asked whether free returns made a difference. Marcus said the panel shows only a modest effect on whether people return but a strong effect on whether they buy at all, particularly for first time customers, and that value players with generous returns windows have used this to win young shoppers. He thought a clear exchange promise would help more than a longer refund window for a brand in Northstar's position, because most of the cost to the customer lies in time and uncertainty, not in money.
+
+We then turned to Kinetic Lab. Marcus said Brightline tracks the brand through a mix of panel purchase data, retailer and marketplace checks and a small number of customers contacted for a follow up survey. He noted that the company publishes a return rate of 6%, which he said is not impossible if one counts only refunds on the first pair. Our channel checks suggest Kinetic Lab returns run closer to 15% once remakes are counted. The difference arises because Kinetic Lab remakes a pair at no charge when the fit is off, and those remakes are logged as service events instead of returns.
+
+Leo asked about customer behaviour after a remake. Marcus said that customers who receive a remake are less likely to reorder, even though the company's repeat purchase share of about 31% looks healthy, because that figure is dominated by customers who never needed a remake. He also said that delivery times of two to three weeks and the price of its custom runner, at around $210, keep the brand a niche choice for committed runners, and that the panel shows little cross shopping with value brands. He expects growth to continue but at a slower pace than the 64% reported for fiscal 2025, as the brand has to spend more to acquire customers beyond early adopters.
+
+On personalization more broadly, Marcus said clients often ask whether it is the next big thing and his answer is that it will be an important niche but not a mass market feature in the next few years. The analyst expects personalization to remain below 5% of US athletic footwear units through 2028. He gave three reasons. Lead times for made to order production remain long. Unit economics are poor, because the cost of scanning, small batches and shipping erodes the premium. And most customers say they like the idea but choose the standard product when delivery speed and price are put alongside it. He did add that simple forms of personalization, such as monograms, team colors and preset colorways, are likely to spread because they cost little and carry social signalling value.
+
+We shared, in general terms, that the spring pilot had been designed to test personalized fit and custom colorways, and that analysis was still under way. Marcus said that results showing low uptake of a paid tier would be consistent with other clients he has seen, and he recommended that we look closely at repeat purchase and not only at first order take up. We did not share specific pilot numbers.
+
+On social commerce, Marcus said that the share of athletic footwear bought through social platforms among Gen Z is rising quickly and that the panel's measurement of it will be restated upward in the next edition of the trends report, since earlier panels undercounted young shoppers. He said creator videos and peer reviews are the strongest triggers for purchase and that conversion is higher on social checkout than on a brand site for impulse categories, but that return rates on social orders are also higher. He cautioned that brands moving quickly into the channel often discover that fulfilment and customer service are the real constraints, with response times in particular becoming a source of complaints.
+
+Marcus ended by saying that, in his view, the winners among mid sized brands over the next two years will be the ones that fix fit and delivery before adding features.
+
+Follow ups were agreed as plain actions. Marcus will send the panel cut of apparel returns by age band and category, and a short note on the methodology behind the Kinetic Lab remake estimate, by the end of August. Dana will ask finance whether Northstar's own apparel return data can be cut the same way for comparison. Imani will schedule a second call in October to discuss the next edition of the annual trends report. Leo will circulate these notes to the strategy team and flag the Kinetic Lab and personalization points for the FY27 planning discussion.
