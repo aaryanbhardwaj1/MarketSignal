@@ -250,7 +250,8 @@ def test_locator_kinds_only_use_grammar_units() -> None:
     assert all(isinstance(kind, LocatorKind) for p in parents for kind, _ in p.locator)
 
 
-def test_row_child_identifier_experiment_changes_only_child_text() -> None:
+def test_policy_c3_row_identifiers_change_only_child_text() -> None:
+    """c3 (default) vs c2: identifiers enter the row child's text; parents and spans do not move."""
     csv = make_csv(
         [
             ["review_id", "segment", "review_text"],
@@ -259,8 +260,13 @@ def test_row_child_identifier_experiment_changes_only_child_text() -> None:
         ]
     )
     off = parse_source(
-        SourceType.CSV, csv, title="Reviews", tokenizer=RegexTokenizer(), settings=SETTINGS
+        SourceType.CSV,
+        csv,
+        title="Reviews",
+        tokenizer=RegexTokenizer(),
+        settings=Settings(env="test", row_child_identifiers=False, chunking_policy_version="c2"),
     )
+
     on = parse_source(
         SourceType.CSV,
         csv,
