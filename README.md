@@ -2,7 +2,22 @@
 
 **An agentic growth-strategy intelligence platform for consulting teams.** It turns fragmented customer, competitor, market, and internal evidence into grounded strategic insights. Every material claim resolves to an exact, immutable evidence handle.
 
-> **Status:** Phase 0 (repository and local infrastructure). The approved design is in [`docs/ARCHITECTURE_PLAN.md`](docs/ARCHITECTURE_PLAN.md). The decisions behind it are in [`docs/adr/`](docs/adr/).
+> **Status:** Phase 0 is complete: repository, local infrastructure, workspace-isolation scaffolding and CI ([report](docs/phase-reports/phase-0.md)). Phase 1 (ingestion and evidence model) is next. The approved design is in [`docs/ARCHITECTURE_PLAN.md`](docs/ARCHITECTURE_PLAN.md), and the decisions behind it are in [`docs/adr/`](docs/adr/).
+
+## Quick start (local, light mode)
+
+Requires Docker (OrbStack, Colima or Docker Desktop), [uv](https://docs.astral.sh/uv/), Node 24 and pnpm.
+
+```bash
+make up                  # Postgres 18 + pgvector and Redis in containers (creates .env from .env.example)
+make sync migrate        # backend deps (Python 3.13) + migrations as the schema-owner role
+make api                 # FastAPI on :8000 as the non-privileged ms_app role
+curl localhost:8000/readyz
+make test                # unit + integration tests (integration runs as ms_app, so RLS is enforced)
+cd frontend && pnpm install && pnpm dev   # Next.js on :3000
+```
+
+To run everything in containers instead: `make up-full`.
 
 ## What it is
 
