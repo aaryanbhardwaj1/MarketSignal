@@ -1,0 +1,95 @@
+# MarketSignal local environment.
+#
+# Light mode (default, recommended on 8 GB machines): only stateful services run in containers;
+# the API, worker and Next.js run natively (see Makefile: `make up`, `make api`).
+#   docker compose up -d                 -> postgres + redis
+#
+# Full-container mode (CI parity / demo from a clean machine):
+#   docker compose --profile full up -d  -> + migrate (one-shot) + api
+#
+# Ports bind to 127.0.0.1 only. All credentials below are dev-only defaults; override in .env.
+name: marketsignal
+
+x-backend-env: &backend-env
+  MS_ENV: dev
+  MS_DATABASE_URL: postgresql+psycopg://ms_app:${MS_APP_PASSWORD:-dev-only-insecure-app}@postgres:5432/${POSTGRES_DB:-marketsignal}
+  MS_MIGRATIONS_DATABASE_URL: postgresql+psycopg://ms_owner:${MS_OWNER_PASSWORD:-dev-only-insecure-owner}@postgres:5432/${POSTGRES_DB:-marketsignal}
+  MS_REDIS_URL: redis://redis:6379/0
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.7-pg18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev-only-insecure-bootstrap}
+      POSTGRES_DB: ${POSTGRES_DB:-marketsignal}
+      MS_OWNER_PASSWORD: ${MS_OWNER_PASSWORD:-dev-only-insecure-owner}
+      MS_APP_PASSWORD: ${MS_APP_PASSWORD:-dev-only-insecure-app}
+    command:
+      - postgres
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=256MB
+      - -c
+      - max_connections=60
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # PG18 images keep data under /var/lib/postgresql/<major>/docker; mount the parent.
+      - pgdata:/var/lib/postgresql
+      - ./backend/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-marketsignal}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    mem_limit: 768m
+    restart: unless-stopped
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    mem_limit: 192m
+    restart: unless-stopped
+
+  migrate:
+    profiles: ["full"]
+    image: marketsignal-backend:dev
+    build:
+      context: ./backend
+    environment: *backend-env
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    profiles: ["full"]
+    image: marketsignal-backend:dev
+    environment: *backend-env
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz').status==200 else 1)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 1g
+
+volumes:
+  pgdata:

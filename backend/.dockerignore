@@ -1,0 +1,16 @@
+.venv
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.hypothesis
+.coverage
+htmlcov
+tests
+.env
+.env.*
+*.zip
+*.heic
+*.HEIC
+.cache

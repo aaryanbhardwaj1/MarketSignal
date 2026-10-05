@@ -116,7 +116,7 @@ Evaluation uses a versioned gold set derived from a synthetic **world model with
 MarketSignal/                    # NOTE: private notes and non-public reference material are kept OUTSIDE this tree
 ├── README.md                    # pitch, diagram, quick start, evidence-handle explainer, eval snapshot, limitations, privacy
 ├── docker-compose.yml           # postgres(pgvector) · redis · api(+mcp) · worker · frontend (profile "ui")
-├── .env.example  .gitignore  .dockerignore (per build context)  Justfile
+├── .env.example  .gitignore  .dockerignore (per build context)  Makefile  (Justfile → Makefile: approved Phase 0 deviation; no extra tool to install)
 ├── .github/workflows/           # ci.yml (every PR), eval-full.yml (manual; needs LLM key)
 ├── docs/
 │   ├── ARCHITECTURE_PLAN.md (this)  ARCHITECTURE.md  SYSTEM_DESIGN.md  RETRIEVAL_DEEP_DIVE.md  INGESTION.md
