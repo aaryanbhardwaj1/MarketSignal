@@ -148,6 +148,7 @@ PIPELINE_ARMS: dict[str, dict[str, Any]] = {
     "dense": {"use_lexical": False, "rerank": False, "balance": False},
     "lexical": {"use_dense": False, "rerank": False, "balance": False},
     "hybrid": {"rerank": False, "balance": False},
+    "dense-rerank": {"use_lexical": False, "rerank": True, "balance": False},
     "hybrid-rerank": {"rerank": True, "balance": False},
     "hybrid-rerank-balance": {"rerank": True, "balance": True},
     "hybrid-balance": {"rerank": False, "balance": True},

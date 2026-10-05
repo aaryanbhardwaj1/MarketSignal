@@ -227,6 +227,102 @@ async def _run(args: argparse.Namespace, settings: Settings) -> int:
     return 0
 
 
+async def _profile(args: argparse.Namespace, settings: Settings) -> int:
+    from sqlalchemy.ext.asyncio import create_async_engine
+
+    from marketsignal.evaluation.profile import profile_lanes
+    from marketsignal.evaluation.runner import _scopes
+
+    items = select(load_frozen(args.dataset), "dev")
+    embedder = _embedder_factory(settings)
+    service = _service(settings, embedder, {"rerank": False, "balance": False})
+    app_engine = create_engine(settings)
+    su_engine = create_async_engine(args.superuser_dsn) if args.superuser_dsn else None
+    try:
+        from marketsignal.db.engine import create_session_factory as factory_of
+
+        scopes = await _scopes(factory_of(app_engine), {i.workspace for i in items})
+        await profile_lanes(service, items[:1], scopes, app_engine, su_engine)  # warm caches
+        report = await profile_lanes(service, items, scopes, app_engine, su_engine)
+    finally:
+        await app_engine.dispose()
+        if su_engine is not None:
+            await su_engine.dispose()
+    report["run"] = {"git": _git_sha(), "at": datetime.now(UTC).isoformat(timespec="seconds")}
+    args.out.mkdir(parents=True, exist_ok=True)
+    (args.out / "profile.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
+    lines = [
+        "# Retrieval lanes under forced RLS (EXPLAIN ANALYZE)",
+        "",
+        f"- dev queries: {report['queries']} · git {report['run']['git']}",
+        "",
+        "| lane / role | n | exec p50 ms | exec p95 ms | GIN used | HNSW used "
+        "| rows scanned p50 | max | indexes |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for key, s in report["summary"].items():
+        lines.append(
+            f"| {key} | {s['n']} | {s['execution_ms_p50']} | {s['execution_ms_p95']} | "
+            f"{s['gin_used']}/{s['n']} | {s['hnsw_used']}/{s['n']} | {s['rows_scanned_p50']} | "
+            f"{s['rows_scanned_max']} | {', '.join(s['indexes']) or '-'} |"
+        )
+    (args.out / "profile.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print("\n".join(lines))
+    return 0
+
+
+async def _reachability(args: argparse.Namespace, settings: Settings) -> int:
+    """Which gold facts can a lane retrieve at all? A fact whose satisfying parents all have no
+    children (purely numeric rows, ADR-0003 policy c2) is invisible to both lanes by design."""
+    from sqlalchemy import text as sql
+
+    from marketsignal.db.session import scoped_session
+    from marketsignal.evaluation.runner import _scopes
+
+    dataset = load_frozen(args.dataset)
+    engine = create_engine(settings)
+    try:
+        factory = create_session_factory(engine)
+        scopes = await _scopes(factory, {i.workspace for i in dataset.items})
+        with_children: set[str] = set()
+        for scope in scopes.values():
+            async with scoped_session(factory, scope) as session:
+                rows = await session.execute(
+                    sql(
+                        "SELECT DISTINCT p.handle FROM parent_chunks p "
+                        "JOIN child_chunks c ON c.parent_id = p.id"
+                    )
+                )
+                with_children |= {r[0] for r in rows.all()}
+    finally:
+        await engine.dispose()
+    out: dict[str, Any] = {"items": {}}
+    for item in dataset.items:
+        facts = {
+            f.fact_id: any(h in with_children for h in f.handles()) for f in item.required_facts
+        }
+        out["items"][item.id] = {
+            "split": item.split,
+            "category": item.category,
+            "facts": facts,
+            "fully_reachable": all(facts.values()),
+            "any_reachable": any(facts.values()),
+        }
+    for split in ("dev", "test"):
+        members = [v for v in out["items"].values() if v["split"] == split]
+        out[split] = {
+            "items": len(members),
+            "fully_reachable": sum(1 for v in members if v["fully_reachable"]),
+            "unreachable_items": sorted(
+                k for k, v in out["items"].items() if v["split"] == split and not v["any_reachable"]
+            ),
+        }
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
+    print(json.dumps({k: out[k] for k in ("dev", "test")}, indent=1))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ms-eval")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -247,7 +343,20 @@ def main(argv: list[str] | None = None) -> int:
     p_run.add_argument("--milestone")
     p_run.add_argument("--set", action="append", help="RetrievalConfig override key=value")
     p_run.add_argument("--suffix", default="", help="appended to pipeline arm names")
+    p_prof = sub.add_parser("profile")
+    p_prof.add_argument("--dataset", type=Path, default=DATASET_DIR / "frozen.json")
+    p_prof.add_argument("--superuser-dsn", help="control run without RLS (local dev only)")
+    p_prof.add_argument("--out", type=Path, required=True)
+    p_reach = sub.add_parser("reachability")
+    p_reach.add_argument("--dataset", type=Path, default=DATASET_DIR / "frozen.json")
+    p_reach.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     settings = get_settings()
-    handler = {"freeze": _freeze, "integrity": _integrity, "run": _run}[args.command]
+    handler = {
+        "freeze": _freeze,
+        "integrity": _integrity,
+        "run": _run,
+        "profile": _profile,
+        "reachability": _reachability,
+    }[args.command]
     return asyncio.run(handler(args, settings))
