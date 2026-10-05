@@ -6,6 +6,7 @@
 | Exit criterion | The seeded corpus goes through the real upload API, and every required format becomes resolvable evidence with lexical and dense retrieval, versioning, isolation and handle-failure safety, verified from a clean database. **Met.** |
 | Verification | `scripts/verify_phase1.py` → **PASS**; machine-readable output in [`phase-1-verification.json`](phase-1-verification.json) |
 | CI | Run 37362002404 on `b733d18`: safety ✅, backend ✅ (197 passed, 0 skipped), frontend ✅ (46 passed), container build ✅ |
+| CI on the final commit (`208cc04`, docs only) | Run 37362833376. Attempts 1–4 (2026-10-05) were blocked by a GitHub Actions incident: hosted runners did not acquire jobs ("The job was not acquired by Runner of type hosted even after multiple attempts"), and githubstatus.com showed Actions as degraded. Attempts 3–4 already passed backend, safety and container build. **Attempt 5, after recovery: safety ✅, backend ✅, frontend ✅, container build ✅.** Recorded during Phase 2; Phase 1 history is unchanged. |
 | How it works | [`docs/INGESTION.md`](../INGESTION.md); ADR implementation notes in 0001, 0003, 0004, 0009, 0010, 0012, 0013, 0016 and 0017 |
 
 ## Implemented
