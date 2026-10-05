@@ -98,6 +98,85 @@ jobs:
       - name: Tests (unit + integration, as ms_app)
         run: uv run pytest
 
+  retrieval-eval:
+    name: retrieval eval (seed, gold integrity, dev gate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci-only-bootstrap
+          POSTGRES_DB: marketsignal
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d marketsignal"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      MS_ENV: test
+      MS_LOG_JSON: "false"
+      MS_DATABASE_URL: postgresql+psycopg://ms_app:ci-only-app@localhost:5432/marketsignal
+      MS_MIGRATIONS_DATABASE_URL: postgresql+psycopg://ms_owner:ci-only-owner@localhost:5432/marketsignal
+      MS_RETRIEVAL_DENSE_EXACT: "true"  # the CI gate uses exact search (plan §7)
+      MS_RETRIEVAL_TRACE_PERSIST: "false"
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Cache local ONNX models (embedder + reranker)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/models
+          key: onnx-models-bge-small-en-v1.5-msmarco-minilm-l6-v1
+      - name: Cache ingest embeddings (keyed by text hash; stale entries are harmless)
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/embeddings
+          key: ingest-embeddings-${{ github.run_id }}
+          restore-keys: ingest-embeddings-
+      - name: Install Python 3.13 + dependencies
+        run: |
+          uv python install 3.13
+          uv sync --locked
+      - name: Create roles
+        env:
+          PGHOST: localhost
+          PGPASSWORD: ci-only-bootstrap
+          POSTGRES_USER: postgres
+          POSTGRES_DB: marketsignal
+          MS_OWNER_PASSWORD: ci-only-owner
+          MS_APP_PASSWORD: ci-only-app
+          MS_TEST_DATABASE: ""
+        run: bash db/init/01_roles.sh
+      - name: Migrate
+        run: uv run alembic upgrade head
+      - name: Seed the corpus through the real upload API and ingestion pipeline
+        run: uv run python -m marketsignal.evaluation seed
+      - name: Gold integrity (handles resolve, anchors present, hashes, pins, no leakage)
+        run: uv run python -m marketsignal.evaluation integrity
+      - name: Evaluate the frozen Phase 2 configuration on the dev split
+        run: >-
+          uv run python -m marketsignal.evaluation run --split dev --arms hybrid-rerank
+          --out ../eval/reports/ci-dev --title "CI retrieval gate (dev)"
+      - name: Gate (floors sit just below the recorded dev result, eval/baselines/phase2/06)
+        run: >-
+          uv run python -m marketsignal.evaluation gate
+          --results ../eval/reports/ci-dev/results.json --arm hybrid-rerank
+          --min hit@10=0.84 --min recall@10=0.78 --min mrr=0.72 --min hit@1=0.65
+      - name: Upload the evaluation report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: retrieval-eval-dev
+          path: eval/reports/ci-dev
+          if-no-files-found: ignore
+
   frontend:
     name: frontend (lint, types, tests, build)
     runs-on: ubuntu-latest
