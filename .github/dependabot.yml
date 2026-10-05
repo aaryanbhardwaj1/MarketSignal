@@ -1,4 +1,5 @@
-# Weekly, grouped dependency updates. SHA-pinned GitHub Actions are updated by bumping the
+# Weekly, grouped dependency updates. Package majors (React, TypeScript, FastAPI, ...) are
+# deliberate upgrades with their own review, so they are ignored here. SHA-pinned GitHub Actions are updated by bumping the
 # pinned commit (Dependabot rewrites the SHA and the version comment).
 version: 2
 updates:
@@ -14,6 +15,9 @@ updates:
     groups:
       python-minor-patch:
         update-types: [minor, patch]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
     directory: /frontend
     schedule: { interval: weekly }
@@ -21,3 +25,6 @@ updates:
     groups:
       npm-minor-patch:
         update-types: [minor, patch]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
