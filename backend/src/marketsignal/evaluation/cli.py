@@ -323,6 +323,33 @@ async def _reachability(args: argparse.Namespace, settings: Settings) -> int:
     return 0
 
 
+async def _seed(args: argparse.Namespace, settings: Settings) -> int:
+    from marketsignal.evaluation.seed_local import seed_in_process
+
+    result = await seed_in_process(settings)
+    print(json.dumps(result))
+    return 0 if not result["not_ready"] else 1
+
+
+def _gate(args: argparse.Namespace) -> int:
+    """Fail (exit 1) when an arm's metric falls below its floor in a results file."""
+    report = json.loads(args.results.read_text(encoding="utf-8"))
+    metrics = report["arms"][args.arm]["metrics"]
+    failures = []
+    for spec in args.min:
+        name, _, floor = spec.partition("=")
+        value = metrics[name]
+        status = "ok" if value >= float(floor) else "FAIL"
+        print(f"{status} {args.arm} {name} = {value:.3f} (floor {float(floor):.3f})")
+        if status == "FAIL":
+            failures.append(name)
+    flags = report["arms"][args.arm].get("flags", {})
+    if flags:
+        print(f"FAIL degradation flags present: {flags}")
+        failures.append("flags")
+    return 1 if failures else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ms-eval")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -350,7 +377,14 @@ def main(argv: list[str] | None = None) -> int:
     p_reach = sub.add_parser("reachability")
     p_reach.add_argument("--dataset", type=Path, default=DATASET_DIR / "frozen.json")
     p_reach.add_argument("--out", type=Path, required=True)
+    sub.add_parser("seed")
+    p_gate = sub.add_parser("gate")
+    p_gate.add_argument("--results", type=Path, required=True)
+    p_gate.add_argument("--arm", required=True)
+    p_gate.add_argument("--min", action="append", required=True, help="metric=floor")
     args = parser.parse_args(argv)
+    if args.command == "gate":
+        return _gate(args)
     settings = get_settings()
     handler = {
         "freeze": _freeze,
@@ -358,5 +392,6 @@ def main(argv: list[str] | None = None) -> int:
         "run": _run,
         "profile": _profile,
         "reachability": _reachability,
+        "seed": _seed,
     }[args.command]
     return asyncio.run(handler(args, settings))
