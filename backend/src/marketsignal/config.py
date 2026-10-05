@@ -55,6 +55,50 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     log_json: bool = True
 
+    # ── Identity (Phase 1: single demo principal; ADR-0014 adds real sessions) ──
+    demo_principal: str = "demo"
+
+    # ── Upload validation (plan §4) ──
+    upload_max_bytes: int = Field(default=25 * 1024 * 1024, ge=1)
+    zip_max_entries: int = Field(default=2_000, ge=1)
+    zip_max_uncompressed_bytes: int = Field(default=200 * 1024 * 1024, ge=1)
+    zip_max_compression_ratio: int = Field(default=100, ge=1)
+
+    # ── Parsing limits ──
+    parse_timeout_s: float = Field(default=120.0, gt=0)
+    max_pdf_pages: int = Field(default=300, ge=1)
+    max_slides: int = Field(default=500, ge=1)
+    max_table_rows: int = Field(default=100_000, ge=1)
+    pdf_min_words_per_page: int = Field(default=5, ge=0)  # below: PARTIAL_EXTRACTION warning
+
+    # ── Pipeline versions: part of provenance and of the idempotency key ──
+    parser_version: str = "p1"
+    structure_version: str = "s1"  # parent policy; changing it mints new source versions
+    chunking_policy_version: str = "c1"  # child policy; changing it rebuilds children only
+
+    # ── Hierarchical chunking (ADR-0003) ──
+    parent_max_tokens: int = Field(default=800, ge=64)
+    child_window_tokens: int = Field(default=192, ge=16)
+    child_overlap_tokens: int = Field(default=32, ge=0)
+    table_summary_max_levels: int = Field(default=12, ge=1)
+
+    # ── Embeddings (ADR-0012) ──
+    embed_model_id: str = "bge-small-en-v1.5"
+    embed_model_name: str = "BAAI/bge-small-en-v1.5"
+    embed_dimensions: int = 384
+    embed_batch_size: int = Field(default=64, ge=1)
+    embed_threads: int | None = None  # None: onnxruntime default (container CPU quota)
+    model_cache_dir: Path = _REPO_ROOT / ".cache" / "models"
+    embedding_cache_dir: Path = _REPO_ROOT / ".cache" / "embeddings"
+
+    # ── Ingestion health check (plan §4) ──
+    health_sample_size: int = Field(default=5, ge=0)
+    health_dense_top_k: int = Field(default=5, ge=1)
+
+    # ── Dense smoke search (Phase 1 verification only; Phase 2 replaces it) ──
+    hnsw_ef_search: int = Field(default=100, ge=1)
+    dev_endpoints_enabled: bool = True  # forced off when env == "prod"
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
