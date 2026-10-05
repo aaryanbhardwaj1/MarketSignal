@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 0 (roles, RLS scaffolding, readiness guard), applied to each tenant table as it is added from Phase 1 onward, hardened in Phase 8 (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 0 implemented** (roles, RLS scaffolding, readiness guard, scope listener); applied to each tenant table as it is added from Phase 1 onward; hardened in Phase 8
 - **Related:** plan §6, §8 (RLS × GIN caveat), §22, §23, §24, §32.2, §34; ADR-0001 (Postgres), ADR-0006 (MCP boundary), ADR-0008 (SSE), ADR-0010 (job queue); approved deviation D8
 
 ## Context
@@ -77,3 +77,16 @@ Non-tenant tables are explicit: `workspaces` and `workspace_members` are read on
 - Readiness test: `/readyz` fails when connected as a superuser or BYPASSRLS role.
 - EXPLAIN-based regression test documenting the RLS × GIN plan.
 - Behavioral eval: zero Southpeak canary facts in Northstar answers and the reverse, checked deterministically from traces and answers.
+
+## Implementation status (Phase 0, 2026-10-05)
+
+| Item | Where | Verified by |
+|---|---|---|
+| `ms_owner` / `ms_app` roles (both `NOSUPERUSER NOBYPASSRLS`; DB owned by `ms_owner`) | `backend/db/init/01_roles.sh` (compose initdb + CI) | catalog check: `rolsuper=f, rolbypassrls=f` |
+| `app.current_workspace()` raises `WORKSPACE_SCOPE_NOT_SET` on a missing or empty GUC | migration `0001` | `test_unscoped_query_fails_closed_on_fresh_and_reused_connections` |
+| ENABLE + FORCE RLS with the `USING` / `WITH CHECK` policy | `workspace_corpus_state` (first tenant table) | `test_scope_a_sees_only_workspace_a`, `test_cross_workspace_write_is_rejected_by_with_check` |
+| Transaction-local scope via `set_config(..., true)` in an `after_begin` listener; no scope means fail closed | `marketsignal.db.scope` | `test_orm_session_sets_scope_per_transaction` + unit tests |
+| Startup and `/readyz` refuse superuser/BYPASSRLS connections | `marketsignal.api.app`, `marketsignal.health` | `test_startup_refuses_superuser_connection`; manual start with the superuser URL exits with "Application startup failed" |
+
+**Non-vacuity check.** The same isolation suite run deliberately as the bootstrap **superuser** fails 5/5. This confirms that the tests detect an RLS bypass and do not pass merely because the data happens to be separated.
+
