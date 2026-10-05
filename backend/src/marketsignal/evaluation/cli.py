@@ -331,6 +331,52 @@ async def _seed(args: argparse.Namespace, settings: Settings) -> int:
     return 0 if not result["not_ready"] else 1
 
 
+def _compare(args: argparse.Namespace) -> int:
+    """Paired comparison of two arms recorded in (possibly) different results files."""
+    from marketsignal.evaluation.metrics import ItemScore
+    from marketsignal.evaluation.stats import mcnemar_exact, paired_bootstrap_diff
+
+    def load(spec: str) -> tuple[str, dict[str, Any]]:
+        path, _, arm = spec.rpartition(":")
+        report = json.loads(Path(path).read_text(encoding="utf-8"))
+        return arm, report["arms"][arm]
+
+    name_a, a = load(args.a)
+    name_b, b = load(args.b)
+    sa = {i["item_id"]: ItemScore(i["item_id"], i["fact_ranks"]) for i in a["items"]}
+    sb = {i["item_id"]: ItemScore(i["item_id"], i["fact_ranks"]) for i in b["items"]}
+    ids = sorted(sa.keys() & sb.keys())
+    out: dict[str, Any] = {"a": args.a, "b": args.b, "n": len(ids)}
+    for k in (1, 5, 10, 20):
+        test = mcnemar_exact([sa[i].hit_at(k) for i in ids], [sb[i].hit_at(k) for i in ids])
+        out[f"hit@{k}"] = {
+            "only_a": test.only_a,
+            "only_b": test.only_b,
+            "p": round(test.p_value, 4),
+        }
+    for metric, fn in (
+        ("mrr", lambda s: s.reciprocal_rank()),
+        ("recall@10", lambda s: s.recall_at(10)),
+    ):
+        diff = paired_bootstrap_diff([fn(sa[i]) for i in ids], [fn(sb[i]) for i in ids])
+        out[f"{metric}_diff_b_minus_a"] = diff.as_dict()
+    out["changed_items"] = {
+        i: {"a": dict(sa[i].fact_ranks), "b": dict(sb[i].fact_ranks)}
+        for i in ids
+        if sa[i].fact_ranks != sb[i].fact_ranks
+    }
+    out["latency_total_ms"] = {
+        name_a: a["latency_ms"].get("total_ms"),
+        name_b: b["latency_ms"].get("total_ms"),
+    }
+    text_out = json.dumps(out, indent=1)
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(text_out + "\n", encoding="utf-8")
+    print(text_out)
+    return 0
+
+
 def _gate(args: argparse.Namespace) -> int:
     """Fail (exit 1) when an arm's metric falls below its floor in a results file."""
     report = json.loads(args.results.read_text(encoding="utf-8"))
@@ -382,9 +428,15 @@ def main(argv: list[str] | None = None) -> int:
     p_gate.add_argument("--results", type=Path, required=True)
     p_gate.add_argument("--arm", required=True)
     p_gate.add_argument("--min", action="append", required=True, help="metric=floor")
+    p_cmp = sub.add_parser("compare")
+    p_cmp.add_argument("--a", required=True, help="results.json:arm")
+    p_cmp.add_argument("--b", required=True, help="results.json:arm")
+    p_cmp.add_argument("--out", type=Path)
     args = parser.parse_args(argv)
     if args.command == "gate":
         return _gate(args)
+    if args.command == "compare":
+        return _compare(args)
     settings = get_settings()
     handler = {
         "freeze": _freeze,
