@@ -1,4 +1,4 @@
-import type { SearchMode } from "./types";
+import type { SearchMode, SourceClass } from "./types";
 
 export const queryKeys = {
   workspaces: ["workspaces"] as const,
@@ -7,6 +7,6 @@ export const queryKeys = {
   source: (ws: string, id: string) => ["workspace", ws, "sources", id] as const,
   evidence: (ws: string, handle: string, child: string | null) =>
     ["workspace", ws, "evidence", handle, child] as const,
-  search: (ws: string, q: string, mode: SearchMode, k: number) =>
-    ["workspace", ws, "search", q, mode, k] as const,
+  search: (ws: string, q: string, mode: SearchMode, k: number, classes: readonly SourceClass[]) =>
+    ["workspace", ws, "search", q, mode, k, classes] as const,
 };

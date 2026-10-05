@@ -12,7 +12,8 @@ export type VersionStatus =
   | (typeof NON_TERMINAL_STATUSES)[number]
   | (typeof TERMINAL_STATUSES)[number];
 
-export type SearchMode = "lexical" | "dense";
+export const SEARCH_MODES = ["full", "hybrid", "dense", "lexical"] as const;
+export type SearchMode = (typeof SEARCH_MODES)[number];
 
 export interface Workspace {
   id: string;
@@ -180,23 +181,56 @@ export interface Tombstone {
   deleted_at: string;
 }
 
-export interface SearchHit {
-  rank: number;
+export interface SearchAnchor {
   child_id: string;
+  lane: "dense" | "lexical";
+  char_start: number;
+  char_end: number;
+}
+
+/** Snippet offsets count Unicode code points (see lib/highlight.ts). */
+export interface SearchSnippet {
+  text: string;
+  mark_start: number;
+  mark_end: number;
+  truncated_left: boolean;
+  truncated_right: boolean;
+}
+
+export interface SearchScores {
+  rrf: number;
+  rerank: number | null;
+  fused_rank: number;
+  lanes: { dense?: number; lexical?: number };
+}
+
+export interface SearchItem {
+  rank: number;
   handle: string;
   locator_label: string;
   source_code: string;
   source_title: string;
-  source_class: SourceClass;
-  child_kind: string;
-  char_start: number;
-  char_end: number;
-  snippet: string;
-  score: number;
+  source_type: string;
+  source_class: string;
+  anchor: SearchAnchor;
+  snippet: SearchSnippet;
+  scores: SearchScores;
 }
 
 export interface SearchResponse {
-  mode: SearchMode;
   query: string;
-  hits: SearchHit[];
+  mode: string;
+  items: SearchItem[];
+  flags: string[];
+  trace_id: string | null;
+  timings_ms: Record<string, number>;
+}
+
+export interface SearchParams {
+  q: string;
+  mode: SearchMode;
+  k?: number;
+  sourceClasses?: readonly SourceClass[];
+  sources?: readonly string[];
+  maxConfidentiality?: Confidentiality;
 }

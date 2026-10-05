@@ -53,7 +53,7 @@ export function EvidenceView({
       )}
       {!handle ? (
         <p className="text-sm text-slate-500">
-          Enter a handle above, or open one from the smoke search results.
+          Enter a handle above, or open one from the search results.
         </p>
       ) : query.isPending ? (
         <Loading label="Resolving evidence..." />

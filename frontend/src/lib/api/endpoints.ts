@@ -1,10 +1,11 @@
 import { evidenceApiPath } from "../handles";
+import { buildSearchQuery } from "../search";
 import { apiGet, apiRequest } from "./client";
 import type {
   CreateWorkspaceInput,
   DeleteSourceResult,
   Evidence,
-  SearchMode,
+  SearchParams,
   SearchResponse,
   SourceDetail,
   SourceSummary,
@@ -67,12 +68,5 @@ export const getEvidence = (
   signal?: AbortSignal,
 ) => apiGet<Evidence>(evidenceApiPath(code, handle), { query: { child_id: childId }, signal });
 
-export const devSearch = (
-  code: string,
-  params: { q: string; mode: SearchMode; k?: number },
-  signal?: AbortSignal,
-) =>
-  apiGet<SearchResponse>(`${ws(code)}/dev/search`, {
-    query: { q: params.q, mode: params.mode, k: params.k ?? 10 },
-    signal,
-  });
+export const searchWorkspace = (code: string, params: SearchParams, signal?: AbortSignal) =>
+  apiGet<SearchResponse>(`${ws(code)}/search?${buildSearchQuery(params)}`, { signal });
