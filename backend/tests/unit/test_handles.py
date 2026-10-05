@@ -62,10 +62,15 @@ def test_structural_round_trip(parts: tuple[str, str, int, tuple[LocatorUnit, ..
 
 @given(workspace_codes, source_codes, versions, analytic_ids)
 def test_analytic_round_trip(ws: str, src: str, ver: int, aq: str) -> None:
+    raw = f"{ws}/{src}@v{ver}:AQ{aq}"
+    if len(raw) > MAX_HANDLE_LENGTH:
+        with pytest.raises(MalformedHandleError):
+            EvidenceHandle(ws, src, ver, (), aq)
+        return
     handle = EvidenceHandle(ws, src, ver, (), aq)
-    if len(str(handle)) <= MAX_HANDLE_LENGTH:
-        assert parse_handle(str(handle)) == handle
-        assert handle.is_analytic
+    assert str(handle) == raw
+    assert parse_handle(raw) == handle
+    assert handle.is_analytic
 
 
 @settings(max_examples=2000)
