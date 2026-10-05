@@ -12,6 +12,8 @@ import uuid
 from collections.abc import AsyncIterator
 
 import pytest
+from alembic import command
+from alembic.config import Config
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
@@ -29,6 +31,15 @@ def _unavailable(reason: str) -> None:
 @pytest.fixture(scope="session")
 def settings() -> Settings:
     return get_settings()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def migrated_test_database(settings: Settings) -> None:
+    """Bring the dedicated test database to the Alembic head (as the schema owner)."""
+    try:
+        command.upgrade(Config(str(settings.alembic_ini_path)), "head")
+    except Exception as exc:  # unreachable DB, missing test database, ...
+        _unavailable(f"cannot migrate test database: {type(exc).__name__}: {exc}"[:300])
 
 
 @pytest.fixture(scope="session")
