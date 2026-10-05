@@ -5,7 +5,7 @@
   by opening the file: CSV ``R{n}``, XLSX ``SH{sheet}.R{n}``.
 * Each row's parent text is the authoritative ``column: value; ...`` rendering.
 * Column roles (plan §9): ``free_text`` (long or high-cardinality strings), ``identifier``,
-  ``context`` (low-cardinality strings), ``numeric``, ``date``.
+  ``context`` (low-cardinality strings), ``constant`` (one repeated value), ``numeric``, ``date``.
 * Only rows with a non-empty free-text cell become retrieval units. Their child text is
   ``{table} | context=values | column: verbatim``, and their span points at the verbatim value
   inside the parent text (D1). Purely numeric rows are parents only: resolvable, available to
@@ -87,6 +87,11 @@ def _profile(name: str, values: list[Any], max_levels: int) -> ColumnProfile:
         return ColumnProfile(name, "numeric", "numeric", len(present), distinct)
     if all(isinstance(v, str) and _ISO_DATE.match(v) for v in present):
         return ColumnProfile(name, "date", "date", len(present), distinct)
+    if distinct == 1 and len(present) > 1:
+        # A single repeated value (e.g. a data notice) carries no row-specific evidence.
+        return ColumnProfile(
+            name, "categorical", "constant", len(present), distinct, (str(present[0]),)
+        )
     mean_len = sum(len(str(v)) for v in present) / len(present)
     if mean_len > FREE_TEXT_MEAN_LEN:
         return ColumnProfile(name, "text", "free_text", len(present), distinct)

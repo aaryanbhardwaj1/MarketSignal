@@ -13,10 +13,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from redis.asyncio import Redis
 
-from marketsignal.api.routers import health
+from marketsignal.api.errors import install_error_handlers
+from marketsignal.api.routers import dev, evidence, health, sources, workspaces
 from marketsignal.config import Settings, get_settings
 from marketsignal.db.engine import create_engine, create_session_factory
 from marketsignal.health import role_is_privileged
+from marketsignal.providers.embeddings import Embedder, FastEmbedEmbedder
 from marketsignal.telemetry.logging import configure_logging, get_logger
 
 log = get_logger(__name__)
@@ -42,6 +44,26 @@ async def _guard_db_role(app: FastAPI, settings: Settings) -> None:
         raise PrivilegedDatabaseRoleError(
             "MS_DATABASE_URL connects as a superuser/BYPASSRLS role; use the ms_app role"
         )
+
+
+def _lazy_query_embedder(settings: Settings) -> Callable[[], Embedder]:
+    """Load the ONNX model on first dense query, not at startup (fast boot, low idle RSS)."""
+    embedder: list[Embedder] = []
+
+    def get() -> Embedder:
+        if not embedder:
+            embedder.append(
+                FastEmbedEmbedder(
+                    settings.embed_model_id,
+                    settings.embed_model_name,
+                    settings.embed_dimensions,
+                    settings.model_cache_dir,
+                    threads=settings.embed_threads,
+                )
+            )
+        return embedder[0]
+
+    return get
 
 
 @asynccontextmanager
@@ -75,6 +97,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         openapi_url=None if settings.env == "prod" else "/openapi.json",
     )
     app.state.settings = settings
+    # Overridable seams (tests inject an in-process worker and a deterministic embedder).
+    from marketsignal.worker.app import defer_ingestion
+
+    app.state.defer_job = defer_ingestion
+    app.state.query_embedder = _lazy_query_embedder(settings)
+    install_error_handlers(app)
 
     app.add_middleware(
         CORSMiddleware,
@@ -108,4 +136,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
     app.include_router(health.router)
+    app.include_router(workspaces.router)
+    app.include_router(sources.router)
+    app.include_router(evidence.router)
+    if settings.env != "prod" and settings.dev_endpoints_enabled:
+        app.include_router(dev.router)
     return app

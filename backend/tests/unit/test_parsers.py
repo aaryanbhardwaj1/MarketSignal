@@ -127,14 +127,17 @@ def test_pptx_slides_notes_and_tables() -> None:
     assert slide2.text == "Channel Mix\nDTC grew\nChannel | Share\nDTC | 41%"
 
 
+NOTICE = "Fictional data created for the MarketSignal demo."
+
+
 def test_csv_rows_summary_original_text_and_free_text_span() -> None:
     verbatim = "Sizes are inconsistent between the tops and the shoes I buy."
     data = make_csv(
         [
-            ["respondent_id", "segment", "nps", "code", "verbatim"],
-            ["R001", "Gen Z", "7", "007", verbatim],
-            ["R002", "Millennial", "9", "008", ""],
-            ["R003", "Gen Z", "3", "009", "Delivery took two weeks which is far too slow for me."],
+            ["respondent_id", "segment", "nps", "code", "verbatim", "notice"],
+            ["R001", "Gen Z", "7", "007", verbatim, NOTICE],
+            ["R002", "Millennial", "9", "008", "", NOTICE],
+            ["R003", "Gen Z", "3", "009", "Delivery took two weeks which is far too slow.", NOTICE],
         ],
         bom=True,
     )
@@ -146,7 +149,8 @@ def test_csv_rows_summary_original_text_and_free_text_span() -> None:
     assert "3 data rows" in summary.text
     assert "segment (categorical: Gen Z, Millennial)" in summary.text
     assert (
-        row2.text == f"respondent_id: R001; segment: Gen Z; nps: 7; code: 007; verbatim: {verbatim}"
+        row2.text == "respondent_id: R001; segment: Gen Z; nps: 7; code: 007; "
+        f"verbatim: {verbatim}; notice: {NOTICE}"
     )
     assert row2.row_child is not None
     assert row2.text[row2.row_child.char_start : row2.row_child.char_end] == verbatim
@@ -160,10 +164,18 @@ def test_csv_rows_summary_original_text_and_free_text_span() -> None:
         "nps": "numeric",
         "code": "numeric",
         "verbatim": "free_text",
+        "notice": "constant",  # long but repeated: never a free-text retrieval unit
     }
     assert table.rows[0] == (
         2,
-        {"respondent_id": "R001", "segment": "Gen Z", "nps": 7, "code": 7, "verbatim": verbatim},
+        {
+            "respondent_id": "R001",
+            "segment": "Gen Z",
+            "nps": 7,
+            "code": 7,
+            "verbatim": verbatim,
+            "notice": NOTICE,
+        },
     )
 
 
