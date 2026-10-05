@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 1 (ingestion, handles, resolver); anchor propagation completed in Phases 2–3 (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 1 implemented** (parents, children, spans, resolver, highlight); anchor propagation through traces, pool, pack and citation cards in Phases 2–3
 - **Related:** plan §9, §4, §4.2, §4.3, §16, §26, §27; ADR-0001, ADR-0002, ADR-0004; approved deviation D1
 
 ## Context
@@ -76,3 +76,25 @@ Structured files add a second problem: one child per spreadsheet row floods the 
 - Gold integrity (CI): every `satisfied_by` handle resolves and its parent text contains the anchor or a surface form; each anchor matches exactly one active parent; `content_hash` matches.
 - To add with the component: a reindex with a new `chunking_policy_version` leaves every parent handle and `content_hash` unchanged; a contract test that a stored citation card's `char_start/char_end` slice of the parent equals the anchor child's text; a contract test that the anchor offsets survive tool output → evidence pool → pack → stored citation card.
 - Integration: purge makes the handle return 410 and removes the canary text everywhere.
+
+## Implementation notes (Phase 1, 2026-10-05)
+
+- **Parent units.** Parents are built as the Decision describes. Locators are `P{p}.B{n}` (PDF), `S{s}.B{n}` / `S{s}.Q{n}` (DOCX, MD, TXT), `SL{n}` / `SL{n}.N1` (PPTX), `SH{s}.R{r}` / `R{r}` (rows) and `SH{s}.T1` / `T1` (table summaries). The cap is 800 tokens, counted on the rendered text including list markers.
+- **Children.** There are three kinds:
+  - `window`: 192 tokens with 32 overlap, cut on the embedder's own WordPiece offsets;
+  - `row`: one per row that has a free-text cell;
+  - `summary`: one per table.
+- **Spans.**
+  - Every child stores `char_start`/`char_end` into its parent.
+  - For windows, the parent slice equals the child text. This is checked before insert (`check_child_contract`), in the per-version health check and, with real model offsets, in `test_model_ingestion.py`.
+  - **For row children, the span is the verbatim free-text cell**, not the whole row. The row parent is the authoritative `col: value; …` text. Cell-level highlighting of numeric metrics belongs to the analytics tool (Phase 5).
+- **Highlight.** The resolver returns `highlight {child_id, char_start, char_end, text}` when `child_id` names a child of the parent. An unknown `child_id` returns 200 without a highlight, and no highlight is chosen by default. Offsets count Unicode code points, and the frontend slices by code point.
+- **Policy `c2`** (changed from `c1` during Phase 1). Columns that are unique, whitespace-free and ≤ 64 characters are classified as `identifier` *before* the free-text test. Under `c1`, long `record_id` values passed the free-text test and every numeric channel row became a retrieval unit. Seed-corpus children fell from 1,954 to 1,834 (Northstar).
+- **Row parent text** is rendered from the original cell strings, so `007` stays `007`. A `constant` column role, such as a data notice repeated in every row, is never free text.
+- **Not built in Phase 1:**
+  - the reindex job that acts on a `parser_version`, `structure_version` or `chunking_policy_version` change (Phase 7);
+  - anchor propagation through retrieval traces, pool, pack and citation cards (Phases 2–3).
+- **Verified (Phase 1 exit):**
+  - all 111 fact-ledger anchors resolve to exactly one parent;
+  - for sampled facts in every format, the resolved parent text and locator are exact, and `text[char_start:char_end] == highlight.text`;
+  - a free-text survey row (`NORTHSTAR/SURVEY-2026@v1:R148`) is retrieved lexically at rank 1, with its highlight covering exactly the verbatim cell.

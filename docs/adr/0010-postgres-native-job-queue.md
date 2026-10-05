@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 1 (ingestion worker, transactional enqueue, stalled-job reaper); re-embed and purge jobs as their features land (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 1 implemented** (Procrastinate 3.10 worker, transactional enqueue, structured statuses); stalled-job reaper and re-embed job deferred (see notes)
 - **Related:** plan §4, §4.2, §4.3, §5, §6, §34; ADR-0001 (Postgres as single system of record), ADR-0009 (workspace isolation), ADR-0016 (purge and versioning); no approved deviation
 
 ## Context
@@ -78,3 +78,15 @@ Use **Procrastinate 3.x**, a Postgres-native task queue, on the same PostgreSQL 
 - Integration: delete → purge contract (canary string gone everywhere, handle returns 410, blob gone).
 - Isolation: the worker cannot read another workspace's children; a job for a missing or foreign version fails on 0 rows.
 - Degradation: `EMBEDDER_UNAVAILABLE` → `ready_degraded` plus a scheduled re-embed job has a named test.
+
+## Implementation notes (Phase 1, 2026-10-05)
+
+- **Library.** Procrastinate 3.10.0 with `PsycopgConnector`. Its schema is applied by migration 0002 from `SchemaManager.get_schema()`, and the downgrade drops the `procrastinate_*` functions too. One task, `ingest_source_version`, runs on queue `ingestion` with arguments `(workspace_id, source_version_id)`. The worker re-derives the workspace scope from the database and never trusts a code in the payload.
+- **Transactional enqueue: implemented and verified.** The upload deferral runs on the upload's own psycopg connection (`task.configure(connection=…).defer_async`), so the version row, blob, audit event and job commit or roll back together. `test_failed_job_handoff_rolls_back_the_upload` raises after the deferral and asserts that no source, version or `todo` job remains.
+- **Idempotent jobs.** A job only claims a version that is still `queued`, under `FOR UPDATE`. Duplicate delivery or a re-queue after a purge is a no-op.
+- **Retry.** `POST /sources/{id}/retry` re-queues the latest version only when it is `failed`, in one transaction with the job. Procrastinate's own automatic retry is not used: ingestion failures are deterministic (parse errors, health check), and a visible, user-initiated retry is clearer.
+- **Purge vs in-flight job.** Every worker write share-locks the source row, which serialises with the purge's `FOR UPDATE`. A purged version is never activated, failed or given content again. Four tests cover it: purge before the job, and purge during embedding, during the health check and before the flip.
+- **Deferred:**
+  - **Stalled-job reaper.** A worker killed mid-job leaves the job `doing` and the version in an intermediate status. Phase 1 recovers this by hand: `procrastinate` retry, or a re-upload. The reaper (Procrastinate `stalled_jobs` + version reset) is scheduled for Phase 8 hardening, before deployment.
+  - **Re-embed job** for `ready_degraded` versions. The status and warning are implemented, and the job arrives with Phase 2's embedding work.
+- **Observed throughput** (seed corpus, one worker, laptop CPU): 30 jobs in about 60 s, a median of about 0.8 s per source; embedding dominates.

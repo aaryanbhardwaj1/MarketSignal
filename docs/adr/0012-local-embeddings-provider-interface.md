@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 1 (embedder and file cache); dense retrieval SQL in Phase 2 (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 1 implemented** (fastembed embedder, per-model table and HNSW index, ingest cache); query instruction and dense retrieval SQL in Phase 2 (see notes)
 - **Related:** plan §0.2 (A3), §4, §5, §6 (`chunk_embeddings`), §7, §8, §9, §12, §22, §24, §26, §28, §30, §32; ADR-0001 (Postgres + pgvector), ADR-0002 (hybrid retrieval), ADR-0003 (parent/child chunks), ADR-0005 (local cross-encoder), ADR-0011 (answer cache / corpus_version), ADR-0013 (evaluation); no approved deviation
 
 ## Context
@@ -81,3 +81,17 @@ Dense retrieval needs an embedding model at ingest time (every child chunk) and 
 - Ingest health check on every not-yet-active version: a dense self-match in the top 5 for 5 sampled children.
 - Integration: iterative-scan settings are active inside the retrieval transaction; a filtered query returns exactly LIMIT rows; an EXPLAIN test confirms HNSW use; embedder down leads to lexical-only.
 - Eval: ANN recall against an exact scan (`enable_indexscan=off`), reported by the harness; the bge-small vs bge-base ablation, mapped to parents before scoring.
+
+## Implementation notes (Phase 1, 2026-10-05)
+
+- **Model.** `FastEmbedEmbedder` runs fastembed 0.8.1 with ONNX `BAAI/bge-small-en-v1.5` (384-d, L2-normalised). It loads lazily, once per process, under a lock. Its `tokenizers.Tokenizer` is reused for chunking, so child windows are cut on the model's own WordPiece offsets, with no truncation and special tokens excluded.
+- **Storage** follows the Decision, with one change. The primary key is **`(workspace_id, child_id, model_id)`**, tenant-scoped as ADR-0009 requires. The model also has a dimension check constraint and a partial expression HNSW index, `chunk_embeddings_hnsw_bge_small_en_v1_5` (m=16, ef_construction=64).
+- **Ingest cache: deviation.** The cache is an **SQLite file per model** (`.cache/embeddings/<model>.sqlite3`), keyed by `sha256(model_id ∥ input)`, instead of Parquet. SQLite gives concurrent-safe incremental appends and point lookups with no extra dependency; Parquet would need the whole file rewritten on every append.
+  - The `(model_id, embed_input_sha256)` btree exists, but the DB-side reuse lookup is not used in Phase 1, because the file cache covers re-ingestion.
+  - CI caches the ONNX model directory (`onnx-models-bge-small-en-v1.5-v1`), not the embedding cache.
+- **Dense input** is `"{title} › {heading path}\n{child text}"`.
+- **Not yet implemented: the query instruction.** fastembed's `query_embed` does not prepend BGE's retrieval instruction, so queries are currently embedded without it. This changes dense ranking, which makes it a Phase 2 retrieval decision: add a configurable `embed_query_instruction`, A/B it on gold v0, and record the result here.
+- **Degradation: implemented.** A failing or unavailable model marks the version `ready_degraded` with `EMBEDDER_UNAVAILABLE`, and lexical search still serves it (integration test). The re-embed job is deferred (ADR-0010).
+- **Hosted-embedder refusal** is not applicable yet: only the local embedder exists.
+- **Phase 1 smoke dense query** (`retrieval/smoke.py`, dev-only endpoint) already follows the canonical form: an explicit transaction with `set_config('hnsw.ef_search', …, true)` and `hnsw.iterative_scan = relaxed_order`, a `MATERIALIZED` CTE, and `ORDER BY distance + 0`. The full filtered query is built in Phase 2.
+- **Measured throughput** (laptop CPU, batch 64, cold cache): **40–43 children/s**. Embedding is about 88% of ingestion time, so a warm cache makes re-ingestion nearly free. Dense self-retrieval passes the health check on every seed version.

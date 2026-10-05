@@ -2,7 +2,7 @@
 
 **An agentic growth-strategy intelligence platform for consulting teams.** It turns fragmented customer, competitor, market, and internal evidence into grounded strategic insights. Every material claim resolves to an exact, immutable evidence handle.
 
-> **Status:** Phase 0 is complete: repository, local infrastructure, workspace-isolation scaffolding and CI ([report](docs/phase-reports/phase-0.md)). Phase 1 (ingestion and evidence model) is next. The approved design is in [`docs/ARCHITECTURE_PLAN.md`](docs/ARCHITECTURE_PLAN.md), and the decisions behind it are in [`docs/adr/`](docs/adr/).
+> **Status:** Phases 0 and 1 are complete. Phase 0 delivered the repository, local infrastructure, isolation scaffolding and CI ([report](docs/phase-reports/phase-0.md)). Phase 1 delivered ingestion and the evidence model: seven formats through the real upload API, versioned sources, parent/child evidence with exact spans, local embeddings, the evidence resolver and an inspection UI ([report](docs/phase-reports/phase-1.md)). Phase 2 (retrieval core and gold v0) is next. The approved design is in [`docs/ARCHITECTURE_PLAN.md`](docs/ARCHITECTURE_PLAN.md), and the decisions behind it are in [`docs/adr/`](docs/adr/).
 
 ## Quick start (local, light mode)
 
@@ -12,7 +12,9 @@ Requires Docker (OrbStack, Colima or Docker Desktop), [uv](https://docs.astral.s
 make up                  # Postgres 18 + pgvector and Redis in containers (creates .env from .env.example)
 make sync migrate        # backend deps (Python 3.13) + migrations as the schema-owner role
 make api                 # FastAPI on :8000 as the non-privileged ms_app role
+make worker              # ingestion worker (Procrastinate, Postgres-backed queue)
 curl localhost:8000/readyz
+make seed                # upload the fictional Northstar/Southpeak corpus through the real API
 make test                # unit + integration tests (integration runs as ms_app, so RLS is enforced)
 cd frontend && pnpm install && pnpm dev   # Next.js on :3000
 ```
@@ -38,6 +40,8 @@ The demo engagement uses **Northstar Athletics**, a fictional client. Its compet
 | [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md) | Product and engineering specification |
 | [`docs/ARCHITECTURE_PLAN.md`](docs/ARCHITECTURE_PLAN.md) | Approved architecture plan: every major decision with its rationale, alternatives and tradeoffs |
 | [`docs/adr/`](docs/adr/) | Architecture Decision Records and the spec-deviation register |
+| [`docs/INGESTION.md`](docs/INGESTION.md) | How a file becomes citable evidence: validation, versioning, parsing, parents and children, embeddings, purge, resolution |
+| [`docs/phase-reports/`](docs/phase-reports/) | Per-phase reports with verification results and measurements |
 
 More documents arrive with the phases that implement them: system design, retrieval deep dive, agent and MCP, evaluation, security, deployment, and an interview guide.
 

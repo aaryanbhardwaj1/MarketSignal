@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 1 (grammar, resolver), Phase 3 (alias layer, hold-back gate, verifier) (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 1 implemented** (grammar, strict parser, builder, resolver, workspace check); Phase 3 (alias layer, hold-back gate, verifier)
 - **Related:** plan §10, §10.1, §16, §21, §3.1, §24; ADR-0001, ADR-0003; approved deviation D2
 
 ## Context
@@ -77,3 +77,16 @@ unit   = kind [1-9][0-9]{0,6};  kind = SL|SH|P|B|S|N|R|Q|T
 - To add with the component: persisted `messages`, citation cards, hypothesis links and cache entries contain no `[E\d+]` evidence identities.
 - Deterministic CI-gated metrics: citation validity 100%, citation-in-pack 100%, numeric faithfulness, finding-citation coverage.
 - Injection suite includes a citation-hijack attack goal (Phase 8).
+
+## Implementation notes (Phase 1, 2026-10-05)
+
+- **Grammar.** `WS/SOURCE@vN:LOCATOR`, alphabet `[A-Z0-9v/@:.-]` (the lowercase `v` is the version marker), maximum 96 characters.
+  - Units: `SL SH P B S N R Q T`.
+  - Computed handles: `AQ` + 12 hex characters (reserved for Phase 5).
+  - Earlier drafts of this ADR and of the plan left the `v` out of the alphabet. That was corrected when the grammar was implemented.
+- **Parsing.** `parse_handle` is strict. It rejects lowercase workspace, source or unit text, leading zeros in versions and indices, lowercase hex in computed handles, unknown units, trailing characters (such as Markdown link injection) and over-length input. `parse_rendered_handle` accepts the bracketed display form.
+  - 51 unit tests cover the parser, including property-based round-trips (Hypothesis).
+  - The generator guards raw length *before* constructing a handle. An early version produced over-length handles and hid failures.
+- **Workspace check.** `require_workspace` compares the handle's workspace prefix with the route's workspace. A mismatch is reported as **404 `EVIDENCE_NOT_FOUND`**, the same as an unknown handle, so a handle never reveals that another workspace exists. RLS would hide the row anyway; the check makes the outcome explicit and cheap.
+- **Resolver outcomes:** malformed → 400 `MALFORMED_HANDLE`; unknown or foreign → 404; purged source → 410 `SOURCE_DELETED` with tombstone; otherwise 200 with exact parent text, `content_hash`, locator and label, version status (`is_latest`, `latest_version`), provenance, neighbouring excerpts, child spans and optional highlight.
+- **Verified on the seeded system:** malformed 400, unknown locator 404, unknown version 404, foreign prefix 404, and a live purge turning 200 into 410.

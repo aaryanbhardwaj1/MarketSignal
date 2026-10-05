@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phases 0–1 (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 1 implemented** (PostgreSQL 18.6, pgvector 0.8.7; evidence model in migration 0002)
 - **Related:** plan §5, §6, §7, §8, §16, §33, §34; ADR-0002, ADR-0003, ADR-0004; no approved deviation
 
 ## Context
@@ -76,3 +76,10 @@ Dense query contract (§7): runs inside an explicit transaction, sets `hnsw.ef_s
 - RLS negative tests: scope A sees 0 rows of B; cross-workspace INSERT fails WITH CHECK; missing scope errors.
 - Eval harness reports ANN recall against an exact scan; the CI gate uses exact search.
 - `/readyz` role guard test; ingestion health check on the not-yet-active version (rare-lexeme `tsv @@` membership, dense self-match in top-5, handle resolves to text containing the child).
+
+## Implementation notes (Phase 1, 2026-10-05)
+
+- **One database holds everything.** Sources, versions, blobs (`bytea`), parents, children, embeddings, dataset tables and rows, audit events and the Procrastinate job queue all live in PostgreSQL 18.6 with pgvector 0.8.7 (`pgvector/pgvector:0.8.7-pg18`). No object store is used in Phase 1. The 25 MB upload cap keeps blobs small, and a purge deletes the blob in the same transaction as the derived content.
+- **Lexical search** uses generated, stored `tsvector` columns on `child_chunks`: `tsv` weights the heading A and the body D, and `tsv_body` holds the body only. `tsv` has a GIN index.
+- **Measured on the seed corpus** (30 uploads, 994 KB): 2,680 parents, 2,230 children and 2,230 embeddings. Total ingestion time is about 60 s on a laptop CPU, of which embedding is about 88% (`docs/phase-reports/phase-1.md`).
+- **Not yet measured:** RLS × GIN/HNSW query cost under load. That belongs to Phase 2 retrieval, where the real queries are built.

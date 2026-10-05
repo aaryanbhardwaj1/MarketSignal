@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phases 1–2 (world model, seed corpus, `freeze-gold`, gold v0, retrieval runner, CI smoke) and Phase 7 (gold v1, judge calibration, generation/behavioral metrics, tuning iterations, fresh-seed holdout) (this ADR is updated with measurements when the component is built)
+- **Implementation:** Phase 1 implemented: world model, deterministic seed generator, fact ledger (111 facts), real-API seeding and anchor census. Phase 2: `freeze-gold`, gold v0, retrieval runner, CI smoke. Phase 7: gold v1, calibration, generation metrics.
 - **Related:** plan §0.3 (D4), §7, §26, §27, §29, §30, §35, §38; ADR-0002 (hybrid retrieval), ADR-0003 (parent is the citation unit), ADR-0004 (evidence handles), ADR-0012 (embeddings), ADR-0015 (modes and the agent ablation), ADR-0017 (fictional corpus), ADR-0019 (testing strategy); approved deviation D4
 
 ## Context
@@ -108,3 +108,16 @@ The project's claims (hybrid beats dense-only, reranking helps, the agent is wor
 - The judge calibration report (sensitivity, specificity, flip rate).
 - Per-iteration tuning reports.
 - The holdout gap against dev.
+
+## Implementation notes (Phase 1, 2026-10-05)
+
+- **Inputs.** `seed_data/world_model.yaml` defines the fictional companies, segments, products and planted facts. `seed_data/generator/` renders the corpus deterministically: same world model, same bytes, checked by `make seed-check`.
+- **Corpus.** 30 uploads across all seven formats:
+  - Northstar: 24 uploads, including a v1 → v2 update of `GENZ-TRENDS`;
+  - Southpeak: 6 uploads.
+  - The generated files are committed byte-exact; `.gitattributes` marks them `-text` so CRLF CSVs are not normalised.
+- **Fact ledger.** `seed_data/fact_ledger.json` holds 111 facts.
+  - Each fact has an anchor: an exact sentence, or a row (`key_column`, `key_value`, `value_column`, `value`) with an optional sheet. It also has a statement and its source.
+  - The ledger includes superseded pairs (v1 → v2), distractors and an injection carrier for later security evaluation.
+- **Seeding** goes through the real upload API (`scripts/seed.py`), the same path user documents take.
+- **Anchor census** (`scripts/verify_phase1.py`). All 111 anchors are located in **exactly one** parent of the ingested corpus: 0 missing, 0 ambiguous. This is the basis for Phase 2's `freeze-gold`, which will write the resolved handles into gold v0.

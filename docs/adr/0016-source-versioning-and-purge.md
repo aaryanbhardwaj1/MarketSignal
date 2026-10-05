@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 1 (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 1 implemented** (versioning, idempotency, duplicates, retry, guarded flip, synchronous purge with tombstone)
 - **Related:** plan §4.2, §4.3, §16 (also §6, §10, §22, §23, §29); ADR-0001, ADR-0003, ADR-0004, ADR-0009, ADR-0010, ADR-0011; approved deviation D1 (context only)
 
 ## Context
@@ -83,3 +83,29 @@ A tombstone is an explicit, resolved state, not a fake citation. The acceptance 
 - Unit: *resolver ordering, including tombstones*. A purged version returns `SOURCE_DELETED` before any parent lookup.
 - Eval gate: citation validity stays at 100%, with tombstones counted as resolved-deleted.
 - In demo mode, `demo_read_only` workspaces return `POLICY_DENIED` for delete.
+
+## Implementation notes (Phase 1, 2026-10-05)
+
+- **Implemented as decided:**
+  - version allocation under `FOR UPDATE` on the source row;
+  - the partial unique index `source_versions_live_content`, so a source has at most one live version per content hash;
+  - an idempotent re-upload returns `200 {created: false}`;
+  - `duplicate_of` for identical bytes uploaded as a new source;
+  - revert, retry-after-fix and re-add-after-delete each create a new version;
+  - the guarded flip: activate only if newer, otherwise `superseded` on arrival; supersede the previous version; bump `workspace_corpus_state.version`; audit.
+- **Retry.** The endpoint re-queues the **same failed version**; `attempts` is incremented and no new version is created. Only the latest version, and only when `failed`; anything else returns 409 `NOT_RETRYABLE`.
+- **Purge is synchronous.** It runs in one request transaction, not as a job. At Phase 1 corpus sizes it takes milliseconds. If large sources make it slow, it moves to a job with the same contract.
+- **Re-upload to a deleted source** clears `deleted_at` and allocates the next version number. Old handles keep returning 410, because their versions stay `purged`.
+- **Follow-ups from this ADR, resolved:**
+  - *The flip refuses a version whose source was purged in flight.* Implemented more strictly than planned. Every worker write share-locks the source row, so a purge at any point wins: the version stays `purged`, nothing written survives, and the handle returns 410. Tested for a purge before the job, during embedding, during the health check and before the flip.
+  - A bug found while writing those tests: previously the worker overwrote `purged` with in-flight statuses and finally marked the version `failed`.
+  - *Embedding caches on purge.* The ingest file cache stores vectors keyed by a hash of the input, never the text, so it is **not** evicted on purge. There is no query cache yet.
+- **Verification implemented:**
+  - delete → purge contract with a **canary sweep** of every content table, including whole-row text of dataset rows and audit payloads, before (non-vacuous) and after;
+  - transactional-enqueue rollback;
+  - idempotent and duplicate uploads;
+  - version update with the old handle still resolving (`is_latest: false`);
+  - retry-after-fail;
+  - resolver ordering with tombstones.
+  - On the seeded system: `GENZ-TRENDS` v1 is `superseded` and v2 `ready`; four superseded fact pairs resolve on both versions; a live purge turns 200 into 410.
+- **Not yet built:** `demo_read_only` (Phase 9), hypothesis stale-version flags (Phase 6), and the `run_events` retention decision (Phase 3).

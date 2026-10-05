@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 1 (this ADR is updated with measurements when the component is built)
+- **Implementation:** **Phase 1 implemented** (fictional Northstar / Southpeak world and corpus)
 - **Related:** plan §27 (corpus composition), §0.2 A4, §0.2 A5, §23, §24, §35; ADR-0013, ADR-0016; approved deviations D6 and D4 (context)
 
 ## Context
@@ -77,3 +77,10 @@ If real competitors were mixed with synthetic customer voice, the repository wou
 - Gold integrity CI (§27): every `satisfied_by` handle resolves and contains its anchor or surface form, each anchor matches exactly one active parent, and the corpus sha256 matches the manifest.
 - Isolation behavioural eval: zero Southpeak canaries in Northstar answers, and the reverse.
 - Repository hygiene: gitleaks and the size and path checks pass on every PR, and no fetched filing appears in git history.
+
+## Implementation notes (Phase 1, 2026-10-05)
+
+- **Companies.** The corpus describes two fictional clients in separate workspaces: Northstar Athletics (`NORTHSTAR`, a Gen Z growth engagement) and Southpeak Outdoor (`SOUTHPEAK`, a brand refresh, also used for cross-workspace isolation tests). Northstar's corpus includes fictional competitors, such as Vantage Athletic, with `competitor`-class sources. All names, figures and quotes are generated from `seed_data/world_model.yaml`; no real company data is included.
+- **Formats.** The 30 uploads cover PDF, DOCX, PPTX, XLSX, CSV, Markdown and TXT. Every format is ingested through the real upload API.
+- **Seed size:** 994 KB.
+- **Not built:** the optional public-filings fetch script (D6) is not part of Phase 1.

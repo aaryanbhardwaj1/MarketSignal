@@ -108,6 +108,20 @@ Evaluation uses a versioned gold set derived from a synthetic **world model with
 | D10 | Every query goes through the agent (implied) | A `standard` single-pass mode plus an agentic `research` mode, chosen by a deterministic router that the user can override. **Approval requirement:** the router stays deterministic (no LLM) and user-overridable. The Phase 7 agent-vs-single-pass ablation is mandatory and is the evidence for when agentic orchestration is worth its cost. | The spec's latency target is under 15 s. Phase 7 measures the agent's benefit through an ablation. |
 | D11 | Load test with Locust/k6 | A Locust script, or a documented asyncio script if Locust adds friction. | Either one serves spec §26.4. |
 
+### 0.4 Implementation deviations (recorded as phases complete)
+
+These refine the plan without changing the approved evidence, versioning, parent/child, isolation or ingestion models. Each one is detailed in the named ADR's *Implementation notes*. Where this register and the text below disagree, the register wins.
+
+| Phase | Plan text | As built | ADR |
+|---|---|---|---|
+| 1 | Ingest embedding cache at `.cache/embeddings/<model>.parquet` plus a DB lookup (§22) | One SQLite file per model (`<model>.sqlite3`). The DB reuse index exists, but the lookup is not used yet | 0012 |
+| 1 | Query embedding uses the bge query instruction (§12) | Not applied yet (fastembed adds none). Phase 2 makes it configurable and A/B-tests it on gold v0 | 0012 |
+| 1 | Stalled-job reaper and re-embed job in the worker (§4) | Deferred: reaper to Phase 8 hardening; re-embed to Phase 2. `ready_degraded` and the manual retry are built | 0010 |
+| 1 | Row child `{table} \| {context} \| {free-text col}: <verbatim>`; span into the row parent not specified | The child text is as planned. Its span into the authoritative `col: value; …` row parent is the verbatim free-text cell. Identifier columns are never free text (policy `c2`) | 0003 |
+| 1 | Retry, purge execution | Retry re-queues the same failed version; purge is synchronous; re-uploading to a deleted source restores it with the next version | 0016 |
+| 1 | Purge vs in-flight ingestion (follow-up) | Every worker write share-locks the source; a purge at any point wins and the version stays `purged` | 0016 |
+| 1 | Integration tests against the service database | A dedicated `marketsignal_test` database, created by the init script, with a guard test | 0009 |
+
 ---
 
 ## 1. Repository structure

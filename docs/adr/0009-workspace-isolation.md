@@ -98,3 +98,7 @@ Non-tenant tables are explicit: `workspaces` and `workspace_members` are read on
 - **Tenant-scoped keys.** Tables keyed by another row's id (`source_blobs`, `chunk_embeddings`) include `workspace_id` in their primary key. A global key would let workspace B learn that one of A's ids exists, because B would get a *uniqueness* error instead of an FK error. The isolation test suite found this, and the keys were changed before the migration was committed.
 - `audit_events` is append-only for `ms_app` (UPDATE and DELETE are revoked).
 - Verified by `tests/integration/test_evidence_model_isolation.py`, which has 31 tests running as `ms_app`. Run as superuser, all 24 RLS and privilege tests fail, as they should. The 7 composite-FK and idempotency tests still pass, because foreign keys hold for every role.
+- **Test database.** Integration tests run against a dedicated `marketsignal_test` database, created by `db/init/01_roles.sh` with the same roles, grants and extension. `tests/conftest.py` rewrites every database URL before any settings object exists.
+  - A guard test fails if the suite would touch the development database.
+  - The first version of this change did not rewrite the URLs, so tests ran against the development database. It was found when the native dev worker picked up a test job, and fixed with the guard test.
+- **Purge vs worker.** Worker writes share-lock the source row inside the workspace scope, so the purge/ingest serialisation (ADR-0016) also runs under RLS.
