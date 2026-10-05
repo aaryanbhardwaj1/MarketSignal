@@ -5,7 +5,9 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from marketsignal.domain.enums import IngestErrorCode
 from marketsignal.ingestion.models import IngestionError
@@ -35,6 +37,24 @@ def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def _app_error(_: Request, exc: AppError) -> JSONResponse:
         return JSONResponse(error_body(exc.code, exc.message, **exc.extra), status_code=exc.status)
+
+    @app.exception_handler(RequestValidationError)
+    async def _validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
+        fields = [
+            {"location": ".".join(str(p) for p in e.get("loc", ())), "message": e.get("msg", "")}
+            for e in exc.errors()
+        ]
+        return JSONResponse(
+            error_body("VALIDATION_ERROR", "request validation failed", fields=fields),
+            status_code=422,
+        )
+
+    @app.exception_handler(StarletteHTTPException)
+    async def _http_error(_: Request, exc: StarletteHTTPException) -> JSONResponse:
+        code = {404: "NOT_FOUND", 405: "METHOD_NOT_ALLOWED"}.get(exc.status_code, "HTTP_ERROR")
+        return JSONResponse(
+            error_body(code, str(exc.detail)), status_code=exc.status_code, headers=exc.headers
+        )
 
     @app.exception_handler(IngestionError)
     async def _ingestion_error(_: Request, exc: IngestionError) -> JSONResponse:

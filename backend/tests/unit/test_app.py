@@ -61,3 +61,15 @@ def test_docs_disabled_in_prod() -> None:
     with TestClient(create_app(_settings(env="prod"))) as client:
         assert client.get("/docs").status_code == 404
         assert client.get("/openapi.json").status_code == 404
+
+
+def test_every_error_uses_the_envelope() -> None:
+    with TestClient(create_app(_settings())) as client:
+        missing = client.get("/no/such/route")
+        invalid = client.post("/api/workspaces", json={"code": "bad code", "name": ""})
+    assert missing.status_code == 404
+    assert missing.json()["error"]["code"] == "NOT_FOUND"
+    assert invalid.status_code == 422
+    body = invalid.json()["error"]
+    assert body["code"] == "VALIDATION_ERROR"
+    assert {f["location"] for f in body["fields"]} >= {"body.code", "body.name"}
