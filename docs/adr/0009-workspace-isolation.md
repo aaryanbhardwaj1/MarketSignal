@@ -90,3 +90,11 @@ Non-tenant tables are explicit: `workspaces` and `workspace_members` are read on
 
 **Non-vacuity check.** The same isolation suite run deliberately as the bootstrap **superuser** fails 5/5. This confirms that the tests detect an RLS bypass and do not pass merely because the data happens to be separated.
 
+
+## Implementation status (Phase 1, migration 0002)
+
+- All nine evidence-model tables (`sources`, `source_versions`, `source_blobs`, `parent_chunks`, `child_chunks`, `chunk_embeddings`, `dataset_tables`, `dataset_rows`, `audit_events`) use ENABLE + FORCE RLS with the standard policy.
+- Every cross-table reference is a composite `(workspace_id, x_id)` foreign key.
+- **Tenant-scoped keys.** Tables keyed by another row's id (`source_blobs`, `chunk_embeddings`) include `workspace_id` in their primary key. A global key would let workspace B learn that one of A's ids exists, because B would get a *uniqueness* error instead of an FK error. The isolation test suite found this, and the keys were changed before the migration was committed.
+- `audit_events` is append-only for `ms_app` (UPDATE and DELETE are revoked).
+- Verified by `tests/integration/test_evidence_model_isolation.py`, which has 31 tests running as `ms_app`. Run as superuser, all 24 RLS and privilege tests fail, as they should. The 7 composite-FK and idempotency tests still pass, because foreign keys hold for every role.

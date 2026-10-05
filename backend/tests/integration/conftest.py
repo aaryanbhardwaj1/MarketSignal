@@ -67,5 +67,31 @@ async def two_workspaces(owner_engine: AsyncEngine) -> AsyncIterator[tuple[uuid.
             )
             ids.append(row.scalar_one())
     yield ids[0], ids[1]
+    for workspace_id in ids:
+        await purge_workspace(owner_engine, workspace_id)
+
+
+# Dependency order for test cleanup. FORCE RLS applies to the schema owner too, so each delete
+# runs inside the workspace's own scope; RESTRICT foreign keys make the order explicit.
+_PURGE_ORDER = (
+    "DELETE FROM chunk_embeddings",
+    "DELETE FROM child_chunks",
+    "DELETE FROM parent_chunks",
+    "DELETE FROM dataset_tables",
+    "DELETE FROM source_blobs",
+    "UPDATE sources SET current_version_id = NULL",
+    "DELETE FROM source_versions",
+    "DELETE FROM sources",
+    "DELETE FROM audit_events",
+    "DELETE FROM workspace_corpus_state",
+)
+
+
+async def purge_workspace(owner_engine: AsyncEngine, workspace_id: uuid.UUID) -> None:
     async with owner_engine.begin() as conn:
-        await conn.execute(text("DELETE FROM workspaces WHERE id = ANY(:ids)"), {"ids": ids})
+        await conn.execute(
+            text("SELECT set_config('app.workspace_id', :ws, true)"), {"ws": str(workspace_id)}
+        )
+        for statement in _PURGE_ORDER:
+            await conn.execute(text(statement))
+        await conn.execute(text("DELETE FROM workspaces WHERE id = :id"), {"id": workspace_id})
