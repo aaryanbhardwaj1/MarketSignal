@@ -1,0 +1,57 @@
+{
+ "a": "../eval/baselines/phase2/02-rerank-dev/results.json:dense-rerank",
+ "b": "../eval/baselines/phase2/05-exp-row-identifiers-dev/results.json:dense-rerank@c3-ids",
+ "n": 44,
+ "hit@1": {
+  "only_a": 0,
+  "only_b": 0,
+  "p": 1.0
+ },
+ "hit@5": {
+  "only_a": 0,
+  "only_b": 0,
+  "p": 1.0
+ },
+ "hit@10": {
+  "only_a": 0,
+  "only_b": 0,
+  "p": 1.0
+ },
+ "hit@20": {
+  "only_a": 0,
+  "only_b": 0,
+  "p": 1.0
+ },
+ "mrr_diff_b_minus_a": {
+  "estimate": 0.0,
+  "low": 0.0,
+  "high": 0.0
+ },
+ "recall@10_diff_b_minus_a": {
+  "estimate": 0.0,
+  "low": 0.0,
+  "high": 0.0
+ },
+ "changed_items": {
+  "R0-051": {
+   "a": {
+    "NS-004": 1,
+    "NS-070": 15
+   },
+   "b": {
+    "NS-004": 1,
+    "NS-070": 17
+   }
+  }
+ },
+ "latency_total_ms": {
+  "dense-rerank": {
+   "p50": 601.57,
+   "p95": 833.92
+  },
+  "dense-rerank@c3-ids": {
+   "p50": 580.38,
+   "p95": 848.76
+  }
+ }
+}

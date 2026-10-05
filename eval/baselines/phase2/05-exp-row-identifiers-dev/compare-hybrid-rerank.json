@@ -1,0 +1,93 @@
+{
+ "a": "../eval/baselines/phase2/02-rerank-dev/results.json:hybrid-rerank",
+ "b": "../eval/baselines/phase2/05-exp-row-identifiers-dev/results.json:hybrid-rerank@c3-ids",
+ "n": 44,
+ "hit@1": {
+  "only_a": 0,
+  "only_b": 0,
+  "p": 1.0
+ },
+ "hit@5": {
+  "only_a": 0,
+  "only_b": 1,
+  "p": 1.0
+ },
+ "hit@10": {
+  "only_a": 0,
+  "only_b": 1,
+  "p": 1.0
+ },
+ "hit@20": {
+  "only_a": 0,
+  "only_b": 1,
+  "p": 1.0
+ },
+ "mrr_diff_b_minus_a": {
+  "estimate": 0.004424048174048175,
+  "low": 0.0,
+  "high": 0.01295648795648796
+ },
+ "recall@10_diff_b_minus_a": {
+  "estimate": 0.022727272727272728,
+  "low": 0.0,
+  "high": 0.06818181818181818
+ },
+ "changed_items": {
+  "R0-027": {
+   "a": {
+    "NS-148": 52
+   },
+   "b": {
+    "NS-148": 5
+   }
+  },
+  "R0-040": {
+   "a": {
+    "NS-005": 9
+   },
+   "b": {
+    "NS-005": 8
+   }
+  },
+  "R0-049": {
+   "a": {
+    "NS-054": 1,
+    "NS-105": 12
+   },
+   "b": {
+    "NS-054": 1,
+    "NS-105": 11
+   }
+  },
+  "R0-051": {
+   "a": {
+    "NS-004": 1,
+    "NS-070": 18
+   },
+   "b": {
+    "NS-004": 1,
+    "NS-070": 17
+   }
+  },
+  "R0-055": {
+   "a": {
+    "NS-063": 1,
+    "NS-146": null
+   },
+   "b": {
+    "NS-063": 1,
+    "NS-146": 121
+   }
+  }
+ },
+ "latency_total_ms": {
+  "hybrid-rerank": {
+   "p50": 705.07,
+   "p95": 987.57
+  },
+  "hybrid-rerank@c3-ids": {
+   "p50": 676.57,
+   "p95": 978.37
+  }
+ }
+}

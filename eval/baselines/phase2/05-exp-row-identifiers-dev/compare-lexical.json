@@ -1,0 +1,97 @@
+{
+ "a": "../eval/baselines/phase2/01-lanes-dev/results.json:lexical",
+ "b": "../eval/baselines/phase2/05-exp-row-identifiers-dev/results.json:lexical@c3-ids",
+ "n": 44,
+ "hit@1": {
+  "only_a": 0,
+  "only_b": 2,
+  "p": 0.5
+ },
+ "hit@5": {
+  "only_a": 0,
+  "only_b": 2,
+  "p": 0.5
+ },
+ "hit@10": {
+  "only_a": 0,
+  "only_b": 2,
+  "p": 0.5
+ },
+ "hit@20": {
+  "only_a": 0,
+  "only_b": 2,
+  "p": 0.5
+ },
+ "mrr_diff_b_minus_a": {
+  "estimate": 0.044524189578537404,
+  "low": 0.0010260210803689062,
+  "high": 0.10019768275203057
+ },
+ "recall@10_diff_b_minus_a": {
+  "estimate": 0.045454545454545456,
+  "low": 0.0,
+  "high": 0.11363636363636363
+ },
+ "changed_items": {
+  "R0-026": {
+   "a": {
+    "NS-144": 2
+   },
+   "b": {
+    "NS-144": 1
+   }
+  },
+  "R0-027": {
+   "a": {
+    "NS-148": 26
+   },
+   "b": {
+    "NS-148": 2
+   }
+  },
+  "R0-029": {
+   "a": {
+    "NS-146": 21
+   },
+   "b": {
+    "NS-146": 1
+   }
+  },
+  "R0-044": {
+   "a": {
+    "NS-112": 6
+   },
+   "b": {
+    "NS-112": 8
+   }
+  },
+  "R0-055": {
+   "a": {
+    "NS-063": 25,
+    "NS-146": null
+   },
+   "b": {
+    "NS-063": 23,
+    "NS-146": 82
+   }
+  },
+  "R0-060": {
+   "a": {
+    "NS-129": 4
+   },
+   "b": {
+    "NS-129": 3
+   }
+  }
+ },
+ "latency_total_ms": {
+  "lexical": {
+   "p50": 14.51,
+   "p95": 26.83
+  },
+  "lexical@c3-ids": {
+   "p50": 16.3,
+   "p95": 27.05
+  }
+ }
+}
