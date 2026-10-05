@@ -5,3 +5,7 @@
 *.docx binary
 *.pptx binary
 *.xlsx binary
+
+# Generated seed corpus is stored byte-for-byte: manifest sha256 values, idempotent
+# re-upload and evidence identities depend on exact bytes (CSV files use CRLF).
+seed_data/generated/** -text

@@ -1,16 +1,17 @@
-# gitleaks configuration: default rule set plus project allowlist.
+# gitleaks configuration: default rule set plus narrowly scoped allowlists.
 title = "MarketSignal gitleaks config"
 
 [extend]
 useDefault = true
 
-[allowlist]
+[[allowlists]]
 description = "Placeholder values in example configuration and test fixtures"
-paths = [
-  '''\.env\.example$''',
-]
-regexes = [
-  '''(?i)changeme''',
-  '''(?i)placeholder''',
-  '''dev-only-insecure-[a-z0-9-]+''',
-]
+paths = ['''\.env\.example$''']
+regexes = ['''(?i)changeme''', '''(?i)placeholder''', '''dev-only-insecure-[a-z0-9-]+''']
+
+[[allowlists]]
+description = "Fact-ledger row anchors: the field name 'key_value' trips the generic API-key rule"
+condition = "AND"
+paths = ['''^seed_data/fact_ledger\.json$''']
+regexTarget = "line"
+regexes = ['''^\s*"key_value": "[A-Z0-9-]{1,40}",?\s*$''']
