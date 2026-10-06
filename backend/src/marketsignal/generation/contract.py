@@ -20,7 +20,8 @@ recovered from text by rules that never guess:
   :func:`supports` compares units: when both sides state a scale they must agree, a percent
   claim needs percent evidence or a bare unlabelled figure (a table cell), and stated
   currencies must match.
-* :func:`strip_leaks` removes what must never reach the UI: URLs, images, links (text kept),
+* :func:`strip_leaks` removes what must never reach the UI: invisible format characters (Cf),
+  URLs, images, links (text kept),
   HTML, UUIDs, child-id fragments, raw handles and canonical ``[[...]]`` markers, which only
   the verifier itself may write. Removal repeats until nothing changes, so a removal can
   never reassemble a marker.
@@ -646,10 +647,30 @@ def _link_text(match: re.Match[str]) -> str:
     return f"[{label}]" if ALIASISH_RE.fullmatch(f"[{label}]") else label
 
 
+# Every Unicode format character (category Cf: zero-width space/joiners, word joiner, BOM, soft
+# hyphen, bidi embeddings/overrides/isolates, tag characters; Unicode 15.1, pinned by
+# tests/unit/test_generation_result_security.py). They are invisible, so "600\u200b38.2%"
+# *displays* as "60038.2%" while a parser sees two figures; removing them (not replacing them
+# with a delimiter) makes what is verified equal what is displayed.
+FORMAT_CHAR_RE: Final = re.compile(
+    "[\u00ad\u0600-\u0605\u061c\u06dd\u070f\u0890-\u0891\u08e2\u180e\u200b-\u200f"
+    "\u202a-\u202e\u2060-\u2064\u2066-\u206f\ufeff\ufff9-\ufffb\U000110bd\U000110cd"
+    "\U00013430-\U0001343f\U0001bca0-\U0001bca3\U0001d173-\U0001d17a\U000e0001"
+    "\U000e0020-\U000e007f]+"
+)
+
+
+def strip_format_chars(text: str) -> str:
+    return FORMAT_CHAR_RE.sub("", text)
+
+
 _Replacement = str | Callable[[re.Match[str]], str]
-# (kind, pattern, replacement); applied in this order, each occurrence reported once. Images
-# go before links (same bracket syntax) and links before bare URLs (so the text survives).
+# (kind, pattern, replacement); applied in this order, each occurrence reported once. Format
+# characters go first (removed, never replaced by a delimiter) so they can neither glue figures
+# nor hide a marker, handle or URL from the later rules. Images go before links (same bracket
+# syntax) and links before bare URLs (so the text survives).
 _LEAK_RULES: Final[tuple[tuple[str, re.Pattern[str], _Replacement], ...]] = (
+    ("format_char", FORMAT_CHAR_RE, ""),
     ("canonical_marker", CANONICAL_MARKER_RE, " "),
     ("html", re.compile(r"<(script|style)\b[^>]*>.*?</\1\s*>", re.IGNORECASE | re.DOTALL), " "),
     ("html", re.compile(r"<!--.*?-->", re.DOTALL), " "),
@@ -691,7 +712,8 @@ def _strip_once(text: str) -> tuple[str, list[str]]:
 
 
 def strip_leaks(text: str) -> LeakScan:
-    """Remove URLs, images, links (text kept), HTML, raw IDs/handles and ``[[...]]`` markers.
+    """Remove invisible format characters (Unicode Cf), URLs, images, links (text kept), HTML,
+    raw IDs/handles and ``[[...]]`` markers.
 
     Repeated to a fixpoint: one removal (an empty link, ``()`` dropped by :func:`tidy`) can
     reassemble a marker or handle that an earlier rule already passed over, e.g.

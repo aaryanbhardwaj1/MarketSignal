@@ -2,7 +2,8 @@
 
 No LLM call and no transcript replay. After each verified answer the conversation keeps:
 * a rolling summary of at most ``SUMMARY_MAX_CHARS`` (~400 tokens) built from the Answer
-  sections of recent verified answers, newest first, citation markers removed and
+  sections of recent verified answers, newest first, citation markers (evidence and
+  computed-result) removed and
   ``[inference]`` units left out (the model is told the summary is verified);
 * the last two user questions;
 * up to 20 recently cited canonical handles.
@@ -16,8 +17,8 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 
-from marketsignal.generation.contract import split_units
-from marketsignal.generation.types import CANONICAL_RE, INFERENCE_TAG
+from marketsignal.generation.contract import CANONICAL_MARKER_RE, split_units
+from marketsignal.generation.types import INFERENCE_TAG
 
 SUMMARY_MAX_CHARS = 1600
 RECENT_QUESTIONS = 2
@@ -32,7 +33,8 @@ def answer_digest(sections: dict[str, object]) -> str:
     answer = sections.get("answer") or []
     units = [str(u) for u in answer] if isinstance(answer, list) else split_units(str(answer))
     text = " ".join(u for u in units if INFERENCE_TAG not in u.lower())
-    text = _SPACE.sub(" ", CANONICAL_RE.sub("", text)).strip()
+    # Every ``[[...]]`` marker: evidence handles and computed-result ``[[result:<uuid>]]``.
+    text = _SPACE.sub(" ", CANONICAL_MARKER_RE.sub("", text)).strip()
     return _SPACE_BEFORE_PUNCT.sub(r"\1", text)
 
 

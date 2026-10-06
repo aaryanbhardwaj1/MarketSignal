@@ -76,13 +76,15 @@ class ResultFigure:
     ``kind`` is ``metric`` (a metric value: ``value`` rounded, ``exact`` unrounded, in
     ``unit``/``scale``), ``difference`` (group_compare A - B, same fields), ``count`` (a
     numerator, denominator or matched-row count) or ``label`` (a numeric group label, cell or
-    filter value)."""
+    filter value). ``groups`` is ``(group_a, group_b)`` as shown, for a ``difference`` of a
+    group_compare whose spec names both groups (the subject of a direction word)."""
 
     kind: str
     value: Decimal | None
     exact: Decimal | None = None
     unit: str = "number"
     scale: str = ""
+    groups: tuple[str, str] | None = None
 
 
 @dataclass(frozen=True, slots=True)

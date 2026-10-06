@@ -16,9 +16,10 @@ generated answers (no URLs, HTML or ids).
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Final
 
 from marketsignal.domain.enums import SourceClass
 from marketsignal.generation.contract import strip_leaks
@@ -118,13 +119,23 @@ def _safe_label(value: str, default: str) -> str:
     return default if is_instruction_like(value) else _clean(value, default)
 
 
+_MARKDOWN_RE: Final = re.compile(r"([\\`*_~|])")
+
+
+def _md_literal(text: str) -> str:
+    """Escape the inline markdown a document-derived label could use to restyle neighbouring
+    figures (emphasis, code, strike-through, table pipes) in our own markdown line."""
+    return _MARKDOWN_RE.sub(r"\\\1", text)
+
+
 def result_unit(item: ResultItem) -> str:
     """One deterministic line per computed result: values, units, denominators, provenance.
-    Labels come from documents, so they are cleaned like snippets."""
-    values = "; ".join(_clean(line) for line in item.fallback_lines) or "no values"
+    Labels come from documents, so they are cleaned like snippets (leaks and invisible format
+    characters removed) and their markdown is escaped."""
+    values = "; ".join(_md_literal(_clean(line)) for line in item.fallback_lines) or "no values"
     provenance = (
-        f"{_safe_label(item.source_code, 'source')} v{item.source_version}, "
-        f"{_safe_label(item.table, 'table')}, {item.operation}"
+        f"{_md_literal(_safe_label(item.source_code, 'source'))} v{item.source_version}, "
+        f"{_md_literal(_safe_label(item.table, 'table'))}, {item.operation}"
     )
     return f"**Computed result** ({provenance}): {values} {result_marker(item.result_id)}"
 

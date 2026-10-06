@@ -23,12 +23,23 @@ only numbers an ``[R#]`` citation can support.
     multiple ("1.5x"); date/text values support no numbers. Basis points never match.
   - *scale*: the claim's scale word must equal the result's scale ("" = none; billion =
     "billion"/"bn"/"b"), so "$12.4 million" never restates a billion-scale 12.4.
-  - *sign*: a negative claim needs a negative value; a negative value stated unsigned needs a
-    negative-direction word in the unit ("lower", "fell", "declined", ...); a positive
-    difference stated with only negative-direction words fails (a sign flip).
+    A currency written after the number ("812.5 EUR", "812.5 euros") or a foreign prefix
+    ("A$", "\u00a5", "CHF") is another currency.
+  - *precision*: a stated 0 needs an exact zero (a non-zero 0.4% is never "0%" or "0.0%");
+    an over-precise number (more decimals than the exact value) is unsupported, never an
+    arithmetic error.
+  - *sign and direction* (``generation/result_claims.py``): a negative claim needs a negative
+    value; a level (metric value or count) is never stated as a change ("fell 38.2%"); a
+    negative level stated unsigned needs a negative-direction word next to it; a
+    group_compare difference (A - B) must agree in sign with its direction word *and* the
+    group that is its subject ("South exceeded North by 3.2" is -3.2 when A = North).
   - *counts and labels*: a numerator, denominator, matched-row count, or a numeric group
-    label/cell/filter value supports exactly that number, stated plainly (no percent,
+    label/cell/filter operand supports exactly that number, stated plainly (no percent,
     currency or scale).
+* **Years.** A result's years (the temporal qualifiers a cited result supports) come only
+  from label text (filter operands, compare groups, group levels/cells that are not plain
+  numbers, or any label of a date-like column such as ``year``/``fiscal_year``/``order_date``)
+  and from date-unit values, never from counts, denominators or decimal digits.
 """
 
 from __future__ import annotations
@@ -36,13 +47,14 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import replace
-from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation
+from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation, localcontext
 from html import escape
 from typing import Any, Final
 
 from pydantic import ValidationError
 
-from marketsignal.generation.contract import NumberMention, years_in
+from marketsignal.generation import result_claims as claims
+from marketsignal.generation.contract import NumberMention, strip_format_chars, years_in
 from marketsignal.generation.safe_text import is_instruction_like
 from marketsignal.generation.types import EvidencePack, ResultFigure, ResultItem
 from marketsignal.telemetry.logging import get_logger
@@ -74,18 +86,11 @@ _METRIC_KINDS: Final[Mapping[str, frozenset[str]]] = {
 }
 _PERCENT_DIFFERENCE_KINDS: Final = frozenset({"percent", "points"})
 _POINTS_AFTER: Final = r"[ \t]*(?:percentage[ \t-]+points?|points?|pts?|ppts?|pp)\b"
-_NEGATIVE_RE: Final = re.compile(
-    r"\b(?:lower|less|fewer|below|behind|trail(?:s|ed|ing)?|declin(?:e|ed|es|ing)"
-    r"|decreas(?:e|ed|es|ing)|drop(?:s|ped)?|fell|fall(?:s|en)?|down|negative|minus|smaller"
-    r"|worse|lag(?:s|ged)?|loss|shr[ai]nk|shrunk|contract(?:ed|ion)|deficit|under)\b",
+# Columns whose labels are dates/periods: any of their labels may carry a year.
+_TEMPORAL_COLUMN_RE: Final = re.compile(
+    r"(?:^|[^a-z])(?:years?|yr|fy|cy|fiscal|dates?|months?|quarters?|qtr|periods?)(?:$|[^a-z])",
     re.IGNORECASE,
 )
-_POSITIVE_RE: Final = re.compile(
-    r"\b(?:higher|more|greater|above|ahead|exceed(?:s|ed)?|increas(?:e|ed|es|ing)|rose"
-    r"|ris(?:e|es|en|ing)|up|grew|grow(?:th|s)?|gain(?:s|ed)?|larger|better|positive|plus)\b",
-    re.IGNORECASE,
-)
-
 
 # --------------------------------------------------------------------------------------------
 # Building and rendering
@@ -114,7 +119,7 @@ def _fmt(value: object) -> str:
 
 def _label(value: object) -> str:
     """A document-derived label: bounded, instruction-like text withheld (escaped later)."""
-    text = " ".join(str(value).split())[:LABEL_MAX_CHARS]
+    text = " ".join(strip_format_chars(str(value)).split())[:LABEL_MAX_CHARS]
     return WITHHELD_LABEL if is_instruction_like(text) else text
 
 
@@ -122,19 +127,30 @@ def _attr(value: object) -> str:
     return escape(str(value), quote=True).replace("\n", " ")
 
 
-def _spec_scalars(node: object) -> Iterable[object]:
-    """Every filter/condition/comparison value in the normalized spec (recursively)."""
-    if isinstance(node, Mapping):
-        for key, value in node.items():
-            if key in ("value", "group_a", "group_b"):
-                yield value
-            elif key == "values" and isinstance(value, list):
-                yield from value
-            else:
-                yield from _spec_scalars(value)
-    elif isinstance(node, list):
-        for value in node:
-            yield from _spec_scalars(value)
+def _spec_filters(spec: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    """Filters plus metric conditions, each ``{column, op, operands}`` (validate._filter_spec)."""
+    found = [f for f in spec.get("filters") or [] if isinstance(f, Mapping)]
+    metrics = spec.get("metrics")
+    candidates = [*(metrics if isinstance(metrics, list) else []), spec.get("metric")]
+    found += [
+        m["condition"]
+        for m in candidates
+        if isinstance(m, Mapping) and isinstance(m.get("condition"), Mapping)
+    ]
+    return found
+
+
+def _operands(flt: Mapping[str, Any]) -> list[object]:
+    operands = flt.get("operands")
+    return list(operands) if isinstance(operands, list) else []
+
+
+def _spec_labels(spec: Mapping[str, Any]) -> list[tuple[object, object]]:
+    """``(column, value)`` for every filter/condition operand and compared group."""
+    labels = [(f.get("column"), v) for f in _spec_filters(spec) for v in _operands(f)]
+    if spec.get("compare_column"):
+        labels += [(spec["compare_column"], spec.get(k)) for k in ("group_a", "group_b")]
+    return [(column, value) for column, value in labels if value is not None]
 
 
 def _filters_text(spec: Mapping[str, Any]) -> str:
@@ -142,13 +158,8 @@ def _filters_text(spec: Mapping[str, Any]) -> str:
     for flt in spec.get("filters") or []:
         if not isinstance(flt, Mapping):
             continue
-        values = flt.get("values")
-        shown = (
-            ", ".join(_label(v) for v in values)
-            if isinstance(values, list)
-            else _label(flt.get("value"))
-        )
-        parts.append(f"{_label(flt.get('column'))} {flt.get('op')} {shown}".strip())
+        shown = ", ".join(_label(v) for v in _operands(flt))
+        parts.append(f"{_label(flt.get('column'))} {_label(flt.get('op'))} {shown}".strip())
     return "; ".join(parts)
 
 
@@ -176,9 +187,12 @@ def _metric_text(metric: MetricValue) -> str:
     return f"{_label(metric.key)}: " + " ".join(parts)
 
 
-def _metric_figures(metric: MetricValue, kind: str) -> list[ResultFigure]:
+def _metric_figures(
+    metric: MetricValue, kind: str, groups: tuple[str, str] | None = None
+) -> list[ResultFigure]:
+    value, exact = _dec(metric.value), _dec(metric.exact)
     figures = [
-        ResultFigure(kind, _dec(metric.value), _dec(metric.exact), metric.unit, metric.scale),
+        ResultFigure(kind, value, exact, metric.unit, metric.scale, groups),
         ResultFigure("count", Decimal(metric.denominator)),
     ]
     if metric.numerator is not None:
@@ -229,12 +243,42 @@ def _summary(result: AnalyticsResult) -> str:
     return " ".join(" ; ".join(p for p in parts if p).split())[:SUMMARY_MAX_CHARS]
 
 
+def _temporal_label(column: object, value: object) -> bool:
+    """A label that may carry a year: text that is not a plain number, or any label of a
+    date-like column ("year", "fiscal_year", "order_date")."""
+    return _dec(value) is None or _TEMPORAL_COLUMN_RE.search(str(column)) is not None
+
+
+def _years(spec: Mapping[str, Any], rows: Sequence[ResultRow]) -> frozenset[int]:
+    """Years a cited result supports: labels and date values only (module docstring)."""
+    texts = [_label(v) for column, v in _spec_labels(spec) if _temporal_label(column, v)]
+    for row in rows:
+        texts += [_label(v) for column, v in row.group.items() if _temporal_label(column, v)]
+        texts += [
+            _label(part)
+            for m in row.metrics
+            if m.unit == "date"
+            for part in (m.value, m.exact)
+            if part is not None
+        ]
+    return years_in(texts)
+
+
+def _compared_groups(spec: Mapping[str, Any]) -> tuple[str, str] | None:
+    a, b = spec.get("group_a"), spec.get("group_b")
+    if not spec.get("compare_column") or a is None or b is None:
+        return None
+    return _label(a), _label(b)
+
+
 def build_result_item(alias: str, result: AnalyticsResult) -> ResultItem:
     """One result as the model sees it, plus the figures and lines derived from that view."""
     spec = result.spec
     lines: list[str] = []
     figures: list[ResultFigure] = [ResultFigure("count", Decimal(result.rows_matched))]
-    figures += [ResultFigure("label", n) for v in _spec_scalars(spec) if (n := _dec(v)) is not None]
+    figures += [
+        ResultFigure("label", n) for _, v in _spec_labels(spec) if (n := _dec(v)) is not None
+    ]
     if filters := _filters_text(spec):
         lines.append(f"filters: {filters}")
     if grouping := _grouping_text(spec):
@@ -249,7 +293,8 @@ def build_result_item(alias: str, result: AnalyticsResult) -> ResultItem:
         lines.append(f"({len(result.rows) - MAX_ROWS} more rows not shown)")
     if result.difference is not None:
         lines.append(f"difference (A - B): {_metric_text(result.difference)}")
-        figures.extend(_metric_figures(result.difference, "difference"))
+        groups = _compared_groups(spec)
+        figures.extend(_metric_figures(result.difference, "difference", groups))
         difference = _fallback_line(ResultRow(metrics=[]), result.difference)
         fallback.insert(0, f"difference (A - B): {difference}")
     if result.warnings:
@@ -273,7 +318,7 @@ def build_result_item(alias: str, result: AnalyticsResult) -> ResultItem:
         summary=_summary(result),
         rendered=rendered,
         figures=tuple(figures),
-        years=years_in(["\n".join(lines)]),
+        years=_years(spec, result.rows[:MAX_ROWS]),
         workspace=result.workspace,
         fallback_lines=tuple(fallback[:FALLBACK_LINES]),
     )
@@ -314,7 +359,7 @@ def without_result_sources(pack: EvidencePack, codes: Iterable[str]) -> tuple[Re
 # --------------------------------------------------------------------------------------------
 
 
-def _claim_kind(text: str, mention: NumberMention) -> str:
+def _claim_kind(text: str, mention: NumberMention, spans: Sequence[claims.Span]) -> str:
     written = mention.text.lower()
     if re.search(r"\d[ \t]?bps?$", written):
         return "bps"
@@ -326,19 +371,27 @@ def _claim_kind(text: str, mention: NumberMention) -> str:
         return "percent"
     if re.search(rf"(?<![\w.]){re.escape(mention.text)}{_POINTS_AFTER}", text, re.IGNORECASE):
         return "points"
-    if mention.currency is not None:
-        return "currency" if mention.currency.strip() in _USD else "other_currency"
+    if mention.currency is not None and mention.currency.strip() not in _USD:
+        return "other_currency"
+    if claims.foreign_currency(text, spans, mention):
+        return "other_currency"
+    if mention.currency is not None or claims.usd_suffix(text, spans):
+        return "currency"
     return "plain"
 
 
-def _sign_ok(text: str, mention: NumberMention, figure: ResultFigure, value: Decimal) -> bool:
-    if mention.mantissa < 0:
-        return value < 0
-    if value < 0:
-        return _NEGATIVE_RE.search(text) is not None
-    if figure.kind == "difference" and value > 0:
-        return not (_NEGATIVE_RE.search(text) and not _POSITIVE_RE.search(text))
-    return True
+def _direction_ok(
+    text: str,
+    spans: Sequence[claims.Span],
+    mention: NumberMention,
+    figure: ResultFigure,
+    value: Decimal,
+) -> bool:
+    if figure.kind == "difference":
+        return claims.difference_ok(text, spans, mention, value, figure.groups)
+    if figure.kind == "label":
+        return claims.label_ok(text, spans, mention, value)
+    return claims.level_ok(text, spans, mention, value)
 
 
 def _kind_ok(kind: str, figure: ResultFigure) -> bool:
@@ -353,13 +406,30 @@ def _decimals(digits: str) -> int:
     return len(digits.split(".", 1)[1]) if "." in digits else 0
 
 
+def _rounds_to(exact: Decimal, decimals: int, stated: Decimal) -> bool:
+    """``exact`` rounded half-even to ``decimals`` equals ``stated``. Only a real rounding
+    (fewer decimals than ``exact`` has) is computed, with enough precision that an
+    over-precise or huge number is a plain mismatch, never ``InvalidOperation``."""
+    exponent = exact.as_tuple().exponent
+    if not isinstance(exponent, int) or -exponent <= decimals:
+        return False  # nothing to round: only an equal number matches (checked by the caller)
+    with localcontext() as ctx:
+        ctx.prec = max(ctx.prec, len(exact.as_tuple().digits) + 2)
+        try:
+            return exact.quantize(Decimal(1).scaleb(-decimals), rounding=ROUND_HALF_EVEN) == stated
+        except InvalidOperation:
+            return False
+
+
 def _value_ok(stated: Decimal, decimals: int, value: Decimal, figure: ResultFigure) -> bool:
-    if stated == abs(value):
+    if stated == 0 and (figure.exact if figure.exact is not None else value) != 0:
+        return False  # a non-zero result is never stated as zero ("0%" for 0.4)
+    if stated == value.copy_abs():  # copy_abs: no context rounding of long decimals
         return True
     if figure.kind in ("count", "label") or figure.exact is None:
         return False
-    quantum = Decimal(1).scaleb(-decimals)
-    return abs(figure.exact).quantize(quantum, rounding=ROUND_HALF_EVEN) == stated
+    exact = figure.exact.copy_abs()
+    return stated == exact or _rounds_to(exact, decimals, stated)
 
 
 def figure_supports(text: str, mention: NumberMention, figure: ResultFigure) -> bool:
@@ -367,7 +437,10 @@ def figure_supports(text: str, mention: NumberMention, figure: ResultFigure) -> 
     value = figure.value
     if value is None:
         return False  # zero denominator: no stated number is supported by a null value
-    if not _kind_ok(_claim_kind(text, mention), figure):
+    spans = claims.occurrences(text, mention)
+    if not spans:
+        return False  # the claim cannot be placed in its unit: fail closed
+    if not _kind_ok(_claim_kind(text, mention, spans), figure):
         return False
     factor = _SCALE_FACTORS.get(figure.scale if figure.kind in ("metric", "difference") else "")
     if factor is None or mention.scale != factor:
@@ -377,7 +450,7 @@ def figure_supports(text: str, mention: NumberMention, figure: ResultFigure) -> 
     except InvalidOperation:
         return False
     sign_value = value if value != 0 or figure.exact is None else figure.exact
-    if not _sign_ok(text, mention, figure, sign_value):
+    if not _direction_ok(text, spans, mention, figure, sign_value):
         return False
     return _value_ok(stated, _decimals(mention.mantissa_text), value, figure)
 

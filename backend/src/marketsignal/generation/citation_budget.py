@@ -10,6 +10,9 @@ weakened:
 * A unit never loses its last citation (a claim is never left uncited), and a citation is only
   removed when the unit's remaining citations still support every figure in it (the caller's
   ``supported`` check is the verifier's own numeric support rule).
+* A citation the caller marks ``essential`` for a unit (the verifier: a computed result
+  ``[R#]`` that supports a figure in it) is never removed, so a computed figure is never left
+  attributed only to evidence that matches it more loosely (a bare "38" backing "38%").
 * Conflicting-evidence bullets are never touched (each side must keep its citation).
 * Every change is reported as a repair; nothing is silently dropped.
 
@@ -20,9 +23,10 @@ Order (each step stops as soon as the answer fits):
    a citation repeated from the previous unit of the same section is dropped from the later
    unit; an Answer sentence that restates a Key finding drops citations already carried by
    Key findings (the Answer reuses, not repeats, them).
-2. **Extra citations** - units with more than one citation keep only their first supporting
-   citation, lowest-value sections first (Interpretation, then Key findings, then Answer), and
-   later units before earlier ones.
+2. **Extra citations** - units with more than one citation keep only their first essential
+   citation (else their first citation) plus whatever cannot be removed, lowest-value
+   sections first (Interpretation, then Key findings, then Answer), and later units before
+   earlier ones.
 3. **Trailing findings** - Key-findings bullets beyond the first :data:`MIN_FINDINGS` are
    dropped from the end. This removes whole claims (never leaves one uncited).
 
@@ -50,6 +54,11 @@ _TRIM_ORDER: Final = (INTERPRETATION, FINDINGS, ANSWER)
 _ADJACENT_SECTIONS: Final = (ANSWER, FINDINGS, INTERPRETATION)
 
 Supported = Callable[[str, tuple[str, ...]], bool]
+Essential = Callable[[str, str], bool]  # (unit text, alias) -> the alias must stay
+
+
+def _never(text: str, alias: str) -> bool:
+    return False
 
 
 @dataclass(frozen=True, slots=True)
@@ -89,10 +98,17 @@ def _without(unit: Unit, alias: str) -> Unit:
 
 
 class _Budget:
-    def __init__(self, sections: Mapping[str, list[Unit]], cap: int, supported: Supported):
+    def __init__(
+        self,
+        sections: Mapping[str, list[Unit]],
+        cap: int,
+        supported: Supported,
+        essential: Essential = _never,
+    ):
         self.sections = {key: list(units) for key, units in sections.items()}
         self.cap = cap
         self.supported = supported
+        self.essential = essential
         self.repairs: list[str] = []
 
     @property
@@ -109,6 +125,8 @@ class _Budget:
         for alias in reversed([a for a in unit.cited if a in set(droppable)]):
             if not self.over:
                 return False
+            if self.essential(unit.text, alias):
+                continue
             reduced = _without(unit, alias)
             if reduced.cited and self.supported(reduced.text, reduced.cited):
                 unit = reduced
@@ -160,8 +178,11 @@ class _Budget:
     def extras(self) -> None:
         for key in _TRIM_ORDER:
             for index in reversed(range(len(self.sections.get(key, [])))):
-                cited = self.sections[key][index].cited
-                if not self.drop(key, index, cited[1:] if cited else (), "extra citation"):
+                unit = self.sections[key][index]
+                keep = next((a for a in unit.cited if self.essential(unit.text, a)), None)
+                keep = keep or (unit.cited[0] if unit.cited else None)
+                extra = [a for a in unit.cited if a != keep]
+                if not self.drop(key, index, extra, "extra citation"):
                     return
 
     def trailing_findings(self) -> None:
@@ -177,16 +198,18 @@ def fit_citations(
     *,
     supported: Supported,
     parents: Mapping[str, str],
+    essential: Essential = _never,
 ) -> BudgetOutcome:
     """Return ``sections`` unchanged when within ``cap``; otherwise apply the ordered steps in
     the module docstring until the answer fits (or nothing more may be removed).
 
     ``supported(text, cited)`` must be the verifier's support check for a cited unit;
-    ``parents`` maps alias -> canonical parent handle.
+    ``parents`` maps alias -> canonical parent handle; ``essential(text, alias)`` marks a
+    citation that must never be removed from a unit.
     """
     before = count(sections)
     repeated = over_cited(sections)
-    budget = _Budget(sections, cap, supported)
+    budget = _Budget(sections, cap, supported, essential)
     steps: tuple[Callable[[], None], ...] = (
         budget.duplicate_units,
         lambda: budget.same_parent(parents),

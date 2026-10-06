@@ -208,6 +208,18 @@ class _Run:
             if alias not in seen:
                 seen.append(alias)
 
+    def result_backs_figure(self, text: str, alias: str) -> bool:
+        """``alias`` is a computed result supporting some figure of ``text``: the citation
+        budget never removes it (the remaining evidence may back the figure only loosely)."""
+        result = self.results.get(alias)
+        if result is None:
+            return False
+        return any(
+            result_supports(text, mention, (result,))
+            for mention in extract_numbers(text)
+            if not mention.temporal
+        )
+
     def unsupported(self, text: str, cited: tuple[str, ...]) -> list[NumberMention]:
         """Figures in ``text`` that the relevant evidence does not support.
 
@@ -691,6 +703,7 @@ def verify_answer(
         final,
         max_citations,
         supported=lambda text, cited: not run.unsupported(text, cited),
+        essential=run.result_backs_figure,
         parents={
             **{alias: item.handle for alias, item in aliases.items()},
             **{alias: f"result:{r.result_id}" for alias, r in run.results.items()},

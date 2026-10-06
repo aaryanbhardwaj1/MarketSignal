@@ -81,7 +81,8 @@ def result(
         "source_version": 2,
         "table": "Responses",
         "operation": operation,
-        "spec": spec or {"filters": [{"column": "region", "op": "eq", "value": "North"}]},
+        # The engine's spec shape (analytics/validate._filter_spec): {column, op, operands}.
+        "spec": spec or {"filters": [{"column": "region", "op": "eq", "operands": ["North"]}]},
         "rows": rows if rows is not None else [{"group": group or {}, "metrics": list(metrics)}],
         "rows_scanned": 600,
         "rows_matched": 600,
@@ -421,6 +422,10 @@ def test_currency_without_scale_rejects_rescaling() -> None:
     assert kept("Revenue was $1.23 million [R1].", p) is False  # a new figure: rescaled
 
 
+COMPARE_SPEC = {"filters": [], "compare_column": "segment", "group_a": "Value",
+                "group_b": "Premium"}  # fmt: skip
+
+
 @pytest.mark.parametrize(
     ("claim", "ok"),
     [
@@ -438,13 +443,14 @@ def test_currency_without_scale_rejects_rescaling() -> None:
 def test_difference_sign_and_points(claim: str, ok: bool) -> None:
     diff = metric(-3.2, "-3.21", numerator=None, denominator=1200)
     p = pack_with(result(metric(35.0, "35.0", denominator=600), difference=diff,
-                         operation="group_compare"))  # fmt: skip
+                         operation="group_compare", spec=COMPARE_SPEC))  # fmt: skip
     assert kept(claim, p) is ok
 
 
 def test_positive_difference_stated_as_lower_fails() -> None:
     diff = metric(3.2, "3.2", numerator=None, denominator=1200)
-    p = pack_with(result(metric(35.0, "35.0"), difference=diff, operation="group_compare"))
+    p = pack_with(result(metric(35.0, "35.0"), difference=diff, operation="group_compare",
+                         spec=COMPARE_SPEC))  # fmt: skip
     assert kept("Value shoppers are 3.2 points higher [R1].", p)
     assert kept("Value shoppers are 3.2 points lower [R1].", p) is False
 
@@ -477,7 +483,7 @@ def test_grouped_rows_numeric_labels_and_filtered_subsets() -> None:
         {"group": {"year": 2025, "segment": "Value"}, "metrics": [metric(41.0, "41.0")]},
         {"group": {"year": 2026, "segment": "Value"}, "metrics": [metric(38.2, "38.2333")]},
     ]
-    spec = {"filters": [{"column": "age", "op": "gte", "value": 30}], "group_by": ["year"]}
+    spec = {"filters": [{"column": "age", "op": "gte", "operands": ["30"]}], "group_by": ["year"]}
     p = pack_with(result(rows=rows, spec=spec))
     assert kept("Among respondents aged 30 and over, 41% cited delivery in 2025 [R1].", p)
     assert kept("In 2026, 38.2% cited delivery [R1].", p)
