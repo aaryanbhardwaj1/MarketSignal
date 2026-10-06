@@ -12,10 +12,19 @@ Per call, in this order:
 5. Execute under ``asyncio.wait_for(settings.tool_timeout_s)`` in sessions scoped to the
    *claims'* workspace whose every transaction runs ``SET LOCAL statement_timeout``.
 6. Cap the output (items, then serialized characters) and flag ``TRUNCATED``.
+6b. Re-check revocation after the body: if the run stopped being ``running`` while the tool
+   executed, the output is discarded and the call returns ``UNAUTHENTICATED``. That call *is*
+   audited (status ``error``, code ``UNAUTHENTICATED``, no handles): it did read the workspace.
 7. Normalize every failure to a contract code with a fixed, safe message.
-8. Write a ``tool_runs`` audit row (sanitized arguments; never credentials or document text).
-   Calls that fail steps 1-2 have no trusted workspace and are not audited (logged only).
-   An audit write failure fails the call closed (``INTERNAL``).
+8. Write a ``tool_runs`` audit row (sanitized arguments: every string truncated, control
+   characters dropped; never credentials or document text). Calls that fail steps 1-2 have no
+   trusted workspace and are not audited (logged only). An audit write failure fails the call
+   closed (``INTERNAL``). The write is purge-safe: in the same transaction it takes
+   ``FOR KEY SHARE`` on the run's ``query_runs`` row (the row a purge locks ``FOR UPDATE``) and,
+   if any earlier audited call of the run or this call returned a handle whose version is now
+   purged, stores ``{"redacted": true}`` instead of the arguments (model-written arguments can
+   quote text the model already saw). Either the purge's redaction sees this row, or this
+   write sees the purge.
 9. Return ``ToolResult``: the typed output plus a bounded observation for the model.
 """
 
@@ -39,6 +48,7 @@ from marketsignal.config import Settings
 from marketsignal.db.session import SessionFactory, scoped_session
 from marketsignal.retrieval.pipeline import RetrievalService
 from marketsignal.retrieval.types import InvalidFiltersError
+from marketsignal.runs.store import _lock_run_pack, _purged_pack_codes
 from marketsignal.tools.capability import UnauthenticatedError, verify
 from marketsignal.tools.contracts import (
     TRUNCATED,
@@ -49,6 +59,7 @@ from marketsignal.tools.contracts import (
     ToolResult,
     ToolSpec,
     Transport,
+    has_control_chars,
 )
 from marketsignal.tools.env import ToolEnv, ToolInputError, scope_from
 from marketsignal.tools.observation import error_observation, render
@@ -57,6 +68,7 @@ from marketsignal.tools.registry import OUTPUT_MAX_CHARS, ToolEntry, ToolRegistr
 log = logging.getLogger(__name__)
 
 QUERY_AUDIT_CHARS = 200
+REDACTED_ARGS: dict[str, Any] = {"redacted": True}
 STATEMENT_TIMEOUT_KEY = "marketsignal.statement_timeout_ms"
 MESSAGES: dict[str, str] = {
     "UNAUTHENTICATED": "tool credential rejected",
@@ -143,12 +155,22 @@ def _unvalidated_args(arguments: Any) -> dict[str, Any]:
     return {"unvalidated_keys": sorted(str(k)[:40] for k in keys)[:10]}
 
 
+def _bounded(value: Any) -> Any:
+    if isinstance(value, str):
+        if has_control_chars(value):
+            value = "".join(ch for ch in value if not has_control_chars(ch))
+        return value[:QUERY_AUDIT_CHARS]
+    if isinstance(value, list):
+        return [_bounded(v) for v in value]
+    if isinstance(value, dict):
+        return {str(k)[:40]: _bounded(v) for k, v in value.items()}
+    return value
+
+
 def sanitize_args(args: BaseModel) -> dict[str, Any]:
-    dumped = args.model_dump(mode="json", exclude_none=True)
-    if isinstance(dumped.get("query"), str):
-        dumped["query"] = dumped["query"][:QUERY_AUDIT_CHARS]
-    if isinstance(dumped.get("terms"), list):
-        dumped["terms"] = [str(t)[:QUERY_AUDIT_CHARS] for t in dumped["terms"]]
+    """The audit/trace form of validated arguments: every string (list items included) is
+    truncated to ``QUERY_AUDIT_CHARS`` and stripped of control characters (never a NUL)."""
+    dumped: dict[str, Any] = _bounded(args.model_dump(mode="json", exclude_none=True))
     return dumped
 
 
@@ -194,8 +216,19 @@ class ToolGovernor:
         return self.registry.specs()
 
     def authenticate(self, credential: str) -> ToolContext:
-        """Signature and claims only (no database): used by the HTTP bearer check too."""
+        """Signature and claims only (no database)."""
         return verify(self._settings.mcp_token_key, credential)
+
+    async def authenticate_live(self, credential: str) -> ToolContext:
+        """Signature, claims and revocation (the HTTP bearer check: a revoked run's token
+        gets 401 at the edge, for ``tools/list`` too). A database failure during the revocation
+        lookup also raises ``UnauthenticatedError`` (fail closed)."""
+        ctx = self.authenticate(credential)
+        try:
+            await self._check_not_revoked(ctx)
+        except _CallFailedError:
+            raise UnauthenticatedError() from None
+        return ctx
 
     async def execute(
         self,
@@ -224,6 +257,7 @@ class ToolGovernor:
             entry, args = self._admit(call, ctx)
             audit_args = sanitize_args(args)
             output, truncated = await self._run(entry, args, ctx)
+            await self._check_still_running(ctx)
         except _CallFailedError as exc:
             result = failure_result(
                 call, exc.code, exc.message, transport=transport, duration_ms=elapsed()
@@ -260,6 +294,14 @@ class ToolGovernor:
             raise _CallFailedError("UNAVAILABLE") from None
         if status != "running":
             raise UnauthenticatedError()
+
+    async def _check_still_running(self, ctx: ToolContext) -> None:
+        """Step 6b: the run may have been cancelled/finished while the body ran."""
+        try:
+            await self._check_not_revoked(ctx)
+        except UnauthenticatedError:
+            log.info("tool output discarded: run no longer running")
+            raise _CallFailedError("UNAUTHENTICATED") from None
 
     def _admit(self, call: ToolCall, ctx: ToolContext) -> tuple[ToolEntry, BaseModel]:
         if call.name not in ctx.tools:
@@ -320,6 +362,8 @@ class ToolGovernor:
         count = len(output.get("hits") or output.get("items") or output.get("sources") or [])
         try:
             async with scoped_session(self._factory, scope_from(ctx)) as session:
+                if await self._purge_redacts(session, ctx, result):
+                    args = REDACTED_ARGS
                 await session.execute(
                     text(
                         "INSERT INTO tool_runs (workspace_id, query_run_id, step, call_index, "
@@ -351,3 +395,23 @@ class ToolGovernor:
             log.error("tool audit write failed: %s", type(exc).__name__)
             return failure_result(call, "INTERNAL", transport=result.transport)
         return result
+
+    @staticmethod
+    async def _purge_redacts(session: Any, ctx: ToolContext, result: ToolResult) -> bool:
+        """Purge-safe audit (module doc, step 8): lock the run row ``FOR KEY SHARE``, then
+        report whether this run's earlier or current result handles hit a purged version."""
+        if ctx.run_id is None:
+            return False
+        scope, run = scope_from(ctx), uuid.UUID(ctx.run_id)
+        await _lock_run_pack(session, scope, run)
+        earlier = (
+            await session.execute(
+                text(
+                    "SELECT DISTINCT unnest(result_handles) FROM tool_runs "
+                    "WHERE workspace_id = :ws AND query_run_id = :run"
+                ),
+                {"ws": scope.workspace_id, "run": run},
+            )
+        ).scalars()
+        handles = sorted({str(h) for h in earlier} | set(result.handles()))
+        return bool(await _purged_pack_codes(session, scope, handles))

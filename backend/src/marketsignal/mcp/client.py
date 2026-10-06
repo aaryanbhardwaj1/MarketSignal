@@ -6,7 +6,10 @@ credential is per run), with the capability token as the bearer. Mapping:
 * HTTP 401 (bearer rejected at the edge) -> ``UNAUTHENTICATED`` (the same result the in-process
   governor returns for a bad token, built by the same ``failure_result``);
 * any other transport/protocol failure (connection refused, 403/5xx, timeout, malformed
-  result) -> ``UNAVAILABLE``;
+  result) -> ``UNAVAILABLE``. When the server was never reached (connection refused/failed or
+  connect timeout: no HTTP response at all), the result also carries the ``TRANSPORT_FAILURE``
+  warning, so ``tools.fallback.FallbackToolTransport`` may safely re-run the call in-process
+  (no tool ran, nothing was audited). Governor results never carry it;
 * otherwise the server's ``structured_content`` (``to_wire``) becomes the ``ToolResult``.
 
 Tool specs: ``list_tools()`` fetches the server's advertised input schemas when a
@@ -19,6 +22,7 @@ from __future__ import annotations
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from dataclasses import replace
 from typing import Any
 
 import httpx2
@@ -26,7 +30,14 @@ from mcp import Client
 from mcp.client.streamable_http import streamable_http_client
 
 from marketsignal.mcp.server import CALL_ID_HEADER, CALL_INDEX_HEADER, STEP_HEADER
-from marketsignal.tools.contracts import ToolCall, ToolError, ToolResult, ToolSpec, Transport
+from marketsignal.tools.contracts import (
+    TRANSPORT_FAILURE,
+    ToolCall,
+    ToolError,
+    ToolResult,
+    ToolSpec,
+    Transport,
+)
 from marketsignal.tools.governance import failure_result
 from marketsignal.tools.registry import ToolRegistry, default_registry
 from marketsignal.tools.schema import strict_schema
@@ -111,7 +122,10 @@ class HttpToolTransport:
             if 401 in statuses:
                 return failure_result(call, "UNAUTHENTICATED", transport="http")
             log.warning("mcp transport failure: %s", type(exc).__name__)
-            return failure_result(call, "UNAVAILABLE", transport="http")
+            failed = failure_result(call, "UNAVAILABLE", transport="http")
+            if not statuses and _unreachable(exc):
+                return replace(failed, warnings=(TRANSPORT_FAILURE,))
+            return failed
 
     @staticmethod
     def _from_wire(call: ToolCall, wire: dict[str, Any]) -> ToolResult:
@@ -128,3 +142,23 @@ class HttpToolTransport:
             duration_ms=float(wire.get("duration_ms", 0.0)),
             transport="http",
         )
+
+
+_UNREACHABLE = (httpx2.ConnectError, httpx2.ConnectTimeout, ConnectionError)
+
+
+def _unreachable(exc: BaseException) -> bool:
+    """A connection-level failure anywhere in ``exc`` (causes, contexts, exception groups)."""
+    seen: set[int] = set()
+    stack: list[BaseException] = [exc]
+    while stack:
+        e = stack.pop()
+        if id(e) in seen:
+            continue
+        seen.add(id(e))
+        if isinstance(e, _UNREACHABLE):
+            return True
+        if isinstance(e, BaseExceptionGroup):
+            stack.extend(e.exceptions)
+        stack.extend(x for x in (e.__cause__, e.__context__) if x is not None)
+    return False

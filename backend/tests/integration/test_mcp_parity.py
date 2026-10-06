@@ -21,7 +21,13 @@ from fastapi import FastAPI
 
 from marketsignal.mcp.client import HttpToolTransport
 from marketsignal.mcp.server import build_mcp_app
-from marketsignal.tools.contracts import ToolCall, ToolResult
+from marketsignal.tools.contracts import (
+    TOOLS_TRANSPORT_FALLBACK,
+    TRANSPORT_FAILURE,
+    ToolCall,
+    ToolResult,
+)
+from marketsignal.tools.fallback import FallbackToolTransport
 from marketsignal.tools.inprocess import InProcessToolTransport
 from tests.integration.test_ingestion_api import harness  # noqa: F401 - fixture
 from tests.integration.test_tools_governance import World, world  # noqa: F401 - fixture
@@ -68,8 +74,31 @@ Case = tuple[str, str, dict[str, Any], Callable[[World], str]]
 def _cases(w: World) -> list[Case]:
     ok = w.token()
     b = w.token(w.ws_b)
+    fin = w.token(source_classes=["financial"])
     now = int(time.time())
     return [
+        ("class-claim", "search_evidence", {"query": "Gen Z fit frustration"}, lambda _: fin),
+        (
+            "class-filtered",
+            "list_sources",
+            {"source_classes": ["customer"]},
+            lambda _: fin,
+        ),
+        (
+            "class-get",
+            "get_evidence",
+            {"handles": [f"{w.ws_a.workspace_code}/RETURNS@v1:B1"]},
+            lambda _: fin,
+        ),
+        ("nul-query", "search_evidence", {"query": "fit\x00gap"}, lambda _: ok),
+        ("huge-handle", "get_evidence", {"handles": ["A" * 5000]}, lambda _: ok),
+        ("no-jti", "list_sources", {}, lambda ww: ww.raw_token(jti=None)),
+        (
+            "long-lived",
+            "list_sources",
+            {},
+            lambda ww: ww.raw_token(exp=now + 10 * 365 * 86400),
+        ),
         ("search", "search_evidence", {"query": "Gen Z fit frustration", "top_k": 5}, lambda _: ok),
         ("keyword", "search_evidence_keyword", {"terms": ["RV-00412"]}, lambda _: ok),
         (
@@ -146,6 +175,13 @@ async def test_inprocess_and_http_are_equivalent(world: World, mcp_url: str) -> 
     assert all(r.transport == "inprocess" for r in local)
     codes = {r.call_id: (r.error.code if r.error else "OK") for r in local}
     assert codes == {
+        "class-claim": "OK",
+        "class-filtered": "OK",
+        "class-get": "OK",
+        "nul-query": "VALIDATION_ERROR",
+        "huge-handle": "VALIDATION_ERROR",
+        "no-jti": "UNAUTHENTICATED",
+        "long-lived": "UNAUTHENTICATED",
         "search": "OK",
         "keyword": "OK",
         "keyword-any": "OK",
@@ -170,6 +206,11 @@ async def test_inprocess_and_http_are_equivalent(world: World, mcp_url: str) -> 
     keyword_any = next(r for r in remote if r.call_id == "keyword-any")
     assert keyword_any.output is not None
     assert keyword_any.output["matches_by_source"] == {"RETURNS": 1}
+    filtered = next(r for r in remote if r.call_id == "class-filtered")
+    assert filtered.warnings == ("SOURCE_CLASS_FILTERED",)
+    claimed = next(r for r in remote if r.call_id == "class-claim")
+    assert claimed.output is not None
+    assert claimed.output["hits"] == []
 
     for scope in (world.ws_a, world.ws_b):
         rows = await world.audit(scope)
@@ -206,6 +247,65 @@ async def test_http_transport_failure_is_unavailable(world: World) -> None:  # n
     assert r.error is not None
     assert r.error.code == "UNAVAILABLE"
     assert r.transport == "http"
+    assert r.warnings == (TRANSPORT_FAILURE,)
+
+
+async def test_fallback_transport_reruns_in_process(world: World) -> None:  # noqa: F811
+    dead = HttpToolTransport(f"http://127.0.0.1:{_free_port()}/mcp/", timeout_s=2.0)
+    t = FallbackToolTransport(dead, InProcessToolTransport(world.governor))
+    r = await t.call(ToolCall("c", "list_sources", {}), credential=world.token())
+    assert r.ok, r.error
+    assert r.transport == "inprocess"
+    assert TOOLS_TRANSPORT_FALLBACK in r.warnings
+    assert TRANSPORT_FAILURE not in r.warnings
+
+
+async def test_http_governor_unavailable_is_not_a_transport_failure(
+    world: World,  # noqa: F811
+    mcp_url: str,
+) -> None:
+    run_id = await world.start_run()
+    token = world.token(run_id=run_id)
+    await world.set_run_status(run_id, "completed")
+    r = await HttpToolTransport(mcp_url).call(ToolCall("c", "list_sources", {}), credential=token)
+    assert r.error is not None
+    assert TRANSPORT_FAILURE not in r.warnings
+
+
+async def _post_list(app: Any, server: Any, client: str, headers: dict[str, str]) -> int:
+    body = {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}
+    base = {"Accept": "application/json, text/event-stream", "Host": "127.0.0.1:8000"}
+    async with (
+        server.session_manager.run(),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app, client=(client, 5555)),
+            base_url="http://127.0.0.1",
+        ) as http,
+    ):
+        response = await http.post("/", json=body, headers={**base, **headers})
+    return response.status_code
+
+
+async def test_revoked_token_cannot_list_tools(world: World) -> None:  # noqa: F811
+    run_id = await world.start_run()
+    token = world.token(run_id=run_id)
+    auth = {"Authorization": f"Bearer {token}"}
+    server, app = build_mcp_app(world.governor, world.settings)
+    assert await _post_list(app, server, "127.0.0.1", auth) == 200
+    await world.set_run_status(run_id, "cancelled")
+    server, app = build_mcp_app(world.governor, world.settings)
+    assert await _post_list(app, server, "127.0.0.1", auth) == 401
+
+
+async def test_public_mode_uses_configured_allowed_hosts(world: World) -> None:  # noqa: F811
+    settings = world.settings.model_copy(update={"mcp_public": True})
+    auth = {"Authorization": f"Bearer {world.token()}", "Host": "api.example.com"}
+    server, app = build_mcp_app(world.governor, settings, allowed_hosts=["api.example.com"])
+    assert await _post_list(app, server, "10.1.2.3", auth) == 200
+    server, app = build_mcp_app(world.governor, settings, allowed_hosts=["api.example.com"])
+    assert await _post_list(app, server, "10.1.2.3", {**auth, "Host": "evil.test"}) == 421
+    server, app = build_mcp_app(world.governor, settings)  # default: loopback hosts only
+    assert await _post_list(app, server, "10.1.2.3", auth) == 421
 
 
 @pytest.mark.parametrize(

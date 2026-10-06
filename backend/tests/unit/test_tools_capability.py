@@ -13,6 +13,7 @@ from pydantic import SecretStr
 from marketsignal.tools.capability import (
     AUDIENCE,
     ISSUER,
+    MAX_TTL_S,
     UnauthenticatedError,
     issue,
     verify,
@@ -70,8 +71,41 @@ def test_round_trip_builds_context_from_claims() -> None:
     assert ctx.max_confidentiality == "confidential"
 
 
-def test_run_id_is_optional() -> None:
-    assert verify(KEY, _issue(run_id=None)).run_id is None
+def test_run_id_is_required() -> None:
+    with pytest.raises(ValueError, match="run_id"):
+        _issue(run_id=None)
+    claims = jwt.decode(_issue(), options={"verify_signature": False})
+    del claims["jti"]
+    with pytest.raises(UnauthenticatedError):  # no jti: could never be revoked
+        verify(KEY, jwt.encode(claims, KEY.get_secret_value(), algorithm="HS256"))
+
+
+def test_source_classes_claim_round_trips() -> None:
+    assert verify(KEY, _issue()).source_classes == frozenset()
+    ctx = verify(KEY, _issue(source_classes=["financial", "customer", "customer"]))
+    assert ctx.source_classes == frozenset({"financial", "customer"})
+    claims = jwt.decode(_issue(source_classes=["market"]), options={"verify_signature": False})
+    assert claims["classes"] == ["market"]
+    assert "classes" not in jwt.decode(_issue(), options={"verify_signature": False})
+
+
+def test_issue_rejects_unknown_source_class() -> None:
+    with pytest.raises(ValueError, match="source class"):
+        _issue(source_classes=["secret"])
+
+
+def test_lifetime_longer_than_max_ttl_is_rejected() -> None:
+    now = int(time.time())
+    with pytest.raises(UnauthenticatedError):
+        verify(KEY, _raw({"iat": now, "nbf": now, "exp": now + 10 * 365 * 86400}))
+    verify(KEY, _raw({"iat": now, "nbf": now, "exp": now + MAX_TTL_S}))
+
+
+def test_iat_in_the_future_is_rejected() -> None:
+    now = int(time.time())
+    with pytest.raises(UnauthenticatedError):
+        verify(KEY, _raw({"iat": now + 120, "nbf": now, "exp": now + 200}))
+    verify(KEY, _raw({"iat": now + 3, "nbf": now, "exp": now + 60}))  # inside the leeway
 
 
 def test_claims_shape() -> None:
@@ -107,6 +141,8 @@ def test_skew_leeway_is_five_seconds() -> None:
         _raw({"tools": "search_evidence"}),
         _raw({"max_conf": "top-secret"}),
         _raw({"wsc": ""}),
+        _raw({"classes": "customer"}),
+        _raw({"classes": ["secret"]}),
     ],
     ids=[
         "empty",
@@ -121,6 +157,8 @@ def test_skew_leeway_is_five_seconds() -> None:
         "tools-not-list",
         "bad-confidentiality",
         "empty-workspace-code",
+        "classes-not-list",
+        "unknown-class",
     ],
 )
 def test_rejections_carry_no_details(token: str) -> None:

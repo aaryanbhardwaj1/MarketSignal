@@ -8,10 +8,11 @@ statement_timeout -> caps -> normalized errors -> audit -> observation.
 from __future__ import annotations
 
 import asyncio
+import json
 import time
 import uuid
 from collections.abc import AsyncIterator, Callable
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 import jwt
@@ -68,11 +69,12 @@ class World:
     governor: ToolGovernor
     ws_a: WorkspaceScope
     ws_b: WorkspaceScope
+    runs: dict[uuid.UUID, uuid.UUID] = field(default_factory=dict)  # a running run per ws
 
     def token(self, scope: WorkspaceScope | None = None, **overrides: Any) -> str:
         scope = scope or self.ws_a
         kwargs: dict[str, Any] = {
-            "run_id": None,
+            "run_id": self.runs[scope.workspace_id],
             "workspace_id": scope.workspace_id,
             "workspace_code": scope.workspace_code,
             "principal": "demo-user",
@@ -90,6 +92,7 @@ class World:
             "iss": ISSUER,
             "aud": AUDIENCE,
             "sub": "demo-user",
+            "jti": str(self.runs[self.ws_a.workspace_id]),
             "iat": now,
             "nbf": now,
             "exp": now + 60,
@@ -123,13 +126,14 @@ class World:
             )
             return [dict(r._mapping) for r in rows]
 
-    async def start_run(self) -> uuid.UUID:
+    async def start_run(self, scope: WorkspaceScope | None = None) -> uuid.UUID:
+        scope = scope or self.ws_a
         conversation = await store.create_conversation(
-            self.factory, self.ws_a, persona="analyst", title="t"
+            self.factory, scope, persona="analyst", title="t"
         )
         return await store.create_run(
             self.factory,
-            self.ws_a,
+            scope,
             conversation_id=conversation,
             question="q",
             mode="research",
@@ -187,9 +191,12 @@ async def world(harness: Harness) -> AsyncIterator[World]:  # noqa: F811
         rerank_executor=RerankExecutor(ExplodingReranker()),  # type: ignore[arg-type]
     )
     governor = ToolGovernor(factory=factory, settings=settings, retrieval=retrieval)
-    yield World(
+    w = World(
         harness, settings, factory, governor, await _scope(harness, a), await _scope(harness, b)
     )
+    for scope in (w.ws_a, w.ws_b):
+        w.runs[scope.workspace_id] = await w.start_run(scope)
+    yield w
     await engine.dispose()
 
 
@@ -422,6 +429,10 @@ async def test_revoked_run_token_is_unauthenticated(world: World) -> None:
         ("search_evidence_keyword", {"terms": ["   "]}),
         ("get_evidence", {"handles": ["h"] * 9}),
         ("list_sources", {"path": "/etc/passwd"}),
+        ("get_evidence", {"handles": ["A" * 300_000]}),
+        ("search_evidence_keyword", {"terms": ["fit"], "source_codes": ["Z" * 200_000]}),
+        ("search_evidence", {"query": "fit\x00gap"}),
+        ("search_evidence_keyword", {"terms": ["RV\x00412"]}),
     ],
     ids=[
         "short-query",
@@ -433,6 +444,10 @@ async def test_revoked_run_token_is_unauthenticated(world: World) -> None:
         "blank-term",
         "too-many-handles",
         "extra-field",
+        "huge-handle",
+        "huge-source-code",
+        "nul-query",
+        "nul-term",
     ],
 )
 async def test_validation_errors(world: World, name: str, args: dict[str, Any]) -> None:
@@ -440,7 +455,10 @@ async def test_validation_errors(world: World, name: str, args: dict[str, Any]) 
     assert r.error is not None
     assert r.error.code == "VALIDATION_ERROR"
     assert r.observation.startswith("ERROR VALIDATION_ERROR")
-    assert (await world.audit())[-1]["status"] == "error"
+    row = (await world.audit())[-1]
+    assert row["status"] == "error"
+    assert len(json.dumps(row["args"])) < 2_000  # bounded audit, never the raw argument
+    assert "\\u0000" not in json.dumps(row["args"])
 
 
 # --- timeouts and audit ----------------------------------------------------------------------
@@ -537,3 +555,133 @@ async def test_get_evidence_after_delete_is_source_deleted(world: World) -> None
     gone = await call(world, "search_evidence_keyword", {"terms": ["RV-00412"]})
     assert gone.output is not None
     assert gone.output["total_matches"] == 0
+
+
+# --- source-class claim (findings 0/19) --------------------------------------------------------
+
+
+async def test_class_claim_restricts_every_tool(world: World) -> None:
+    fin = world.token(source_classes=["financial"])
+    cust = world.token(source_classes=["customer"], max_conf="restricted")
+    # the claim applies when the arguments omit classes
+    r = await call(world, "search_evidence", {"query": "Gen Z fit frustration"}, credential=fin)
+    assert r.ok
+    assert r.output is not None
+    assert r.output["hits"] == []
+    kw = await call(world, "search_evidence_keyword", {"terms": ["RV-00412"]}, credential=fin)
+    assert kw.output is not None
+    assert kw.output["total_matches"] == 0
+    listed = await call(world, "list_sources", {}, credential=fin)
+    assert listed.output is not None
+    assert listed.output["sources"] == []
+    # asking for a class outside the claim does not widen it
+    for name, args in (
+        ("search_evidence", {"query": "fit", "source_classes": ["customer"]}),
+        ("search_evidence_keyword", {"terms": ["RV-00412"], "source_classes": ["customer"]}),
+        ("list_sources", {"source_classes": ["customer"]}),
+    ):
+        out = await call(world, name, args, credential=fin)
+        assert out.ok, out.error
+        assert out.output is not None
+        assert not out.output.get("hits")
+        assert not out.output.get("sources")
+        assert "SOURCE_CLASS_FILTERED" in out.warnings
+        assert "SOURCE_CLASS_FILTERED" in out.observation
+    # the intersection is used when both are given
+    both = await call(
+        world, "list_sources", {"source_classes": ["customer", "internal"]}, credential=cust
+    )
+    assert both.output is not None
+    assert {s["source_code"] for s in both.output["sources"]} == {"MEMO", "RETURNS"}
+    assert both.warnings == ()
+    # get_evidence: a handle outside the claimed classes is NOT_FOUND
+    hit = await call(world, "search_evidence_keyword", {"terms": ["RV-00412"]})
+    handle = hit.handles()[0]
+    got = await call(world, "get_evidence", {"handles": [handle]}, credential=fin)
+    assert got.output is not None
+    assert got.output["items"][0]["miss_reason"] == "NOT_FOUND"
+    assert got.handles() == ()
+    allowed = await call(world, "get_evidence", {"handles": [handle]}, credential=cust)
+    assert allowed.handles() == (handle,)
+
+
+# --- revocation after the body (finding 4) ---------------------------------------------------
+
+
+async def test_run_cancelled_during_call_discards_output(world: World) -> None:
+    run_id = await world.start_run()
+    token = world.token(run_id=run_id)
+    base = default_registry().get("list_sources")
+    assert base is not None
+
+    async def slow(env: ToolEnv, args: BaseModel) -> BaseModel:
+        out = await base.impl(env, args)
+        await world.set_run_status(run_id, "cancelled")
+        return out
+
+    governor = world.governor_with(replace(base, impl=slow))
+    r = await InProcessToolTransport(governor).call(
+        ToolCall("c", "list_sources", {}), credential=token
+    )
+    assert not r.ok
+    assert r.error is not None
+    assert r.error.code == "UNAUTHENTICATED"
+    assert r.output is None
+    assert "MEMO" not in r.observation
+    rows = await world.audit()
+    assert len(rows) == 1  # the executed call is audited, as a revoked failure
+    assert rows[0]["query_run_id"] == run_id
+    assert (rows[0]["status"], rows[0]["error_code"]) == ("error", "UNAUTHENTICATED")
+    assert rows[0]["result_handles"] == []
+
+
+# --- purged tombstone confidentiality (finding 5) ---------------------------------------------
+
+
+async def test_purged_source_above_max_conf_is_not_found(world: World) -> None:
+    restricted = world.token(max_conf="restricted")
+    kw = await call(world, "search_evidence_keyword", {"terms": ["Halcyon"]}, credential=restricted)
+    deal = kw.handles()[0]
+    sources = await world.h.client.get(f"/api/workspaces/{world.ws_a.workspace_code}/sources")
+    row = next(s for s in sources.json() if s["source_code"] == "DEAL")
+    deleted = await world.h.client.delete(
+        f"/api/workspaces/{world.ws_a.workspace_code}/sources/{row['source_id']}"
+    )
+    assert deleted.status_code == 200
+    nope = f"{world.ws_a.workspace_code}/NOPE@v1:B1"
+    low = await call(world, "get_evidence", {"handles": [deal, nope]})  # max_conf confidential
+    assert low.output is not None
+    assert [i["miss_reason"] for i in low.output["items"]] == ["NOT_FOUND", "NOT_FOUND"]
+    high = await call(world, "get_evidence", {"handles": [deal]}, credential=restricted)
+    assert high.output is not None
+    assert high.output["items"][0]["miss_reason"] == "SOURCE_DELETED"
+
+
+# --- purge-safe audit (finding 18) -----------------------------------------------------------
+
+
+async def test_audit_after_purge_redacts_args_quoting_purged_text(world: World) -> None:
+    run_id = await world.start_run()
+    token = world.token(run_id=run_id)
+    first = await call(
+        world, "search_evidence_keyword", {"terms": ["RV-00412"]}, credential=token, idx=0
+    )
+    assert any("/RETURNS@v" in h for h in first.handles())
+    sources = await world.h.client.get(f"/api/workspaces/{world.ws_a.workspace_code}/sources")
+    returns = next(s for s in sources.json() if s["source_code"] == "RETURNS")
+    deleted = await world.h.client.delete(
+        f"/api/workspaces/{world.ws_a.workspace_code}/sources/{returns['source_id']}"
+    )
+    assert deleted.status_code == 200
+    quoted = "Sleeves ran long and the fit was inconsistent"
+    second = await call(world, "search_evidence", {"query": quoted}, credential=token, idx=1)
+    assert second.ok
+    rows = await world.audit()
+    row = next(r for r in rows if r["query_run_id"] == run_id and r["call_index"] == 1)
+    assert row["args"] == {"redacted": True}
+    assert quoted not in json.dumps([r["args"] for r in rows])
+    # another run that never saw the purged source keeps its (sanitized) arguments
+    other = world.token(run_id=await world.start_run())
+    await call(world, "search_evidence", {"query": "fit sizing"}, credential=other, idx=7)
+    clean = next(r for r in await world.audit() if r["call_index"] == 7)
+    assert clean["args"] == {"query": "fit sizing"}

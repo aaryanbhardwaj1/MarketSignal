@@ -47,6 +47,11 @@ class Tombstone:
     title: str
     version: int
     deleted_at: datetime | None
+    # Policy attributes of the purged version, so callers can keep a purged passage above a
+    # reader's confidentiality (or outside its classes) indistinguishable from an absent one.
+    # Never serialized into a tombstone response.
+    confidentiality: str = ""
+    source_class: str = ""
 
 
 class EvidenceDeletedError(LookupError):
@@ -160,7 +165,15 @@ async def resolve_evidence(
     ) = version
     if status == VersionStatus.PURGED.value:
         raise EvidenceDeletedError(
-            Tombstone(str(handle), source_code, title, version_no, deleted_at)
+            Tombstone(
+                str(handle),
+                source_code,
+                title,
+                version_no,
+                deleted_at,
+                confidentiality=str(confidentiality),
+                source_class=str(source_class),
+            )
         )
     parent = (
         await session.execute(

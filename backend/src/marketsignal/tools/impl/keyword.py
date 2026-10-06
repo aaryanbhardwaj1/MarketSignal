@@ -22,7 +22,12 @@ from sqlalchemy import text
 from marketsignal.db.session import scoped_session
 from marketsignal.retrieval.lanes import LaneScope, lane_scope
 from marketsignal.retrieval.types import RetrievalFilters, allowed_confidentiality
-from marketsignal.tools.contracts import EvidenceHit, KeywordSearchIn, KeywordSearchOut
+from marketsignal.tools.contracts import (
+    SOURCE_CLASS_FILTERED,
+    EvidenceHit,
+    KeywordSearchIn,
+    KeywordSearchOut,
+)
 from marketsignal.tools.env import ToolEnv, ToolInputError
 from marketsignal.tools.impl.common import compact, snippet
 
@@ -103,8 +108,13 @@ async def keyword_search(
 async def search_evidence_keyword(env: ToolEnv, args: KeywordSearchIn) -> KeywordSearchOut:
     terms = normalize_terms(args.terms)
     match = args.match or "all"
+    classes = env.classes(args.source_classes)
+    if classes is None:
+        return KeywordSearchOut(
+            total_matches=0, matches_by_source={}, hits=[], warnings=[SOURCE_CLASS_FILTERED]
+        )
     filters = RetrievalFilters.of(
-        [c.value for c in args.source_classes or ()],
+        classes,
         args.source_codes or (),
         env.max_confidentiality,
     )

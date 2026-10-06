@@ -11,7 +11,12 @@ from sqlalchemy import text
 from marketsignal.db.session import scoped_session
 from marketsignal.retrieval.pipeline import RetrievalService
 from marketsignal.retrieval.types import ParentCandidate, RetrievalFilters
-from marketsignal.tools.contracts import EvidenceHit, SearchEvidenceIn, SearchEvidenceOut
+from marketsignal.tools.contracts import (
+    SOURCE_CLASS_FILTERED,
+    EvidenceHit,
+    SearchEvidenceIn,
+    SearchEvidenceOut,
+)
 from marketsignal.tools.env import ToolEnv
 from marketsignal.tools.impl.common import snippet
 
@@ -36,8 +41,11 @@ def production_service(service: RetrievalService) -> RetrievalService:
 
 async def search_evidence(env: ToolEnv, args: SearchEvidenceIn) -> SearchEvidenceOut:
     top_k = args.top_k or DEFAULT_TOP_K
+    classes = env.classes(args.source_classes)
+    if classes is None:
+        return SearchEvidenceOut(hits=[], classes_found={}, warnings=[SOURCE_CLASS_FILTERED])
     filters = RetrievalFilters.of(
-        [c.value for c in args.source_classes or ()],
+        classes,
         args.source_codes or (),
         env.max_confidentiality,
     )

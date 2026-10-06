@@ -7,7 +7,12 @@ from sqlalchemy import text
 
 from marketsignal.db.session import scoped_session
 from marketsignal.retrieval.types import allowed_confidentiality
-from marketsignal.tools.contracts import ListSourcesIn, ListSourcesOut, SourceCard
+from marketsignal.tools.contracts import (
+    SOURCE_CLASS_FILTERED,
+    ListSourcesIn,
+    ListSourcesOut,
+    SourceCard,
+)
 from marketsignal.tools.env import ToolEnv
 
 MAX_SOURCES = 50
@@ -26,6 +31,9 @@ LIMIT :limit
 
 
 async def list_sources(env: ToolEnv, args: ListSourcesIn) -> ListSourcesOut:
+    classes = env.classes(args.source_classes)
+    if classes is None:
+        return ListSourcesOut(sources=[], warnings=[SOURCE_CLASS_FILTERED])
     async with scoped_session(env.factory, env.scope) as session:
         rows = (
             await session.execute(
@@ -33,7 +41,7 @@ async def list_sources(env: ToolEnv, args: ListSourcesIn) -> ListSourcesOut:
                 {
                     "ws": env.scope.workspace_id,
                     "conf": allowed_confidentiality(env.max_confidentiality),
-                    "classes": sorted({c.value for c in args.source_classes or ()}),
+                    "classes": classes,
                     "limit": MAX_SOURCES + 1,  # one extra row tells the governor to flag TRUNCATED
                 },
             )

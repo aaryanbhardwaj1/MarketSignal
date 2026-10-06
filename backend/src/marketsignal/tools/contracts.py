@@ -11,8 +11,11 @@ Rules that every implementation must keep:
   The workspace comes only from the verified capability token (``credential``) and becomes a
   ``ToolContext`` server-side. A model-supplied ``workspace_id`` (or any unknown field) is a
   ``VALIDATION_ERROR``: every input model forbids extra fields.
-* **Bounded.** Every list and string has a server-side limit; outputs are capped and say so
-  (``truncated`` plus the ``TRUNCATED`` warning).
+* **Bounded.** Every list and string (including each list item) has a server-side limit, and
+  no string input may contain control characters other than tab/newline/carriage return
+  (``VALIDATION_ERROR``); outputs are capped and say so (``truncated`` plus ``TRUNCATED``).
+* **Class claim.** A capability token may carry ``source_classes``; the tools intersect any
+  requested classes with it (never widen) and ``get_evidence`` treats other classes as absent.
 * **Explicit failure.** A call never raises to the agent: it returns ``ToolResult(ok=False,
   error=ToolError(code, message))`` with a normalized code and a safe message.
 * **Two views of one result.** ``output`` is the full typed result for the runtime (the
@@ -25,10 +28,11 @@ Rules that every implementation must keep:
 
 from __future__ import annotations
 
+import unicodedata
 from dataclasses import dataclass, field
-from typing import Any, Literal, Protocol
+from typing import Annotated, Any, Literal, Protocol
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
 from marketsignal.domain.enums import SourceClass, SourceType
 
@@ -52,13 +56,50 @@ ErrorCode = Literal[
 Transport = Literal["inprocess", "http"]
 
 TRUNCATED = "TRUNCATED"  # warning: the output was capped (items or characters)
+# warning: the requested classes and the token's class claim do not intersect (no hits)
+SOURCE_CLASS_FILTERED = "SOURCE_CLASS_FILTERED"
+# warning on an UNAVAILABLE result: the transport itself failed (no tool ran); set only by the
+# HTTP transport on connection failures, so a fallback transport may safely re-run the call
+TRANSPORT_FAILURE = "TRANSPORT_FAILURE"
+# warning: the call was re-run through the fallback (in-process) transport
+TOOLS_TRANSPORT_FALLBACK = "TOOLS_TRANSPORT_FALLBACK"
 SNIPPET_MAX_CHARS = 280
+HANDLE_MAX_CHARS = 200
+SOURCE_CODE_MAX_CHARS = 64
+TERM_MAX_CHARS = 60
+
+_ALLOWED_CONTROL = frozenset("\t\n\r")
+
+Handle = Annotated[str, StringConstraints(min_length=1, max_length=HANDLE_MAX_CHARS)]
+SourceCode = Annotated[str, StringConstraints(min_length=1, max_length=SOURCE_CODE_MAX_CHARS)]
+Term = Annotated[str, StringConstraints(min_length=1, max_length=TERM_MAX_CHARS)]
+
+
+def has_control_chars(value: str) -> bool:
+    """Control (Cc, other than tab/newline/CR) or surrogate (Cs) characters: NUL breaks jsonb
+    writes and escape sequences have no place in a search argument."""
+    return any(
+        unicodedata.category(ch) in ("Cc", "Cs") and ch not in _ALLOWED_CONTROL for ch in value
+    )
+
+
+def _check_strings(value: Any) -> Any:
+    items = value if isinstance(value, list) else [value]
+    if any(isinstance(v, str) and has_control_chars(v) for v in items):
+        raise ValueError("control characters are not allowed")
+    return value
 
 
 class _In(BaseModel):
-    """Tool inputs: strict, closed (no extra fields), so context can never be smuggled in."""
+    """Tool inputs: strict, closed (no extra fields), so context can never be smuggled in.
+    Every string (and every string list item) is bounded and free of control characters."""
 
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    @field_validator("*", mode="after")
+    @classmethod
+    def _no_control_chars(cls, value: Any) -> Any:
+        return _check_strings(value)
 
 
 class _Out(BaseModel):
@@ -73,7 +114,7 @@ class SearchEvidenceIn(_In):
 
     query: str = Field(min_length=2, max_length=400)
     source_classes: list[SourceClass] | None = Field(default=None, max_length=5)
-    source_codes: list[str] | None = Field(default=None, max_length=10)
+    source_codes: list[SourceCode] | None = Field(default=None, max_length=10)
     top_k: int | None = Field(default=None, ge=1, le=12)  # default 8
 
 
@@ -81,17 +122,17 @@ class KeywordSearchIn(_In):
     """``search_evidence_keyword``: exact matching with exhaustive counts (identifiers,
     names, quoted phrases)."""
 
-    terms: list[str] = Field(min_length=1, max_length=6)  # each 1..60 chars (validated)
+    terms: list[Term] = Field(min_length=1, max_length=6)  # each 1..60 non-blank chars
     match: Literal["all", "any", "phrase"] | None = None  # default "all"
     source_classes: list[SourceClass] | None = Field(default=None, max_length=5)
-    source_codes: list[str] | None = Field(default=None, max_length=10)
+    source_codes: list[SourceCode] | None = Field(default=None, max_length=10)
     limit: int | None = Field(default=None, ge=1, le=20)  # default 10
 
 
 class GetEvidenceIn(_In):
     """``get_evidence``: resolve up to 8 canonical handles (malformed ones reported per item)."""
 
-    handles: list[str] = Field(min_length=1, max_length=8)
+    handles: list[Handle] = Field(min_length=1, max_length=8)
 
 
 class ListSourcesIn(_In):
@@ -247,6 +288,8 @@ class ToolContext:
     tools: frozenset[str]
     max_confidentiality: str
     extra: dict[str, Any] = field(default_factory=dict)
+    # the token's ``classes`` claim (SourceClass values); empty = every class
+    source_classes: frozenset[str] = frozenset()
 
 
 class ToolTransport(Protocol):
