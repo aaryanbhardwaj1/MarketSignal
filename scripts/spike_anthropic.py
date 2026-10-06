@@ -10,7 +10,10 @@ SecretStr and is never printed, logged or written). Small, cheap calls only.
 from __future__ import annotations
 
 import asyncio
+import io
 import json
+import logging
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -19,10 +22,19 @@ import anthropic
 
 from marketsignal.config import get_settings
 from marketsignal.generation.prompts import PROMPT_VERSION, SYSTEM_PROMPT
-from marketsignal.providers.llm.anthropic import AnthropicProvider
+from marketsignal.providers.llm.anthropic import AnthropicProvider, _UsageAccumulator
 from marketsignal.providers.llm.base import LLMRequest, LLMStop, LLMText, LLMUnavailableError
+from marketsignal.telemetry.logging import configure_logging
 
 OUT = Path(__file__).resolve().parents[1] / "docs" / "spikes" / "0002-anthropic-live.json"
+# Credential shapes checked in the captured logs: patterns only, the key value is never compared.
+_LEAK_PATTERNS = {
+    "anthropic_key_shape": re.compile(r"sk-ant-[A-Za-z0-9_-]{8,}"),
+    "x_api_key_header_value": re.compile(
+        r"x-api-key['\"]?\s*[:=]\s*['\"]?(?!\[REDACTED)\S{8,}", re.I
+    ),
+    "bearer_value": re.compile(r"Bearer\s+(?!\[REDACTED)\S{8,}", re.I),
+}
 USER = (
     '<evidence_items>\n<evidence alias="E1" class="customer" source="Survey" '
     'locator="Row 2">27 percent of Gen Z buyers name fit inconsistency as their top '
@@ -76,8 +88,15 @@ async def main() -> int:
     if settings.anthropic_api_key is None:
         print("ANTHROPIC_API_KEY is not configured")
         return 2
+    # Capture everything at DEBUG (stdlib root + structlog) to prove nothing secret is logged.
+    captured = io.StringIO()
+    root = logging.getLogger()
+    root.addHandler(logging.StreamHandler(captured))
+    root.setLevel(logging.DEBUG)
+    configure_logging("DEBUG", json=True)
     key = settings.anthropic_api_key.get_secret_value()
     client = anthropic.AsyncAnthropic(api_key=key, max_retries=0)
+    del key
     results: dict[str, Any] = {
         "sdk": anthropic.__version__,
         "model": settings.llm_model,
@@ -139,9 +158,39 @@ async def main() -> int:
         )
         async for _ in disabled.stream(req):
             pass
-        results["timeout_mapping"] = "no error (unexpected)"
+            results["timeout_mapping"] = "no error (unexpected)"
     except LLMUnavailableError:
         results["timeout_mapping"] = "LLMUnavailableError"
+    # 7b. Retry path: a refused connection is retried once by the adapter, then mapped to
+    #     LLMUnavailableError. The client points at a closed local port, so nothing leaves
+    #     the machine.
+    dead = anthropic.AsyncAnthropic(
+        api_key=settings.anthropic_api_key.get_secret_value(),
+        base_url="http://127.0.0.1:9",
+        max_retries=0,
+    )
+    retrying = AnthropicProvider(
+        model=settings.llm_model, api_key=settings.anthropic_api_key, client=dead
+    )
+    t0 = time.monotonic()
+    try:
+        async for _ in retrying.stream(
+            LLMRequest(
+                system=SYSTEM_PROMPT,
+                messages=({"role": "user", "content": USER},),
+                max_tokens=50,
+                effort="low",
+                timeout_s=10,
+            )
+        ):
+            pass
+        results["retry_on_connection_error"] = "no error (unexpected)"
+    except LLMUnavailableError as exc:
+        results["retry_on_connection_error"] = {
+            "mapped_to": "LLMUnavailableError",
+            "elapsed_ms": round((time.monotonic() - t0) * 1000),
+            "message": str(exc)[:160],
+        }
     # 8. Strict tool schema with count_tokens, and forced tool_choice (Phase 4 relevance).
     tool = {
         "name": "search_evidence",
@@ -179,6 +228,51 @@ async def main() -> int:
             }
         except Exception as exc:
             results[f"tool_choice_{choice['type']}"] = {"ok": False, **_err(exc)}
+    # 9. Structured output (json_schema) for later phases: planner/state outputs.
+    schema = {
+        "type": "object",
+        "properties": {"sub_questions": {"type": "array", "items": {"type": "string"}}},
+        "required": ["sub_questions"],
+        "additionalProperties": False,
+    }
+    try:
+        message = await client.messages.create(
+            model=settings.llm_model,
+            max_tokens=300,
+            messages=[{"role": "user", "content": "Split into two sub-questions: churn drivers"}],
+            output_config={"effort": "low", "format": {"type": "json_schema", "schema": schema}},  # type: ignore[typeddict-unknown-key]
+        )
+        body = "".join(getattr(b, "text", "") for b in message.content)
+        parsed = json.loads(body)
+        results["structured_output_json_schema"] = {
+            "ok": True,
+            "stop_reason": message.stop_reason,
+            "valid_json": True,
+            "keys": sorted(parsed),
+            "n_sub_questions": len(parsed.get("sub_questions", [])),
+        }
+    except Exception as exc:
+        results["structured_output_json_schema"] = {"ok": False, **_err(exc)}
+    # 10. Usage parsing through our type, from a non-streamed message.
+    try:
+        message = await client.messages.create(
+            model=settings.llm_model,
+            max_tokens=16,
+            messages=[{"role": "user", "content": "Reply with the single word: ok"}],
+            output_config={"effort": "low"},
+        )
+        results["usage_raw_fields"] = sorted(message.usage.model_dump(exclude_none=True))
+        acc = _UsageAccumulator()
+        acc.update(message.usage)
+        results["usage_parsed"] = acc.freeze().as_dict()
+    except Exception as exc:
+        results["usage_parse"] = {"ok": False, **_err(exc)}
+    # 11. No credential shapes anywhere in the captured logs (booleans only).
+    logs = captured.getvalue()
+    results["log_capture"] = {
+        "bytes_captured": len(logs),
+        **{name: bool(rx.search(logs)) for name, rx in _LEAK_PATTERNS.items()},
+    }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(results, indent=1, default=str) + "\n")
     print(

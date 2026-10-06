@@ -1,0 +1,146 @@
+{
+ "sdk": "1.11.0",
+ "model": "claude-sonnet-5-5",
+ "prompt_version": "synth-v1-36627472f1",
+ "models_listed": [
+  "claude-fable-5",
+  "claude-fable-5-1",
+  "claude-haiku-4-5-20251001",
+  "claude-opus-4-5-20251101",
+  "claude-opus-4-6",
+  "claude-opus-4-7",
+  "claude-opus-4-8",
+  "claude-opus-5",
+  "claude-opus-5-5",
+  "claude-sonnet-4-6",
+  "claude-sonnet-5",
+  "claude-sonnet-5-5"
+ ],
+ "configured_model_listed": true,
+ "stream_effort_low_thinking_disabled": {
+  "first_token_ms": 858,
+  "total_ms": 2327,
+  "stop_reason": "end_turn",
+  "usage": {
+   "input_tokens": 117,
+   "output_tokens": 165,
+   "cache_read_input_tokens": 658,
+   "cache_creation_input_tokens": 0
+  },
+  "model": "claude-sonnet-5-5",
+  "chars": 505,
+  "has_alias_citation": true,
+  "has_answer_heading": true,
+  "sample": "### Answer\n27 percent of Gen Z buyers name fit inconsistency as their top frustration [E1].\n\n### Key findings\n- 27 percent of Gen Z buyers name fit inconsistency as their top frustration [E1].\n\n### Gaps & unknowns\nThe evidence is a single survey row and does not state the sample size, survey date, geography, or product category. It also does not show how the other frustrations ranked or how this s"
+ },
+ "stream_repeat_for_cache": {
+  "first_token_ms": 699,
+  "total_ms": 2314,
+  "stop_reason": "end_turn",
+  "usage": {
+   "input_tokens": 117,
+   "output_tokens": 189,
+   "cache_read_input_tokens": 658,
+   "cache_creation_input_tokens": 0
+  },
+  "model": "claude-sonnet-5-5",
+  "chars": 554,
+  "has_alias_citation": true,
+  "has_answer_heading": true,
+  "sample": "### Answer\n27 percent of Gen Z buyers name fit inconsistency as their top frustration [E1].\n\n### Key findings\n- 27 percent of Gen Z buyers name fit inconsistency as their top frustration, per a survey row [E1].\n\n### Gaps & unknowns\nThe evidence does not state the survey's sample size, geography, timing, or how \"Gen Z\" and \"top frustration\" were defined. It also does not indicate which other frustr"
+ },
+ "stream_effort_medium_thinking_adaptive": {
+  "first_token_ms": 3214,
+  "total_ms": 4262,
+  "stop_reason": "end_turn",
+  "usage": {
+   "input_tokens": 117,
+   "output_tokens": 159,
+   "cache_read_input_tokens": 659,
+   "cache_creation_input_tokens": 0
+  },
+  "model": "claude-sonnet-5-5",
+  "chars": 475,
+  "has_alias_citation": true,
+  "has_answer_heading": true,
+  "sample": "### Answer\n27 percent of Gen Z buyers name fit inconsistency as their top frustration. [E1]\n\n### Key findings\n- 27 percent of Gen Z buyers name fit inconsistency as their top frustration. [E1]\n\n### Gaps & unknowns\nThe evidence does not state the survey's sample size, date, geography, or the other frustration options offered. It also does not say whether respondents could pick only one answer. A su"
+ },
+ "stop_reason_on_tiny_max_tokens": "max_tokens",
+ "effort_values": {
+  "low": {
+   "ok": true,
+   "stop_reason": "end_turn"
+  },
+  "medium": {
+   "ok": true,
+   "stop_reason": "end_turn"
+  },
+  "high": {
+   "ok": true,
+   "stop_reason": "end_turn"
+  },
+  "xhigh": {
+   "ok": true,
+   "stop_reason": "end_turn"
+  },
+  "max": {
+   "ok": true,
+   "stop_reason": "end_turn"
+  }
+ },
+ "timeout_mapping": "LLMUnavailableError",
+ "retry_on_connection_error": {
+  "mapped_to": "LLMUnavailableError",
+  "elapsed_ms": 820,
+  "message": "Anthropic unavailable after 2 attempt(s) (APIConnectionError)"
+ },
+ "count_tokens_strict_tool": {
+  "ok": true,
+  "input_tokens": 382
+ },
+ "tool_choice_auto": {
+  "ok": true,
+  "stop_reason": "tool_use",
+  "blocks": [
+   "tool_use",
+   "tool_use"
+  ]
+ },
+ "tool_choice_tool": {
+  "ok": false,
+  "error_class": "BadRequestError",
+  "status": 400,
+  "error_type": "invalid_request_error"
+ },
+ "structured_output_json_schema": {
+  "ok": true,
+  "stop_reason": "end_turn",
+  "valid_json": true,
+  "keys": [
+   "sub_questions"
+  ],
+  "n_sub_questions": 2
+ },
+ "usage_raw_fields": [
+  "cache_creation",
+  "cache_creation_input_tokens",
+  "cache_read_input_tokens",
+  "inference_geo",
+  "input_tokens",
+  "output_tokens",
+  "output_tokens_details",
+  "service_tier"
+ ],
+ "usage_parsed": {
+  "input_tokens": 18,
+  "output_tokens": 4,
+  "cache_read_input_tokens": 0,
+  "cache_creation_input_tokens": 0
+ },
+ "log_capture": {
+  "bytes_captured": 31734,
+  "anthropic_key_shape": false,
+  "x_api_key_header_value": false,
+  "bearer_value": false
+ }
+}

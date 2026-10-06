@@ -372,7 +372,9 @@ async def test_request_params_built_correctly() -> None:
     ]
     assert sent["messages"] == [{"role": "user", "content": "What drives churn?"}]
     assert sent["output_config"] == {"effort": "medium"}
-    assert sent["thinking"] == {"type": "disabled"}
+    # Claude 5.x rejects {"type": "disabled"}; "between_tools" is its spelling of "no thinking
+    # before responding" (live spike, docs/spikes/0002-anthropic-live.md).
+    assert sent["thinking"] == {"type": "between_tools"}
     assert sent["timeout"] == pytest.approx(12.5)
     assert "metadata" not in sent
 

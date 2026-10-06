@@ -21,12 +21,15 @@ request timeout and each wait for the next stream event.
 request id only (never ``str(exc)``, never the request), raised ``from None`` so the SDK
 exception (whose request carries auth headers) is not chained.
 
-API assumptions the live spike (spec §12, "Live Anthropic check") must confirm:
+API behaviour confirmed by the live spike (docs/spikes/0002-anthropic-live.md):
 
 1. ``output_config={"effort": ...}`` is accepted with ``low|medium|high|xhigh|max`` on the
    synthesis model (``claude-sonnet-5-5``), with and without thinking.
-2. ``thinking={"type": "disabled"}`` and ``{"type": "adaptive", "display": "omitted"}`` are
-   both accepted; with ``omitted`` no ``thinking_delta`` text arrives (we drop it anyway).
+2. Claude 5.x models *reject* ``thinking={"type": "disabled"}`` (400). The setting
+   ``llm_thinking="disabled"`` is therefore sent as ``{"type": "between_tools"}``, the model's
+   "no thinking before responding" mode: with no tools it returns a single text block. (With
+   tools, short between-call updates arrive as thinking blocks; we drop every thinking delta.)
+   ``{"type": "adaptive", "display": "omitted"}`` is accepted and streams no thinking text.
 3. A ``cache_control: {"type": "ephemeral"}`` breakpoint on the single system text block
    yields ``cache_creation_input_tokens`` on the first call and ``cache_read_input_tokens`` on
    repeats (system prompt must exceed the model's minimum cacheable length).
@@ -138,7 +141,7 @@ class AnthropicProvider:
     def thinking_param(self) -> dict[str, Any]:
         if self._thinking == "adaptive":
             return {"type": "adaptive", "display": "omitted"}
-        return {"type": "disabled"}
+        return {"type": "between_tools"}  # "disabled" is rejected by Claude 5.x (see docstring)
 
     def build_params(self, request: LLMRequest, timeout_s: float) -> dict[str, Any]:
         """Keyword arguments for ``messages.create`` (``metadata`` is never sent)."""
