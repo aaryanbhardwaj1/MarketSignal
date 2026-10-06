@@ -153,3 +153,22 @@ def test_explicit_standard_is_honoured_for_an_analytics_question() -> None:
     assert d.decided == "standard"
     assert d.task_type == "analytics"  # recorded, so the trace shows the user overrode it
     assert d.as_dict()["task_type"] == "analytics"
+
+
+@pytest.mark.parametrize(
+    ("question", "task"),
+    [
+        ("What has the outlet averaged for weekly orders?", "analytics"),
+        ("Compute the correlation between price and rating.", "analytics"),
+        ("What did the sales table show for margin in March?", "analytics"),
+        ("What share of shoppers chose express, and what do they want improved?", "mixed"),
+        ("What share name zippers as the issue, and which models are failing them?", "mixed"),
+        ("What rate does the board memo cite, and what is the conversion in the data?", "mixed"),
+        (
+            "What percentage of SKUs exceed a 10% return rate per the performance sheet?",
+            "analytics",
+        ),
+    ],
+)
+def test_phase5_task_cues(question: str, task: str) -> None:
+    assert route(question, requested="auto", persona="generalist").task_type == task

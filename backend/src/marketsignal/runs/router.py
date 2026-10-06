@@ -70,15 +70,22 @@ _CLASS_CUES: dict[str, re.Pattern[str]] = {
 # has them); qualitative asks need evidence retrieval; both together are mixed.
 _QUANT = re.compile(
     r"%|\b(how many|how much|(what|which) (percentage|percent|share|proportion|fraction)|"
-    r"percentage of|share of|proportion of|average|mean|median|total|sum of|count of|"
+    r"percentage of|share of|proportion of|averag(e|ed|es|ing)|mean|median|total|sum of|"
+    r"count of|calculate|compute|correlat(e|ion)|"
     r"number of|highest|lowest|top \d+|bottom \d+|top (three|five|ten)|rank(ing)?|"
     r"by (segment|region|channel|age( group)?|category|month|quarter|product|sku)|"
-    r"break(s)? down|breakdown|distribution)\b",
+    r"break(s)? down|breakdown|distribution)\b"
+    # a figure looked up in a data table ("what did the channel table show for conversion")
+    r"|\b(table|data|dataset|spreadsheet)\b.{0,60}\b(figure|conversion|rate|margin|aov|"
+    r"sessions|orders|units|share|value)\b"
+    r"|\b(figure|conversion|rate|margin|aov|sessions|orders|units|value)\b.{0,60}\b(table|"
+    r"data|dataset|spreadsheet)\b",
     _I,
 )
 _QUAL = re.compile(
     r"\b(say|says|said|saying|mention(s|ed)?|complain(t|ts|s|ing)?|describe[sd]?|feel|think|"
-    r"why|reasons?|caus(e|es|ed|ing)|themes?|quotes?|verbatims?|opinions?)\b",
+    r"why|reasons?|caus(e|es|ed|ing)|themes?|quotes?|verbatims?|opinions?|want(s|ed)?|"
+    r"wish(es)?|failing|cites?|cited)\b",
     _I,
 )
 _FOLLOW_UP = re.compile(
