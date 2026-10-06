@@ -19,6 +19,7 @@ The final content is canonical: run-local aliases become ``[[HANDLE]]`` markers,
 
 from __future__ import annotations
 
+import itertools
 import re
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
@@ -41,6 +42,7 @@ from marketsignal.generation.contract import (
     number_values,
     parse_sections,
     split_units,
+    states_gap,
     states_insufficient,
     strip_leaks,
     unsupported_numbers,
@@ -90,6 +92,7 @@ _TRAILING_MARKERS_RE: Final = re.compile(
     r"(?:\s*(?:\[\[[^\[\]]*\]\]|\[E\d{1,2}\]|\[inference\]))+$"
 )
 _SENTENCE_END_RE: Final = re.compile(r"[.!?]+[\"'\u201d\u2019)*_]*\s*$")
+_STRAY_BRACKETS_RE: Final = re.compile(r"\[\[+|\]\]+")
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,7 +116,7 @@ class _Run:
     """Per-call accumulator (never shared between calls)."""
 
     aliases: dict[str, PackItem]
-    pack_values: tuple[float, ...]
+    pack_values: tuple[NumberMention, ...]
     repairs: list[str] = field(default_factory=list)
     unknown: list[str] = field(default_factory=list)
     numeric: list[str] = field(default_factory=list)
@@ -212,7 +215,9 @@ def _cited_rule(unit: _Unit, key: str, index: int, run: _Run) -> _Unit | None:
 
 
 def _interpretation_rule(unit: _Unit, key: str, index: int, run: _Run) -> _Unit | None:
-    if _check_pack(unit, key, index, run) is None:
+    """A kept citation must support the unit's numbers, as in every other section."""
+    check = _check_cited if unit.cited else _check_pack
+    if check(unit, key, index, run) is None:
         return None
     if unit.inferred:
         return unit
@@ -221,21 +226,26 @@ def _interpretation_rule(unit: _Unit, key: str, index: int, run: _Run) -> _Unit 
 
 
 def _gaps_rule(unit: _Unit, key: str, index: int, run: _Run) -> _Unit | None:
+    """Gaps carry no citations or numbers; a unit that is not about missing evidence is an
+    uncited claim, so it keeps (or gets) an ``[inference]`` tag."""
     text = unit.text
     if unit.cited:
         text = ALIAS_RE.sub(" ", text)
         run.repair(key, index, "removed citations")
-    if unit.inferred:
-        text = INFERENCE_RE.sub(" ", text)
-        run.repair(key, index, "removed [inference] tag")
-    text = _tidy(text)
+    text = _tidy(INFERENCE_RE.sub(" ", text))
     if extract_numbers(text):
         run.repair(key, index, "dropped unit containing numbers")
         return None
     if not has_content(text):
         run.repair(key, index, "dropped a unit with no text")
         return None
-    return _Unit(text, (), False)
+    if states_gap(text):
+        if unit.inferred:
+            run.repair(key, index, "removed [inference] tag")
+        return _Unit(text, (), False)
+    if not unit.inferred:
+        run.repair(key, index, "tagged a gaps unit that names no missing evidence as [inference]")
+    return _Unit(_add_tag(text), (), True)
 
 
 _Rule = Callable[[_Unit, str, int, _Run], _Unit | None]
@@ -265,7 +275,16 @@ def _with_terminal(text: str) -> str:
 
 
 def _canonical(text: str, aliases: dict[str, PackItem]) -> str:
-    return ALIAS_RE.sub(lambda m: f"[[{aliases[f'E{m.group(1)}'].handle}]]", text)
+    """Aliases become ``[[HANDLE]]``; every other ``[[``/``]]`` is removed.
+
+    Defence in depth behind :func:`strip_leaks`: the only canonical markers in the output are
+    the ones written here for the unit's own (cited, in-pack) aliases.
+    """
+    pieces = ALIAS_RE.split(text)  # text, alias digits, text, ...
+    return "".join(
+        f"[[{aliases[f'E{piece}'].handle}]]" if odd else _STRAY_BRACKETS_RE.sub("", piece)
+        for odd, piece in zip(itertools.cycle((False, True)), pieces, strict=False)
+    )
 
 
 def _render(final: dict[str, list[_Unit]], aliases: dict[str, PackItem]) -> dict[str, list[str]]:
@@ -302,7 +321,9 @@ def _structural(
     raw_answer = [unit for unit in split_units(parsed.get(ANSWER, "")) if has_content(unit)]
     if len(raw_answer) > MAX_ANSWER_SENTENCES:
         failures.append(ANSWER_TOO_LONG)
-    statements = [unit.text for key in (ANSWER, GAPS) for unit in final.get(key, [])]
+    # A Gaps unit tagged [inference] is an uncited claim, never an insufficiency statement.
+    statements = [unit.text for unit in final.get(ANSWER, [])]
+    statements += [unit.text for unit in final.get(GAPS, []) if not unit.inferred]
     insufficient = any(states_insufficient(text) for text in statements)
     if citation_count == 0 and not pack.empty and not insufficient:
         failures.append(NO_CITATIONS)

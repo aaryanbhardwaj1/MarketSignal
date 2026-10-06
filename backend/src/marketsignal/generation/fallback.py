@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from marketsignal.domain.enums import SourceClass
+from marketsignal.generation.contract import strip_leaks
 from marketsignal.generation.types import EvidencePack, PackItem
 
 SNIPPET_CHARS = 280
@@ -47,9 +48,11 @@ def snippet(item: PackItem, limit: int = SNIPPET_CHARS) -> str:
     return f"{prefix}{text}{suffix}"
 
 
-def _clean(value: str) -> str:
-    # Snippets are document text: neutralise anything a renderer could treat as markup/links.
-    return value.replace("[", "(").replace("]", ")").replace("<", "\u2039").replace(">", "\u203a")
+def _clean(value: str, default: str = "") -> str:
+    """Document text: drop leaks (URLs, ids, handles, HTML) as the verifier does for generated
+    answers, then neutralise anything a renderer could still treat as markup or links."""
+    text = " ".join(strip_leaks(value).text.split()) or default
+    return text.replace("[", "(").replace("]", ")").replace("<", "\u2039").replace(">", "\u203a")
 
 
 def evidence_only(
@@ -66,7 +69,8 @@ def evidence_only(
     units = []
     for item in items:
         unit = (
-            f"**{_clean(item.source_title)}**, {_clean(item.locator_label)}: "
+            f"**{_clean(item.source_title, 'Untitled source')}**, "
+            f"{_clean(item.locator_label, 'excerpt')}: "
             f"“{_clean(snippet(item))}” [[{item.handle}]]"
         )
         units.append(unit)
