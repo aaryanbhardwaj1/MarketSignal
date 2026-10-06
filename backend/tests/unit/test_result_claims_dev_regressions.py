@@ -355,3 +355,29 @@ def test_scanned_rows_beside_the_dataset_title_still_kept() -> None:
     claim = "Out of 600 rows scanned in the Northstar Customer Survey 2026, 76 match [R1]."
     assert kept(claim, TRAIL_PACK)
     assert kept("The mean price change was $5.0 across 120 price change values [R1].", PRICE_CHANGE)
+
+
+AGES = pack_with(
+    result(
+        _mean(3.9, "3.9025", "price_sensitivity", "number", 400),
+        spec={
+            "filters": [
+                {"column": "age_group", "op": "in", "operands": ["18-21", "22-24", "25-27", "45+"]}
+            ]
+        },
+    )
+)
+
+
+def test_range_label_endpoints_are_plain_label_figures() -> None:
+    assert kept(
+        "For respondents aged 18 to 27 (age groups 18-21, 22-24 and 25-27), the average is 3.9 "
+        "[R1].",
+        AGES,
+    )
+    assert kept("Including the 45+ band, the average is 3.9 [R1].", AGES)
+
+
+def test_range_endpoints_back_no_other_number_or_unit() -> None:
+    assert not kept("Respondents aged 18 to 30 average 3.9 [R1].", AGES)
+    assert not kept("21% of respondents average 3.9 [R1].", AGES)

@@ -35,7 +35,8 @@ only numbers an ``[R#]`` citation can support.
     group that is its subject ("South exceeded North by 3.2" is -3.2 when A = North).
   - *counts and labels*: a numerator, denominator, matched-row count, or a numeric group
     label/cell/filter operand supports exactly that number, stated plainly (no percent,
-    currency or scale); the scanned-row count only next to scanned/total wording. A listed
+    currency or scale), as do the endpoints of a range label ("18-21", "45+"); the
+    scanned-row count only next to scanned/total wording. A listed
     (filter_rows) row's numeric cell also backs its value in the column's inferred unit
     ("return_rate_pct" 16.8 -> "16.8%"). Digits inside a shown name ("NS-KR2") are part of
     the name (``result_claims`` "Digits in names").
@@ -99,6 +100,17 @@ _TEMPORAL_COLUMN_RE: Final = re.compile(
 # --------------------------------------------------------------------------------------------
 # Building and rendering
 # --------------------------------------------------------------------------------------------
+
+
+# An age-band style range label ("18-21", "25 to 34", "45+"): its endpoints are shown numbers.
+_RANGE_LABEL_RE: Final = re.compile(
+    r"^\s*(\d+(?:\.\d+)?)\s*(?:(?:-|\u2013|to)\s*(\d+(?:\.\d+)?)|\+)\s*$", re.IGNORECASE
+)
+
+
+def _range_ends(value: object) -> list[Decimal]:
+    match = _RANGE_LABEL_RE.match(value) if isinstance(value, str) else None
+    return [Decimal(g) for g in match.groups() if g is not None] if match else []
 
 
 def _dec(value: object) -> Decimal | None:
@@ -240,6 +252,7 @@ def _cell_figures(row: ResultRow) -> list[ResultFigure]:
 def _row_line(row: ResultRow) -> tuple[str, list[ResultFigure]]:
     group = " | ".join(f"{_label(k)}={_label(v)}" for k, v in row.group.items())
     figures = [ResultFigure("label", n) for v in row.group.values() if (n := _dec(v)) is not None]
+    figures += [ResultFigure("label", n) for v in row.group.values() for n in _range_ends(v)]
     figures += _cell_figures(row)
     metrics = []
     for metric in row.metrics:
@@ -348,6 +361,7 @@ def build_result_item(alias: str, result: AnalyticsResult) -> ResultItem:
     figures += [
         ResultFigure("label", n) for _, v in _spec_labels(spec) if (n := _dec(v)) is not None
     ]
+    figures += [ResultFigure("label", n) for _, v in _spec_labels(spec) for n in _range_ends(v)]
     if filters := _filters_text(spec):
         lines.append(f"filters: {filters}")
     if grouping := _grouping_text(spec):
