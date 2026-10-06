@@ -1,0 +1,2691 @@
+{
+ "dataset_version": "research-v0",
+ "description": "Phase 4 research-mode evaluation: hand-written items comparing the standard single-pass path with the bounded research agent. Grounded-eval compatible schema plus router_expectation, notes, split and leakage diagnostics.",
+ "manifest": {
+  "ledger_sha256": "95e9bb87bae7157e47f1ff006dcd43886046a973420ac56ca61e2cb3d538e79d",
+  "corpus_sha256": "d68f6473052e5a39ab0ab6d86f9bed984a45658f4342b2935b6046cd0d3f2ec5",
+  "retrieval_v0_items_sha256": "8519fbe778771927c145d1126ae246a3ec2004a2831a95a2a10b333775d823dd",
+  "grounded_v0_sha256": "558ee3cff7ffea7d85fb5c52850bb139c33a361744ff3405ec780ab89011370e",
+  "split_seed": "research-v0",
+  "dev_fraction_target": 0.4,
+  "jaccard_reject_threshold": 0.6,
+  "counts": {
+   "items": 57,
+   "dev": 23,
+   "test": 34,
+   "groups": 37,
+   "by_category": {
+    "conflict_search": {
+     "dev": 3,
+     "test": 2
+    },
+    "customer_competitor": {
+     "dev": 2,
+     "test": 3
+    },
+    "customer_internal": {
+     "dev": 2,
+     "test": 3
+    },
+    "first_pass_insufficient": {
+     "dev": 2,
+     "test": 4
+    },
+    "identifier_then_semantic": {
+     "dev": 2,
+     "test": 4
+    },
+    "insufficient_stop": {
+     "dev": 2,
+     "test": 4
+    },
+    "multi_class": {
+     "dev": 3,
+     "test": 3
+    },
+    "reformulation": {
+     "dev": 2,
+     "test": 4
+    },
+    "simple_control": {
+     "dev": 5,
+     "test": 7
+    }
+   },
+   "router_expectation": {
+    "research": 36,
+    "standard": 21
+   },
+   "expect": {
+    "answer": 46,
+    "conflict": 5,
+    "insufficient": 6
+   }
+  }
+ },
+ "items": [
+  {
+   "id": "R-MC-01",
+   "workspace": "NORTHSTAR",
+   "category": "multi_class",
+   "question": "How far behind its rivals is Northstar with Gen Z? Give Northstar's aided awareness among Gen Z, Vantage Athletic's FY2025 revenue scale, and the share of Pace & Co.'s active customers who are Gen Z.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-002",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "value": 46,
+     "unit": "percent",
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-090",
+     "handles": [
+      "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+     "value": 4.2,
+     "unit": "usd_billion",
+     "source_code": "VANTAGE-DECK",
+     "source_class": "competitor"
+    },
+    {
+     "fact_id": "NS-093",
+     "handles": [
+      "NORTHSTAR/PACE-DECK@v1:SL4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4"
+     ],
+     "anchor_handle": "NORTHSTAR/PACE-DECK@v1:SL4",
+     "value": 44,
+     "unit": "percent",
+     "source_code": "PACE-DECK",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Internal brand strategy + two competitor decks; three separate entities, so one fused query rarely surfaces all three parents (the brand-strategy competitor summaries help).",
+   "gold_source_classes": [
+    "competitor",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.167,
+    "nearest_all_tokens": "G-C3 (grounded)",
+    "max_jaccard_content_tokens": 0.208,
+    "nearest_content_tokens": "G-I7 (grounded)"
+   },
+   "group": "G-R-CF-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-MC-02",
+   "workspace": "NORTHSTAR",
+   "category": "multi_class",
+   "question": "Quantify Northstar's fit problem from three angles: the share of under-28 support contacts in Q3 about sizing and fit, the share of Gen Z survey respondents who call fit inconsistency their top frustration, and the share of Switchback Trail's Q3 2026 returns put down to running small.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-010",
+     "handles": [
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+      "NORTHSTAR/SUPPORT-THEMES@v1:P1.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+     "value": 31,
+     "unit": "percent",
+     "source_code": "SUPPORT-THEMES",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-004",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+     "value": 27,
+     "unit": "percent",
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-124",
+     "handles": [
+      "NORTHSTAR/PRODUCT-PERF@v1:SH3.R35"
+     ],
+     "anchor_handle": "NORTHSTAR/PRODUCT-PERF@v1:SH3.R35",
+     "value": 41.0,
+     "unit": "percent",
+     "source_code": "PRODUCT-PERF",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Customer support report + internal strategy prose + an internal returns spreadsheet row; the row only matches on its record text, so a sub-query per angle is needed.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.234,
+    "nearest_all_tokens": "G-A2 (grounded)",
+    "max_jaccard_content_tokens": 0.194,
+    "nearest_content_tokens": "G-A2 (grounded)"
+   },
+   "group": "G-R-MC-02",
+   "split": "test"
+  },
+  {
+   "id": "R-MC-03",
+   "workspace": "NORTHSTAR",
+   "category": "multi_class",
+   "question": "Size up the social-commerce opportunity: what share of Gen Z athletic footwear purchases now happen on social platforms according to the latest trend panel, how fast did Northstar's Social Shop grow quarter over quarter in Q2 FY26, and how big is the FY27 Gen Z marketing budget the strategy team proposes?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-035",
+     "handles": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+     "value": 26,
+     "unit": "percent",
+     "source_code": "GENZ-TRENDS",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-085",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL5"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL5",
+     "value": 142,
+     "unit": "percent",
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-100",
+     "handles": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7"
+     ],
+     "anchor_handle": "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+     "value": 24,
+     "unit": "usd_million",
+     "source_code": "FY27-MEMO",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Market report (2026 edition, superseding 2025) + Q3 deck + FY27 memo. The superseded 2025 figure is inactive, so a single search tends to return only the social-commerce material.",
+   "gold_source_classes": [
+    "internal",
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.288,
+    "nearest_all_tokens": "R0-050 (dev)",
+    "max_jaccard_content_tokens": 0.256,
+    "nearest_content_tokens": "R0-050 (dev)"
+   },
+   "group": "G-R-CC-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-MC-04",
+   "workspace": "NORTHSTAR",
+   "category": "multi_class",
+   "question": "The panel analyst argues that an exchange promise would help Northstar more than a longer refund window. How much more often do Gen Z shoppers return athletic apparel than shoppers over 35 according to the panel, and what exchange guarantee does the FY27 memo propose, and for when?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-111",
+     "handles": [
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1"
+     ],
+     "anchor_handle": "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+     "value": 1.5,
+     "unit": "ratio",
+     "source_code": "ANALYST-CALL",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-101",
+     "handles": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6"
+     ],
+     "anchor_handle": "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+     "value": "Q1 FY27",
+     "unit": null,
+     "source_code": "FY27-MEMO",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Customer-class analyst notes + internal FY27 memo; the two halves share almost no vocabulary ('return at 1.5 times' vs 'Fit Promise, free exchange guarantee').",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.2,
+    "nearest_all_tokens": "R0-002 (dev)",
+    "max_jaccard_content_tokens": 0.194,
+    "nearest_content_tokens": "R0-002 (dev)"
+   },
+   "group": "G-R-CF-04",
+   "split": "test"
+  },
+  {
+   "id": "R-MC-05",
+   "workspace": "NORTHSTAR",
+   "category": "multi_class",
+   "question": "Put Northstar's numbers in market context: its FY26 latest-estimate net revenue, the growth expected from Gen Z revenue in FY26, and the size of the 2026 US Gen Z athletic footwear market.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-125",
+     "handles": [
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+     "value": 612.0,
+     "unit": "usd_million",
+     "source_code": "FIN-SUMMARY-FY26",
+     "source_class": "financial"
+    },
+    {
+     "fact_id": "NS-128",
+     "handles": [
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+     "value": 13.8,
+     "unit": "percent",
+     "source_code": "FIN-SUMMARY-FY26",
+     "source_class": "financial"
+    },
+    {
+     "fact_id": "NS-129",
+     "handles": [
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5"
+     ],
+     "anchor_handle": "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5",
+     "value": 18.6,
+     "unit": "usd_billion",
+     "source_code": "CATEGORY-SIZING",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Financial workbook rows + market sizing row (a millennial row NS-D07 is a near distractor); spreadsheets need targeted lookups.",
+   "gold_source_classes": [
+    "financial",
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.273,
+    "nearest_all_tokens": "R0-060 (dev)",
+    "max_jaccard_content_tokens": 0.261,
+    "nearest_content_tokens": "R0-060 (dev)"
+   },
+   "group": "G-R-CF-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-MC-06",
+   "workspace": "NORTHSTAR",
+   "category": "multi_class",
+   "question": "How much do young shoppers care about fast delivery, and is Northstar's personalization offer creating delivery friction? Give the trend panel's share of Gen Z rating three-day delivery essential and how much more likely personalized orders were to trigger order-status tickets.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-039",
+     "handles": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P3.B4"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-TRENDS@v2:P3.B4",
+     "value": 48,
+     "unit": "percent",
+     "source_code": "GENZ-TRENDS",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-011",
+     "handles": [
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+     "value": 2.4,
+     "unit": "ratio",
+     "source_code": "SUPPORT-THEMES",
+     "source_class": "customer"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Market trend report + customer support report; the support fact is phrased as 'where is my order ticket', not 'delivery friction'.",
+   "gold_source_classes": [
+    "customer",
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.167,
+    "nearest_all_tokens": "R0-064 (dev)",
+    "max_jaccard_content_tokens": 0.156,
+    "nearest_content_tokens": "G-C3 (grounded)"
+   },
+   "group": "G-R-MC-06",
+   "split": "test"
+  },
+  {
+   "id": "R-IT-01",
+   "workspace": "NORTHSTAR",
+   "category": "identifier_then_semantic",
+   "question": "What did survey respondent R0521 complain about, and how many Knit Runner 2 returns in Q3 2026 were logged for that same kind of failure?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-145",
+     "handles": [
+      "NORTHSTAR/SURVEY-2026@v1:R522"
+     ],
+     "anchor_handle": "NORTHSTAR/SURVEY-2026@v1:R522",
+     "value": null,
+     "unit": null,
+     "source_code": "SURVEY-2026",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-123",
+     "handles": [
+      "NORTHSTAR/PRODUCT-PERF@v1:SH3.R11"
+     ],
+     "anchor_handle": "NORTHSTAR/PRODUCT-PERF@v1:SH3.R11",
+     "value": 2960,
+     "unit": "returns",
+     "source_code": "PRODUCT-PERF",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Exact respondent id first (keyword lane), then a semantic hop from 'knit split' to the returns row whose reason is 'Durability - upper wear'.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.306,
+    "nearest_all_tokens": "R0-038 (dev)",
+    "max_jaccard_content_tokens": 0.292,
+    "nearest_content_tokens": "R0-038 (dev)"
+   },
+   "group": "G-R-IT-01",
+   "split": "test"
+  },
+  {
+   "id": "R-IT-02",
+   "workspace": "NORTHSTAR",
+   "category": "identifier_then_semantic",
+   "question": "Review RV-00233 is a five-star review. Which product is it for, and how many units of that product has Northstar sold so far in FY26?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-149",
+     "handles": [
+      "NORTHSTAR/REVIEWS@v1:R234"
+     ],
+     "anchor_handle": "NORTHSTAR/REVIEWS@v1:R234",
+     "value": null,
+     "unit": null,
+     "source_code": "REVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-121",
+     "handles": [
+      "NORTHSTAR/PRODUCT-PERF@v1:SH2.R14"
+     ],
+     "anchor_handle": "NORTHSTAR/PRODUCT-PERF@v1:SH2.R14",
+     "value": 212400,
+     "unit": "units",
+     "source_code": "PRODUCT-PERF",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "The product (Studio Contour Legging) is only known after the review is opened; the unit count needs a second lookup on the SKU sheet.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.269,
+    "nearest_all_tokens": "R0-021 (test)",
+    "max_jaccard_content_tokens": 0.333,
+    "nearest_content_tokens": "R0-021 (test)"
+   },
+   "group": "G-R-IT-02",
+   "split": "test"
+  },
+  {
+   "id": "R-IT-03",
+   "workspace": "NORTHSTAR",
+   "category": "identifier_then_semantic",
+   "question": "What did the customer who wrote review RV-00655 complain about, and what did the personalization pilot find about average lead time and its effect on reordering?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-148",
+     "handles": [
+      "NORTHSTAR/REVIEWS@v1:R656"
+     ],
+     "anchor_handle": "NORTHSTAR/REVIEWS@v1:R656",
+     "value": null,
+     "unit": null,
+     "source_code": "REVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-054",
+     "handles": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B7"
+     ],
+     "anchor_handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B7",
+     "value": 12,
+     "unit": "days",
+     "source_code": "PERSO-PILOT",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Review id lookup, then the pilot results document; the pilot wording ('lead time', 'reason not to order again') differs from the review ('took 13 days').",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.194,
+    "nearest_all_tokens": "R0-001 (dev)",
+    "max_jaccard_content_tokens": 0.143,
+    "nearest_content_tokens": "R0-001 (dev)"
+   },
+   "group": "G-R-IT-03",
+   "split": "test"
+  },
+  {
+   "id": "R-IT-04",
+   "workspace": "NORTHSTAR",
+   "category": "identifier_then_semantic",
+   "question": "What average order value does record CP-2026-09-APP-GENZ show, and how does it compare with the average order value of Northstar's largest Gen Z segment, and how large is that segment?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-141",
+     "handles": [
+      "NORTHSTAR/CHANNEL-PERF@v1:R114"
+     ],
+     "anchor_handle": "NORTHSTAR/CHANNEL-PERF@v1:R114",
+     "value": 96.0,
+     "unit": "usd",
+     "source_code": "CHANNEL-PERF",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-007",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL7"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+     "value": 31,
+     "unit": "percent",
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Channel CSV row by record id, then the segment narrative ($94, Studio Social).",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.226,
+    "nearest_all_tokens": "R0-022 (test)",
+    "max_jaccard_content_tokens": 0.2,
+    "nearest_content_tokens": "R0-022 (test)"
+   },
+   "group": "G-R-IT-04",
+   "split": "test"
+  },
+  {
+   "id": "R-IT-05",
+   "workspace": "NORTHSTAR",
+   "category": "identifier_then_semantic",
+   "question": "Survey respondent R0388 named a premium they would accept. What was it and what condition did they attach, and how does stated acceptance in the external willingness-to-pay study change at a 25% premium?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-144",
+     "handles": [
+      "NORTHSTAR/SURVEY-2026@v1:R389"
+     ],
+     "anchor_handle": "NORTHSTAR/SURVEY-2026@v1:R389",
+     "value": null,
+     "unit": null,
+     "source_code": "SURVEY-2026",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-042",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "value": 12,
+     "unit": "percent",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Respondent id lookup, then the WTP study (prose or the acceptance-by-premium table).",
+   "gold_source_classes": [
+    "customer",
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.206,
+    "nearest_all_tokens": "R0-033 (test)",
+    "max_jaccard_content_tokens": 0.107,
+    "nearest_content_tokens": "R0-057 (test)"
+   },
+   "group": "G-R-CF-01",
+   "split": "dev"
+  },
+  {
+   "id": "R-IT-06",
+   "workspace": "NORTHSTAR",
+   "category": "identifier_then_semantic",
+   "question": "SKU NS-KR2: what is its FY26 return rate, and what were customers contacting support about for that shoe in Q3, and in what volume?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-120",
+     "handles": [
+      "NORTHSTAR/PRODUCT-PERF@v1:SH2.R2"
+     ],
+     "anchor_handle": "NORTHSTAR/PRODUCT-PERF@v1:SH2.R2",
+     "value": 16.8,
+     "unit": "percent",
+     "source_code": "PRODUCT-PERF",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-012",
+     "handles": [
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+     "value": 1140,
+     "unit": "tickets",
+     "source_code": "SUPPORT-THEMES",
+     "source_class": "customer"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "SKU row (NS-KR1 row is a near distractor), then the support themes report, which names the product (Knit Runner 2) rather than the SKU code.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.167,
+    "nearest_all_tokens": "R0-038 (dev)",
+    "max_jaccard_content_tokens": 0.25,
+    "nearest_content_tokens": "R0-024 (dev)"
+   },
+   "group": "G-R-IT-06",
+   "split": "dev"
+  },
+  {
+   "id": "R-CC-01",
+   "workspace": "NORTHSTAR",
+   "category": "customer_competitor",
+   "question": "An interviewee put a number on how much extra they would pay for a shoe built from a scan of their foot. How does that compare with what Kinetic Lab charges for its custom runner?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-061",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S9.Q1"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S9.Q1",
+     "value": "10 to 15 dollars more, not 50",
+     "unit": "usd",
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-106",
+     "handles": [
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B6",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1"
+     ],
+     "anchor_handle": "NORTHSTAR/KINETIC-WEB@v1:S1.B6",
+     "value": 210,
+     "unit": "usd",
+     "source_code": "KINETIC-WEB",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Interview quote + competitor price (also restated in strategy summaries).",
+   "gold_source_classes": [
+    "competitor",
+    "customer"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.2,
+    "nearest_all_tokens": "G-C1 (grounded)",
+    "max_jaccard_content_tokens": 0.111,
+    "nearest_content_tokens": "G-I2 (grounded)"
+   },
+   "group": "G-R-CC-01",
+   "split": "test"
+  },
+  {
+   "id": "R-CC-02",
+   "workspace": "NORTHSTAR",
+   "category": "customer_competitor",
+   "question": "One interviewee wants everyday trainers delivered within two days. How far is the leading made-to-order competitor from meeting that expectation?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-065",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S4.Q2",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S4.Q2",
+     "value": "wants everyday trainers in two days",
+     "unit": null,
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-105",
+     "handles": [
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13",
+      "NORTHSTAR/KINETIC-AR@v1:P3.B4"
+     ],
+     "anchor_handle": "NORTHSTAR/KINETIC-WEB@v1:S1.B5",
+     "value": "14 to 21 days",
+     "unit": "days",
+     "source_code": "KINETIC-WEB",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "The competitor is not named; the agent must resolve 'made-to-order competitor' to Kinetic Lab and then find its 14 to 21 day window.",
+   "gold_source_classes": [
+    "competitor",
+    "customer"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.111,
+    "nearest_all_tokens": "G-E2 (grounded)",
+    "max_jaccard_content_tokens": 0.05,
+    "nearest_content_tokens": "R0-021 (test)"
+   },
+   "group": "G-R-CC-02",
+   "split": "test"
+  },
+  {
+   "id": "R-CC-03",
+   "workspace": "NORTHSTAR",
+   "category": "customer_competitor",
+   "question": "One interviewee says their last three pairs came from a run club group chat rather than ads. How does Vantage Athletic's stated mission and homepage emphasis compare with that discovery route?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-064",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S13.Q1"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S13.Q1",
+     "value": "run club group chat",
+     "unit": null,
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-103",
+     "handles": [
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/VANTAGE-WEB@v1:S1.B3",
+     "value": "engineering speed for athletes who compete",
+     "unit": null,
+     "source_code": "VANTAGE-WEB",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Interview quote + competitor web positioning page; no shared vocabulary.",
+   "gold_source_classes": [
+    "competitor",
+    "customer"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.12,
+    "nearest_all_tokens": "R0-046 (dev)",
+    "max_jaccard_content_tokens": 0.071,
+    "nearest_content_tokens": "G-C2 (grounded)"
+   },
+   "group": "G-R-CC-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-CC-04",
+   "workspace": "NORTHSTAR",
+   "category": "customer_competitor",
+   "question": "How common was cart abandonment over mismatched size charts among the Gen Z focus-group participants, and how widely has Vantage rolled out in-store gait scanning as its answer to fit?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-070",
+     "handles": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B1"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B1",
+     "value": 7,
+     "unit": "of_10_participants",
+     "source_code": "GENZ-FOCUS-GROUP",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-091",
+     "handles": [
+      "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1"
+     ],
+     "anchor_handle": "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1",
+     "value": 120,
+     "unit": "stores",
+     "source_code": "VANTAGE-DECK",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Focus group note + competitor investor-deck speaker notes.",
+   "gold_source_classes": [
+    "competitor",
+    "customer"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.182,
+    "nearest_all_tokens": "R0-051 (dev)",
+    "max_jaccard_content_tokens": 0.152,
+    "nearest_content_tokens": "R0-036 (dev)"
+   },
+   "group": "G-R-CC-04",
+   "split": "test"
+  },
+  {
+   "id": "R-CC-05",
+   "workspace": "NORTHSTAR",
+   "category": "customer_competitor",
+   "question": "What kind of personalization got the Gen Z focus-group participants most excited, and how does Vantage Athletic's personalization offer compare with that?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-072",
+     "handles": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+     "value": "status signal",
+     "unit": null,
+     "source_code": "GENZ-FOCUS-GROUP",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-104",
+     "handles": [
+      "NORTHSTAR/VANTAGE-WEB@v1:S1.B4",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/VANTAGE-WEB@v1:S1.B4",
+     "value": "12 preset colorways",
+     "unit": null,
+     "source_code": "VANTAGE-WEB",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Focus group (status-signal framing) + competitor web page (12 preset colorways).",
+   "gold_source_classes": [
+    "competitor",
+    "customer"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.259,
+    "nearest_all_tokens": "G-C5 (grounded)",
+    "max_jaccard_content_tokens": 0.278,
+    "nearest_content_tokens": "G-C5 (grounded)"
+   },
+   "group": "G-R-CC-05",
+   "split": "dev"
+  },
+  {
+   "id": "R-CI-01",
+   "workspace": "NORTHSTAR",
+   "category": "customer_internal",
+   "question": "An interviewee's Knit Runners frayed after about two months of walking to class. What did Northstar estimate that durability issue cost in Q2 returns and replacements?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-062",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S7.Q1"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S7.Q1",
+     "value": "fraying after two months",
+     "unit": null,
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-082",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL8.N1"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+     "value": 3.1,
+     "unit": "usd_million",
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Interview quote + Q3 review speaker notes.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.19,
+    "nearest_all_tokens": "R0-048 (dev)",
+    "max_jaccard_content_tokens": 0.2,
+    "nearest_content_tokens": "R0-048 (dev)"
+   },
+   "group": "G-R-CI-01",
+   "split": "test"
+  },
+  {
+   "id": "R-CI-02",
+   "workspace": "NORTHSTAR",
+   "category": "customer_internal",
+   "question": "What made a shopper who loved the custom colorway tool give up on ordering, and what did Northstar leadership decide about personalization at the Q3 strategy review?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-066",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S14.Q1"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S14.Q1",
+     "value": "twelve day wait",
+     "unit": "days",
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-083",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL14.N1"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+     "value": "pause until October readout",
+     "unit": null,
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Interview quote + leadership decision in deck speaker notes.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.464,
+    "nearest_all_tokens": "R0-001 (dev)",
+    "max_jaccard_content_tokens": 0.421,
+    "nearest_content_tokens": "R0-001 (dev)"
+   },
+   "group": "G-R-CI-02",
+   "split": "dev"
+  },
+  {
+   "id": "R-CI-03",
+   "workspace": "NORTHSTAR",
+   "category": "customer_internal",
+   "question": "One interviewee wears different sizes across Northstar's joggers, hoodies and shoe lines. What remedy does next year's plan propose for that, and in which quarter would it launch?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-060",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S5.Q1"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S5.Q1",
+     "value": "medium joggers, large hoodies, shoe size varies by line",
+     "unit": null,
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-101",
+     "handles": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6"
+     ],
+     "anchor_handle": "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+     "value": "Q1 FY27",
+     "unit": null,
+     "source_code": "FY27-MEMO",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Interview quote + FY27 memo recommendation (Fit Promise, Q1 FY27).",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.136,
+    "nearest_all_tokens": "G-C1 (grounded)",
+    "max_jaccard_content_tokens": 0.045,
+    "nearest_content_tokens": "G-I1 (grounded)"
+   },
+   "group": "G-R-CF-04",
+   "split": "test"
+  },
+  {
+   "id": "R-CI-04",
+   "workspace": "NORTHSTAR",
+   "category": "customer_internal",
+   "question": "What does the external panel analyst expect personalization's share of US athletic footwear units to be through 2028, and is the FY27 memo's stance on personalization consistent with that view?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-112",
+     "handles": [
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+     "value": 5,
+     "unit": "percent",
+     "source_code": "ANALYST-CALL",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-102",
+     "handles": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B6"
+     ],
+     "anchor_handle": "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+     "value": "limited test",
+     "unit": null,
+     "source_code": "FY27-MEMO",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Analyst call notes (customer class) + FY27 memo recommendation.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.405,
+    "nearest_all_tokens": "R0-004 (dev)",
+    "max_jaccard_content_tokens": 0.391,
+    "nearest_content_tokens": "R0-004 (dev)"
+   },
+   "group": "G-R-CF-04",
+   "split": "test"
+  },
+  {
+   "id": "R-CI-05",
+   "workspace": "NORTHSTAR",
+   "category": "customer_internal",
+   "question": "Customers say they discover shoes through run clubs and group chats rather than ads. How large is the proposed FY27 Gen Z marketing budget, and how much of it would move toward creator and community programmes?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-064",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S13.Q1"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S13.Q1",
+     "value": "run club group chat",
+     "unit": null,
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-100",
+     "handles": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7"
+     ],
+     "anchor_handle": "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+     "value": 24,
+     "unit": "usd_million",
+     "source_code": "FY27-MEMO",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Interview quote + FY27 memo budget ($24M, 40% to creator and community).",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.167,
+    "nearest_all_tokens": "G-C1 (grounded)",
+    "max_jaccard_content_tokens": 0.179,
+    "nearest_content_tokens": "R0-013 (dev)"
+   },
+   "group": "G-R-CC-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-CF-01",
+   "workspace": "NORTHSTAR",
+   "category": "conflict_search",
+   "question": "Northstar is sizing a paid fit-personalization tier at a 15% markup. What uptake should it plan for: the stated acceptance in the external study, or the take-up actually observed when pilot shoppers were offered that tier?",
+   "expect": "conflict",
+   "gold_facts": [
+    {
+     "fact_id": "NS-041",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "value": 38,
+     "unit": "percent",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-051",
+     "handles": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ],
+     "anchor_handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+     "value": 9,
+     "unit": "percent",
+     "source_code": "PERSO-PILOT",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:ledger-contradiction",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Ledger contradiction C1 (stated 38% vs revealed 9%). A first search on the external study surfaces only the stated side; the pilot side needs a second search.",
+   "gold_source_classes": [
+    "internal",
+    "market"
+   ],
+   "ledger_contradictions": [
+    "C1"
+   ],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.167,
+    "nearest_all_tokens": "R0-057 (test)",
+    "max_jaccard_content_tokens": 0.091,
+    "nearest_content_tokens": "R0-057 (test)"
+   },
+   "group": "G-R-CF-01",
+   "split": "dev"
+  },
+  {
+   "id": "R-CF-02",
+   "workspace": "NORTHSTAR",
+   "category": "conflict_search",
+   "question": "The Q3 strategy review slides cite an encouraging early repeat-purchase number for personalized buyers. Does the pilot's final readout confirm it?",
+   "expect": "conflict",
+   "gold_facts": [
+    {
+     "fact_id": "NS-081",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL10.N1",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL10.N1",
+     "value": 27,
+     "unit": "percent",
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-050",
+     "handles": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ],
+     "anchor_handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+     "value": 18,
+     "unit": "percent",
+     "source_code": "PERSO-PILOT",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:ledger-contradiction",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Ledger contradiction C2 (week-six 27% vs final 90-day 18% below 24% control); the question anchors on the deck, the final readout lives in the pilot report.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [
+    "C2"
+   ],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.125,
+    "nearest_all_tokens": "R0-001 (dev)",
+    "max_jaccard_content_tokens": 0.136,
+    "nearest_content_tokens": "R0-001 (dev)"
+   },
+   "group": "G-R-CF-02",
+   "split": "test"
+  },
+  {
+   "id": "R-CF-03",
+   "workspace": "NORTHSTAR",
+   "category": "conflict_search",
+   "question": "The board tracks Gen Z share of revenue against a 30% FY28 target. What is the FY25 starting point, and do the brand team and finance agree on it?",
+   "expect": "conflict",
+   "gold_facts": [
+    {
+     "fact_id": "NS-001",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "value": 21,
+     "unit": "percent",
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-127",
+     "handles": [
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2"
+     ],
+     "anchor_handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+     "value": 19.4,
+     "unit": "percent",
+     "source_code": "FIN-SUMMARY-FY26",
+     "source_class": "financial"
+    },
+    {
+     "fact_id": "NS-003",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "value": 30,
+     "unit": "percent",
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:ledger-contradiction",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Ledger contradiction C3 (21% loyalty definition vs 19.4% finance definition). The finance side is a spreadsheet row that prose-oriented queries miss.",
+   "gold_source_classes": [
+    "financial",
+    "internal"
+   ],
+   "ledger_contradictions": [
+    "C3"
+   ],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.226,
+    "nearest_all_tokens": "G-C3 (grounded)",
+    "max_jaccard_content_tokens": 0.238,
+    "nearest_content_tokens": "G-C3 (grounded)"
+   },
+   "group": "G-R-CF-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-CF-04",
+   "workspace": "NORTHSTAR",
+   "category": "conflict_search",
+   "question": "Kinetic Lab's annual report touts a low return rate on customized midsoles. Is there independent evidence on that figure, and how does either number compare with returns on Northstar's own personalized pilot items?",
+   "expect": "conflict",
+   "gold_facts": [
+    {
+     "fact_id": "NS-021",
+     "handles": [
+      "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B3",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1"
+     ],
+     "anchor_handle": "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+     "value": 6,
+     "unit": "percent",
+     "source_code": "KINETIC-AR",
+     "source_class": "competitor"
+    },
+    {
+     "fact_id": "NS-110",
+     "handles": [
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1"
+     ],
+     "anchor_handle": "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+     "value": 15,
+     "unit": "percent",
+     "source_code": "ANALYST-CALL",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-052",
+     "handles": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B6",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ],
+     "anchor_handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B6",
+     "value": 11,
+     "unit": "percent",
+     "source_code": "PERSO-PILOT",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:ledger-contradiction",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Ledger contradiction C4 (claimed 6% vs analyst ~15% with remakes) plus the pilot's 11% vs 16%; three documents, two of which use different vocabulary for returns.",
+   "gold_source_classes": [
+    "competitor",
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [
+    "C4"
+   ],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.242,
+    "nearest_all_tokens": "G-C4 (grounded)",
+    "max_jaccard_content_tokens": 0.261,
+    "nearest_content_tokens": "G-C4 (grounded)"
+   },
+   "group": "G-R-CF-04",
+   "split": "test"
+  },
+  {
+   "id": "R-CF-05",
+   "workspace": "NORTHSTAR",
+   "category": "conflict_search",
+   "question": "Should Northstar lead its Gen Z messaging with personalization? Check what framing excited the focus group most, and where personalization landed when participants allocated a fixed budget of points across benefits.",
+   "expect": "conflict",
+   "gold_facts": [
+    {
+     "fact_id": "NS-072",
+     "handles": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+     "value": "status signal",
+     "unit": null,
+     "source_code": "GENZ-FOCUS-GROUP",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-071",
+     "handles": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+     "value": "fit guarantee > delivery > materials > personalization",
+     "unit": null,
+     "source_code": "GENZ-FOCUS-GROUP",
+     "source_class": "customer"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:ledger-contradiction",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Ledger contradiction C5 (status-signal excitement vs ranked behind fit guarantee, delivery, materials). Both sides share one parent, so a careful single pass can find both; the conflict still has to be surfaced.",
+   "gold_source_classes": [
+    "customer"
+   ],
+   "ledger_contradictions": [
+    "C5"
+   ],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.243,
+    "nearest_all_tokens": "R0-006 (dev)",
+    "max_jaccard_content_tokens": 0.208,
+    "nearest_content_tokens": "R0-006 (dev)"
+   },
+   "group": "G-R-CC-05",
+   "split": "dev"
+  },
+  {
+   "id": "R-FP-01",
+   "workspace": "NORTHSTAR",
+   "category": "first_pass_insufficient",
+   "question": "How quickly is Pace & Co. expanding its physical presence through partner retailers, and how affordable is its range overall?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-095",
+     "handles": [
+      "NORTHSTAR/PACE-DECK@v1:SL7",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13"
+     ],
+     "anchor_handle": "NORTHSTAR/PACE-DECK@v1:SL7",
+     "value": 1100,
+     "unit": "doors",
+     "source_code": "PACE-DECK",
+     "source_class": "competitor"
+    },
+    {
+     "fact_id": "NS-107",
+     "handles": [
+      "NORTHSTAR/PACE-WEB@v1:S1.B5"
+     ],
+     "anchor_handle": "NORTHSTAR/PACE-WEB@v1:S1.B5",
+     "value": 70,
+     "unit": "percent",
+     "source_code": "PACE-WEB",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Why the first pass misses: the deck states expansion as 'store in store doors' and the affordability fact sits in the returns paragraph of the Pace web page ('70% of its range is priced under $50'); a single expansion-focused query rarely retrieves the returns paragraph.",
+   "gold_source_classes": [
+    "competitor"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.1,
+    "nearest_all_tokens": "R0-053 (dev)",
+    "max_jaccard_content_tokens": 0.118,
+    "nearest_content_tokens": "R0-005 (dev)"
+   },
+   "group": "G-R-FP-01",
+   "split": "test"
+  },
+  {
+   "id": "R-FP-02",
+   "workspace": "NORTHSTAR",
+   "category": "first_pass_insufficient",
+   "question": "How healthy is the made-to-order shoe start-up commercially: how fast are its sales growing, how profitable is it, and how loyal are its customers?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-020",
+     "handles": [
+      "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+     "value": 148,
+     "unit": "usd_million",
+     "source_code": "KINETIC-AR",
+     "source_class": "competitor"
+    },
+    {
+     "fact_id": "NS-022",
+     "handles": [
+      "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+     "value": 38,
+     "unit": "percent",
+     "source_code": "KINETIC-AR",
+     "source_class": "competitor"
+    },
+    {
+     "fact_id": "NS-023",
+     "handles": [
+      "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B3",
+      "NORTHSTAR/ANALYST-CALL@v1:S1.B1"
+     ],
+     "anchor_handle": "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+     "value": 31,
+     "unit": "percent",
+     "source_code": "KINETIC-AR",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Why the first pass misses: the company is unnamed (Kinetic Lab must be resolved first), and 'loyal' maps to 'order a second pair within twelve months', a different annual-report paragraph from revenue and margin.",
+   "gold_source_classes": [
+    "competitor"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.135,
+    "nearest_all_tokens": "R0-050 (dev)",
+    "max_jaccard_content_tokens": 0.062,
+    "nearest_content_tokens": "R0-027 (dev)"
+   },
+   "group": "G-R-FP-02",
+   "split": "test"
+  },
+  {
+   "id": "R-FP-03",
+   "workspace": "NORTHSTAR",
+   "category": "first_pass_insufficient",
+   "question": "How big is the US custom-sneaker market among young consumers in 2026, and what is the most recent estimate of the whole Gen Z athletic apparel market?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-130",
+     "handles": [
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17"
+     ],
+     "anchor_handle": "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17",
+     "value": 1.1,
+     "unit": "usd_billion",
+     "source_code": "CATEGORY-SIZING",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-036",
+     "handles": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+     "value": 44.8,
+     "unit": "usd_billion",
+     "source_code": "GENZ-TRENDS",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Why the first pass misses: 'custom sneaker' must map to the sizing row 'Personalized athletic footwear' (US-GENZ-PFW-2026), which prose queries about personalization outrank; the apparel figure is a 2026 restatement ('we restate the 2025 ... market').",
+   "gold_source_classes": [
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.407,
+    "nearest_all_tokens": "R0-063 (dev)",
+    "max_jaccard_content_tokens": 0.368,
+    "nearest_content_tokens": "R0-063 (dev)"
+   },
+   "group": "G-R-FP-03",
+   "split": "test"
+  },
+  {
+   "id": "R-FP-04",
+   "workspace": "NORTHSTAR",
+   "category": "first_pass_insufficient",
+   "question": "How many people did the external willingness-to-pay study survey, and how did the older millennial respondents compare on paying a 15% premium for fit-personalized shoes?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-044",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+     "value": 2400,
+     "unit": "respondents",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-D01",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+     "value": 29,
+     "unit": "percent",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Why the first pass misses: a premium-focused query returns the results section; the sample size is in the methods paragraph ('surveyed 2,400 US consumers'), which shares no premium vocabulary.",
+   "gold_source_classes": [
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.179,
+    "nearest_all_tokens": "R0-057 (test)",
+    "max_jaccard_content_tokens": 0.148,
+    "nearest_content_tokens": "R0-057 (test)"
+   },
+   "group": "G-R-CF-01",
+   "split": "dev"
+  },
+  {
+   "id": "R-FP-05",
+   "workspace": "NORTHSTAR",
+   "category": "first_pass_insufficient",
+   "question": "How much of Gen Z athletic spending now flows through third-party platforms instead of brand-owned sites, and how far do young shoppers trust fellow customers over advertising?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-108",
+     "handles": [
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+     "value": 34,
+     "unit": "percent",
+     "source_code": "CHANNEL-SHIFT",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-040",
+     "handles": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P4.B1"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+     "value": 57,
+     "unit": "percent",
+     "source_code": "GENZ-TRENDS",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Why the first pass misses: 'third-party platforms' is stated as 'marketplace and social commerce' (channel note), and trust is phrased as 'peer reviews and creator try on videos' in a different report.",
+   "gold_source_classes": [
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.184,
+    "nearest_all_tokens": "R0-064 (dev)",
+    "max_jaccard_content_tokens": 0.156,
+    "nearest_content_tokens": "R0-062 (dev)"
+   },
+   "group": "G-R-FP-05",
+   "split": "dev"
+  },
+  {
+   "id": "R-FP-06",
+   "workspace": "SOUTHPEAK",
+   "category": "first_pass_insufficient",
+   "question": "Which Southpeak product drew a comfort complaint in the customer interviews, and what sales goal is set for the jacket meant to showcase the brand refresh?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "SP-C03",
+     "handles": [
+      "SOUTHPEAK/INTERVIEWS@v1:S6.Q1"
+     ],
+     "anchor_handle": "SOUTHPEAK/INTERVIEWS@v1:S6.Q1",
+     "value": null,
+     "unit": null,
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "SP-C01",
+     "handles": [
+      "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B4"
+     ],
+     "anchor_handle": "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B4",
+     "value": 52,
+     "unit": "usd_million",
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Why the first pass misses: Southpeak's comfort and fit vocabulary is dominated by boot sizing material; the pack complaint is phrased 'straps dug into my shoulders', and the jacket goal names the Ridgeline shell, not 'showcase jacket'.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.158,
+    "nearest_all_tokens": "G-A3 (grounded)",
+    "max_jaccard_content_tokens": 0.095,
+    "nearest_content_tokens": "G-A4 (grounded)"
+   },
+   "group": "G-R-FP-06",
+   "split": "test"
+  },
+  {
+   "id": "R-RF-01",
+   "workspace": "NORTHSTAR",
+   "category": "reformulation",
+   "question": "What CTR uplift did bespoke-colour email creative achieve against business-as-usual sends?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-084",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL12"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL12",
+     "value": 2.3,
+     "unit": "ratio",
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Jargon/synonyms: 'bespoke-colour' = custom colorway, 'business-as-usual sends' = standard creative. Single fact: research helps only if the first pass misses.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.118,
+    "nearest_all_tokens": "R0-025 (test)",
+    "max_jaccard_content_tokens": 0.05,
+    "nearest_content_tokens": "R0-047 (test)"
+   },
+   "group": "G-R-RF-01",
+   "split": "dev"
+  },
+  {
+   "id": "R-RF-02",
+   "workspace": "NORTHSTAR",
+   "category": "reformulation",
+   "question": "What GM% does the FY26 LE carry, and what was the Q2 top line?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-126",
+     "handles": [
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R5",
+     "value": 47.2,
+     "unit": "percent",
+     "source_code": "FIN-SUMMARY-FY26",
+     "source_class": "financial"
+    },
+    {
+     "fact_id": "NS-080",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL3",
+     "value": 158,
+     "unit": "usd_million",
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Finance shorthand: GM% = gross margin, LE = latest estimate, top line = net revenue.",
+   "gold_source_classes": [
+    "financial",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.167,
+    "nearest_all_tokens": "R0-027 (dev)",
+    "max_jaccard_content_tokens": 0.154,
+    "nearest_content_tokens": "R0-059 (dev)"
+   },
+   "group": "G-R-RF-02",
+   "split": "test"
+  },
+  {
+   "id": "R-RF-03",
+   "workspace": "NORTHSTAR",
+   "category": "reformulation",
+   "question": "Which shopper personas does Northstar's Gen Z segmentation define?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-006",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL7"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+     "value": "Campus Competitors; Studio Social; Trail Starters; Value Seekers",
+     "unit": null,
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "'Personas' = segments.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.2,
+    "nearest_all_tokens": "R0-022 (test)",
+    "max_jaccard_content_tokens": 0.231,
+    "nearest_content_tokens": "R0-010 (test)"
+   },
+   "group": "G-R-RF-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-RF-04",
+   "workspace": "NORTHSTAR",
+   "category": "reformulation",
+   "question": "What does a Vantage performance running shoe typically go for at the till these days?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-092",
+     "handles": [
+      "NORTHSTAR/VANTAGE-DECK@v1:SL5",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL13"
+     ],
+     "anchor_handle": "NORTHSTAR/VANTAGE-DECK@v1:SL5",
+     "value": 165,
+     "unit": "usd",
+     "source_code": "VANTAGE-DECK",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Colloquial price wording vs 'average selling price' / 'ASP'.",
+   "gold_source_classes": [
+    "competitor"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.167,
+    "nearest_all_tokens": "G-A3 (grounded)",
+    "max_jaccard_content_tokens": 0.083,
+    "nearest_content_tokens": "G-I6 (grounded)"
+   },
+   "group": "G-R-RF-04",
+   "split": "test"
+  },
+  {
+   "id": "R-RF-05",
+   "workspace": "NORTHSTAR",
+   "category": "reformulation",
+   "question": "How do younger shoppers react to eco-friendly marketing that lacks specifics, according to the one-on-one conversations?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-063",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S11.Q1"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S11.Q1",
+     "value": "assumes green claims are marketing",
+     "unit": null,
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "'Eco-friendly marketing' = green claims; 'one-on-one conversations' = interviews.",
+   "gold_source_classes": [
+    "customer"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.207,
+    "nearest_all_tokens": "R0-064 (dev)",
+    "max_jaccard_content_tokens": 0.111,
+    "nearest_content_tokens": "R0-040 (dev)"
+   },
+   "group": "G-R-RF-05",
+   "split": "test"
+  },
+  {
+   "id": "R-RF-06",
+   "workspace": "NORTHSTAR",
+   "category": "reformulation",
+   "question": "What was Northstar's company-wide promoter score across all age groups in Q2?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-D04",
+     "handles": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B4"
+     ],
+     "anchor_handle": "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+     "value": 31,
+     "unit": "nps_points",
+     "source_code": "FY27-MEMO",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "'Promoter score' = NPS; the Gen Z NPS (22) is a near distractor for the all-customer figure (31).",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.25,
+    "nearest_all_tokens": "G-I1 (grounded)",
+    "max_jaccard_content_tokens": 0.214,
+    "nearest_content_tokens": "R0-059 (dev)"
+   },
+   "group": "G-R-RF-06",
+   "split": "test"
+  },
+  {
+   "id": "R-IS-01",
+   "workspace": "NORTHSTAR",
+   "category": "insufficient_stop",
+   "question": "How many patents does Kinetic Lab hold on its phone foot-scanning technology?",
+   "expect": "insufficient",
+   "gold_facts": [],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:topic-not-in-corpus",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "No patent or IP information exists in the corpus; the scan process is described, which invites over-searching. Correct behaviour: stop and state insufficiency.",
+   "gold_source_classes": [],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.357,
+    "nearest_all_tokens": "G-I2 (grounded)",
+    "max_jaccard_content_tokens": 0.333,
+    "nearest_content_tokens": "G-I2 (grounded)"
+   },
+   "group": "G-R-IS-01",
+   "split": "dev"
+  },
+  {
+   "id": "R-IS-02",
+   "workspace": "NORTHSTAR",
+   "category": "insufficient_stop",
+   "question": "What greenhouse-gas emissions per pair does Northstar report for its running footwear, and how does that compare with Vantage Athletic's racers?",
+   "expect": "insufficient",
+   "gold_facts": [],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:topic-not-in-corpus",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "No emissions data anywhere (sustainability content is about claims and transparency). Comparison phrasing may route to research; the agent should stop rather than loop.",
+   "gold_source_classes": [],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.162,
+    "nearest_all_tokens": "G-C1 (grounded)",
+    "max_jaccard_content_tokens": 0.125,
+    "nearest_content_tokens": "R0-015 (test)"
+   },
+   "group": "G-R-IS-02",
+   "split": "test"
+  },
+  {
+   "id": "R-IS-03",
+   "workspace": "NORTHSTAR",
+   "category": "insufficient_stop",
+   "question": "What inventory turnover did Northstar achieve in FY26, and which distribution centres hold the most stock?",
+   "expect": "insufficient",
+   "gold_facts": [],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:topic-not-in-corpus",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Neither inventory turnover nor distribution centres appear in the corpus.",
+   "gold_source_classes": [],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.185,
+    "nearest_all_tokens": "R0-011 (dev)",
+    "max_jaccard_content_tokens": 0.105,
+    "nearest_content_tokens": "R0-011 (dev)"
+   },
+   "group": "G-R-IS-03",
+   "split": "test"
+  },
+  {
+   "id": "R-IS-04",
+   "workspace": "NORTHSTAR",
+   "category": "insufficient_stop",
+   "question": "How much debt does Northstar carry on its balance sheet?",
+   "expect": "insufficient",
+   "gold_facts": [],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:topic-not-in-corpus",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "The financial summary covers P&L lines and segment revenue only; no balance sheet.",
+   "gold_source_classes": [],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.267,
+    "nearest_all_tokens": "G-I8 (grounded)",
+    "max_jaccard_content_tokens": 0.222,
+    "nearest_content_tokens": "G-I8 (grounded)"
+   },
+   "group": "G-R-IS-04",
+   "split": "test"
+  },
+  {
+   "id": "R-IS-05",
+   "workspace": "SOUTHPEAK",
+   "category": "insufficient_stop",
+   "question": "What royalty does Southpeak pay to license the waterproof membrane in its shell jackets?",
+   "expect": "insufficient",
+   "gold_facts": [],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:topic-not-in-corpus",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Shell jackets (Ridgeline) exist in the Southpeak corpus, membranes and licensing do not: an adjacent-topic trap.",
+   "gold_source_classes": [],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.217,
+    "nearest_all_tokens": "G-A5 (grounded)",
+    "max_jaccard_content_tokens": 0.071,
+    "nearest_content_tokens": "R0-039 (test)"
+   },
+   "group": "G-R-IS-05",
+   "split": "test"
+  },
+  {
+   "id": "R-IS-06",
+   "workspace": "NORTHSTAR",
+   "category": "insufficient_stop",
+   "question": "How did Northstar's share price react after the Q3 strategy review?",
+   "expect": "insufficient",
+   "gold_facts": [],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:topic-not-in-corpus",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "The Q3 review exists but no share-price data does; the agent should not substitute revenue or NPS figures.",
+   "gold_source_classes": [],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.286,
+    "nearest_all_tokens": "R0-011 (dev)",
+    "max_jaccard_content_tokens": 0.2,
+    "nearest_content_tokens": "R0-001 (dev)"
+   },
+   "group": "G-R-IS-06",
+   "split": "dev"
+  },
+  {
+   "id": "R-SC-01",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "How much revenue did Northstar actually book for the FY25 year, per the financial summary?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-D06",
+     "handles": [
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+     "value": 571.0,
+     "unit": "usd_million",
+     "source_code": "FIN-SUMMARY-FY26",
+     "source_class": "financial"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single financial row / strategy sentence.",
+   "gold_source_classes": [
+    "financial"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.304,
+    "nearest_all_tokens": "R0-011 (dev)",
+    "max_jaccard_content_tokens": 0.235,
+    "nearest_content_tokens": "R0-011 (dev)"
+   },
+   "group": "G-R-CF-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-SC-02",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "What net revenue did Kinetic Lab book in fiscal 2024?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-D09",
+     "handles": [
+      "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+      "NORTHSTAR/KINETIC-AR@v1:P2.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+     "value": 90,
+     "unit": "usd_million",
+     "source_code": "KINETIC-AR",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single annual-report sentence or table.",
+   "gold_source_classes": [
+    "competitor"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.286,
+    "nearest_all_tokens": "G-I1 (grounded)",
+    "max_jaccard_content_tokens": 0.222,
+    "nearest_content_tokens": "G-I2 (grounded)"
+   },
+   "group": "G-R-FP-02",
+   "split": "test"
+  },
+  {
+   "id": "R-SC-03",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "What value does the category sizing workbook put on the 2026 US athletic footwear market for millennials?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-D07",
+     "handles": [
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23"
+     ],
+     "anchor_handle": "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23",
+     "value": 23.9,
+     "unit": "usd_billion",
+     "source_code": "CATEGORY-SIZING",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single sizing row (Gen Z row is the near distractor).",
+   "gold_source_classes": [
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.417,
+    "nearest_all_tokens": "R0-060 (dev)",
+    "max_jaccard_content_tokens": 0.467,
+    "nearest_content_tokens": "R0-060 (dev)"
+   },
+   "group": "G-R-CF-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-SC-04",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "What conversion rate did millennial shoppers have on the Social Shop in September 2026?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-D08",
+     "handles": [
+      "NORTHSTAR/CHANNEL-PERF@v1:R117"
+     ],
+     "anchor_handle": "NORTHSTAR/CHANNEL-PERF@v1:R117",
+     "value": 2.1,
+     "unit": "percent",
+     "source_code": "CHANNEL-PERF",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single channel CSV row.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.471,
+    "nearest_all_tokens": "R0-009 (dev)",
+    "max_jaccard_content_tokens": 0.545,
+    "nearest_content_tokens": "R0-009 (dev)"
+   },
+   "group": "G-R-SC-04",
+   "split": "test"
+  },
+  {
+   "id": "R-SC-05",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "What is the FY26 return rate of the original Knit Runner, SKU NS-KR1?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-D05",
+     "handles": [
+      "NORTHSTAR/PRODUCT-PERF@v1:SH2.R3"
+     ],
+     "anchor_handle": "NORTHSTAR/PRODUCT-PERF@v1:SH2.R3",
+     "value": 13.1,
+     "unit": "percent",
+     "source_code": "PRODUCT-PERF",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single SKU row by exact code.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.4,
+    "nearest_all_tokens": "G-I5 (grounded)",
+    "max_jaccard_content_tokens": 0.455,
+    "nearest_content_tokens": "R0-058 (dev)"
+   },
+   "group": "G-R-IT-06",
+   "split": "dev"
+  },
+  {
+   "id": "R-SC-06",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "What was repeat purchase among personalized buyers at the pilot's 60 day checkpoint?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-D03",
+     "handles": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ],
+     "anchor_handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+     "value": 14,
+     "unit": "percent",
+     "source_code": "PERSO-PILOT",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single pilot sentence or results table.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.25,
+    "nearest_all_tokens": "G-C2 (grounded)",
+    "max_jaccard_content_tokens": 0.308,
+    "nearest_content_tokens": "G-C2 (grounded)"
+   },
+   "group": "G-R-CF-02",
+   "split": "test"
+  },
+  {
+   "id": "R-SC-07",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "Among survey respondents aged 28 and older, where does fit inconsistency rank as a frustration, and at what share?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-D10",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+     "value": 19,
+     "unit": "percent",
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single strategy sentence.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.219,
+    "nearest_all_tokens": "G-A2 (grounded)",
+    "max_jaccard_content_tokens": 0.19,
+    "nearest_content_tokens": "G-A2 (grounded)"
+   },
+   "group": "G-R-MC-02",
+   "split": "test"
+  },
+  {
+   "id": "R-SC-08",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "What brand position does Northstar's 2026 brand strategy want to own with active Gen Z consumers?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-005",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "value": "dependable fit brand",
+     "unit": null,
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single strategy sentence.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.261,
+    "nearest_all_tokens": "R0-010 (test)",
+    "max_jaccard_content_tokens": 0.333,
+    "nearest_content_tokens": "R0-010 (test)"
+   },
+   "group": "G-R-CF-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-SC-09",
+   "workspace": "SOUTHPEAK",
+   "category": "simple_control",
+   "question": "How many members did Southpeak's Basecamp Rewards programme have at the close of the quarter?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "SP-C04",
+     "handles": [
+      "SOUTHPEAK/BOARD-DECK@v1:SL6.N1"
+     ],
+     "anchor_handle": "SOUTHPEAK/BOARD-DECK@v1:SL6.N1",
+     "value": 412000,
+     "unit": "members",
+     "source_code": "BOARD-DECK",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single board-deck speaker note.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.375,
+    "nearest_all_tokens": "R0-032 (dev)",
+    "max_jaccard_content_tokens": 0.2,
+    "nearest_content_tokens": "R0-032 (dev)"
+   },
+   "group": "G-R-SC-09",
+   "split": "test"
+  },
+  {
+   "id": "R-SC-10",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "What net revenue did Vantage Athletic report for FY2025?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-090",
+     "handles": [
+      "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+     "value": 4.2,
+     "unit": "usd_billion",
+     "source_code": "VANTAGE-DECK",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single investor-deck slide.",
+   "gold_source_classes": [
+    "competitor"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.286,
+    "nearest_all_tokens": "R0-008 (dev)",
+    "max_jaccard_content_tokens": 0.222,
+    "nearest_content_tokens": "G-I1 (grounded)"
+   },
+   "group": "G-R-CF-03",
+   "split": "dev"
+  },
+  {
+   "id": "R-SC-11",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "What does Kinetic Lab charge for its custom runner, and for a rescan fitting?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-106",
+     "handles": [
+      "NORTHSTAR/KINETIC-WEB@v1:S1.B6"
+     ],
+     "anchor_handle": "NORTHSTAR/KINETIC-WEB@v1:S1.B6",
+     "value": 210,
+     "unit": "usd",
+     "source_code": "KINETIC-WEB",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single web-page sentence (only the anchor states the fee).",
+   "gold_source_classes": [
+    "competitor"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.269,
+    "nearest_all_tokens": "G-A3 (grounded)",
+    "max_jaccard_content_tokens": 0.222,
+    "nearest_content_tokens": "G-I2 (grounded)"
+   },
+   "group": "G-R-CC-01",
+   "split": "test"
+  },
+  {
+   "id": "R-SC-12",
+   "workspace": "NORTHSTAR",
+   "category": "simple_control",
+   "question": "How long is the free returns window at Pace & Co., and what share of its range is priced under $50?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-107",
+     "handles": [
+      "NORTHSTAR/PACE-WEB@v1:S1.B5"
+     ],
+     "anchor_handle": "NORTHSTAR/PACE-WEB@v1:S1.B5",
+     "value": 70,
+     "unit": "percent",
+     "source_code": "PACE-WEB",
+     "source_class": "competitor"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "Single web-page sentence.",
+   "gold_source_classes": [
+    "competitor"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.188,
+    "nearest_all_tokens": "R0-032 (dev)",
+    "max_jaccard_content_tokens": 0.143,
+    "nearest_content_tokens": "G-I4 (grounded)"
+   },
+   "group": "G-R-FP-01",
+   "split": "test"
+  }
+ ]
+}
