@@ -4,6 +4,8 @@ In one transaction: every version's derived content (parents -> children -> embe
 dataset tables -> rows) and raw blob is deleted; versions become ``purged`` with filename and
 content hash nulled; the source keeps code/title/version numbers so its handles resolve to a
 410 tombstone; the corpus version is bumped (cache invalidation); an audit event is written.
+Everything runs and answers stored that can quote the purged text goes in the same transaction
+(``_purge_run_artifacts``); ``runs.store`` explains why a run in flight cannot outlive it.
 """
 
 from __future__ import annotations
@@ -63,27 +65,7 @@ async def purge_source(
         text("UPDATE sources SET deleted_at = now(), updated_at = now() WHERE id = :s"),
         {"s": source_id},
     )
-    # Answers and token events can quote the purged text (migration 0004): redact assistant
-    # answers that cited this source (their handles stay and resolve to the 410 tombstone) and
-    # delete the event logs of runs whose evidence pack included it.
-    handle_prefix = f"{scope.workspace_code}/{source.source_code}@v%"
-    await session.execute(
-        text(
-            "UPDATE messages SET content = :redacted, sections = '{}'::jsonb, status = 'redacted' "
-            "WHERE workspace_id = :ws AND role = 'assistant' AND EXISTS ("
-            "  SELECT 1 FROM jsonb_array_elements(citations) c "
-            "  WHERE c->>'source_code' = :code)"
-        ),
-        {"ws": scope.workspace_id, "code": source.source_code, "redacted": REDACTED_ANSWER},
-    )
-    await session.execute(
-        text(
-            "DELETE FROM run_events WHERE workspace_id = :ws AND run_id IN ("
-            "  SELECT id FROM query_runs WHERE workspace_id = :ws AND EXISTS ("
-            "    SELECT 1 FROM unnest(pack_handles) h WHERE h LIKE :prefix))"
-        ),
-        {"ws": scope.workspace_id, "prefix": handle_prefix},
-    )
+    await _purge_run_artifacts(session, scope, source.source_code)
     corpus_version = await repo.bump_corpus_version(session, scope.workspace_id)
     await repo.audit(
         session,
@@ -95,3 +77,64 @@ async def purge_source(
     )
     await session.commit()
     return PurgeResult(source.source_code, len(version_ids), corpus_version)
+
+
+# Runs whose frozen evidence pack (query_runs.pack_handles) included the purged source.
+_PACK_RUNS = (
+    "SELECT id FROM query_runs WHERE workspace_id = :ws AND EXISTS ("
+    "  SELECT 1 FROM unnest(pack_handles) h WHERE h LIKE :prefix)"
+)
+
+
+async def _purge_run_artifacts(
+    session: AsyncSession, scope: WorkspaceScope, source_code: str
+) -> None:
+    """Remove every stored quote of, or citation to, the purged source's evidence.
+
+    * Conversations: the rolling summary (fed to later prompts) and recent questions/handles
+      are reset wherever the source could have reached them: a run whose pack included it, an
+      answer citing it, or a recent handle of it.
+    * Assistant answers whose run's pack included the source (an answer can use pack text it
+      does not cite) or that cite it are redacted; citation cards of the source become
+      tombstones ``{handle, source_code, purged}`` (the handle resolves to the 410 tombstone).
+    * The event logs of runs whose pack included it are deleted (tokens, citations, final).
+    """
+    params = {
+        "ws": scope.workspace_id,
+        "code": source_code,
+        "prefix": f"{scope.workspace_code}/{source_code}@v%",
+    }
+    await session.execute(
+        text(
+            "UPDATE conversations c SET rolling_summary = '', recent_questions = '{}', "  # noqa: S608 - constant SQL
+            "recent_handles = '{}', summary_through_message_id = NULL, updated_at = now() "
+            "WHERE c.workspace_id = :ws AND ("
+            f"  c.id IN (SELECT conversation_id FROM query_runs WHERE id IN ({_PACK_RUNS}))"
+            "  OR EXISTS (SELECT 1 FROM unnest(c.recent_handles) h WHERE h LIKE :prefix)"
+            "  OR EXISTS (SELECT 1 FROM messages m, jsonb_array_elements(m.citations) e"
+            "    WHERE m.workspace_id = :ws AND m.conversation_id = c.id"
+            "    AND e->>'source_code' = :code))"
+        ),
+        params,
+    )
+    await session.execute(
+        text(
+            "UPDATE messages m SET content = :redacted, sections = '{}'::jsonb, "  # noqa: S608 - constant SQL
+            "status = 'redacted', citations = COALESCE(("
+            "  SELECT jsonb_agg(CASE WHEN e.card->>'source_code' = :code THEN "
+            "    jsonb_build_object('handle', e.card->'handle', "
+            "      'source_code', e.card->'source_code', 'purged', true) "
+            "    ELSE e.card END ORDER BY e.pos) "
+            "  FROM jsonb_array_elements(m.citations) WITH ORDINALITY AS e(card, pos)"
+            "), '[]'::jsonb) "
+            "WHERE m.workspace_id = :ws AND m.role = 'assistant' AND ("
+            f"  m.query_run_id IN ({_PACK_RUNS})"
+            "  OR EXISTS (SELECT 1 FROM jsonb_array_elements(m.citations) c"
+            "    WHERE c->>'source_code' = :code))"
+        ),
+        {**params, "redacted": REDACTED_ANSWER},
+    )
+    await session.execute(
+        text(f"DELETE FROM run_events WHERE workspace_id = :ws AND run_id IN ({_PACK_RUNS})"),  # noqa: S608 - constant SQL
+        params,
+    )

@@ -155,6 +155,13 @@ class Settings(BaseSettings):
     run_deadline_s: float = Field(default=60.0, gt=0)
     run_gather_budget_s: float = Field(default=35.0, gt=0)
     regeneration_min_remaining_s: float = Field(default=15.0, ge=0)
+    # Time kept back from the run deadline for verification + fallback: an LLM call is clamped
+    # to (remaining - reserve), so a slow model degrades to evidence-only, not a run timeout.
+    run_finalize_reserve_s: float = Field(default=3.0, ge=0)
+    # A run still 'running' past run_deadline_s + run_reap_margin_s is an orphan (its process
+    # died): the periodic reaper and the SSE stream close it with done(interrupted).
+    run_reap_margin_s: float = Field(default=60.0, ge=0)
+    run_reaper_interval_s: float = Field(default=60.0, gt=0)
     # SSE keep-alive: FastAPI's native EventSourceResponse sends ': ping' every 15 s (plan §21).
     sse_token_coalesce_ms: int = Field(default=100, ge=0)
     sse_poll_interval_s: float = Field(default=1.0, gt=0)  # cross-process fallback

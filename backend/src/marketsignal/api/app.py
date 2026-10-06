@@ -28,7 +28,7 @@ from marketsignal.retrieval.rerank import RerankExecutor
 from marketsignal.retrieval.types import RetrievalConfig
 from marketsignal.runs.broker import RunBroker
 from marketsignal.runs.executor import StandardRunExecutor
-from marketsignal.runs.reaper import reap_interrupted_runs
+from marketsignal.runs.reaper import orphan_after_s, reap_interrupted_runs
 from marketsignal.telemetry.logging import configure_logging, get_logger
 
 log = get_logger(__name__)
@@ -83,9 +83,13 @@ def _lazy_llm(settings: Settings) -> Callable[[], LLMProvider]:
     def get() -> LLMProvider:
         if not provider:
             if settings.llm_provider == "fake":
-                from marketsignal.providers.llm.fake import FakeLLM
+                from marketsignal.providers.llm.base import LLMUnavailableError
+                from marketsignal.providers.llm.fake import FakeLLM, ScriptedResponse
 
-                provider.append(FakeLLM([], repeat_last=False))
+                # Deterministic offline stand-in: every call is "model unavailable", so runs
+                # degrade to evidence-only answers (never an AssertionError from the script).
+                unavailable = LLMUnavailableError("fake LLM provider has no scripted response")
+                provider.append(FakeLLM([ScriptedResponse(error=unavailable)], repeat_last=True))
             else:
                 from marketsignal.providers.llm.anthropic import AnthropicProvider
 
@@ -103,12 +107,21 @@ def _lazy_llm(settings: Settings) -> Callable[[], LLMProvider]:
 
 async def _reap(app: FastAPI) -> None:
     try:
-        reaped = await reap_interrupted_runs(app.state.session_factory)
+        reaped = await reap_interrupted_runs(
+            app.state.session_factory, orphan_after_s(app.state.settings)
+        )
     except Exception as exc:
         log.warning("run_reaper_skipped", reason=type(exc).__name__)
         return
     if reaped:
         log.info("runs_reaped", count=reaped)
+
+
+async def _reap_periodically(app: FastAPI) -> None:
+    """Orphans appear while the API runs (another process died), not only before startup."""
+    while True:
+        await asyncio.sleep(app.state.settings.run_reaper_interval_s)
+        await _reap(app)
 
 
 @asynccontextmanager
@@ -121,12 +134,17 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         if settings.redis_url
         else None
     )
+    reaper: asyncio.Task[None] | None = None
     try:
         await _guard_db_role(app, settings)
         await _reap(app)
+        reaper = asyncio.create_task(_reap_periodically(app))
         log.info("startup_complete", env=settings.env)
         yield
     finally:
+        if reaper is not None:
+            reaper.cancel()
+            await asyncio.gather(reaper, return_exceptions=True)
         if app.state.redis is not None:
             await app.state.redis.aclose()
         for task in list(app.state.run_tasks.values()):

@@ -9,7 +9,10 @@
   exactly the missed events. FastAPI's native ``EventSourceResponse`` sends ``: ping`` every
   15 s.
 * ``POST /runs/{rid}/cancel`` cancels the run task; the run still ends with ``done``
-  (``termination_state = cancelled``).
+  (``termination_state = cancelled``). Repeated cancels are idempotent.
+* A stream never hangs or loops: a run with no ``done`` row that is no longer running (e.g. its
+  events were purged) gets a ``done`` synthesized from ``query_runs``; a run still ``running``
+  past its deadline + reap margin (its process died) is reaped, which writes ``done``.
 Phase 3 serves ``standard`` mode only: ``auto`` is treated as standard (the router is Phase 4)
 and ``research`` is refused.
 """
@@ -33,6 +36,13 @@ from marketsignal.domain.enums import SourceClass
 from marketsignal.generation.prompts import PROMPT_VERSION
 from marketsignal.runs import store, tokens
 from marketsignal.runs.executor import RunRequest
+from marketsignal.runs.reaper import (
+    done_seq,
+    is_overdue,
+    orphan_after_s,
+    reap_run,
+    synthesized_done,
+)
 
 router = APIRouter(prefix="/api/workspaces/{ws}", tags=["runs"])
 
@@ -160,9 +170,17 @@ async def cancel_run(
     run = await store.get_run(factory, scope, run_id)
     if run is None:
         raise AppError(404, "RUN_NOT_FOUND", "run not found")
-    task = request.app.state.run_tasks.get(run_id)
-    cancelled = bool(task and not task.done() and task.cancel())
-    return {"run_id": str(run_id), "cancel_requested": cancelled, "status": run["status"]}
+    task: asyncio.Task[None] | None = request.app.state.run_tasks.get(run_id)
+    if task is None or task.done():
+        # Cancellation is process-local (known limitation): a run executing in another API
+        # process is not reachable from here, so this reports cancel_requested=false and that
+        # run ends at its deadline. Cross-process cancel needs a shared signal (LISTEN/NOTIFY).
+        requested = False
+    elif task.cancelling():
+        requested = True  # already cancelling: a second cancel would interrupt its termination
+    else:
+        requested = task.cancel()
+    return {"run_id": str(run_id), "cancel_requested": requested, "status": run["status"]}
 
 
 async def authorized_stream(
@@ -213,6 +231,20 @@ async def run_events(
             return
         if not events:
             run = await store.get_run(factory, scope, run_id)
-            if run is None or run["status"] != "running":
-                return  # finished and nothing newer than Last-Event-ID: the stream is complete
+            if run is None:
+                return
+            if run["status"] != "running":
+                last_done = await done_seq(factory, scope, run_id)
+                if last_done is not None and last_done > after:
+                    continue  # done landed after our read: the next pass delivers it
+                if last_done is None:  # no done row at all (e.g. purged): never leave it open
+                    seq = after + 1
+                    yield ServerSentEvent(
+                        data=synthesized_done(run, seq), event="done", id=str(seq)
+                    )
+                return  # complete: the client already has done
+            if is_overdue(run, settings) and await reap_run(
+                factory, scope, run_id, orphan_after_s(settings)
+            ):
+                continue  # the orphan now has its done
         await broker.wait(run_id, settings.sse_poll_interval_s)
