@@ -193,6 +193,16 @@ class Settings(BaseSettings):
     agent_gather_budget_s: float = Field(default=35.0, gt=0)
     evidence_pool_max: int = Field(default=40, ge=1)
 
+    # --- Structured analytics (Phase 5; plan §18). Deterministic engine limits. ---
+    analytics_max_filters: int = Field(default=5, ge=1, le=10)
+    analytics_max_filter_values: int = Field(default=20, ge=1, le=100)
+    analytics_max_metrics: int = Field(default=4, ge=1, le=8)
+    analytics_max_group_by: int = Field(default=2, ge=1, le=3)
+    analytics_max_groups: int = Field(default=50, ge=1, le=500)
+    analytics_max_rows: int = Field(default=20, ge=1, le=200)
+    analytics_max_scan_rows: int = Field(default=20_000, ge=100)
+    analytics_timeout_s: float = Field(default=5.0, gt=0)
+
     # --- Governed tools and MCP (plan §17-18, ADR-0006) ---
     tool_timeout_s: float = Field(default=8.0, gt=0)
     tool_statement_timeout_ms: int = Field(default=5_000, ge=100)
