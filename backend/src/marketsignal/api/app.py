@@ -7,6 +7,7 @@ import hmac
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
+from typing import Any, cast
 
 import structlog
 from fastapi import FastAPI, Request, Response
@@ -14,13 +15,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from redis.asyncio import Redis
 
+from marketsignal.agent.runtime import ResearchAgent
 from marketsignal.api.errors import install_error_handlers
 from marketsignal.api.routers import dev, evidence, health, runs, search, sources, workspaces
 from marketsignal.config import Settings, check_production_secrets, get_settings
 from marketsignal.db.engine import create_engine, create_session_factory
 from marketsignal.health import role_is_privileged
+from marketsignal.mcp.client import HttpToolTransport
+from marketsignal.mcp.server import GovernedMCPServer, build_mcp_app
 from marketsignal.providers.embeddings import Embedder, FastEmbedEmbedder
-from marketsignal.providers.llm.base import LLMProvider
+from marketsignal.providers.llm.base import AgentLLM, LLMProvider
 from marketsignal.providers.rerankers import FastEmbedCrossEncoder
 from marketsignal.retrieval.lanes import DocumentFrequencies
 from marketsignal.retrieval.pipeline import QueryEmbeddingCache, RetrievalService
@@ -30,6 +34,9 @@ from marketsignal.runs.broker import RunBroker
 from marketsignal.runs.executor import StandardRunExecutor
 from marketsignal.runs.reaper import live_run_ids, orphan_after_s, reap_interrupted_runs
 from marketsignal.telemetry.logging import configure_logging, get_logger
+from marketsignal.tools.contracts import ToolTransport
+from marketsignal.tools.governance import ToolGovernor
+from marketsignal.tools.inprocess import InProcessToolTransport
 
 log = get_logger(__name__)
 
@@ -105,6 +112,68 @@ def _lazy_llm(settings: Settings) -> Callable[[], LLMProvider]:
     return get
 
 
+def _agent_llm(app: FastAPI, settings: Settings) -> Callable[[], AgentLLM]:
+    """The research agent's tool-use model: the synthesis provider when it supports agent
+    steps (Anthropic), else a stand-in whose every step is "unavailable" (research then falls
+    back to the standard gather, PLANNER_UNAVAILABLE_FALLBACK)."""
+
+    def get() -> AgentLLM:
+        provider = app.state.llm_provider()
+        if callable(getattr(provider, "step", None)):  # e.g. AnthropicProvider
+            return cast(AgentLLM, provider)
+        from marketsignal.providers.llm.base import LLMUnavailableError
+        from marketsignal.providers.llm.fake import FakeAgentLLM, ScriptedTurn
+
+        down = LLMUnavailableError("no tool-use model configured")
+        return FakeAgentLLM(lambda _request, _index: ScriptedTurn(content=(), error=down))
+
+    return get
+
+
+def _tool_transport(app: FastAPI, settings: Settings) -> ToolTransport:
+    """In-process by default; Streamable HTTP over loopback when ``tools_transport=http``.
+    Both run the same governed registry (parity is tested)."""
+    if settings.tools_transport == "http":
+        return HttpToolTransport(settings.mcp_base_url)
+    return InProcessToolTransport(app.state.tool_governor)
+
+
+async def _start_mcp(server: GovernedMCPServer, stop: asyncio.Event) -> asyncio.Task[None]:
+    """Run the MCP session manager (spike 0001: it must be running while /mcp serves) in its
+    own task, so its task group is entered and exited in the same task whatever task runs the
+    app lifespan."""
+    ready = asyncio.Event()
+
+    async def run() -> None:
+        async with server.session_manager.run():
+            ready.set()
+            await stop.wait()
+
+    task = asyncio.create_task(run())
+    waiter = asyncio.create_task(ready.wait())
+    await asyncio.wait({task, waiter}, return_when=asyncio.FIRST_COMPLETED)
+    waiter.cancel()
+    if task.done():
+        task.result()  # startup failed: raise it here
+    return task
+
+
+class _DeferredMCP:
+    """``/mcp`` forwards to the MCP app built in the lifespan (the governor needs the session
+    factory, which exists only once the app starts); before that it answers 503."""
+
+    def __init__(self, app: FastAPI) -> None:
+        self._app = app
+
+    async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
+        target = getattr(self._app.state, "mcp_asgi", None)
+        if target is None:
+            response = Response(status_code=503)
+            await response(scope, receive, send)
+            return
+        await target(scope, receive, send)
+
+
 async def _reap(app: FastAPI) -> None:
     try:
         reaped = await reap_interrupted_runs(
@@ -137,13 +206,27 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         else None
     )
     reaper: asyncio.Task[None] | None = None
+    mcp_task: asyncio.Task[None] | None = None
+    mcp_stop = asyncio.Event()
     try:
         await _guard_db_role(app, settings)
         await _reap(app)
         reaper = asyncio.create_task(_reap_periodically(app))
+        app.state.tool_governor = ToolGovernor(
+            factory=app.state.session_factory,
+            settings=settings,
+            retrieval=app.state.retrieval_service,
+        )
+        mcp_server, mcp_asgi = build_mcp_app(app.state.tool_governor, settings)
+        mcp_task = await _start_mcp(mcp_server, mcp_stop)
+        app.state.mcp_asgi = mcp_asgi
         log.info("startup_complete", env=settings.env)
         yield
     finally:
+        app.state.mcp_asgi = None
+        mcp_stop.set()
+        if mcp_task is not None:
+            await asyncio.gather(mcp_task, return_exceptions=True)
         if reaper is not None:
             reaper.cancel()
             await asyncio.gather(reaper, return_exceptions=True)
@@ -193,12 +276,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.run_broker = RunBroker()
     app.state.run_tasks = {}
     app.state.llm_provider = _lazy_llm(settings)
+    app.state.agent_llm_provider = _agent_llm(app, settings)
+    app.state.mcp_asgi = None
     app.state.run_executor = lambda: StandardRunExecutor(
         app.state.session_factory,
         settings,
         app.state.retrieval_service,
         lambda: app.state.llm_provider(),
         app.state.run_broker,
+        agent_factory=lambda: ResearchAgent(
+            llm=app.state.agent_llm_provider(),
+            transport=_tool_transport(app, settings),
+            settings=settings,
+        ),
     )
     install_error_handlers(app)
 
@@ -251,6 +341,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(evidence.router)
     app.include_router(search.router)
     app.include_router(runs.router)
+    # Governed MCP tools over Streamable HTTP (loopback only unless mcp_public; ADR-0006).
+    app.mount("/mcp", _DeferredMCP(app))
     if settings.env != "prod" and settings.dev_endpoints_enabled:
         app.include_router(dev.router)
     return app

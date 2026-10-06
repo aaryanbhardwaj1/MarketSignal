@@ -13,8 +13,9 @@
 * A stream never hangs or loops: a run with no ``done`` row that is no longer running (e.g. its
   events were purged) gets a ``done`` synthesized from ``query_runs``; a run still ``running``
   past its deadline + reap margin (its process died) is reaped, which writes ``done``.
-Phase 3 serves ``standard`` mode only: ``auto`` is treated as standard (the router is Phase 4)
-and ``research`` is refused.
+* Modes (ADR-0015): the deterministic router (``runs.router``) decides ``standard`` or
+  ``research`` from the request mode, the conversation's persona default and the cue rules; the
+  decision is stored in ``query_runs.route`` and sent in ``run_started``.
 """
 
 from __future__ import annotations
@@ -44,6 +45,7 @@ from marketsignal.runs.reaper import (
     reap_run,
     synthesized_done,
 )
+from marketsignal.runs.router import route
 
 router = APIRouter(prefix="/api/workspaces/{ws}", tags=["runs"])
 
@@ -55,7 +57,8 @@ class ConversationIn(BaseModel):
 
 class RunIn(BaseModel):
     question: str = Field(min_length=1, max_length=2000)
-    mode: Literal["auto", "standard", "research"] = "auto"
+    # Absent: the persona default applies; "auto": the cue rules (ADR-0015 precedence).
+    mode: Literal["auto", "standard", "research"] | None = None
     source_classes: list[SourceClass] = Field(default_factory=list, max_length=5)
 
 
@@ -115,30 +118,36 @@ async def start_run(
     conversation_id: uuid.UUID,
     body: RunIn,
 ) -> dict[str, Any]:
-    if body.mode == "research":
-        raise AppError(
-            422, "MODE_UNAVAILABLE", "research mode arrives in Phase 4; use standard or auto"
-        )
     state = await store.conversation_state(factory, scope, conversation_id)
     if state is None:
         raise AppError(404, "CONVERSATION_NOT_FOUND", "conversation not found")
+    question = body.question.strip()
+    decision = route(
+        question,
+        requested=body.mode,
+        persona=state.persona,
+        recent_questions=tuple(state.recent_questions),
+    )
     service = request.app.state.retrieval_service
     run_id = await store.create_run(
         factory,
         scope,
         conversation_id=conversation_id,
-        question=body.question.strip(),
-        mode="standard",
+        question=question,
+        mode=decision.decided,
         persona=state.persona,
         config_hash=service.config_hash,
         prompt_version=PROMPT_VERSION,
+        route=decision.as_dict(),
     )
     run_request = RunRequest(
         run_id=run_id,
         scope=scope,
         conversation_id=conversation_id,
-        question=body.question.strip(),
+        question=question,
         persona=state.persona,
+        mode=decision.decided,
+        route=decision.as_dict(),
         source_classes=tuple(dict.fromkeys(c.value for c in body.source_classes)),
     )
     task = asyncio.create_task(request.app.state.run_executor().execute(run_request))
@@ -153,7 +162,12 @@ async def start_run(
         ttl_s=int(settings.run_deadline_s) + settings.stream_token_replay_s,
     )
     base = f"/api/workspaces/{scope.workspace_code}/runs/{run_id}"
-    return {"run_id": str(run_id), "stream_url": f"{base}/events?st={stream_token}"}
+    return {
+        "run_id": str(run_id),
+        "stream_url": f"{base}/events?st={stream_token}",
+        "mode": decision.decided,
+        "route": decision.as_dict(),
+    }
 
 
 @router.get("/runs/{run_id}")

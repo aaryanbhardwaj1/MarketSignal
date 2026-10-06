@@ -479,21 +479,33 @@ async def test_conversation_context_is_bounded(harness: Harness) -> None:
     assert max(sizes[-3:]) - min(sizes[-3:]) < 120  # once capped, input stays flat
 
 
-async def test_modes(harness: Harness) -> None:
-    _install(harness, FakeLLM([GOOD]))
+async def test_modes_are_routed_recorded_and_research_degrades_to_standard(
+    harness: Harness,
+) -> None:
+    """Explicit research is accepted and traced; with no tool-use model the agent cannot plan,
+    so the run falls back to the standard gather (PLANNER_UNAVAILABLE_FALLBACK) and still
+    answers. ``auto`` without cues routes to standard."""
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
     ws = await harness.create_workspace()
     await _seed(harness, ws, FACT)
-    created = await harness.client.post(f"/api/workspaces/{ws}/conversations", json={})
-    conversation = created.json()["conversation_id"]
-    research = await harness.client.post(
-        f"/api/workspaces/{ws}/conversations/{conversation}/runs",
-        json={"question": "x", "mode": "research"},
-    )
-    assert research.status_code == 422
-    assert research.json()["error"]["code"] == "MODE_UNAVAILABLE"
-    _, run = await _ask(harness, ws, "fit inconsistency share", conversation, mode="auto")
-    events = await _stream(harness, run["stream_url"])
+    conversation, research = await _ask(harness, ws, "fit inconsistency share", mode="research")
+    assert research["mode"] == "research"
+    assert research["route"]["reason"] == "explicit_request"
+    events = await _stream(harness, research["stream_url"])
+    assert events[0]["data"]["mode"] == "research"
+    assert events[0]["data"]["route"]["decided"] == "research"
+    done = events[-1]["data"]
+    assert "PLANNER_UNAVAILABLE_FALLBACK" in done["flags"]
+    assert "final" in _types(events)
+    stored = (await harness.client.get(f"/api/workspaces/{ws}/runs/{research['run_id']}")).json()
+    assert stored["mode"] == "research"
+    assert stored["route"]["requested"] == "research"
+    assert stored["agent"]["stop_reason"] == "planner_unavailable"
+
+    _, auto = await _ask(harness, ws, "fit inconsistency share", conversation, mode="auto")
+    events = await _stream(harness, auto["stream_url"])
     assert events[0]["data"]["mode"] == "standard"
+    assert events[0]["data"]["route"]["reason"] == "auto_no_cue"
 
 
 async def test_reaper_closes_orphaned_runs(harness: Harness, owner_engine: AsyncEngine) -> None:

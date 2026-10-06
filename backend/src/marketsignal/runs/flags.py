@@ -17,6 +17,8 @@ RETRIEVAL_FLAGS = frozenset(
 )
 # A finished run's conversation summary could not be updated (best effort after ``final``).
 CONVERSATION_STATE_NOT_UPDATED = "CONVERSATION_STATE_NOT_UPDATED"
+# Research mode was requested but no agent is configured: the standard gather ran instead.
+RESEARCH_UNAVAILABLE = "RESEARCH_UNAVAILABLE"
 PRECEDENCE = (
     "cancelled",
     "timeout",
@@ -28,6 +30,7 @@ PRECEDENCE = (
     "completed",
 )
 STATUS = {
+    "planning": "Planning the research",
     "searching": "Searching workspace evidence",
     "analyzing": "Assembling the evidence pack",
     "synthesizing": "Writing a grounded answer",

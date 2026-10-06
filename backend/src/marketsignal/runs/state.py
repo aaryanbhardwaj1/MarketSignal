@@ -33,6 +33,7 @@ class RunRequest:
     persona: str
     mode: str = "standard"
     source_classes: tuple[str, ...] = ()
+    route: dict[str, Any] | None = None  # the router's decision (runs.router.RouteDecision)
 
 
 @dataclass(frozen=True, slots=True)

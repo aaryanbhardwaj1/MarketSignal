@@ -465,11 +465,12 @@ async def test_purge_deletes_verification_reports_of_runs_that_used_the_source(
                 text(
                     "INSERT INTO verification_attempts (workspace_id, query_run_id, attempt, "
                     "disposition, report) SELECT workspace_id, id, 1, 'repaired', "
-                    "CAST(:p AS jsonb) FROM query_runs WHERE id = CAST(:r AS uuid)"
+                    "CAST(:p AS jsonb) FROM query_runs WHERE id = CAST(:r AS uuid) "
+                    "ON CONFLICT DO NOTHING"
                 ),
                 {"r": run_id, "p": json.dumps({"rejected": [{"span": RETURNS[:40]}]})},
             )
-    assert await reports(used["run_id"]) == 1
+    assert await reports(used["run_id"]) >= 1  # the run's own attempt report, or ours
     await _purge(harness, ws, "MEMO")
     assert await reports(used["run_id"]) == 0
     assert await reports(other["run_id"]) == 1

@@ -66,9 +66,12 @@ _RUN_FIELDS = frozenset(
         "error_class",
         "finished_at",
         "corpus_version_start",
+        "route",
+        "agent",
+        "tool_calls",
     }
 )
-_JSON_FIELDS = frozenset({"models", "usage", "timings"})
+_JSON_FIELDS = frozenset({"models", "usage", "timings", "route", "agent"})
 # Events whose payload can quote or point at pack evidence (alias-gated draft text, citation
 # cards, the final answer). They are only stored while every pack source is still alive.
 TEXT_EVENT_TYPES = frozenset({"token", "citation", "final"})
@@ -212,15 +215,17 @@ async def create_run(
     persona: str,
     config_hash: str,
     prompt_version: str,
+    route: dict[str, Any] | None = None,
 ) -> uuid.UUID:
-    """Insert the run (status ``running``) and the user's message in one transaction."""
+    """Insert the run (status ``running``, with its route decision) and the user's message in
+    one transaction."""
     async with scoped_session(factory, scope) as session:
         run_id = (
             await session.execute(
                 text(
                     "INSERT INTO query_runs (workspace_id, conversation_id, mode, persona, "
-                    "original_query, config_hash, prompt_version, corpus_version_start) "
-                    "VALUES (:ws, :c, :m, :p, :q, :ch, :pv, "
+                    "original_query, config_hash, prompt_version, route, corpus_version_start) "
+                    "VALUES (:ws, :c, :m, :p, :q, :ch, :pv, CAST(:route AS jsonb), "
                     "(SELECT version FROM workspace_corpus_state WHERE workspace_id = :ws)) "
                     "RETURNING id"
                 ),
@@ -232,6 +237,7 @@ async def create_run(
                     "q": question,
                     "ch": config_hash,
                     "pv": prompt_version,
+                    "route": json.dumps(route or {}),
                 },
             )
         ).scalar_one()
@@ -329,7 +335,7 @@ async def get_run(
                     "SELECT id, conversation_id, mode, status, termination_state, "
                     "degradation_flags, original_query, pack_handles, cited_handles, usage, "
                     "timings, models, context_tokens, pack_tokens, config_hash, prompt_version, "
-                    "created_at, finished_at FROM query_runs "
+                    "created_at, finished_at, route, agent, tool_calls FROM query_runs "
                     "WHERE workspace_id = :ws AND id = :id"
                 ),
                 {"ws": scope.workspace_id, "id": run_id},
@@ -356,6 +362,9 @@ async def get_run(
         "prompt_version",
         "created_at",
         "finished_at",
+        "route",
+        "agent",
+        "tool_calls",
     )
     return dict(zip(keys, row, strict=True))
 

@@ -31,6 +31,7 @@ from typing import Any
 
 from sqlalchemy import text
 
+from marketsignal.agent.runtime import ResearchAgent
 from marketsignal.config import Settings
 from marketsignal.db.scope import WorkspaceScope
 from marketsignal.db.session import SessionFactory, scoped_session
@@ -42,7 +43,7 @@ from marketsignal.generation.verifier import VerifiedAnswer
 from marketsignal.providers.llm.base import LLMProvider
 from marketsignal.retrieval.pipeline import RetrievalService
 from marketsignal.retrieval.traces import persist_trace
-from marketsignal.retrieval.types import RetrievalFilters
+from marketsignal.retrieval.types import ParentCandidate, RetrievalFilters
 from marketsignal.runs import store
 from marketsignal.runs.broker import RunBroker
 from marketsignal.runs.events import EventWriter
@@ -51,6 +52,7 @@ from marketsignal.runs.flags import (
     CITATION_VERIFICATION_FAILED,
     EVIDENCE_EMPTY,
     PACK_BUDGET_TRUNCATED,
+    RESEARCH_UNAVAILABLE,
     RETRIEVAL_FLAGS,
     RETRIEVAL_TIMEOUT,
     RUN_TIMEOUT,
@@ -59,6 +61,7 @@ from marketsignal.runs.flags import (
     termination_state,
 )
 from marketsignal.runs.reaper import status_for_termination
+from marketsignal.runs.research import research_gather
 from marketsignal.runs.state import RunRequest, _Answer, _Outcome, _RunState, _ToolFailureError
 from marketsignal.runs.synthesis import generate_and_verify
 from marketsignal.telemetry.logging import get_logger
@@ -96,12 +99,14 @@ class StandardRunExecutor:
         retrieval: RetrievalService,
         llm: Callable[[], LLMProvider],
         broker: RunBroker,
+        agent_factory: Callable[[], ResearchAgent] | None = None,
     ) -> None:
         self._factory = factory
         self._settings = settings
         self._retrieval = retrieval
         self._llm = llm
         self._broker = broker
+        self._agent_factory = agent_factory  # None: research requests run the standard gather
 
     # ------------------------------------------------------------------ entry point
     async def execute(self, req: RunRequest) -> None:
@@ -289,63 +294,41 @@ class StandardRunExecutor:
         settings = self._settings
         await writer.emit(
             "run_started",
-            {"conversation_id": str(req.conversation_id), "persona": req.persona, "mode": req.mode},
+            {
+                "conversation_id": str(req.conversation_id),
+                "persona": req.persona,
+                "mode": req.mode,
+                "route": req.route,
+            },
         )
         convo = await store.conversation_state(self._factory, req.scope, req.conversation_id)
         summary = convo.summary if convo else ""
         recent_q = convo.recent_questions if convo else ()
 
-        # 1. Retrieval (the production default: hybrid RRF).
-        await writer.emit("status", {"phase": "searching", "message": STATUS["searching"]})
-        await writer.emit(
-            "tool_started",
-            {"step": 1, "tool": "search_evidence", "kind": "search", "summary": "hybrid search"},
-        )
-        t0 = time.monotonic()
         max_conf = await self._llm_max_confidentiality(req.scope)
-        filters = RetrievalFilters.of(req.source_classes, (), max_conf)
-        try:
-            async with asyncio.timeout(settings.run_gather_budget_s):
-                result = await self._retrieval.search(
-                    self._factory, req.scope, req.question, filters, top_k=settings.pack_candidates
-                )
-        except TimeoutError as exc:  # the gather budget, not the run deadline (that is a cancel)
-            await writer.emit(
-                "tool_completed",
-                {
-                    "step": 1,
-                    "tool": "search_evidence",
-                    "status": "error",
-                    "result_count": 0,
-                    "duration_ms": round((time.monotonic() - t0) * 1000, 1),
-                },
+        if req.mode == "research" and self._agent_factory is not None:
+            # 1. Research gather: the bounded agent over the governed tools (ADR-0007/0015).
+            await writer.emit("status", {"phase": "planning", "message": STATUS["planning"]})
+            research = await research_gather(
+                factory=self._factory,
+                settings=settings,
+                req=req,
+                writer=writer,
+                state=state,
+                agent_factory=self._agent_factory,
+                max_conf=max_conf,
+                summary=summary,
+                recent_questions=recent_q,
             )
-            raise _ToolFailureError(
-                RETRIEVAL_TIMEOUT, "Evidence search exceeded its time budget."
-            ) from exc
-        trace_id = await persist_trace(
-            self._factory, req.scope, result, origin="api", query_run_id=req.run_id
-        )
-        state.timings["retrieval_ms"] = round((time.monotonic() - t0) * 1000, 1)
-        for flag in result.flags:
-            state.flag(flag)
-            if flag in RETRIEVAL_FLAGS:
-                state.states.add("retrieval_degraded")
-            await writer.emit("warning", {"code": flag, "message": f"Retrieval degraded: {flag}"})
-        await writer.emit(
-            "tool_completed",
-            {
-                "step": 1,
-                "tool": "search_evidence",
-                "status": "ok",
-                "result_count": len(result.parents),
-                "classes_found": sorted(
-                    {p.source_class for p in result.parents[: settings.pack_candidates]}
-                ),
-                "duration_ms": state.timings["retrieval_ms"],
-                "trace_id": str(trace_id) if trace_id else None,
-            },
-        )
+            ranked = research.ranked
+            if research.fallback:  # plan §19: no plan or no successful search → standard gather
+                ranked = await self._standard_gather(
+                    req, writer, state, max_conf, step=research.outcome.steps + 1
+                )
+        else:
+            if req.mode == "research":
+                state.flag(RESEARCH_UNAVAILABLE)
+            ranked = await self._standard_gather(req, writer, state, max_conf, step=1)
 
         # 2. Evidence pack.
         await writer.emit("status", {"phase": "analyzing", "message": STATUS["analyzing"]})
@@ -353,7 +336,7 @@ class StandardRunExecutor:
         pack = await build_pack(
             self._factory,
             req.scope,
-            result.parents,
+            ranked,
             PackLimits(
                 max_items=settings.pack_max_items,
                 max_tokens=settings.pack_max_tokens,
@@ -373,7 +356,7 @@ class StandardRunExecutor:
             items=[(i.handle, i.source_code) for i in pack.items],
             normalized_query=" ".join(req.question.split()),
             standalone_query=req.question,
-            retrieved_handles=[p.handle for p in result.parents[: settings.pack_candidates]],
+            retrieved_handles=[p.handle for p in ranked[: settings.pack_candidates]],
             pack_tokens=pack.tokens,
             context_tokens=pack.tokens + len(summary) // 4,
         )
@@ -444,6 +427,70 @@ class StandardRunExecutor:
         pack: EvidencePack,
     ) -> None:
         await finish(self._factory, req, writer, state, content, sections, citations, report, pack)
+
+    async def _standard_gather(
+        self,
+        req: RunRequest,
+        writer: EventWriter,
+        state: _RunState,
+        max_conf: Confidentiality,
+        *,
+        step: int,
+    ) -> list[ParentCandidate]:
+        """The Phase 3 standard gather (production hybrid RRF), unchanged; also the research
+        fallback."""
+        settings = self._settings
+        # 1. Retrieval (the production default: hybrid RRF).
+        await writer.emit("status", {"phase": "searching", "message": STATUS["searching"]})
+        await writer.emit(
+            "tool_started",
+            {"step": step, "tool": "search_evidence", "kind": "search", "summary": "hybrid search"},
+        )
+        t0 = time.monotonic()
+        filters = RetrievalFilters.of(req.source_classes, (), max_conf)
+        try:
+            async with asyncio.timeout(settings.run_gather_budget_s):
+                result = await self._retrieval.search(
+                    self._factory, req.scope, req.question, filters, top_k=settings.pack_candidates
+                )
+        except TimeoutError as exc:  # the gather budget, not the run deadline (that is a cancel)
+            await writer.emit(
+                "tool_completed",
+                {
+                    "step": step,
+                    "tool": "search_evidence",
+                    "status": "error",
+                    "result_count": 0,
+                    "duration_ms": round((time.monotonic() - t0) * 1000, 1),
+                },
+            )
+            raise _ToolFailureError(
+                RETRIEVAL_TIMEOUT, "Evidence search exceeded its time budget."
+            ) from exc
+        trace_id = await persist_trace(
+            self._factory, req.scope, result, origin="api", query_run_id=req.run_id
+        )
+        state.timings["retrieval_ms"] = round((time.monotonic() - t0) * 1000, 1)
+        for flag in result.flags:
+            state.flag(flag)
+            if flag in RETRIEVAL_FLAGS:
+                state.states.add("retrieval_degraded")
+            await writer.emit("warning", {"code": flag, "message": f"Retrieval degraded: {flag}"})
+        await writer.emit(
+            "tool_completed",
+            {
+                "step": step,
+                "tool": "search_evidence",
+                "status": "ok",
+                "result_count": len(result.parents),
+                "classes_found": sorted(
+                    {p.source_class for p in result.parents[: settings.pack_candidates]}
+                ),
+                "duration_ms": state.timings["retrieval_ms"],
+                "trace_id": str(trace_id) if trace_id else None,
+            },
+        )
+        return list(result.parents)
 
     async def _llm_max_confidentiality(self, scope: WorkspaceScope) -> Confidentiality:
         async with scoped_session(self._factory, scope) as session:
