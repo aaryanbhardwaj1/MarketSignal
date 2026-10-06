@@ -1,13 +1,13 @@
-# System design (as built through Phase 4)
+# System design (as built through Phase 5)
 
-**Last updated:** 2026-10-06 · **Scope:** what the code does today, through Phase 4 (standard and research modes, governed tools, verifier precision). Anything planned but not built is listed under [Deferred](#9-deferred). The approved target design is [`ARCHITECTURE_PLAN.md`](ARCHITECTURE_PLAN.md); where the two differ, the plan's §0.4 deviation register records why.
+**Last updated:** 2026-10-06 · **Scope:** what the code does today, through Phase 5 (standard and research modes, governed tools, verifier precision, deterministic structured analytics). Anything planned but not built is listed under [Deferred](#9-deferred). The approved target design is [`ARCHITECTURE_PLAN.md`](ARCHITECTURE_PLAN.md); where the two differ, the plan's §0.4 deviation register records why.
 
-> **Live validation status.** Phase 4 (research mode, governed tools, verifier precision) is implemented and tested against scripted models. For its live results, see [`docs/phase-reports/phase-4.md`](phase-reports/phase-4.md). Phase 3: the live Anthropic spike and the live grounded evaluation ran on 2026-10-06. All six hard gates passed; end-to-end p50/p95 was 4.8 s / 9.6 s and the 76-item run cost about $1.00. Live results (2026-10-06, `claude-sonnet-5-5`, effort low, no thinking): [`docs/phase-reports/phase-3.md`](phase-reports/phase-3.md), [spike 0002](spikes/0002-anthropic-live.md), and `eval/baselines/phase3/live-v0/`.
+> **Live validation status.** Phase 5 (structured analytics, computed results in answers, task routing) is implemented and tested; its analytics-v0 measurements are in the Phase 5 report (`docs/phase-reports/phase-5.md`). Phase 4 (research mode, governed tools, verifier precision) is implemented and tested against scripted models. For its live results, see [`docs/phase-reports/phase-4.md`](phase-reports/phase-4.md). Phase 3: the live Anthropic spike and the live grounded evaluation ran on 2026-10-06. All six hard gates passed; end-to-end p50/p95 was 4.8 s / 9.6 s and the 76-item run cost about $1.00. Live results (2026-10-06, `claude-sonnet-5-5`, effort low, no thinking): [`docs/phase-reports/phase-3.md`](phase-reports/phase-3.md), [spike 0002](spikes/0002-anthropic-live.md), and `eval/baselines/phase3/live-v0/`.
 
 Companion documents:
 - [`GROUNDED_ANSWERING.md`](GROUNDED_ANSWERING.md): generation and streaming in depth (pack, prompt, alias gate, verifier and its Phase 4 precision rules, SSE, purge during a run, evaluation).
 - [`RESEARCH_AGENT.md`](RESEARCH_AGENT.md): the router and the bounded research agent (state machine, bounds, transcript, progress events, pool, persistence, failure modes).
-- [`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md): the four governed tools, capability tokens, the governance pipeline, audit, the in-process and MCP Streamable HTTP transports, and the threat model.
+- [`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md): the eight governed tools (four evidence, four analytics), capability tokens, the governance pipeline, audit, the in-process and MCP Streamable HTTP transports, and the threat model.
 - [`RETRIEVAL_DEEP_DIVE.md`](RETRIEVAL_DEEP_DIVE.md): the retrieval pipeline and its measurements.
 - [`INGESTION.md`](INGESTION.md): how a file becomes citable evidence.
 
@@ -26,6 +26,7 @@ Companion documents:
  │  (pure event reducer)    │          │   standard: retrieval/pipeline.py hybrid RRF      │
  └──────────────────────────┘          │   research: runs/research.py → agent/* (bounded)  │
                                        │     → tools/* governor (in-process | /mcp HTTP)   │
+                                       │     → analytics/* engine → analytics_results      │
                                        │     → agent/pool.py pool_to_candidates            │
                                        │   generation/pack.py     evidence pack E1..En     │
                                        │   generation/prompts.py  static system prompt     │
@@ -49,6 +50,7 @@ Companion documents:
                                        │  runs: conversations, messages, query_runs,        │
                                        │   run_events                    (migration 0004)   │
                                        │  tool_runs, verification_attempts (0005, 0006)     │
+                                       │  analytics_results              (migration 0007)   │
                                        │  retrieval_traces               (migration 0003)   │
                                        └────────────────────────────────────────────────────┘
 ```
@@ -57,10 +59,12 @@ Companion documents:
 |---|---|---|
 | `api/routers/runs.py` | Conversations, run start, run status, cancel, SSE stream | `start_run`, `run_events`, `cancel_run`, `authorized_stream` |
 | `api/app.py` | Wiring: lazy LLM provider, agent model factory, tool governor and transport, `/mcp` mount and its session-manager task, run broker, task registry, reaper loop, SSE headers | `create_app`, `lifespan` |
-| `runs/router.py` | Deterministic, user-overridable mode router (no model call) | `route`, `cues`, `RouteDecision`, `PERSONA_DEFAULT_MODES` |
+| `runs/router.py` | Deterministic, user-overridable mode router and task type (`retrieval`/`analytics`/`mixed`; no model call) | `route`, `cues`, `task_type`, `RouteDecision`, `PERSONA_DEFAULT_MODES` |
 | `runs/research.py` | Research gather: capability token, agent, persisted agent record, fallback decision | `research_gather`, `write_agent_record`, `agent_record` |
-| `agent/*` | Bounded research agent: state machine and bounds, runtime loop, concurrent tool execution, evidence pool, progress events, prompts, append-only transcript | `ResearchAgent`, `AgentBounds`, `check_bounds`, `pool_to_candidates` |
-| `tools/*` | Governed tool contract, capability tokens, governance pipeline, registry, strict-schema adapter, observations, in-process and fallback transports, four tool implementations | `ToolGovernor`, `TOOL_NAMES`, `issue`/`verify`, `InProcessToolTransport`, `FallbackToolTransport` |
+| `agent/*` | Bounded research agent: state machine and bounds, runtime loop, concurrent tool execution, evidence pool, progress events, prompts, append-only transcript, research summary hand-off | `ResearchAgent`, `AgentBounds`, `check_bounds`, `pool_to_candidates`, `build_research_summary` |
+| `tools/*` | Governed tool contract, capability tokens, governance pipeline, registry, strict-schema adapter, observations, in-process and fallback transports, eight tool implementations (four evidence, four analytics) | `ToolGovernor`, `TOOL_NAMES`, `issue`/`verify`, `InProcessToolTransport`, `FallbackToolTransport` |
+| `analytics/*` | Deterministic analytics engine: dataset visibility and units (`schema`), validation against the stored column profile (`validate`), pure-Python computation (`engine`), half-even rounding (`rounding`), row fetch and purge-ordered result insert (`store`) | `find_datasets`, `aggregate`, `group_compare`, `filter_rows`, `save_result` |
+| `api/routers/results.py` | `GET /api/workspaces/{ws}/results/{result_id}`: one stored computed result | `get_result` |
 | `mcp/*` | MCP Streamable HTTP server over the governor (loopback guard, bearer check) and its client transport | `build_mcp_app`, `GovernedMCPServer`, `HttpToolTransport` |
 | `runs/verification_log.py` | One `verification_attempts` row per verified attempt (purge-guarded) | `record_attempt`, `disposition` |
 | `runs/executor.py` | Orchestration of a run (standard gather, or research gather with standard fallback): deadline scope, bounded conclusion (`_conclude`), publish and terminate | `StandardRunExecutor`, `RunRequest`, `termination_state` (re-exported) |
@@ -74,12 +78,13 @@ Companion documents:
 | `runs/reaper.py` | Closes runs whose process died; skips runs still live in this process | `reap_interrupted_runs`, `reap_run`, `live_run_ids`, `synthesized_done` |
 | `runs/tokens.py` | Short-lived SSE stream tokens (HS256 JWT) | `issue`, `verify` |
 | `runs/conversation.py` | Bounded, deterministic conversation state | `next_state` |
-| `generation/*` | Pack, prompt, gate, contract, verifier, fallbacks | see [`GROUNDED_ANSWERING.md`](GROUNDED_ANSWERING.md) |
+| `generation/*` | Pack, prompt, gate, contract, verifier, citation budget, computed results (`[R#]`), safe fallback text, fallbacks | see [`GROUNDED_ANSWERING.md`](GROUNDED_ANSWERING.md) |
 | `providers/llm/*` | Streaming LLM interface; Anthropic and scripted fake | `LLMProvider`, `AnthropicProvider`, `FakeLLM` |
 | `evaluation/grounded.py` | End-to-end grounded evaluation through the in-process API (either mode) | `evaluate`, `summarize` |
+| `evaluation/analytics_eval.py` | Structured-analytics evaluation (analytics-v0) through the in-process API | `evaluate`, `score` |
 | `evaluation/grounded_stats.py`, `grounded_compare.py`, `numeric_recheck.py`, `verifier_eval.py` | Pipeline statistics (incl. `route`/`agent`), paired standard-vs-research comparison, independent numeric re-check, verifier precision harness | — |
 
-## 2. Data model (migrations 0004–0006)
+## 2. Data model (migrations 0004–0007)
 
 All six run-side tables are tenant tables: `workspace_id` on every row, composite `(workspace_id, id)` foreign keys, and **ENABLE + FORCE row-level security** with the policy `workspace_id = app.current_workspace()` for both `USING` and `WITH CHECK` (`backend/migrations/versions/0004_runs_and_conversations.py`, `0005_agent_tools_verification.py`, `0006_tool_runs_args_redaction.py`).
 
@@ -88,12 +93,13 @@ All six run-side tables are tenant tables: `workspace_id` on every row, composit
 | `conversations` | persona, title, `rolling_summary`, `recent_questions[]`, `recent_handles[]`, `summary_through_message_id` | Bounded state only. No transcript is replayed into prompts. |
 | `messages` | user questions and **verified** assistant answers: `content`, `citations` (jsonb cards), `sections` (jsonb), `status`, `query_run_id`, `model`, `usage` | Content holds canonical `[[HANDLE]]` markers only, never `[E#]` aliases. `status ∈ complete, incomplete, failed, redacted`; the code currently writes `complete` (answers) and `redacted` (purge). |
 | `query_runs` | one row per question: `mode`, `persona`, `original_query`, `normalized_query`, `standalone_query`, `retrieved_handles[]`, `pack_handles[]`, `cited_handles[]`, `pack_tokens`, `context_tokens`, `models`, `usage`, `cache_status` (default `'disabled'`), `timings`, `status`, `termination_state`, `degradation_flags[]`, `config_hash`, `prompt_version`, `corpus_version_start`, `error_class` | Stores handles, never document text. `mode ∈ standard, research`. `status ∈ running, completed, failed, cancelled, interrupted`. |
-| `query_runs` (0005 columns) | `route` jsonb (router decision: `requested`, `persona_default`, `decided`, `reason`, `cues`), `agent` jsonb (stop reason, flags, steps, tool calls and errors, state path, pool size, `sufficient`, gap count, usage, per-call trace or `trace_redacted`), `tool_calls` integer (executed governed calls, written once after the gather) | Never model prose, thinking or `finish_research` gap text. Written by `runs/research.py::write_agent_record` under the purge guard |
+| `query_runs` (0005 columns) | `route` jsonb (router decision: `requested`, `persona_default`, `decided`, `reason`, `cues`, and since Phase 5 `task_type`), `agent` jsonb (stop reason, flags, steps, tool calls and errors, state path, pool size, `sufficient`, gap count, usage, per-call trace or `trace_redacted`), `tool_calls` integer (executed governed calls, written once after the gather) | Never model prose, thinking or `finish_research` gap text. Written by `runs/research.py::write_agent_record` under the purge guard |
 | `tool_runs` (0005) | one audit row per governed tool call: `step`, `call_index`, `tool`, sanitized `args`, `status`, `error_code`, `result_handles[]`, `result_count`, `total_matches`, `truncated`, `warnings[]`, `duration_ms`, `transport` | No observation or document text. `UPDATE` revoked from `ms_app` except **`UPDATE (args)`** (migration 0006), so purge can redact arguments in place |
 | `verification_attempts` (0005) | one row per verified synthesis attempt: `attempt` (1–3), `disposition` (`accepted`, `repaired`, `regenerate`, `rejected`, `fallback`), `report` jsonb | Append-only for `ms_app`. Reports quote model spans, so purge deletes the rows of affected runs |
+| `analytics_results` (0007) | one row per computing analytics call: `id` (the cited `result_id`), `query_run_id`, `source_version_id`, `table_id`, `tool` (`aggregate`, `group_compare`, `filter_rows`), normalized `spec`, the `AnalyticsResult` as `result` jsonb, `created_at` | RLS forced; `UPDATE` revoked from `ms_app`. `ON DELETE CASCADE` from the source version and the dataset table, `SET NULL` on `query_run_id`. Read by `GET /api/workspaces/{ws}/results/{result_id}` (`{kind: "result", tool, query_run_id, created_at, result}`; `404 RESULT_NOT_FOUND` for unknown, foreign or purged ids) |
 | `run_events` | the SSE event log: `(workspace_id, run_id, seq)` primary key, `type`, `payload` jsonb | Append-only for the runtime role (`REVOKE UPDATE … FROM ms_app`). Replayed on reconnect. Retention (30 days) is the Phase 8 nightly job. |
 
-Indexes: `tool_runs_run (workspace_id, query_run_id, step)`, `query_runs_ws_time (workspace_id, created_at)`, the partial `query_runs_running (status) WHERE status = 'running'` (the reaper's scan) and `messages_conversation (workspace_id, conversation_id, created_at)`.
+Indexes: `tool_runs_run (workspace_id, query_run_id, step)`, `analytics_results_version (workspace_id, source_version_id)`, `analytics_results_run (workspace_id, query_run_id)`, `query_runs_ws_time (workspace_id, created_at)`, the partial `query_runs_running (status) WHERE status = 'running'` (the reaper's scan) and `messages_conversation (workspace_id, conversation_id, created_at)`.
 
 ## 3. Request flow
 
@@ -120,6 +126,7 @@ sequenceDiagram
         loop ≤ 4 model steps, bounds checked before each
             A->>DB: status / tool_started / tool_completed events
             A->>DB: governed tool calls (RLS, statement_timeout) + tool_runs audit rows
+            A->>DB: analytics calls: analytics_results row per computed result
         end
         X->>DB: query_runs.agent, tool_calls (purge-guarded)
         X->>DB: pool_to_candidates: re-resolve handles in scope
@@ -159,12 +166,12 @@ sequenceDiagram
 
 Steps in prose (orchestration in `runs/executor.py`; generation in `runs/synthesis.py`; persist and `final` in `runs/finalize.py`; storage in `runs/store.py`):
 
-1. **Start and route.** `POST /api/workspaces/{ws}/conversations/{cid}/runs` validates the body (`question` 1–2000 chars, optional `mode ∈ auto|standard|research`, up to 5 `source_classes`). `runs/router.py::route` decides the mode without a model call. An explicit `standard`/`research` wins. `auto` applies the cue rules. An absent mode applies the persona default, which is itself `auto` for the generalist. The decision is stored in `query_runs.route`, returned in the 202 body and sent in `run_started` ([`RESEARCH_AGENT.md` §1](RESEARCH_AGENT.md#1-router)). The run row and the user message are inserted in one transaction, the executor starts as an `asyncio` task registered in `app.state.run_tasks`, and the response is `202 {run_id, stream_url}`. The stream URL carries a stream token (§6).
+1. **Start and route.** `POST /api/workspaces/{ws}/conversations/{cid}/runs` validates the body (`question` 1–2000 chars, optional `mode ∈ auto|standard|research`, up to 5 `source_classes`). `runs/router.py::route` decides the mode without a model call. An explicit `standard`/`research` wins. A question whose `task_type` is `analytics` or `mixed` goes to `research` (reason `analytics_task`), because only the agent has the analytics tools. `auto` applies the cue rules. An absent mode applies the persona default, which is itself `auto` for the generalist. The decision is stored in `query_runs.route`, returned in the 202 body and sent in `run_started` ([`RESEARCH_AGENT.md` §1](RESEARCH_AGENT.md#1-router)). The run row and the user message are inserted in one transaction, the executor starts as an `asyncio` task registered in `app.state.run_tasks`, and the response is `202 {run_id, stream_url}`. The stream URL carries a stream token (§6).
 2. **Retrieve (standard mode, and the research fallback).** The production retrieval default from Phase 2: hybrid dense + lexical with parent-level RRF (the cross-encoder only if `MS_RERANK_ENABLED`). Filters are the requested source classes plus the workspace's `llm_max_confidentiality` ceiling, so content above that ceiling never reaches the model. The search runs under `run_gather_budget_s`; exceeding it is `RETRIEVAL_TIMEOUT` (`tool_failure`). Retrieval degradation flags are passed through as `warning` events. A `retrieval_traces` row is linked to the run.
-   **Research mode** replaces this step: `runs/research.py::research_gather` mints a run-scoped capability token, runs the bounded agent over the four governed tools until a bound, `finish_research` or the shared gather deadline stops it, persists `query_runs.agent`/`tool_calls`, and turns the evidence pool into ranked parents (`agent/pool.py::pool_to_candidates`). If the agent cannot plan or ends without a successful search, the standard retrieval below runs in the time left before the same deadline. Details: [`RESEARCH_AGENT.md`](RESEARCH_AGENT.md), [`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md).
+   **Research mode** replaces this step: `runs/research.py::research_gather` mints a run-scoped capability token, runs the bounded agent over the eight governed tools until a bound, `finish_research` or the shared gather deadline stops it, persists `query_runs.agent`/`tool_calls`, and turns the evidence pool into ranked parents (`agent/pool.py::pool_to_candidates`). Its computed results (at most 8) are attached to the pack as `R1..Rn`, and a `ResearchSummary` is handed to synthesis ([`GROUNDED_ANSWERING.md` §5.8](GROUNDED_ANSWERING.md#58-computed-results-in-answers-phase-5)). If the agent cannot plan or ends without a successful search, the standard retrieval below runs in the time left before the same deadline. Details: [`RESEARCH_AGENT.md`](RESEARCH_AGENT.md), [`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md).
 3. **Pack.** `build_pack` reads canonical parent text from Postgres in the workspace scope, de-duplicates, windows large parents around the anchor child, fills the item and token budget in rank order and assigns `E1..En`. Details: [`GROUNDED_ANSWERING.md` §1](GROUNDED_ANSWERING.md#1-evidence-pack).
-4. **Freeze.** `store.freeze_pack` writes `pack_handles` (and the query fields) *before* any event or model call can quote the pack. It share-locks the pack's `sources` rows once and checks `source_versions.status = 'purged'` for the exact `@vN` of each handle; sources purged since packing are dropped (`SOURCE_DELETED_DURING_RUN`).
-5. **Abstain or synthesize.** An empty pack ends in a deterministic abstention with no LLM call (`EVIDENCE_EMPTY`, `no_relevant_evidence`). Otherwise the model streams an answer through the alias gate; the verifier repairs and checks it; one regeneration is allowed; failing that, an evidence-only answer is published.
+4. **Freeze.** `store.freeze_pack` writes `pack_handles` (and the query fields) *before* any event or model call can quote the pack. It share-locks the pack's `sources` rows once and checks `source_versions.status = 'purged'` for the exact `@vN` of each handle; sources purged since packing are dropped (`SOURCE_DELETED_DURING_RUN`). Computed results are frozen by their source-version handle, so the same guards cover them.
+5. **Abstain or synthesize.** An empty pack with no computed result ends in a deterministic abstention with no LLM call (`EVIDENCE_EMPTY`, `no_relevant_evidence`). Otherwise the model streams an answer through the alias gate; the verifier repairs and checks it; one regeneration is allowed; failing that, an evidence-only answer is published.
 6. **Persist, then publish.** `persist_answer` stores the assistant message only if no version in the run's pack (or among its citations) has been purged; `final` is emitted after the row is committed; `cited_handles` and the conversation state are updated after `final` (best effort).
 7. **Terminate.** Exactly one `done` is emitted, always last. The `query_runs` row (status, termination state, flags, usage, timings) is finished **in the same transaction** as the `done` row, so a reader who sees `done` also sees the finished run. Steps 6 and 7 together are bounded by `run_finalize_timeout_s` (§7).
 
@@ -176,7 +183,7 @@ Isolation follows ADR-0009 and is unchanged in shape by Phase 3:
 - **Pack admission:** `build_pack` skips any ranked handle whose prefix is not `"{workspace_code}/"` before touching the database, then resolves text with RLS and the explicit predicate. A foreign handle cannot enter a pack.
 - **Stream tokens** are bound to one run and one workspace. A token for another workspace or run, an expired or malformed token, and an unknown run all return the same **404 `RUN_NOT_FOUND`**.
 - **The model never sees identifiers.** Evidence is rendered with run-local aliases; canonical handles, ids and URLs are not in the prompt (`generation/prompts.py`).
-- **Governed tools (Phase 4):** the agent never names a workspace. Tool inputs are closed schemas with no context fields, and each call's workspace, confidentiality ceiling and class restriction come from a signed, run-scoped capability token that is revoked once the run stops being `running`. Tool SQL runs in RLS-scoped sessions with explicit predicates, and foreign or over-ceiling handles are `NOT_FOUND`. The agent's pool is re-resolved in the workspace scope before packing ([`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md)).
+- **Governed tools (Phase 4):** the agent never names a workspace. Tool inputs are closed schemas with no context fields, and each call's workspace, confidentiality ceiling and class restriction come from a signed, run-scoped capability token that is revoked once the run stops being `running`. Tool SQL runs in RLS-scoped sessions with explicit predicates, and foreign or over-ceiling handles are `NOT_FOUND`. Analytics tools see only datasets visible to the token, never interpolate column names into SQL, and store results under forced RLS. The agent's pool is re-resolved in the workspace scope before packing ([`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md)).
 - **Evaluation:** the grounded evaluation has a hard gate for cross-workspace leaks (cited foreign handles, or second-workspace marker strings in a first-workspace answer).
 
 ## 5. Purge semantics
@@ -191,9 +198,12 @@ Deleting a source is a content purge (ADR-0016), performed synchronously in one 
 | `verification_attempts` of every affected run | Deleted (reports quote model spans) |
 | `tool_runs.args` of every affected run | Replaced by `{"redacted": true}` (the column-level grant from migration 0006); the audit row (tool, status, handles, timing) is kept |
 | `query_runs.agent.trace` of every affected run | Removed and replaced by `"trace_redacted": true`; counts, states and usage kept |
+| Runs that computed results from the source (captured from `analytics_results.query_run_id` before deletion) | Treated as affected: events deleted, tool arguments and trace redacted |
+| Answers citing a computed result of the source | Redacted like evidence citations (result cards carry `source_code`) |
+| `analytics_results` of every version of the source | Deleted last (also `ON DELETE CASCADE`); `GET /results/{id}` then returns 404 |
 | `query_runs` rows | Kept: they store handles, never text. A purged handle resolves to `410 SOURCE_DELETED` |
 
-A run in flight cannot outlive the purge. `purge_source` locks every affected `query_runs` row `FOR UPDATE` (in `id` order) before it resets conversations, redacts messages and deletes events. Every later write that can carry evidence text takes `FOR KEY SHARE` on the run's own `query_runs` row and re-checks the purge state of the pack's *versions* (`source_versions.status = 'purged'`, never `sources.deleted_at`) in the same transaction, so per-event writes never lock source rows. Phase 4 writers follow the same protocol: the `tool_runs` audit insert stores redacted arguments if the run has already seen a purged handle, the agent record drops its trace, and a verification report is not written. A purged version stays purged when its source is re-uploaded (the re-upload restores the source row, and the pipeline's supersede step skips purged versions), so a run frozen on `X@v1` stays guarded after `X@v2` arrives. The argument is in [`GROUNDED_ANSWERING.md` §8](GROUNDED_ANSWERING.md#8-purge-during-a-run). A stream whose events were deleted gets a `done` synthesized from `query_runs`, so it never hangs.
+A run in flight cannot outlive the purge. `purge_source` locks every affected `query_runs` row `FOR UPDATE` (in `id` order) before it resets conversations, redacts messages and deletes events. Every later write that can carry evidence text takes `FOR KEY SHARE` on the run's own `query_runs` row and re-checks the purge state of the pack's *versions* (`source_versions.status = 'purged'`, never `sources.deleted_at`) in the same transaction, so per-event writes never lock source rows. Phase 4 writers follow the same protocol, and so does the Phase 5 result insert (`FOR SHARE` on the source row, then a version recheck: a result is never stored for a purged version): the `tool_runs` audit insert stores redacted arguments if the run has already seen a purged handle, the agent record drops its trace, and a verification report is not written. A purged version stays purged when its source is re-uploaded (the re-upload restores the source row, and the pipeline's supersede step skips purged versions), so a run frozen on `X@v1` stays guarded after `X@v2` arrives. The argument is in [`GROUNDED_ANSWERING.md` §8](GROUNDED_ANSWERING.md#8-purge-during-a-run). A stream whose events were deleted gets a `done` synthesized from `query_runs`, so it never hangs.
 
 ## 6. SSE delivery
 
@@ -220,7 +230,7 @@ plus **`interrupted`**, written only by the reaper (an extension of the plan's e
 | Run deadline (`run_deadline_s`, 60 s) | `RUN_TIMEOUT` | `timeout` | `failed` | warning, `done` |
 | Retrieval over its gather budget | `RETRIEVAL_TIMEOUT` | `tool_failure` | `failed` | warning, `done` |
 | Unexpected exception | — (`error_class` recorded) | `tool_failure` | `failed` | `error RUN_FAILED`, `done` |
-| Empty pack | `EVIDENCE_EMPTY` | `no_relevant_evidence` | `completed` | deterministic abstention |
+| Empty pack (no evidence and no computed result) | `EVIDENCE_EMPTY` | `no_relevant_evidence` | `completed` | deterministic abstention |
 | LLM unavailable, refusal, truncation, verification failed twice, or a pack source purged during the run (generation stops at the first withheld text event, or `persist_answer` refuses) | `LLM_SYNTHESIS_UNAVAILABLE` / `MODEL_REFUSAL` / `GENERATION_TRUNCATED` / `CITATION_VERIFICATION_FAILED` / `SOURCE_DELETED_DURING_RUN` | `generation_unavailable` | `completed` | evidence-only answer (cards, no prose) |
 | Research agent cannot plan, or ends without a successful search | `PLANNER_UNAVAILABLE_FALLBACK` / `PLANNER_NO_TOOL_FALLBACK` (+ the bound's flag) | per the standard gather that follows | `completed` | progress events, then the standard gather's events |
 | Research agent stops on a bound | `AGENT_STEP_BUDGET_EXHAUSTED`, `AGENT_TOKEN_BUDGET_EXHAUSTED`, `AGENT_CONTEXT_LIMIT`, `GATHER_TIMEOUT`, `AGENT_REPEAT_CALL_STOPPED`, `AGENT_LLM_UNAVAILABLE` | unchanged (answer from the pool) | `completed` | progress events |
@@ -288,7 +298,9 @@ Phase 4 knobs (research agent, governed tools, MCP, verifier):
 | `mcp_allowed_hosts` | `[]` | `Host` allowlist in public mode (empty = loopback only) |
 | `mcp_base_url` | `http://127.0.0.1:8000/mcp` | HTTP transport target |
 | `mcp_token_key` | development value, refused in production | HS256 key for capability tokens; `MS_MCP_TOKEN_KEY`, at least 32 bytes, must differ from `MS_STREAM_TOKEN_SECRET` |
-| `verifier_max_citations` | 20 (4–60) | Structural citation cap, stated in the system prompt and the regeneration feedback |
+| `verifier_max_citations` | 20 (4–60) | Structural citation cap, stated in the system prompt and the regeneration feedback; `[E#]` and `[R#]` share it, and the citation budget fits answers under it |
+| `research_summary` | `true` | Hand the bounded `ResearchSummary` from the agent to synthesis |
+| `analytics_max_*`, `analytics_timeout_s` | 5 filters, 20 values, 4 metrics, 2 group-by, 50 groups, 20 rows, 20,000 scanned rows; 5.0 s | Analytics limits ([`GOVERNED_TOOLS_AND_MCP.md` §9](GOVERNED_TOOLS_AND_MCP.md#9-configuration)) |
 
 The research agent uses the synthesis provider and model (`llm_model`, `llm_thinking`); with the default `llm_thinking=disabled` the agent runs in `between_tools` thinking mode.
 
@@ -298,7 +310,7 @@ Every run records `config_hash` (retrieval configuration) and `prompt_version` (
 
 | Item | Status today | Planned |
 |---|---|---|
-| Analytics and hypothesis tools (`query_structured_metrics`, `analyze_hypothesis_evidence`) and `get_source_metadata` | Not built; the agent has four tools (ADR-0006) | Later phase |
+| Hypothesis tool (`analyze_hypothesis_evidence`) and `get_source_metadata` | Not built. Analytics was built in Phase 5 as four tools instead of `query_structured_metrics` (ADR-0020) | Later phase |
 | Persona YAML files, persona prompt-policy blocks and source-class priors (ADR-0018) | Only persona default modes, as a table in `runs/router.py` | Later phase; priors need balancing, which is off by default since Phase 2 |
 | Keyword lane for quoted/capitalized entities in standard gather | Standard gather is still hybrid search only; the keyword tool exists for the agent | Open |
 | Pack class reservation, rerank-score reuse, collapse/balance in the pack | Pack fills by rank only (agent pool order in research mode) | Open |

@@ -153,6 +153,10 @@ These refine the plan without changing the approved evidence, versioning, parent
 | 4 | Verifier evaluation holdout used once | `verifier-v1` holdout evaluated twice: at the end of development, and once more only to measure the review-driven safety fixes (no rule tuned to holdout) | 0013 |
 | 4 | Conflicting evidence section | Advisory conflict signal fed to the prompt; the section is encouraged, never required by the verifier (false triggers on verifier-v1) | 0004 |
 | 4 | Verifier citation re-pointing | Built, but restricted after review (distinctive figures plus subject words in the target); it fired 0 times on verifier-v1, so in practice miscited claims are dropped as in Phase 3 | 0004 |
+| 5 | One flattened `query_structured_metrics` tool returning a computed `AQ…` handle (§18) | Four tools: `describe_dataset`, `aggregate`, `group_compare`, `filter_rows`. No `pct_change` or `contains`; top-N is `aggregate` with `order` and `limit`. Results are persisted in `analytics_results` (migration 0007) | 0020 |
+| 5 | Every tool offered in strict mode (§18) | The four analytics tools are offered with `strict: false`: the live API's strict-array limits (≤ 16 union-typed, ≤ 24 optional parameters in total) are exceeded. Server-side strict Pydantic validation is unchanged | 0006, 0020 |
+| 5 | Computed results cited as evidence handles (§10, §18) | A separate citation kind: run-local `[R#]` aliases, stored as `[[result:<id>]]`, with result cards and a result-specific numeric rule in the verifier. `describe_dataset` records no handles; computing calls record only their source-version handle (and `filter_rows` row handles) for the purge guards | 0020, 0004 |
+| 5 | Router cues only (§3 step 4) | A deterministic `task_type` (`retrieval`/`analytics`/`mixed`); analytics and mixed go to research unless the user chose a mode | 0015 |
 
 ---
 
@@ -1438,6 +1442,7 @@ Each ADR is a one-paragraph stub in Phase 0 and is completed when its component 
 | 0017 | Fictional competitor corpus (D6) |
 | 0018 | Personas as policy configuration, not tool restriction (D9) |
 | 0019 | Testing strategy and load testing (D11) |
+| 0020 | Deterministic structured analytics; computed results cited as `[R#]` (added in Phase 5) |
 
 ---
 

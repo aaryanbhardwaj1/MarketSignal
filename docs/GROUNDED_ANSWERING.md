@@ -1,6 +1,6 @@
-# Grounded answering deep dive (Phase 3, verifier precision updated in Phase 4)
+# Grounded answering deep dive (Phase 3, verifier precision updated in Phase 4, computed results added in Phase 5)
 
-**Last updated:** 2026-10-06 · **Code:** `backend/src/marketsignal/generation/`, `providers/llm/`, `runs/`, `api/routers/runs.py`, `ingestion/purge.py`, `frontend/src/lib/run-stream.ts`, `frontend/src/components/chat/` · **Decisions:** ADR-0004 (handles and aliases), ADR-0007 (bounds), ADR-0008 (SSE), ADR-0015 (modes), ADR-0016 (purge)
+**Last updated:** 2026-10-06 · **Code:** `backend/src/marketsignal/generation/`, `providers/llm/`, `runs/`, `api/routers/runs.py`, `api/routers/results.py`, `ingestion/purge.py`, `frontend/src/lib/run-stream.ts`, `frontend/src/components/chat/` · **Decisions:** ADR-0004 (handles and aliases), ADR-0007 (bounds), ADR-0008 (SSE), ADR-0015 (modes), ADR-0016 (purge), ADR-0020 (deterministic analytics)
 
 This document describes how a run turns ranked evidence into a verified, cited answer and streams it, as the code does it today. Standard and research runs share everything described here; they differ only in how the ranked evidence is gathered (see [Research mode](#research-mode)). The system-level view (components, tables, termination, configuration) is in [`SYSTEM_DESIGN.md`](SYSTEM_DESIGN.md).
 
@@ -36,7 +36,7 @@ The short answer:
 
 **Token unit.** Budgets use the parent's stored `token_count`, which comes from the embedder's WordPiece tokenizer (ADR-0012), as a deterministic proxy for model tokens. Windows are sized by the parent's average characters per token. The real input usage is recorded per run from the provider's `usage`. How closely the proxy tracks Anthropic tokenization is **pending live evaluation**.
 
-**Freezing.** Before any event or model call can quote the pack, `runs/store.py::freeze_pack` records `query_runs.pack_handles` after share-locking the pack's `sources` rows once and checking `source_versions.status = 'purged'` for the exact version of each handle (§8). Sources purged since the pack was read are left out and the executor drops those items.
+**Freezing.** Before any event or model call can quote the pack, `runs/store.py::freeze_pack` records `query_runs.pack_handles` after share-locking the pack's `sources` rows once and checking `source_versions.status = 'purged'` for the exact version of each handle (§8). Sources purged since the pack was read are left out and the executor drops those items. Computed results are frozen by their source-version handle (`ResultItem.source_handle`), so the same guards cover them; a result whose source was purged before the freeze is dropped for good.
 
 The `evidence` event reports `{item_count, classes, truncated}`. Pack tokens are stored on the run but not streamed.
 
@@ -52,7 +52,9 @@ The `evidence` event reports `{item_count, classes, truncated}`. Pack tokens are
 
 The canonical marker `[[HANDLE]]` (`generation/types.py::CANONICAL_RE`) is written only by the verifier and by the deterministic fallbacks. Any `[[…]]` the model writes is stripped as a leak (§5.4). The frontend's `SafeMarkdown` turns each canonical marker in a `final` answer into a citation chip linked to the evidence viewer; a marker with no matching card renders as a chip without a link.
 
-A citation card (`PackItem.card()`) carries `handle`, `source_code`, `source_title`, `source_class`, `source_type`, `locator_label`, `anchor_child_id`, `char_start`, `char_end` and `parent_content_hash`.
+A citation card (`PackItem.card()`) carries `kind: "evidence"` (Phase 5), `handle`, `source_code`, `source_title`, `source_class`, `source_type`, `locator_label`, `anchor_child_id`, `char_start`, `char_end` and `parent_content_hash`.
+
+**Computed results (Phase 5)** have their own alias kind, `R1..Rn`, and their own marker, `[[result:<uuid>]]` (`types.py::result_marker`; the lowercase `result:` prefix never matches `CANONICAL_RE`). A result card (`ResultItem.card()`) carries `kind: "result"`, `result_id`, `source_code`, `dataset`, `source_version`, `table`, `op`, `summary` and `handle` (the source-version handle `WS/SOURCE@vN`, which the purge guards match). See §5.8.
 
 ## 3. Prompt and trust policy
 
@@ -125,7 +127,8 @@ Guarantees:
 2. **Per-unit cleaning.** Every alias-shaped marker (including `[e3]`, `[ E3 ]`, `[E1, E2]`) that is not an exact `[E\d{1,2}]` naming a pack item is removed and reported in `unknown_aliases`; a repeated citation in the same unit collapses; the `[inference]` tag is normalised; empty units are dropped.
 3. **Section rules** (§4), each logged as a repair: `"<Section> #<n>: <action>"`.
 4. **Citation resolution.** Every surviving citation is a pack alias by construction, so every final citation maps to a pack handle. On output, aliases become `[[HANDLE]]`; every other `[[`/`]]` is removed.
-5. **Structural checks**, the only failures (`ok = False`): `answer_missing`, `answer_too_long` (> 4 sentences), `no_citations` (zero citations with a non-empty pack, unless the Answer or an untagged Gaps unit explicitly states the evidence is insufficient), `too_many_citations` (> `settings.verifier_max_citations`, default 20, §5.7 A4), `gaps_missing` (pack truncated and no Gaps).
+5. **Citation budget** (Phase 5 A1, §5.9): when the answer is over the cap, `citation_budget.py::fit_citations` removes surplus citations before the checks below.
+6. **Structural checks**, the only failures (`ok = False`): `answer_missing`, `answer_too_long` (> 4 sentences), `no_citations` (zero citations with a non-empty pack, unless the Answer or an untagged Gaps unit explicitly states the evidence is insufficient), `too_many_citations` (> `settings.verifier_max_citations`, default 20, §5.7 A4), `gaps_missing` (pack truncated and no Gaps).
 
 The report (`final.verification`) records `passed`, `structural_failures`, `repairs`, `unknown_aliases`, `numeric_violations`, `leaks_removed`, `citations`, `cited_aliases` and `sections`. Phase 4 adds `attempt`, `disposition`, `regeneration_requested`, `failure_categories`, `rejected` (spans with their aliases and reason), `evidence_checked` / `evidence_handles`, `gap_statements`, `conflict_signals` and `max_citations` (§5.7).
 
@@ -156,7 +159,7 @@ Documented limits (kept deliberately, because guessing would create false passes
 2. On a structural failure, if at least `regeneration_min_remaining_s` (15 s) of the run deadline remains, the executor emits `draft_reset {attempt: 2, reason: "verification_failed"}` and regenerates **once**, with `regeneration_feedback` (the structural failures in plain language, up to 8 numeric violations, and the unknown aliases).
 3. If attempt 2 also fails, or there is not enough time, the answer is **evidence-only** (`CITATION_VERIFICATION_FAILED`).
 
-The evidence-only answer (`generation/fallback.py::evidence_only`) lists up to 8 pack items as `**Title**, locator: “snippet” [[HANDLE]]`, with a 280-character extractive snippet centred on the anchor. It has no generated prose. If draft text was visible, it is withdrawn first with `draft_reset {attempt: 0, reason: "evidence_only"}`.
+The evidence-only answer (`generation/fallback.py::evidence_only`) lists up to 8 pack items as `**Title**, locator: “snippet” [[HANDLE]]`, with a 280-character extractive snippet centred on the anchor. It has no generated prose. Since Phase 5 it lists computed results first, one deterministic line each (`result_unit`: values, units, denominators, provenance, `[[result:<id>]]`), and withholds instruction-like evidence text (§5.9). If draft text was visible, it is withdrawn first with `draft_reset {attempt: 0, reason: "evidence_only"}`.
 
 ### 5.7 Verifier precision rules (Phase 4)
 
@@ -172,9 +175,38 @@ Phase 4 (workstream A) narrowed the cases where the verifier removed supported t
 
 `eval/datasets/verifier-v1/holdout.json` was evaluated twice: once at the end of development, and once more only to measure the review-driven safety fixes (R1–R6 in the summary). No rule was tuned to holdout scores. `tests/unit/test_verifier_precision.py::test_review_probe_never_accepts_more_than_phase3` asserts that each of 55 probe units kept without an `[inference]` tag was also kept verbatim by the Phase 3 verifier.
 
+### 5.8 Computed results in answers (Phase 5)
+
+Research runs can hand synthesis the persisted `AnalyticsResult` dicts of the agent's computing calls (`AgentOutcome.results`, at most 8). `generation/results.py` turns them into `ResultItem`s with run-local aliases `R1..Rn`, distinct from `E#`, and `with_results` attaches them to the pack.
+
+| Stage | Rule |
+|---|---|
+| Rendering | Inside `<computed_results>` after `<evidence_items>`, with `COMPUTED_RESULTS_PREAMBLE` (cite `[R#]`, copy numbers exactly with their unit and scale, never compute new figures, a null value means no data). At most `MAX_RESULTS` (8) results, `MAX_ROWS` (20) rows each, labels cut to `LABEL_MAX_CHARS` (80). Labels are escaped; an instruction-like label is withheld. The verifier checks against exactly the figures rendered. |
+| Alias gate | `[R#]` follows the `[E#]` grammar (`_ALIAS_LETTERS = "ER"`). An unknown `[R#]` is removed like an unknown `[E#]`. |
+| Verifier | A figure in a unit citing `[R#]` must be supported by a cited result (`result_supports`), otherwise the usual drop or repair applies. Computed results are never re-pointed. `[R#]` becomes `[[result:<id>]]` on output. The report adds `results_checked` and `result_ids`. |
+| Citation budget | `[R#]` and `[E#]` share `verifier_max_citations`. A `[R#]` that backs a figure in its unit is **essential** (`result_backs_figure`) and is never removed. |
+| Fallback | Result lines and cards come before evidence cards (§5.6). |
+| Empty evidence | An empty evidence pack with at least one result is not an abstention: the model answers from the results alone (`EvidencePack.has_sources`). |
+
+**Numeric rule** (`result_supports`, with claim context in `generation/result_claims.py`):
+
+- **Value.** The stated number equals the result's rounded `value`, or its `exact` value rounded half-even to the decimals stated ("38%" and "38.23%" for exact 38.2333). A null value (`ZERO_DENOMINATOR`) supports nothing. Over-precise numbers are unsupported, and a stated 0 needs an exact zero.
+- **Unit.** Percent needs a percent claim; a percent *difference* may also be stated in points ("3.2 pp"). `currency_usd` allows `$`, `US$`, `USD` or no symbol, never another currency (including a currency written after the number). Counts need a plain number; ratio allows a multiple ("1.5x"); date and text values support no numbers.
+- **Scale.** The claim's scale word must equal the result's `scale` ("$12.4 million" never restates a billion-scale 12.4).
+- **Sign and direction.** A level is never stated as a change ("fell 38.2%"). A `group_compare` difference (A − B) must agree in sign with its direction word and the group that is its subject ("South exceeded North by 3.2" is −3.2 when A = North).
+- **Counts and labels.** A numerator, denominator, matched-row count, or numeric group label, cell or filter operand supports exactly that number, stated plainly.
+- **Years** come only from result labels and date values, never from counts or decimals.
+
+The frontend renders `[[result:<id>]]` as a result chip and a result card (`components/chat/result-chip.tsx`, `result-card.tsx`, formatting in `lib/analytics.ts`), which loads the stored result from `GET /api/workspaces/{ws}/results/{result_id}` and shows values, units, denominators, filters, grouping, dataset, source version and rounding as plain text.
+
+### 5.9 Phase 4 regression fixes (Phase 5, workstream W1)
+
+- **A1 Citation budget.** List-style answers cited every source on every bullet and failed `too_many_citations` twice, ending in the evidence-only fallback. `generation/citation_budget.py::fit_citations` runs on the verified units, only when the answer is over `verifier_max_citations`, and removes citations in a fixed order: exact duplicates first, then extra citations on multi-cited units (Interpretation, then Key findings, then Answer; later units first), then trailing Key-findings bullets beyond `MIN_FINDINGS` (3). A unit never loses its last citation, a citation is removed only when the remaining ones still support every figure, essential `[R#]` citations stay, and Conflicting-evidence bullets are untouched. Every change is a repair. If the answer is still over the cap, `too_many_citations` stands.
+- **A2 Injection-safe fallback.** The evidence-only answer quotes document text verbatim, so a planted instruction could be shown as "the most relevant evidence". `generation/safe_text.py` detects instruction-like sentences conservatively (override phrases, text addressed to an AI, output demands, role-play and chat-template markers). `fallback.py::safe_snippet` replaces them with `WITHHELD_MARKER`, and `evidence_only` lists such items after every normal item (`sections.instruction_like_withheld`). Stored source text is unchanged, and the citation still opens the original in the source viewer.
+
 ## 6. Abstention
 
-**Empty pack: implemented.** When the pack is empty (no hits, or every hit purged), the executor never calls the model (`EVIDENCE_EMPTY`, `no_relevant_evidence`). `fallback.abstention` returns a fixed Answer ("The workspace evidence does not contain information that answers this question, so no answer was generated.") and a Gaps unit naming the source classes the workspace lacks (or the requested classes searched). No tokens are streamed. The grounded evaluation gates this (§9).
+**Empty pack: implemented.** When the pack is empty (no hits, or every hit purged) and there is no computed result, the executor never calls the model (`EVIDENCE_EMPTY`, `no_relevant_evidence`). `fallback.abstention` returns a fixed Answer ("The workspace evidence does not contain information that answers this question, so no answer was generated.") and a Gaps unit naming the source classes the workspace lacks (or the requested classes searched). No tokens are streamed. The grounded evaluation gates this (§9).
 
 **Weak-evidence abstention: deferred.** A non-empty pack always goes to the model, and the model is instructed to say plainly when the evidence does not answer the question; the verifier accepts such an answer with zero citations (`states_insufficient`). A score threshold was considered and not built, because the recorded retrieval scores do not separate the cases. [`eval/baselines/phase3/abstention-signals.json`](../eval/baselines/phase3/abstention-signals.json) records, for 74 grounded-v0 items (all but the two empty-pack items), the top dense score (`dense_top`) and top lexical score (`lex_top`, with `lex_max_possible`). Computed from that file:
 
@@ -259,11 +291,13 @@ On the run side the source rows are share-locked once, at freezing; every later 
 - *Freeze.* If the purge holds the source lock, the freeze waits for it to commit and then sees the purged version (each READ COMMITTED statement takes a fresh snapshot), so it drops it. If the freeze holds the lock first, the purge waits at its first statement, and its later `query_runs` lock sees the committed `pack_handles`. So either the purge locks this run, or the freeze has already dropped the source. Nothing can quote the pack before the freeze commits.
 - *Later writes.* The purge's `FOR UPDATE` on the run row conflicts with the writer's `FOR KEY SHARE` on the same row, so they serialise. If the **write gets the lock first**, the purge waits for its commit; the purge's redaction, reset and delete statements run afterwards with later snapshots and remove what the write stored. If the **purge gets the lock first**, the write waits until the purge commits, then sees the purged version and does not store the text.
 
+**Computed results.** A run's results are in `pack_handles` by source version, so the guards above withhold their text events too. `purge_source` first captures the runs that computed results from the source (`analytics_results.query_run_id`), treats them as affected (events deleted, tool arguments and trace redacted), redacts answers whose citation cards carry the source's `source_code` (result cards included), and deletes the results last.
+
 There is no interleaving in which the text survives. Per-token writes never lock source rows: the only contention is a run with itself, or with a purge that actually concerns it. The `persist_answer` retry loop terminates because each failed attempt removes at least one source, and an abstention cites none. Integration tests cover these races (`backend/tests/integration/test_runs_purge.py`).
 
 ## Research mode
 
-Research runs replace only the gather step: a bounded agent calls governed tools and fills an evidence pool of handles. `agent/pool.py::pool_to_candidates` re-resolves the pool in the workspace scope (dropping foreign, deleted, purged and out-of-class handles) and hands ranked parents to the same `build_pack` and everything after it in this document. The synthesis prompt, alias gate, verifier and fallbacks are identical in both modes. When the agent cannot plan or ends with nothing, the standard gather runs in the remaining gather time. Details: [`RESEARCH_AGENT.md`](RESEARCH_AGENT.md) and [`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md). The SSE stream of a research run adds `status` (`planning`, `searching`) and per-call `tool_started` / `tool_completed` events before `evidence` ([`RESEARCH_AGENT.md` §7](RESEARCH_AGENT.md#7-progress-events)).
+Research runs replace only the gather step: a bounded agent calls governed tools and fills an evidence pool of handles. `agent/pool.py::pool_to_candidates` re-resolves the pool in the workspace scope (dropping foreign, deleted, purged and out-of-class handles) and hands ranked parents to the same `build_pack` and everything after it in this document. The alias gate, verifier and fallbacks are identical in both modes. Since Phase 5 a research run's user turn can also carry `<computed_results>` (§5.8) and a `<research_summary>` (server-written, escaped; `agent/summary.py`, setting `research_summary`, default on). When the agent cannot plan or ends with nothing, the standard gather runs in the remaining gather time. Details: [`RESEARCH_AGENT.md`](RESEARCH_AGENT.md) and [`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md). The SSE stream of a research run adds `status` (`planning`, `searching`) and per-call `tool_started` / `tool_completed` events before `evidence` ([`RESEARCH_AGENT.md` §7](RESEARCH_AGENT.md#7-progress-events)).
 
 ## 9. Grounded evaluation
 
@@ -303,6 +337,7 @@ The two citation gates read **"not evaluated" (fail)** if answer-expected items 
 - Weak-evidence abstention relies on the model stating insufficiency (§6).
 - Numeric faithfulness checks presence, not meaning; spelled-out numbers without magnitude words, fractions, and percent claims against unlabelled table cells are the documented gaps (§5.4).
 - **Verifier precision (Phase 3, measured live; historical).** Bare years and edition labels are checked as figures; source titles and locators shown to the model are not accepted as evidence; a failing unit is dropped whole (it can take the gold sentence with it or leave a dangling reference); the 20-citation cap is not stated in the prompt or in the regeneration feedback (the cause of the only over-refusal); derived arithmetic is never accepted; insufficiency statements in the Answer are tagged `[inference]`; and the verification reports of failed attempts are not persisted. See `eval/baselines/phase3/live-v0/FAILURE_ANALYSIS.md`. Phase 4 addressed these with the rules in §5.7 (A1–A7). Derived arithmetic is still never accepted. Remaining false negatives (invented entity names, causal claims without figures, a figure present in the cited item but for another period, spelled-out fractions) are outside a deterministic numeric verifier (`eval/baselines/phase4/verifier/SUMMARY.md`).
+- Answers may restate computed values only; derived arithmetic over results (sums, growth rates, re-rounding) is never accepted (§5.8).
 - The Conflicting evidence section is not required by the verifier. Phase 4 feeds an advisory conflict signal to the prompt (§5.7 A7), but conflicts are surfaced only if the model writes them.
 - The pack token budget uses a WordPiece proxy (§1).
 - Cancel is process-local and the cross-process live tail polls (§7.4).

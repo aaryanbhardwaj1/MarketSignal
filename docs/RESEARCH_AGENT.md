@@ -1,6 +1,6 @@
-# Research agent deep dive (Phase 4)
+# Research agent deep dive (Phase 4, analytics and summary hand-off added in Phase 5)
 
-**Last updated:** 2026-10-06 · **Code:** `backend/src/marketsignal/agent/` (`state.py`, `runtime.py`, `execute.py`, `pool.py`, `progress.py`, `prompts.py`, `transcript.py`), `runs/router.py`, `runs/research.py`, `runs/executor.py`, `api/routers/runs.py`, `api/app.py` · **Decisions:** ADR-0007 (bounded state machine), ADR-0015 (modes and router), ADR-0018 (personas), ADR-0006 (governed tools)
+**Last updated:** 2026-10-06 · **Code:** `backend/src/marketsignal/agent/` (`state.py`, `runtime.py`, `execute.py`, `pool.py`, `progress.py`, `prompts.py`, `transcript.py`, `summary.py`), `runs/router.py`, `runs/research.py`, `runs/executor.py`, `api/routers/runs.py`, `api/app.py` · **Decisions:** ADR-0007 (bounded state machine), ADR-0015 (modes and router), ADR-0018 (personas), ADR-0006 (governed tools), ADR-0020 (deterministic analytics)
 
 This document describes research mode as the code implements it at HEAD. The tools the agent calls, and the governance around them, are in [`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md). The shared tail (pack, synthesis, verification, persistence, SSE) is in [`GROUNDED_ANSWERING.md`](GROUNDED_ANSWERING.md). Where everything sits in the system is in [`SYSTEM_DESIGN.md`](SYSTEM_DESIGN.md).
 
@@ -10,7 +10,7 @@ This document describes research mode as the code implements it at HEAD. The too
 
 > *How can a language model choose its own searches over workspace evidence without being able to run forever, leave the workspace, leak its reasoning, or make the final answer less grounded than standard mode?*
 
-The answer in one paragraph: a deterministic router picks the mode without calling a model. In research mode, the model is one step function inside an explicit state machine. Every loop iteration is one model call, and a fixed list of bounds is checked before each one. The model reaches data only through four governed tools, and each call carries a run-scoped capability token. The agent collects **handles only** into an evidence pool. Its prose and thinking stay in an in-memory transcript that is never streamed, logged or stored. The pool is then re-resolved in the workspace scope and passed to the same pack → synthesis → verifier tail as standard mode. When the agent cannot plan, or ends with nothing, the standard gather runs in the time that is left.
+The answer in one paragraph: a deterministic router picks the mode without calling a model. In research mode, the model is one step function inside an explicit state machine. Every loop iteration is one model call, and a fixed list of bounds is checked before each one. The model reaches data only through eight governed tools (four evidence, four analytics since Phase 5), and each call carries a run-scoped capability token. The agent collects **handles only** into an evidence pool, plus the persisted results of its analytics calls. Its prose and thinking stay in an in-memory transcript that is never streamed, logged or stored. The pool is then re-resolved in the workspace scope and passed to the same pack → synthesis → verifier tail as standard mode. When the agent cannot plan, or ends with nothing, the standard gather runs in the time that is left.
 
 ## 1. Router
 
@@ -21,6 +21,7 @@ The answer in one paragraph: a deterministic router picks the mode without calli
 | # | Input | Decision | `reason` |
 |---|---|---|---|
 | 1 | request `mode` = `standard` or `research` | that mode | `explicit_request` |
+| 1a | no explicit `standard`/`research`, and `task_type` is `analytics` or `mixed` (Phase 5) | `research` | `analytics_task` |
 | 2 | request `mode` = `auto` | cue rules (overrides the persona default) | `auto_cues` / `auto_no_cue` |
 | 3 | no request mode, persona default `standard` or `research` | the persona default | `persona_default` |
 | 4 | no request mode, persona default `auto` (or unknown persona) | cue rules | `persona_auto_cues` / `persona_auto_no_cue` |
@@ -39,19 +40,22 @@ The answer in one paragraph: a deterministic router picks the mode without calli
 | `multi_class` | cues for **two or more** of the five classes (customer, competitor, market, financial, internal) |
 | `follow_up` | only when there are earlier questions: a leading and/also/"what about"/"how about"/why/so, or a pronoun (it, they, that, those, these, this, them) within the first four words |
 
+**Task type (Phase 5).** `task_type(question)` returns `retrieval`, `analytics` or `mixed` (`TaskType`) from two fixed cue sets. Quantitative cues include `%`, "how many", "how much", "share of", averages, "median", "number of", "top N", rankings, "by region/segment/…", breakdowns and distributions, and a data-table phrase near a figure word. The ambiguous words mean, total, highest and lowest count only within three words of a metric noun (rate, share, NPS, revenue, …), so "what does premium mean" stays a retrieval question. Qualitative cues are words such as say, mention, complain, why, reasons, themes, quotes. Both together give `mixed`. An `analytics` or `mixed` task goes to `research`, because only the agent has the analytics tools, and this overrides the persona default and the `auto` cue rules. An explicit `standard` or `research` request still wins. The fired cues then end with the task type.
+
 The customer-class cue matches the plural **"reviews"** only, because a singular "review" is usually a meeting or a document ("Q3 review"). The internal class matches "strategy review".
 
-**Recorded route.** `RouteDecision.as_dict()` (`requested`, `persona_default`, `decided`, `reason`, `cues`) is stored in `query_runs.route` when the run row is inserted (`runs/store.py::create_run`). It is also returned in the `202` body and sent in `run_started` (`mode`, `route`). Tests: `tests/unit/test_router.py`.
+**Recorded route.** `RouteDecision.as_dict()` (`requested`, `persona_default`, `decided`, `reason`, `cues`, `task_type`) is stored in `query_runs.route` when the run row is inserted (`runs/store.py::create_run`). It is also returned in the `202` body and sent in `run_started` (`mode`, `route`). Tests: `tests/unit/test_router.py`.
 
 ## 2. Research gather inside the executor
 
 The modes differ only in the gather step (`runs/executor.py::StandardRunExecutor._run`). When `req.mode == "research"` and an agent factory is wired (`api/app.py` always wires one), the executor calls `runs/research.py::research_gather`:
 
 1. **One gather deadline.** `gather_deadline = start + run_gather_budget_s` (35 s). The agent stops at the earlier of that and its own `agent_gather_budget_s` (35 s). The standard fallback gets only what is left of the same deadline (`_standard_gather(..., deadline=research.gather_deadline)`). If no time is left, the fallback reports `RETRIEVAL_TIMEOUT` (`tool_failure`) without starting a search.
-2. **Capability token.** `tools/capability.issue(...)` mints an HS256 token with `jti` = run id, the workspace id and code, `principal="api"`, the persona, `tools=TOOL_NAMES` (all four), `max_conf` = the workspace's LLM confidentiality ceiling, the run's `source_classes` (the `classes` claim) and `ttl_s = min(3600, agent_gather_budget_s + 60)`. The token is revoked as soon as the run stops being `running` (§2 of the tools doc).
+2. **Capability token.** `tools/capability.issue(...)` mints an HS256 token with `jti` = run id, the workspace id and code, `principal="api"`, the persona, `tools=TOOL_NAMES` (all eight), `max_conf` = the workspace's LLM confidentiality ceiling, the run's `source_classes` (the `classes` claim) and `ttl_s = min(3600, agent_gather_budget_s + 60)`. The token is revoked as soon as the run stops being `running` (§2 of the tools doc).
 3. **Agent.** `ResearchAgent.gather(AgentContext(...))`. The context carries the question, persona, conversation summary and recent questions, the credential, the deadline, the progress sink and the run's class filter. `AgentContext.__repr__` omits the credential and the question.
 4. **Record.** Flags are added to the run, and `write_agent_record` writes `query_runs.agent` and `query_runs.tool_calls` (§9).
 5. **Fallback or pool.** If the stop reason is `planner_unavailable` or `no_successful_search` (`FALLBACK_STOPS`), the executor runs the Phase 3 standard gather with `step = outcome.steps + 1`. Otherwise `pool_to_candidates` turns the pool into ranked parents (§8). A `tool_errors` stop with an empty result adds the `tool_failure` state.
+6. **Hand-off (Phase 5).** `AgentOutcome.results` goes to synthesis as `[R#]` results, and, when `research_summary` is on (the default; `MS_RESEARCH_SUMMARY`), `build_research_summary` builds the `ResearchSummary` (§8.1).
 
 If `mode == "research"` but no agent factory is wired, the run is flagged `RESEARCH_UNAVAILABLE` and the standard gather runs. Only tests construct the executor this way.
 
@@ -126,7 +130,7 @@ Bounds enforced elsewhere in the loop:
 
 Other stop reasons and flags: `finish_research` and `end_turn` (no flag), `planner_unavailable` (`PLANNER_UNAVAILABLE_FALLBACK`), `llm_unavailable` (`AGENT_LLM_UNAVAILABLE`) and `no_successful_search` (`PLANNER_NO_TOOL_FALLBACK`). The mapping is `STOP_FLAGS` in `agent/state.py`.
 
-**Empty-handed rewrite.** In `_GatherRun.outcome`, if gathering ends with zero successful evidence calls and an empty pool, the reason becomes `no_successful_search`, and `PLANNER_NO_TOOL_FALLBACK` is appended after the original bound's flag. There are three exceptions: `planner_unavailable`, a reason that is already `no_successful_search`, and a `time_limit` with no time left before the run's gather deadline. The executor then runs the standard gather with whatever time is left. "Evidence calls" are `search_evidence`, `search_evidence_keyword` and `get_evidence` (`list_sources` alone does not count).
+**Empty-handed rewrite.** In `_GatherRun.outcome`, if gathering ends with zero successful evidence calls, an empty pool and no computed result, the reason becomes `no_successful_search`, and `PLANNER_NO_TOOL_FALLBACK` is appended after the original bound's flag. There are three exceptions: `planner_unavailable`, a reason that is already `no_successful_search`, and a `time_limit` with no time left before the run's gather deadline. The executor then runs the standard gather with whatever time is left. "Evidence calls" are `search_evidence`, `search_evidence_keyword` and `get_evidence` (`list_sources` alone does not count).
 
 **Model and thinking.** The agent uses the synthesis provider (`api/app.py::_agent_llm`) when that provider implements `step` (Anthropic). Otherwise it uses a stand-in whose every step is unavailable, which produces `planner_unavailable` and the standard gather. The same applies when the provider cannot be built, for example with no API key. With the default `llm_thinking="disabled"`, the provider sends `thinking: {"type": "between_tools"}` (Claude 5.x rejects `disabled`). Short between-call updates then arrive as thinking blocks. No `tool_choice` is sent, so it is `auto` (the spike found `tool`/`any` rejected). The provider makes one jittered retry on 429/529/5xx when budget remains (`providers/llm/anthropic.py`, SDK `max_retries=0`).
 
@@ -165,7 +169,7 @@ The tool array is the governed tools sorted by name, with `finish_research` last
 |---|---|---|
 | `status` | gather start | `{"phase": "planning", "message": "Planning the research"}` |
 | `status` | before the first executed batch | `{"phase": "searching", "message": "Searching workspace evidence"}` |
-| `tool_started` | per planned call that is not budget-denied | `step`, `call_index`, `tool`, `kind` (`search`/`keyword`/`lookup`/`catalog`), `summary` |
+| `tool_started` | per planned call that is not budget-denied | `step`, `call_index`, `tool`, `kind` (`search`/`keyword`/`lookup`/`catalog`/`analytics`), `summary` |
 | `tool_completed` | per such call, after the batch | `step`, `call_index`, `tool`, `status` (`ok`/`error`/`denied`/`timeout`), `result_count`, `duration_ms`, optional `error_code` |
 
 Summary templates (`summarize`):
@@ -176,9 +180,13 @@ Summary templates (`summarize`):
 | `search_evidence_keyword` | `Checking exact identifiers: "{t1}", "{t2}"` | `Checking exact identifiers: "RV-00412"` |
 | `get_evidence` | `Opening {n} evidence item(s)` | `Opening 3 evidence items` |
 | `list_sources` | `Listing {classes} sources` | `Listing all sources` |
+| `describe_dataset` | `Describing datasets` / `Describing dataset {dataset}` | `Describing dataset SURVEY-2026:1` |
+| `aggregate` | `Computing {metrics}[ by {groups}] on {dataset}` | `Computing mean(nps) by region on SURVEY-2026:1` |
+| `group_compare` | `Comparing {metric} between "{a}" and "{b}" on {dataset}` | `Comparing mean(nps) between "Gen Z" and "Millennial" on SURVEY-2026:1` |
+| `filter_rows` | `Listing [up to {n}] matching rows on {dataset}` | `Listing up to 5 matching rows on SURVEY-2026:1` |
 | invalid arguments | `Running a tool call with invalid arguments` | — |
 
-`{classes}` is `all`, one class, or "a, b and c". Model text appears only quoted. `quote()` makes it printable (controls, format characters and lone surrogates become spaces), turns `"` into `'`, collapses it to one line and truncates it to `QUOTE_MAX_CHARS` (80) with `…`. `tool_label()` shows only a known tool name, otherwise `unknown`. When the standard gather runs as the fallback, it emits its own `tool_started`/`tool_completed` for `search_evidence` (summary `hybrid search`) at `step = agent steps + 1`.
+`{classes}` is `all`, one class, or "a, b and c". Model text appears only quoted. Column names appear unquoted but printable and truncated (`NAME_MAX_CHARS`), and a dataset id appears as is only when it is well-formed (`CODE:N`). `quote()` makes it printable (controls, format characters and lone surrogates become spaces), turns `"` into `'`, collapses it to one line and truncates it to `QUOTE_MAX_CHARS` (80) with `…`. `tool_label()` shows only a known tool name, otherwise `unknown`. When the standard gather runs as the fallback, it emits its own `tool_started`/`tool_completed` for `search_evidence` (summary `hybrid search`) at `step = agent steps + 1`.
 
 ## 8. Pool → candidates
 
@@ -187,9 +195,18 @@ Summary templates (`summarize`):
 - De-duplicated by handle and bounded by `evidence_pool_max`. New handles beyond the bound are refused, and a full pool stops gathering at the next bound check (`pool_full`).
 - Hits from `search_evidence`/`search_evidence_keyword` add the hit's `fused_rank` and anchor. A found `get_evidence` item adds the handle with rank = its position and no anchor. An item missing as `NOT_FOUND`/`SOURCE_DELETED` is **discarded** from the pool.
 - A later, better-ranked sighting with an anchor replaces the anchor but keeps `first_step` and `via_tool`.
+- `filter_rows` row handles are real evidence handles: they join the pool anchored at their parent (`via_tool="filter_rows"`) and the trace entry's `handles`.
 - Order (`items()`): best fused rank, then first step, then first-seen order.
 
 `pool_to_candidates(factory, scope, pool, source_classes=...)` re-resolves every handle in one RLS-scoped query with an explicit `workspace_id` predicate. Before the query, it drops handles without the `"{workspace_code}/"` prefix. The query drops unknown handles, deleted sources, purged versions (`v.status <> 'purged'`) and, when the run has a class filter, any other class (the class comes from the database, whatever the tool reported). The anchor is the tool's child if it still belongs to that parent, else the parent's first child. Spans always come from the database. Candidates keep pool order as ranks 1..n on lane `agent`. Tests: `tests/integration/test_agent_pool.py`.
+
+### 8.1 Computed results and the research summary (Phase 5)
+
+**Analytics prompt.** `RESEARCH_SYSTEM_PROMPT` tells the agent to use the analytics tools for exact quantitative asks over tabular data (`describe_dataset`, then `aggregate`, `group_compare` or `filter_rows`), never to do arithmetic or re-derive a computed number, and for mixed questions to compute first and then search for the qualitative evidence. Dataset titles, column names, levels and cells are untrusted data.
+
+**Results in the outcome.** Every successful computing call (`COMPUTING_TOOLS`) adds its full `AnalyticsResult` dict to `AgentOutcome.results`, in call order, de-duplicated by `result_id` and capped at `MAX_RESULTS_FOR_SYNTHESIS` (8). The results become `R1..Rn` in synthesis ([`GROUNDED_ANSWERING.md` §5.8](GROUNDED_ANSWERING.md#58-computed-results-in-answers-phase-5)). A run with results and an empty pool is not empty-handed, so no fallback search runs and the answer can be analytics-only.
+
+**Research summary (A3).** `agent/summary.py::ResearchSummary` is a bounded, deterministic hand-off to synthesis, rendered as `<research_summary>` in the user turn. It is built from observable state only: stop reason, `sufficient`, step and per-tool call counts, pool size and classes, search themes (validated `query`/`terms` arguments), the question's requested dimensions (entities, metrics, periods, comparison terms, by fixed vocabularies and regexes), one line per computed result (operation, metric keys, grouping, dataset id, row count; never a value or level), and, after `bind_pack`, which pack aliases mention each dimension, the dimensions no item mentions, and `detect_conflicts` signals. `finish_research` gap text is not passed (only its count). Bounds: `MAX_LIST_ITEMS` (8) per list, `MAX_ENTRY_CHARS` (80) per entry, `MAX_RENDER_CHARS` (2,400) in total. Handles are never rendered.
 
 ## 9. What is persisted
 
@@ -200,6 +217,7 @@ Summary templates (`summarize`):
 | `query_runs.agent.trace[]` | per handled call: `step`, `call_index`, `tool`, `args` (validated and scrubbed), `status`, `error_code`, `handles`, `duration_ms`; plus one aggregated overflow entry | observations, document text |
 | `query_runs.tool_calls` | executed call count | — |
 | `tool_runs` | one audit row per governed call (see the tools doc) | credentials, observations |
+| `analytics_results` | one row per computing analytics call (`query_run_id`, source version, table, spec, result) | — |
 | `run_events` | `status`, `tool_started`, `tool_completed`, then the shared tail | — |
 | `query_runs.timings.agent_ms` | gather duration | — |
 
@@ -230,10 +248,13 @@ Agent flags do not change the termination state, except that a `tool_errors` sto
 
 `eval/datasets/research-v0` (57 fictional items, nine categories, dev/test split by leakage group, a `router_expectation` per item) is run through the grounded harness once per mode. `evaluation/grounded_compare.py` pairs the two runs by item id (paired bootstrap CI and exact McNemar for rates). `evaluation/grounded_stats.py` reads `route` and `agent` from `query_runs`. Results: see [`docs/phase-reports/phase-4.md`](phase-reports/phase-4.md).
 
+Phase 5 adds `eval/datasets/analytics-v0` (90 items: retrieval, analytics and mixed; dev/holdout splits; golds computed independently by `scripts/build_analytics_v0.py`). `evaluation/analytics_eval.py` drives the real API and scores routing (`route_task_type` vs the item's `task_type`), exact-result accuracy, answers, mixed items, security and resolution gates: `python -m marketsignal.evaluation analytics --split dev|holdout|all --out DIR [--fake]`. Results: the Phase 5 report (`docs/phase-reports/phase-5.md`).
+
 ## 12. Known limits
 
 - Only the default mode of each persona exists (router table). Persona prompt policies and source-class priors are not built (ADR-0018).
-- No analytics or hypothesis tools; the agent cannot compute over datasets (ADR-0006).
+- No hypothesis tool (ADR-0006). Analytics covers aggregate, compare and list over one dataset version; there is no join across datasets and no period-over-period change operation (ADR-0020).
 - No follow-up query rewriting: `standalone_query` is the question. The agent sees the conversation context; standard retrieval does not.
 - Cancel is process-local; there is no spend ledger or rate limit (`SYSTEM_DESIGN.md` §9).
-- `finish_research` gaps are not passed to synthesis; the synthesis prompt is the same as in standard mode.
+- `finish_research` gap text is not passed to synthesis; the research summary's deterministic per-dimension coverage replaces it (§8.1).
+- Task-type cues are English keyword rules; a quantitative question phrased without them goes to retrieval unless the user picks research.

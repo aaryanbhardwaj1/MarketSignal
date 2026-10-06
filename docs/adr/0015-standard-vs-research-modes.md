@@ -100,3 +100,8 @@ The chosen mode is recorded in `query_runs` and the `run_started` event, and is 
 - **Research gather.** The agent over the governed tools, then `pool_to_candidates` into the shared tail. The fallbacks are as decided but wider: any empty-handed stop runs the standard gather, in the time left before the single gather deadline (ADR-0007 notes).
 - **Standard gather unchanged.** It is still hybrid search called directly, with no keyword lane and no tool registry. The Phase 3 deviation stands.
 - **Answer-cache key:** no cache exists yet (ADR-0011), so the mode is not part of a cache key.
+
+## Phase 5 note (2026-10-06)
+
+- **Task type.** `runs/router.py::task_type` classifies a question as `retrieval`, `analytics` or `mixed` from fixed quantitative and qualitative cue sets (no model call). Ambiguous words (mean, total, highest, lowest) count only near a metric noun. The result is recorded as `RouteDecision.task_type` in `query_runs.route`.
+- **Analytics routes to research.** Only the agent can call the analytics tools (ADR-0020), so an `analytics` or `mixed` task is routed to `research` with reason `analytics_task`, overriding the persona default and the `auto` cue rules. An explicit `standard` or `research` request still wins. Routing accuracy is measured on analytics-v0 (`route_task_type` vs the item's `task_type`).
