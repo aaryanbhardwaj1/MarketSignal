@@ -179,6 +179,30 @@ class Settings(BaseSettings):
     stream_token_secret: SecretStr = SecretStr("dev-only-insecure-stream-token-secret-0001")
     stream_token_replay_s: int = Field(default=900, ge=0)  # 15-minute replay window
 
+    # --- Verifier (Phase 4 / former 3.1). The cap is stated in the prompt and the feedback. ---
+    verifier_max_citations: int = Field(default=20, ge=4, le=60)
+
+    # --- Research agent bounds (plan §19, ADR-0007). Every bound has a flag and a test. ---
+    agent_step_limit: int = Field(default=4, ge=1, le=10)
+    agent_max_tool_calls: int = Field(default=10, ge=1, le=30)
+    agent_max_consecutive_tool_errors: int = Field(default=3, ge=1, le=10)
+    agent_max_context_tokens: int = Field(default=40_000, ge=4_000)  # replayed input per step
+    agent_max_output_tokens_total: int = Field(default=12_000, ge=1_000)  # summed over steps
+    agent_max_tokens: int = Field(default=4_096, ge=256)  # per agent step
+    agent_effort: str = "low"
+    agent_gather_budget_s: float = Field(default=35.0, gt=0)
+    evidence_pool_max: int = Field(default=40, ge=1)
+
+    # --- Governed tools and MCP (plan §17-18, ADR-0006) ---
+    tool_timeout_s: float = Field(default=8.0, gt=0)
+    tool_statement_timeout_ms: int = Field(default=5_000, ge=100)
+    obs_max_tokens: int = Field(default=1_000, ge=100)  # model-visible observation per call
+    tools_transport: str = "inprocess"  # inprocess | http (Streamable HTTP over loopback)
+    mcp_public: bool = False  # /mcp accepts loopback clients only unless true
+    mcp_base_url: str = "http://127.0.0.1:8000/mcp"
+    # Dedicated HS256 key for run-scoped capability tokens (aud=mcp). Dev default refused in prod.
+    mcp_token_key: SecretStr = SecretStr("dev-only-insecure-mcp-capability-key-00001")
+
     @model_validator(mode="after")
     def _finalize_fits_the_reap_margin(self) -> Self:
         if self.run_finalize_timeout_s >= self.run_reap_margin_s:
@@ -193,6 +217,13 @@ def check_production_secrets(settings: Settings) -> None:
         raise ValueError("MS_STREAM_TOKEN_SECRET must be at least 32 bytes")
     if settings.env == "prod" and secret.startswith("dev-only"):
         raise ValueError("MS_STREAM_TOKEN_SECRET must be set in production")
+    mcp_key = settings.mcp_token_key.get_secret_value()
+    if len(mcp_key.encode()) < 32:
+        raise ValueError("MS_MCP_TOKEN_KEY must be at least 32 bytes")
+    if settings.env == "prod" and mcp_key.startswith("dev-only"):
+        raise ValueError("MS_MCP_TOKEN_KEY must be set in production")
+    if mcp_key == secret:
+        raise ValueError("MS_MCP_TOKEN_KEY must differ from MS_STREAM_TOKEN_SECRET")
 
 
 @lru_cache(maxsize=1)

@@ -15,6 +15,7 @@ def _settings(**overrides: object) -> Settings:
         "redis_url": None,
         "log_json": False,
         "stream_token_secret": SecretStr("unit-test-stream-token-secret-0123456789"),
+        "mcp_token_key": SecretStr("unit-test-mcp-capability-key-0123456789ab"),
     }
     base.update(overrides)
     return Settings(**base)  # type: ignore[arg-type]
@@ -86,5 +87,22 @@ def test_short_or_dev_stream_secrets_are_refused() -> None:
             _settings(
                 env="prod",
                 stream_token_secret=SecretStr("dev-only-insecure-stream-token-secret-0001"),
+            )
+        )
+
+
+def test_short_dev_or_shared_mcp_keys_are_refused() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="MS_MCP_TOKEN_KEY must be at least 32 bytes"):
+        create_app(_settings(mcp_token_key=SecretStr("short")))
+    with pytest.raises(ValueError, match="MS_MCP_TOKEN_KEY must differ"):
+        create_app(_settings(mcp_token_key=SecretStr("unit-test-stream-token-secret-0123456789")))
+    with pytest.raises(ValueError, match="MS_MCP_TOKEN_KEY must be set in production"):
+        create_app(
+            _settings(
+                env="prod",
+                stream_token_secret=SecretStr("prod-stream-token-secret-0123456789abcdef"),
+                mcp_token_key=SecretStr("dev-only-insecure-mcp-capability-key-00001"),
             )
         )

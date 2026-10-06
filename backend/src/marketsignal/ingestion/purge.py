@@ -84,6 +84,9 @@ _PACK_RUNS = (
     "SELECT id FROM query_runs WHERE workspace_id = :ws AND EXISTS ("
     "  SELECT 1 FROM unnest(pack_handles) h WHERE h LIKE :prefix)"
 )
+_DELETE_ATTEMPTS = (
+    f"DELETE FROM verification_attempts WHERE workspace_id = :ws AND query_run_id IN ({_PACK_RUNS})"  # noqa: S608 - constant SQL
+)
 
 
 async def _purge_run_artifacts(
@@ -141,5 +144,10 @@ async def _purge_run_artifacts(
     )
     await session.execute(
         text(f"DELETE FROM run_events WHERE workspace_id = :ws AND run_id IN ({_PACK_RUNS})"),  # noqa: S608 - constant SQL
+        params,
+    )
+    # Verification reports quote rejected model spans, which can quote the purged evidence.
+    await session.execute(
+        text(_DELETE_ATTEMPTS),
         params,
     )

@@ -428,3 +428,48 @@ async def test_nothing_is_appended_after_done(harness: Harness, app_engine: Asyn
     assert await store.append_event(factory, scope, run_id, 2, "done", {}) is None
     assert await store.append_event(factory, scope, run_id, 3, "status", {}) is None
     assert [e.type for e in await store.load_events(factory, scope, run_id, 0)] == ["done"]
+
+
+async def test_purge_deletes_verification_reports_of_runs_that_used_the_source(
+    harness: Harness, app_engine: AsyncEngine
+) -> None:
+    """Reports quote rejected model spans (which can quote evidence): purge removes them for
+    every run whose pack held the source, and leaves other runs' reports alone."""
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    ws = await harness.create_workspace()
+    await _seed_sections(harness, ws, "MEMO", ("Fit", FACT))
+    _, used = await _ask(harness, ws, QUESTION)
+    await _stream(harness, used["stream_url"])
+    _, other = await _ask(harness, ws, QUESTION, source_classes=["financial"])  # empty pack
+    await _stream(harness, other["stream_url"])
+
+    async def reports(run_id: str) -> int:
+        async with app_engine.begin() as conn:
+            await _scoped(conn, ws)
+            return int(
+                (
+                    await conn.execute(
+                        text(
+                            "SELECT count(*) FROM verification_attempts "
+                            "WHERE query_run_id = CAST(:r AS uuid)"
+                        ),
+                        {"r": run_id},
+                    )
+                ).scalar_one()
+            )
+
+    async with app_engine.begin() as conn:
+        await _scoped(conn, ws)
+        for run_id in (used["run_id"], other["run_id"]):
+            await conn.execute(
+                text(
+                    "INSERT INTO verification_attempts (workspace_id, query_run_id, attempt, "
+                    "disposition, report) SELECT workspace_id, id, 1, 'repaired', "
+                    "CAST(:p AS jsonb) FROM query_runs WHERE id = CAST(:r AS uuid)"
+                ),
+                {"r": run_id, "p": json.dumps({"rejected": [{"span": RETURNS[:40]}]})},
+            )
+    assert await reports(used["run_id"]) == 1
+    await _purge(harness, ws, "MEMO")
+    assert await reports(used["run_id"]) == 0
+    assert await reports(other["run_id"]) == 1
