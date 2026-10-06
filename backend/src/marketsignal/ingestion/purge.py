@@ -104,6 +104,11 @@ async def _purge_run_artifacts(
         "code": source_code,
         "prefix": f"{scope.workspace_code}/{source_code}@v%",
     }
+    # Lock the affected runs before touching anything they write: a run's text-bearing write
+    # holds FOR KEY SHARE on its own row while it re-checks the pack's purge state, so it either
+    # commits before this lock (and the statements below remove what it wrote) or waits for this
+    # transaction and then sees the purged version (runs.store module docstring).
+    await session.execute(text(f"{_PACK_RUNS} ORDER BY id FOR UPDATE"), params)
     await session.execute(
         text(
             "UPDATE conversations c SET rolling_summary = '', recent_questions = '{}', "  # noqa: S608 - constant SQL

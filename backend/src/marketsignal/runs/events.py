@@ -44,6 +44,9 @@ EVENT_TYPES = frozenset(
 )
 
 
+_DRAFT_TYPES = frozenset({"token", "citation"})
+
+
 class EventAfterDoneError(RuntimeError):
     """An event was emitted after the terminal ``done``."""
 
@@ -71,6 +74,9 @@ class EventWriter:
         self._last_flush = time.monotonic()
         self.tokens_emitted = 0
         self._uncertain = False  # the last write may or may not have committed
+        # The store withheld a text event (a pack source was purged): later draft text is
+        # dropped here, not stored as one more notice each (runs.store.append_event).
+        self.withheld = False
 
     async def _max_seq(self) -> int:
         async with scoped_session(self._factory, self._scope) as session:
@@ -90,6 +96,8 @@ class EventWriter:
             raise EventAfterDoneError(event_type)
         if event_type not in EVENT_TYPES:
             raise ValueError(f"unknown event type {event_type}")
+        if self.withheld and event_type in _DRAFT_TYPES:
+            return
         if self._uncertain:
             self.seq = max(self.seq, await self._max_seq())
             self._uncertain = False
@@ -101,12 +109,21 @@ class EventWriter:
             **payload,
         }
         try:
-            await store.append_event(self._factory, self._scope, self.run_id, seq, event_type, body)
+            stored = await store.append_event(
+                self._factory, self._scope, self.run_id, seq, event_type, body
+            )
         except BaseException:
             self._uncertain = True
             raise
+        if stored is None:  # the log already ends with ``done``: nothing more is ever stored
+            self.done = True
+            if event_type == "done":
+                return
+            raise EventAfterDoneError(event_type)
         self.seq = seq
-        if event_type == "done":
+        if stored != event_type:  # a text event stored as the withheld-content warning
+            self.withheld = True
+        elif event_type == "done":
             self.done = True
         elif event_type == "final":
             self.final_emitted = True
@@ -117,7 +134,7 @@ class EventWriter:
     async def flush_tokens(self) -> None:
         for attempt in sorted(self._pending):
             text_ = self._pending.pop(attempt)  # popped first: a failed write is never re-sent
-            if text_:
+            if text_ and not self.withheld:
                 self.draft_open = True  # conservatively: an interrupted write may have landed
                 await self._write("token", {"attempt": attempt, "text": text_})
                 self.tokens_emitted += 1

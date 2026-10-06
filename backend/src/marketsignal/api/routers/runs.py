@@ -39,6 +39,7 @@ from marketsignal.runs.executor import RunRequest
 from marketsignal.runs.reaper import (
     done_seq,
     is_overdue,
+    live_run_ids,
     orphan_after_s,
     reap_run,
     synthesized_done,
@@ -244,7 +245,11 @@ async def run_events(
                     )
                 return  # complete: the client already has done
             if is_overdue(run, settings) and await reap_run(
-                factory, scope, run_id, orphan_after_s(settings)
+                factory,
+                scope,
+                run_id,
+                orphan_after_s(settings),
+                exclude=live_run_ids(request.app.state.run_tasks),  # live here: not an orphan
             ):
                 continue  # the orphan now has its done
         await broker.wait(run_id, settings.sse_poll_interval_s)

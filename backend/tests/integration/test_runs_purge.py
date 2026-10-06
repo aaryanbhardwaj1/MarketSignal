@@ -291,3 +291,140 @@ async def test_failed_conversation_update_does_not_fail_a_finalized_run(
     assert stored["status"] == "completed"
     assert stored["cited_handles"]
     assert "CONVERSATION_STATE_NOT_UPDATED" in stored["degradation_flags"]
+
+
+# --- review follow-ups: withheld flood, re-upload, per-run locking, nothing after done ----------
+
+
+async def _store_ctx(
+    h: Harness, engine: AsyncEngine, ws: str, conversation: str
+) -> tuple[Any, WorkspaceScope, uuid.UUID]:
+    """(session factory, scope, a fresh in-flight run) for driving ``runs.store`` directly."""
+    factory = h.client._transport.app.state.session_factory  # type: ignore[attr-defined]
+    async with engine.begin() as conn:
+        ws_id = (
+            await conn.execute(text("SELECT id FROM workspaces WHERE code = :c"), {"c": ws})
+        ).scalar_one()
+    scope = WorkspaceScope(uuid.UUID(str(ws_id)), ws)
+    run_id = await store.create_run(
+        factory,
+        scope,
+        conversation_id=uuid.UUID(conversation),
+        question="q",
+        mode="standard",
+        persona="general",
+        config_hash="x",
+        prompt_version="x",
+    )
+    return factory, scope, run_id
+
+
+def _items(handles: list[str]) -> list[tuple[str, str]]:
+    return [(h, h.split("/", 1)[1].split("@v", 1)[0]) for h in handles]
+
+
+async def test_withheld_draft_stops_generation_without_a_warning_flood(
+    harness: Harness, app_engine: AsyncEngine
+) -> None:
+    long_answer = GOOD.replace("other age groups.", "other age groups. " * 60)
+    fake = FakeLLM([ScriptedResponse(text=long_answer, chunk_size=4, delay_s=0.02)])
+    _install(harness, fake)  # streaming it all would take ~6 s
+    ws = await harness.create_workspace()
+    await _seed_sections(harness, ws, "MEMO", ("Fit", FACT))
+    await _seed_sections(harness, ws, "NOTES", ("Traffic", OTHER))
+    _, run = await _ask(harness, ws, QUESTION)
+    await _wait_for_tokens(app_engine, ws, run["run_id"])
+    started = asyncio.get_running_loop().time()
+    await _purge(harness, ws, "MEMO")
+    events = await _stream(harness, run["stream_url"])
+    assert asyncio.get_running_loop().time() - started < 4  # generation was abandoned
+    notices = [
+        e
+        for e in events
+        if e["event"] == "warning" and e["data"]["code"] == "SOURCE_DELETED_DURING_RUN"
+    ]
+    assert 1 <= len(notices) <= 2
+    final = next(e["data"] for e in events if e["event"] == "final")
+    assert all(c["source_code"] == "NOTES" for c in final["citations"])
+    assert events[-1]["data"]["termination_state"] != "completed"
+    assert await _events_quoting(app_engine, ws, run["run_id"], "27 percent") == 0
+
+
+async def test_reupload_after_purge_does_not_revive_the_purged_version(
+    harness: Harness, app_engine: AsyncEngine
+) -> None:
+    _install(harness, FakeLLM([GOOD]))
+    ws = await harness.create_workspace()
+    await _seed_sections(harness, ws, "MEMO", ("Fit", FACT))
+    conversation, first = await _ask(harness, ws, QUESTION)
+    await _stream(harness, first["stream_url"])
+    pack = (await _run(harness, ws, first["run_id"]))["pack_handles"]
+    assert pack
+    assert all("/MEMO@v1:" in h for h in pack)
+    factory, scope, run_id = await _store_ctx(harness, app_engine, ws, conversation)
+    assert await store.freeze_pack(factory, scope, run_id, items=_items(pack)) == set()
+
+    await _purge(harness, ws, "MEMO")  # run in flight, pack frozen on MEMO@v1 ...
+    await _seed_sections(harness, ws, "MEMO", ("Returns", RETURNS))  # ... MEMO is back as v2
+
+    stored = await store.append_event(
+        factory, scope, run_id, 1, "token", {"attempt": 1, "text": FACT}
+    )
+    assert stored == "warning"
+    card = {"handle": pack[0], "source_code": "MEMO"}
+    outcome = await store.persist_answer(
+        factory,
+        scope,
+        conversation_id=uuid.UUID(conversation),
+        run_id=run_id,
+        content=FACT,
+        citations=[card],
+        sections={},
+        status="complete",
+        model=None,
+        usage={},
+    )
+    assert outcome.message_id is None
+    assert outcome.purged_codes == frozenset({"MEMO"})
+    _, _, late_run = await _store_ctx(harness, app_engine, ws, conversation)
+    assert await store.freeze_pack(factory, scope, late_run, items=_items(pack)) == {"MEMO"}
+    assert await _events_quoting(app_engine, ws, str(run_id), "27 percent") == 0
+
+
+async def test_text_events_do_not_lock_shared_source_rows(
+    harness: Harness, app_engine: AsyncEngine, owner_engine: AsyncEngine
+) -> None:
+    _install(harness, FakeLLM([GOOD]))
+    ws = await harness.create_workspace()
+    await _seed_sections(harness, ws, "MEMO", ("Fit", FACT))
+    conversation, first = await _ask(harness, ws, QUESTION)
+    await _stream(harness, first["stream_url"])
+    pack = (await _run(harness, ws, first["run_id"]))["pack_handles"]
+    factory, scope, run_id = await _store_ctx(harness, app_engine, ws, conversation)
+    await store.freeze_pack(factory, scope, run_id, items=_items(pack))
+    async with owner_engine.connect() as conn, conn.begin():
+        await _scoped(conn, ws)
+        await conn.execute(
+            text(
+                "SELECT id FROM sources WHERE workspace_id = :ws AND source_code = 'MEMO' "
+                "FOR UPDATE"
+            ),
+            {"ws": scope.workspace_id},
+        )
+        stored = await asyncio.wait_for(
+            store.append_event(factory, scope, run_id, 1, "token", {"attempt": 1, "text": "x"}),
+            timeout=3,
+        )
+    assert stored == "token"
+
+
+async def test_nothing_is_appended_after_done(harness: Harness, app_engine: AsyncEngine) -> None:
+    ws = await harness.create_workspace()
+    created = await harness.client.post(f"/api/workspaces/{ws}/conversations", json={})
+    factory, scope, run_id = await _store_ctx(
+        harness, app_engine, ws, created.json()["conversation_id"]
+    )
+    assert await store.append_event(factory, scope, run_id, 1, "done", {}) == "done"
+    assert await store.append_event(factory, scope, run_id, 2, "done", {}) is None
+    assert await store.append_event(factory, scope, run_id, 3, "status", {}) is None
+    assert [e.type for e in await store.load_events(factory, scope, run_id, 0)] == ["done"]

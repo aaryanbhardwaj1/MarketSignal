@@ -27,7 +27,7 @@ class _FakeLog:
 
     async def append(
         self, _f: Any, _s: Any, _r: Any, seq: int, event_type: str, payload: dict[str, Any]
-    ) -> None:
+    ) -> str | None:
         if seq in self.rows:
             raise RuntimeError(f"duplicate seq {seq}")
         if self.fail_next is not None:
@@ -37,6 +37,7 @@ class _FakeLog:
                 self.commit_then_fail = False
             raise exc
         self.rows[seq] = (event_type, payload)
+        return event_type
 
 
 @pytest.fixture
@@ -152,3 +153,27 @@ def test_synthesized_done_reflects_the_stored_run() -> None:
     orphan = synthesized_done({**run, "termination_state": None, "status": "running"}, seq=1)
     assert orphan["termination_state"] == "interrupted"
     assert "RUN_INTERRUPTED" in orphan["flags"]
+
+
+def test_finalize_timeout_must_fit_inside_the_reap_margin() -> None:
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError, match="run_finalize_timeout_s"):
+        Settings(run_finalize_timeout_s=60, run_reap_margin_s=60)  # type: ignore[call-arg]
+    ok = Settings(run_finalize_timeout_s=20, run_reap_margin_s=60)  # type: ignore[call-arg]
+    assert ok.run_finalize_timeout_s < ok.run_reap_margin_s
+
+
+async def test_live_run_ids_lists_only_unfinished_tasks() -> None:
+    from marketsignal.runs.reaper import live_run_ids
+
+    live, finished = uuid.uuid4(), uuid.uuid4()
+    blocker = asyncio.Event()
+    running = asyncio.create_task(blocker.wait())
+    done = asyncio.create_task(asyncio.sleep(0))
+    await done
+    try:
+        assert live_run_ids({live: running, finished: done}) == frozenset({live})
+    finally:
+        blocker.set()
+        await running

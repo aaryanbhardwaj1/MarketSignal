@@ -28,7 +28,7 @@ from marketsignal.retrieval.rerank import RerankExecutor
 from marketsignal.retrieval.types import RetrievalConfig
 from marketsignal.runs.broker import RunBroker
 from marketsignal.runs.executor import StandardRunExecutor
-from marketsignal.runs.reaper import orphan_after_s, reap_interrupted_runs
+from marketsignal.runs.reaper import live_run_ids, orphan_after_s, reap_interrupted_runs
 from marketsignal.telemetry.logging import configure_logging, get_logger
 
 log = get_logger(__name__)
@@ -108,7 +108,9 @@ def _lazy_llm(settings: Settings) -> Callable[[], LLMProvider]:
 async def _reap(app: FastAPI) -> None:
     try:
         reaped = await reap_interrupted_runs(
-            app.state.session_factory, orphan_after_s(app.state.settings)
+            app.state.session_factory,
+            orphan_after_s(app.state.settings),
+            exclude=live_run_ids(app.state.run_tasks),
         )
     except Exception as exc:
         log.warning("run_reaper_skipped", reason=type(exc).__name__)

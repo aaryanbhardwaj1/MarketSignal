@@ -2,21 +2,35 @@
 
 Every function opens its own short scoped transaction (RLS + explicit workspace predicate).
 
-Purge always wins (ADR-0016). ``ingestion.purge.purge_source`` takes ``FOR UPDATE`` on the
-source row first and, in the same transaction, redacts answers, deletes run events and resets
-conversation summaries for every run whose ``query_runs.pack_handles`` include the source. Every
-write here that can carry evidence text share-locks (``FOR SHARE``) the sources behind it and
-re-checks ``deleted_at`` in the *same* transaction as the write, so for each such write either:
+Purge always wins (ADR-0016). Nothing a run stores may outlive the purge of a source version
+in its frozen evidence pack (``query_runs.pack_handles``). Purge state is read from
+``source_versions.status = 'purged'`` for the pack's *versions*, never from
+``sources.deleted_at``: re-uploading a purged source restores the source row but leaves the
+purged version purged, so a pack frozen on ``X@v1`` stays guarded after ``X@v2`` arrives.
 
-* it commits first, and the purge (blocked on the row lock until then; its statements read
-  after our commit) sees the write and removes it; or
-* the purge commits first, and the write (blocked on the row lock until then; a locking read in
-  READ COMMITTED returns the latest committed row) sees ``deleted_at`` and does not store it.
+``ingestion.purge.purge_source`` runs in one transaction: ``FOR UPDATE`` on the source row,
+versions marked purged, then (``_purge_run_artifacts``) ``FOR UPDATE`` on every
+``query_runs`` row whose pack includes the source, and only then the conversation reset, the
+answer redaction and the run-event delete. The run side locks per run, never shared rows:
 
-The writes covered: ``freeze_pack`` (records ``pack_handles`` before any event or model call can
-quote the pack, dropping sources purged since the pack was read), ``append_event`` for
-text-bearing events, ``persist_answer`` (every pack source, cited or not) and
-``advance_conversation_state`` (the rolling summary later prompts are built from).
+* **Freezing the pack** (``freeze_pack``, once per run) share-locks the pack's ``sources``
+  rows, then reads the versions' purge state, then writes ``pack_handles``. If the purge holds
+  the source lock, the freeze waits until it commits and then sees the purged version (each
+  READ COMMITTED statement takes a new snapshot), so it drops it. If the freeze holds the lock,
+  the purge waits at its first statement and its later ``query_runs`` lock sees the committed
+  ``pack_handles``. So either the purge locks this run, or the freeze has dropped the source.
+  Nothing can quote the pack before this commits.
+* **Every later write that can carry evidence text** (``append_event`` for token / citation /
+  final, ``persist_answer``, ``advance_conversation_state``) first takes ``FOR KEY SHARE`` on
+  the run's own ``query_runs`` row (it conflicts with the purge's ``FOR UPDATE``), *then* reads
+  the pack versions' purge state, then writes, all in one transaction. If the write gets the
+  lock first, the purge waits for it to commit, and the purge's redaction, reset and delete
+  statements (run later, with later snapshots) remove what it wrote. If the purge gets the lock
+  first, the write waits until the purge commits and then sees the purged version, so it
+  withholds the text.
+
+The source rows are therefore never locked per token. The only contention is a run with
+itself, or with a purge that actually concerns it.
 """
 
 from __future__ import annotations
@@ -90,39 +104,50 @@ class PersistOutcome:
     purged_codes: frozenset[str] = frozenset()  # every purged pack/cited source code
 
 
-async def _purged_codes(
-    session: AsyncSession, scope: WorkspaceScope, codes: Sequence[str]
+# Version number of a canonical handle "WS/CODE@vN:LOCATOR".
+_HANDLE_VERSION_SQL = "CAST(split_part(split_part(h, '@v', 2), ':', 1) AS integer)"
+
+
+async def _purged_pack_codes(
+    session: AsyncSession, scope: WorkspaceScope, handles: Sequence[str]
 ) -> set[str]:
-    """Share-lock the given sources (purge takes ``FOR UPDATE``) and return the purged ones."""
-    wanted = sorted(set(codes))
-    if not wanted:
+    """Source codes whose version behind any of ``handles`` is purged (callers hold a lock that
+    orders this read after any purge of those versions; see the module docstring)."""
+    if not handles:
         return set()
-    rows = (
-        await session.execute(
-            text(
-                "SELECT source_code, deleted_at FROM sources WHERE workspace_id = :ws "
-                "AND source_code = ANY(CAST(:codes AS text[])) ORDER BY id FOR SHARE"
-            ),
-            {"ws": scope.workspace_id, "codes": wanted},
-        )
-    ).all()
-    alive = {r[0] for r in rows if r[1] is None}
-    return {c for c in wanted if c not in alive}
+    rows = await session.execute(
+        text(
+            f"SELECT DISTINCT s.source_code FROM unnest(CAST(:handles AS text[])) h "  # noqa: S608 - constant SQL
+            f"JOIN sources s ON s.workspace_id = :ws AND s.source_code = {_HANDLE_CODE_SQL} "
+            "JOIN source_versions v ON v.source_id = s.id "
+            f"AND v.version = {_HANDLE_VERSION_SQL} WHERE v.status = 'purged'"
+        ),
+        {"ws": scope.workspace_id, "handles": sorted(set(handles))},
+    )
+    return {str(r[0]) for r in rows.all()}
 
 
-async def _run_pack_purged(session: AsyncSession, scope: WorkspaceScope, run_id: uuid.UUID) -> bool:
-    """Share-lock the sources of the run's frozen pack; True if any of them was purged."""
-    rows = (
+async def _lock_run_pack(
+    session: AsyncSession, scope: WorkspaceScope, run_id: uuid.UUID
+) -> list[str]:
+    """``FOR KEY SHARE`` on the run's own row (conflicts only with a purge's ``FOR UPDATE`` of
+    it); returns its frozen pack handles."""
+    handles = (
         await session.execute(
             text(
-                "SELECT s.deleted_at FROM sources s WHERE s.workspace_id = :ws AND s.source_code "  # noqa: S608 - constant SQL
-                f"IN (SELECT {_HANDLE_CODE_SQL} FROM query_runs r, unnest(r.pack_handles) h "
-                "WHERE r.workspace_id = :ws AND r.id = :r) ORDER BY s.id FOR SHARE OF s"
+                "SELECT pack_handles FROM query_runs WHERE workspace_id = :ws AND id = :r "
+                "FOR KEY SHARE"
             ),
             {"ws": scope.workspace_id, "r": run_id},
         )
-    ).all()
-    return any(r[0] is not None for r in rows)
+    ).scalar_one_or_none()
+    return list(handles or [])
+
+
+async def _run_pack_purged(session: AsyncSession, scope: WorkspaceScope, run_id: uuid.UUID) -> bool:
+    """Lock the run's row, then: was any version in its frozen pack purged?"""
+    handles = await _lock_run_pack(session, scope, run_id)
+    return bool(await _purged_pack_codes(session, scope, handles))
 
 
 def _run_assignments(fields: dict[str, Any]) -> tuple[list[str], dict[str, Any]]:
@@ -232,28 +257,37 @@ async def append_event(
     seq: int,
     event_type: str,
     payload: dict[str, Any],
-) -> None:
-    """Append one event. A text-bearing event of a run whose pack lost a source to a purge is
-    stored as a ``warning`` instead (same ``seq``, so replay stays gap-free): the purge already
-    deleted this run's earlier events and must not be outlived by later ones."""
+) -> str | None:
+    """Append one event; returns the type actually stored, or ``None`` when nothing was stored
+    because the run's log already ends with ``done`` (nothing, not even a second ``done``, may
+    follow it).
+
+    A text-bearing event of a run whose pack lost a version to a purge is stored as a
+    ``SOURCE_DELETED_DURING_RUN`` ``warning`` instead (same ``seq``): the purge already deleted
+    this run's earlier events and must not be outlived by later ones."""
     async with scoped_session(factory, scope) as session:
         if event_type in TEXT_EVENT_TYPES and await _run_pack_purged(session, scope, run_id):
             keep: dict[str, Any] = {k: payload[k] for k in ("run_id", "seq", "ts") if k in payload}
             event_type, payload = "warning", {**keep, **_WITHHELD}
-        await session.execute(
-            text(
-                "INSERT INTO run_events (workspace_id, run_id, seq, type, payload) "
-                "VALUES (:ws, :r, :s, :t, CAST(:p AS jsonb))"
-            ),
-            {
-                "ws": scope.workspace_id,
-                "r": run_id,
-                "s": seq,
-                "t": event_type,
-                "p": json.dumps(payload, default=str),
-            },
-        )
+        stored = (
+            await session.execute(
+                text(
+                    "INSERT INTO run_events (workspace_id, run_id, seq, type, payload) "
+                    "SELECT :ws, :r, :s, :t, CAST(:p AS jsonb) WHERE NOT EXISTS ("
+                    "  SELECT 1 FROM run_events WHERE workspace_id = :ws AND run_id = :r "
+                    "  AND type = 'done') RETURNING type"
+                ),
+                {
+                    "ws": scope.workspace_id,
+                    "r": run_id,
+                    "s": seq,
+                    "t": event_type,
+                    "p": json.dumps(payload, default=str),
+                },
+            )
+        ).scalar_one_or_none()
         await session.commit()
+    return None if stored is None else str(stored)
 
 
 async def load_events(
@@ -333,13 +367,22 @@ async def freeze_pack(
     **fields: Any,
 ) -> set[str]:
     """Record the run's pack (``(handle, source_code)`` pairs) as ``pack_handles``, plus any
-    other run ``fields``, under a share lock on its sources. Returns the source codes purged
-    since the pack was read; their handles are left out and the caller must drop those items
-    before any event or model call quotes the pack."""
+    other run ``fields``, under a share lock on its sources. Returns the source codes whose
+    pack version was purged since the pack was read; their handles are left out and the caller
+    must drop those items before any event or model call quotes the pack."""
     if "pack_handles" in fields:
         raise ValueError("freeze_pack derives pack_handles from items")
     async with scoped_session(factory, scope) as session:
-        gone = await _purged_codes(session, scope, [code for _, code in items])
+        codes = sorted({code for _, code in items})
+        if codes:  # serialises with purge_source's FOR UPDATE on the source row
+            await session.execute(
+                text(
+                    "SELECT id FROM sources WHERE workspace_id = :ws "
+                    "AND source_code = ANY(CAST(:codes AS text[])) ORDER BY id FOR SHARE"
+                ),
+                {"ws": scope.workspace_id, "codes": codes},
+            )
+        gone = await _purged_pack_codes(session, scope, [h for h, _ in items])
         assignments, params = _run_assignments(
             {**fields, "pack_handles": [h for h, code in items if code not in gone]}
         )
@@ -367,16 +410,16 @@ async def persist_answer(
     status: str,
     model: str | None,
     usage: dict[str, Any],
-    pack_codes: Sequence[str] = (),
 ) -> PersistOutcome:
-    """Store a *verified* answer. Every cited **and** pack source is share-locked (the answer
-    can use pack text it does not cite). If any was purged, nothing is stored; in the same
+    """Store a *verified* answer, unless a version of any pack **or** cited source was purged
+    (the answer can use pack text it does not cite; the run row is locked first, see the module
+    docstring). Then nothing is stored; in the same
     transaction the purged sources are dropped from the run's ``pack_handles`` (so the caller's
     fallback built from the survivors can be emitted) and any text-bearing event of this run is
     deleted (defence in depth: the purge already removed them). The caller falls back."""
-    codes = {c["source_code"] for c in citations} | set(pack_codes)
     async with scoped_session(factory, scope) as session:
-        gone = await _purged_codes(session, scope, sorted(codes))
+        pack = await _lock_run_pack(session, scope, run_id)
+        gone = await _purged_pack_codes(session, scope, [*pack, *(c["handle"] for c in citations)])
         if gone:
             await session.execute(
                 text(
@@ -435,7 +478,7 @@ async def advance_conversation_state(
 ) -> bool:
     """Fold a finished run into the conversation's rolling state in one transaction.
 
-    The run's pack sources are share-locked first: if any was purged the summary is left alone
+    The run's row is locked first: if a version in its pack was purged the summary is left alone
     (the purge resets it) and ``False`` is returned. The conversation row is then read
     ``FOR UPDATE`` so concurrent runs in one conversation cannot lose each other's turn."""
     async with scoped_session(factory, scope) as session:

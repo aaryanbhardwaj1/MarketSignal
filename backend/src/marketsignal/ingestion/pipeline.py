@@ -312,7 +312,19 @@ async def _flip(
             raise SourcePurgedError
         if current_id is None or current_version < version.version:
             if current_id is not None:
-                await repo.set_status(session, current_id, VersionStatus.SUPERSEDED)
+                # A purged version stays purged when its source is re-uploaded (ADR-0016): the
+                # run-side purge guard reads source_versions.status (runs.store).
+                await session.execute(
+                    text(
+                        "UPDATE source_versions SET status = :st, updated_at = now() "
+                        "WHERE id = :id AND status <> :purged"
+                    ),
+                    {
+                        "id": current_id,
+                        "st": VersionStatus.SUPERSEDED.value,
+                        "purged": VersionStatus.PURGED.value,
+                    },
+                )
             await session.execute(
                 text(
                     "UPDATE sources SET current_version_id = :v, updated_at = now() WHERE id = :s"

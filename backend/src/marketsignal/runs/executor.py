@@ -60,6 +60,7 @@ from marketsignal.runs import store
 from marketsignal.runs.broker import RunBroker
 from marketsignal.runs.conversation import next_state
 from marketsignal.runs.events import EventWriter
+from marketsignal.runs.reaper import status_for_termination
 from marketsignal.telemetry.logging import get_logger
 
 log = get_logger(__name__)
@@ -126,6 +127,10 @@ class _ToolFailureError(Exception):
         super().__init__(code)
         self.code = code
         self.message = message
+
+
+class _SourceWithheldError(Exception):
+    """The store withheld this run's draft text: a pack source was purged mid-generation."""
 
 
 # A finished run's conversation summary could not be updated (best effort after ``final``).
@@ -254,6 +259,44 @@ class StandardRunExecutor:
             raise asyncio.CancelledError
 
     async def _conclude(
+        self,
+        req: RunRequest,
+        writer: EventWriter,
+        state: _RunState,
+        started: float,
+        answer: _Answer | None,
+        outcome: _Outcome,
+    ) -> None:
+        """Publish + terminate, bounded by ``run_finalize_timeout_s`` (a DB-starved finalize must
+        not outlive the reap threshold). On expiry: a best-effort ``done`` + row update, bounded
+        by half the rest of the reap margin."""
+        settings = self._settings
+        try:
+            async with asyncio.timeout(settings.run_finalize_timeout_s):
+                await self._publish_and_terminate(req, writer, state, started, answer, outcome)
+            return
+        except TimeoutError:
+            log.error("run_finalize_timeout", run_id=str(req.run_id))
+        status, error = outcome.status, outcome.error
+        notice: tuple[str, dict[str, Any]] | None = None
+        if writer.done:  # only the row update was starved: make it match the done written
+            status = status_for_termination(termination_state(state.states))
+        elif not writer.final_emitted and status == "completed":  # the answer never went out
+            state.states.add("timeout")
+            state.flag(RUN_TIMEOUT)
+            status, error = "failed", "FinalizeTimeout"
+            notice = ("warning", {"code": RUN_TIMEOUT, "message": "The run could not finish."})
+        grace = (settings.run_reap_margin_s - settings.run_finalize_timeout_s) / 2
+        try:
+            async with asyncio.timeout(grace):
+                # done is skipped if already written (writer.done); the row update is retried.
+                await self._terminate(
+                    req, writer, state, started, status=status, error=error, notice=notice
+                )
+        except TimeoutError:
+            log.error("run_terminate_timeout", run_id=str(req.run_id))
+
+    async def _publish_and_terminate(
         self,
         req: RunRequest,
         writer: EventWriter,
@@ -511,6 +554,9 @@ class StandardRunExecutor:
                 generated = await self._generate(
                     req, writer, state, pack, summary, recent_q, attempt, feedback, started
                 )
+            except _SourceWithheldError:
+                state.flag(SOURCE_DELETED_DURING_RUN)
+                return None, report, SOURCE_DELETED_DURING_RUN
             except LLMUnavailableError as exc:
                 log.warning("llm_unavailable", run_id=str(req.run_id), reason=str(exc)[:200])
                 state.count("llm_failures")
@@ -606,6 +652,8 @@ class StandardRunExecutor:
                             out.first_token_ms = round((time.monotonic() - t0) * 1000, 1)
                             state.timings.setdefault("first_token_ms", out.first_token_ms)
                         await self._emit_gate(writer, attempt, gate.push(chunk.text), by_alias)
+                        if writer.withheld:  # a pack source was purged: stop quoting it
+                            raise _SourceWithheldError
                     else:
                         out.stop = chunk
                         state.model = chunk.model
@@ -694,7 +742,6 @@ class StandardRunExecutor:
                 status="complete",
                 model=state.model,
                 usage=state.usage,
-                pack_codes=sorted({i.source_code for i in pack.items}),
             )
             if outcome.message_id is not None:
                 break
@@ -722,11 +769,13 @@ class StandardRunExecutor:
     ) -> fallback.DeterministicAnswer:
         state.flag(SOURCE_DELETED_DURING_RUN)
         state.states.add("generation_unavailable")
-        await writer.emit(
-            "warning",
-            {"code": SOURCE_DELETED_DURING_RUN, "message": "A source was deleted."},
-        )
-        if writer.tokens_emitted:
+        if not writer.withheld:  # the store already logged the one withheld-content notice
+            await writer.emit(
+                "warning",
+                {"code": SOURCE_DELETED_DURING_RUN, "message": "A source was deleted."},
+            )
+        writer.discard_pending()
+        if writer.draft_open:
             await writer.emit("draft_reset", {"attempt": 0, "reason": "evidence_only"})
         if survivors.empty:
             return fallback.abstention(await self._present_classes(req.scope))

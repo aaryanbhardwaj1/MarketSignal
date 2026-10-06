@@ -800,3 +800,74 @@ async def test_stream_closes_an_overdue_orphan(harness: Harness, owner_engine: A
     assert _types(events) == ["done"]
     assert events[0]["data"]["termination_state"] == "interrupted"
     assert await _done_rows(owner_engine, ws, run["run_id"]) == 1
+
+
+class _BlockedExecutor:
+    """A live executor that has outlived the reap threshold (e.g. a DB-starved finalize)."""
+
+    def __init__(self, release: asyncio.Event) -> None:
+        self._release = release
+
+    async def execute(self, _req: Any) -> None:
+        await self._release.wait()
+
+
+async def test_reaper_skips_runs_still_live_in_this_process(
+    harness: Harness, owner_engine: AsyncEngine
+) -> None:
+    from marketsignal.api.app import _reap
+    from marketsignal.runs.reaper import live_run_ids, reap_run
+
+    _install(harness, FakeLLM([GOOD]))
+    app = harness.client._transport.app  # type: ignore[attr-defined]
+    release = asyncio.Event()
+    app.state.run_executor = lambda: _BlockedExecutor(release)
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT)
+    _, run = await _ask(harness, ws, "fit inconsistency share")
+    await _age_run(owner_engine, ws, run["run_id"])
+    try:
+        await _reap(app)  # the periodic reaper's pass
+        scope = await _scope_of(owner_engine, ws)
+        live = live_run_ids(app.state.run_tasks)
+        assert uuid.UUID(run["run_id"]) in live
+        assert not await reap_run(
+            app.state.session_factory, scope, uuid.UUID(run["run_id"]), 0, exclude=live
+        )
+        assert await _done_rows(owner_engine, ws, run["run_id"]) == 0
+    finally:
+        release.set()
+        await _wait_task(harness, run["run_id"])
+
+
+async def _scope_of(owner_engine: AsyncEngine, ws: str) -> Any:
+    from marketsignal.db.scope import WorkspaceScope
+
+    async with owner_engine.begin() as conn:
+        ws_id = (
+            await conn.execute(text("SELECT id FROM workspaces WHERE code = :c"), {"c": ws})
+        ).scalar_one()
+    return WorkspaceScope(uuid.UUID(str(ws_id)), ws)
+
+
+async def test_finalize_is_bounded_and_still_ends_with_one_done(harness: Harness) -> None:
+    from marketsignal.runs.executor import StandardRunExecutor
+
+    class StarvedFinish(StandardRunExecutor):
+        async def _finish(self, *args: Any, **kwargs: Any) -> Any:
+            await asyncio.sleep(30)  # e.g. pool checkout + statement timeouts under DB stress
+            return await super()._finish(*args, **kwargs)
+
+    _install(harness, FakeLLM([GOOD]))
+    _use_executor(harness, StarvedFinish, run_finalize_timeout_s=1.0, run_reap_margin_s=10.0)
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT)
+    _, run = await _ask(harness, ws, "fit inconsistency share")
+    await asyncio.wait_for(_wait_task(harness, run["run_id"]), timeout=10)
+    events = await _stream(harness, run["stream_url"])
+    _assert_single_terminal_done(events)
+    assert "final" not in _types(events)
+    assert events[-1]["data"]["termination_state"] == "timeout"
+    assert "RUN_TIMEOUT" in events[-1]["data"]["flags"]
+    stored = (await harness.client.get(f"/api/workspaces/{ws}/runs/{run['run_id']}")).json()
+    assert stored["status"] == "failed"

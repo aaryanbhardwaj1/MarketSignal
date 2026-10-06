@@ -250,7 +250,10 @@ function applyEvent(state: RunStreamState, event: RunEvent): RunStreamState {
     case "citation":
       return applyCitation(state, data);
     case "warning": {
+      // One notice per code: a run can repeat a warning (e.g. withheld draft text after a
+      // source was deleted) and the UI must not render a flood of identical notices.
       const code = str(data.code, "WARNING");
+      if (state.warnings.some((w) => w.code === code)) return state;
       return { ...state, warnings: [...state.warnings, { code, message: str(data.message) }] };
     }
     case "draft_reset":

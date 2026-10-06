@@ -160,6 +160,20 @@ describe("reduceRunEvent", () => {
     ]);
   });
 
+  it("shows each warning code once, however often the run repeats it", () => {
+    const state = foldRunEvents([
+      ev(1, "warning", { code: "SOURCE_DELETED_DURING_RUN", message: "withheld" }),
+      ev(2, "warning", { code: "UNKNOWN_ALIAS", message: "one" }),
+      ev(3, "warning", { code: "SOURCE_DELETED_DURING_RUN", message: "withheld" }),
+      ev(4, "warning", { code: "SOURCE_DELETED_DURING_RUN", message: "deleted" }),
+    ]);
+    expect(state.warnings).toEqual([
+      { code: "SOURCE_DELETED_DURING_RUN", message: "withheld" },
+      { code: "UNKNOWN_ALIAS", message: "one" },
+    ]);
+    expect(state.lastSeq).toBe(4);
+  });
+
   it("records run errors", () => {
     const state = foldRunEvents([ev(1, "error", { code: "TIMEOUT", message: "Too slow", retryable: true })]);
     expect(state.error).toEqual({ code: "TIMEOUT", message: "Too slow", retryable: true });

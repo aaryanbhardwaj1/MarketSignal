@@ -2,8 +2,10 @@
 
 A run whose process died never emitted ``done``; its stream would hang and its row would stay
 ``running``. A run still ``running`` past ``run_deadline_s + run_reap_margin_s`` is an orphan:
-no live executor outlives its deadline (finalization after the deadline is bounded DB work, well
-inside the margin), so the age condition is safe with several API processes. The reaper runs at
+no live executor outlives it: finalization after the deadline is bounded by
+``run_finalize_timeout_s`` plus a best-effort conclusion of at most half the rest of the margin
+(validated ``< run_reap_margin_s``), so the age condition is safe with several API processes.
+Runs still live in *this* process (``live_run_ids``) are excluded outright. The reaper runs at
 startup, periodically from the app lifespan, and on demand from a stream that finds its run
 overdue.
 
@@ -16,9 +18,10 @@ overdue.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import uuid
-from collections.abc import Mapping
+from collections.abc import Collection, Mapping
 from datetime import UTC, datetime
 from typing import Any
 
@@ -33,6 +36,12 @@ ORPHAN_AFTER_S = 120  # fallback when no settings are given
 INTERRUPTED = "interrupted"
 RUN_INTERRUPTED = "RUN_INTERRUPTED"
 _FAILED = frozenset({"timeout", "tool_failure"})
+
+
+def live_run_ids(tasks: Mapping[uuid.UUID, asyncio.Task[Any]]) -> frozenset[uuid.UUID]:
+    """Runs whose executor is still running in *this* process: never orphans, whatever their
+    age (a DB-starved finalize may outlive the threshold); the reaper must leave them alone."""
+    return frozenset(run_id for run_id, task in tasks.items() if not task.done())
 
 
 def orphan_after_s(settings: Settings) -> float:
@@ -125,6 +134,7 @@ async def _reap_scope(
     scope: WorkspaceScope,
     older_than_s: float,
     run_id: uuid.UUID | None = None,
+    exclude: Collection[uuid.UUID] = (),
 ) -> int:
     reaped = 0
     async with scoped_session(factory, scope) as session:
@@ -143,6 +153,8 @@ async def _reap_scope(
             )
         ).all()
         for rid, done in rows:
+            if uuid.UUID(str(rid)) in exclude:
+                continue
             if await _reap_one(session, scope, rid, dict(done) if done is not None else None):
                 reaped += 1
         await session.commit()
@@ -173,19 +185,28 @@ def is_overdue(run: Mapping[str, Any], settings: Settings) -> bool:
 
 
 async def reap_run(
-    factory: SessionFactory, scope: WorkspaceScope, run_id: uuid.UUID, older_than_s: float
+    factory: SessionFactory,
+    scope: WorkspaceScope,
+    run_id: uuid.UUID,
+    older_than_s: float,
+    *,
+    exclude: Collection[uuid.UUID] = (),
 ) -> bool:
     """Reap one run if it is an overdue orphan (used by a stream that finds it so)."""
-    return await _reap_scope(factory, scope, older_than_s, run_id) > 0
+    return await _reap_scope(factory, scope, older_than_s, run_id, exclude) > 0
 
 
 async def reap_interrupted_runs(
-    factory: SessionFactory, older_than_s: float = ORPHAN_AFTER_S
+    factory: SessionFactory,
+    older_than_s: float = ORPHAN_AFTER_S,
+    *,
+    exclude: Collection[uuid.UUID] = (),
 ) -> int:
+    """Reap every overdue orphan; ``exclude`` lists runs still live in this process."""
     async with unscoped_session(factory) as session:
         workspaces = (await session.execute(text("SELECT id, code FROM workspaces"))).all()
     reaped = 0
     for ws_id, code in workspaces:
         scope = WorkspaceScope(uuid.UUID(str(ws_id)), str(code))
-        reaped += await _reap_scope(factory, scope, older_than_s)
+        reaped += await _reap_scope(factory, scope, older_than_s, exclude=exclude)
     return reaped

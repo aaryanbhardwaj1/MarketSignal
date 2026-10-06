@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import AliasChoices, Field, SecretStr
+from pydantic import AliasChoices, Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -161,6 +161,10 @@ class Settings(BaseSettings):
     # A run still 'running' past run_deadline_s + run_reap_margin_s is an orphan (its process
     # died): the periodic reaper and the SSE stream close it with done(interrupted).
     run_reap_margin_s: float = Field(default=60.0, ge=0)
+    # Finalization (persist -> final -> done) runs after the deadline but is bounded by this,
+    # plus a best-effort done/row update of at most half the remaining margin, so a live run is
+    # always concluded before it could be taken for an orphan.
+    run_finalize_timeout_s: float = Field(default=20.0, gt=0)
     run_reaper_interval_s: float = Field(default=60.0, gt=0)
     # SSE keep-alive: FastAPI's native EventSourceResponse sends ': ping' every 15 s (plan §21).
     sse_token_coalesce_ms: int = Field(default=100, ge=0)
@@ -168,6 +172,12 @@ class Settings(BaseSettings):
     # HS256 key: at least 32 bytes (RFC 7518 §3.2). The dev default is refused in prod.
     stream_token_secret: SecretStr = SecretStr("dev-only-insecure-stream-token-secret-0001")
     stream_token_replay_s: int = Field(default=900, ge=0)  # 15-minute replay window
+
+    @model_validator(mode="after")
+    def _finalize_fits_the_reap_margin(self) -> Self:
+        if self.run_finalize_timeout_s >= self.run_reap_margin_s:
+            raise ValueError("run_finalize_timeout_s must be less than run_reap_margin_s")
+        return self
 
 
 def check_production_secrets(settings: Settings) -> None:
