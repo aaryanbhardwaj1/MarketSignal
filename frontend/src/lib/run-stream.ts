@@ -6,7 +6,7 @@
  * greater than the last applied one is dropped. `done` is terminal; nothing after it is applied.
  * `final` is the source of truth and replaces the streamed draft entirely.
  */
-import type { CitationCard } from "./api/types";
+import type { AnyCitationCard } from "./api/types";
 
 export const RUN_EVENT_TYPES = [
   "run_started",
@@ -43,6 +43,19 @@ export interface AliasCitation {
   locator_label: string;
 }
 
+/** `[R#]` alias binding for a computed result, announced by a `citation` event with kind "result". */
+export interface ResultAliasCitation {
+  kind: "result";
+  alias: string;
+  result_id: string;
+  source_code: string;
+  dataset: string;
+  op: string;
+  summary: string;
+}
+
+export type AnyAliasCitation = AliasCitation | ResultAliasCitation;
+
 export const ROUTE_MODES = ["standard", "research"] as const;
 export type RouteMode = (typeof ROUTE_MODES)[number];
 
@@ -57,7 +70,7 @@ export interface RunRoute {
   cues: string[];
 }
 
-export const TOOL_KINDS = ["search", "keyword", "lookup", "catalog", "other"] as const;
+export const TOOL_KINDS = ["search", "keyword", "lookup", "catalog", "analytics", "other"] as const;
 export type ToolKind = (typeof TOOL_KINDS)[number];
 export type ToolStatus = "running" | "ok" | "error" | "denied" | "timeout";
 
@@ -93,7 +106,7 @@ export interface EvidenceSummary {
 export interface FinalAnswer {
   message_id: string;
   content: string;
-  citations: CitationCard[];
+  citations: AnyCitationCard[];
   sections: unknown;
   verification: unknown;
 }
@@ -130,7 +143,7 @@ export interface RunStreamState {
   /** Generation attempt the draft belongs to; tokens from older attempts are ignored. */
   attempt: number;
   draft: string;
-  citationsByAlias: Readonly<Record<string, AliasCitation>>;
+  citationsByAlias: Readonly<Record<string, AnyAliasCitation>>;
   warnings: readonly RunWarning[];
   evidence: EvidenceSummary | null;
   /** Reason of the latest `draft_reset`, if any (e.g. `verification_failed`, `evidence_only`). */
@@ -170,12 +183,17 @@ const num = (value: unknown, fallback = 0): number =>
 const strList = (value: unknown): string[] =>
   Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
 
-function isCard(value: unknown): value is CitationCard {
-  return isRecord(value) && typeof value.handle === "string" && value.handle.length > 0;
+function isCard(value: unknown): value is AnyCitationCard {
+  if (!isRecord(value)) return false;
+  if (value.kind === "result") return typeof value.result_id === "string" && value.result_id.length > 0;
+  return typeof value.handle === "string" && value.handle.length > 0;
 }
 
-/** Validates the citation array of a `final` event or a stored message (drops malformed cards). */
-export function parseCards(value: unknown): CitationCard[] {
+/**
+ * Validates the citation array of a `final` event or a stored message (drops malformed cards).
+ * Evidence cards need a handle (older stored cards have no `kind`); result cards need a result_id.
+ */
+export function parseCards(value: unknown): AnyCitationCard[] {
   return Array.isArray(value) ? value.filter(isCard) : [];
 }
 
@@ -278,18 +296,38 @@ function applyToken(state: RunStreamState, data: Record<string, unknown>): RunSt
   return { ...state, draft: state.draft + text };
 }
 
-function applyCitation(state: RunStreamState, data: Record<string, unknown>): RunStreamState {
-  const attempt = num(data.attempt, state.attempt);
+function parseAliasCitation(data: Record<string, unknown>): AnyAliasCitation | null {
   const alias = str(data.alias);
+  if (!alias) return null;
+  if (data.kind === "result") {
+    const resultId = str(data.result_id);
+    if (!resultId) return null;
+    return {
+      kind: "result",
+      alias,
+      result_id: resultId,
+      source_code: str(data.source_code),
+      dataset: str(data.dataset),
+      op: str(data.op),
+      summary: str(data.summary),
+    };
+  }
   const handle = str(data.handle);
-  if (attempt < state.attempt || !alias || !handle) return state;
-  const citation: AliasCitation = {
+  if (!handle) return null;
+  return {
     alias,
     handle,
     source_title: str(data.source_title, handle),
     source_class: str(data.source_class),
     locator_label: str(data.locator_label),
   };
+}
+
+function applyCitation(state: RunStreamState, data: Record<string, unknown>): RunStreamState {
+  const attempt = num(data.attempt, state.attempt);
+  const citation = parseAliasCitation(data);
+  if (attempt < state.attempt || !citation) return state;
+  const alias = citation.alias;
   const fresh = attempt > state.attempt;
   return {
     ...state,

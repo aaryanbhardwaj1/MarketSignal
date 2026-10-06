@@ -4,6 +4,9 @@
  * Two marker families exist:
  * - `[E3]`: run-local aliases in streamed draft text. A chip is shown only once a `citation`
  *   event bound the alias; an unbound alias renders as nothing (never the raw marker).
+ * - `[R2]` / `[[result:<uuid>]]`: computed (analytics) results, a distinct chip kind. `[R#]` is
+ *   bound only by a `citation` event of kind "result"; `[[result:<uuid>]]` needs a UUID (the
+ *   lowercase prefix never matches an evidence handle) and uses its card when one exists.
  * - `[[WS/SOURCE@vN:LOCATOR]]`: canonical handles in final / stored text. A chip uses the matching
  *   card from `citations`; a handle without a card renders as an inert "unverified" chip.
  * `[inference]` tags are lifted out too so they can be shown as a label instead of raw text.
@@ -11,24 +14,30 @@
  * Markers are swapped for private-use placeholders *before* Markdown parsing so that Markdown
  * syntax can never split or reinterpret a marker (e.g. `[E3](x)` as a link).
  */
-import type { CitationCard } from "./api/types";
-import type { AliasCitation } from "./run-stream";
+import { isResultCard, type AnyCitationCard, type CitationCard, type ResultCitationCard } from "./api/types";
+import { isUuid } from "./handles";
+import type { AliasCitation, AnyAliasCitation, ResultAliasCitation } from "./run-stream";
+
+/** What a result chip knows without fetching: the card / alias summary, or null if none. */
+export type ResultRef = ResultCitationCard | ResultAliasCitation;
 
 export type ChipToken =
   | { kind: "alias"; alias: string; citation: AliasCitation }
+  | { kind: "result"; resultId: string; ref: ResultRef | null }
   | { kind: "handle"; handle: string; card: CitationCard | null }
   | { kind: "inference" };
 
 export type MarkerSegment = { kind: "text"; text: string } | ChipToken;
 
 export interface CitationContext {
-  aliases?: Readonly<Record<string, AliasCitation>>;
-  cards?: readonly CitationCard[];
+  aliases?: Readonly<Record<string, AnyAliasCitation>>;
+  cards?: readonly AnyCitationCard[];
 }
 
-// [[HANDLE]] | [E#] | [inference] (whitespace/case tolerant, as the backend's INFERENCE_RE).
-const MARKER_RE = /\[\[([^[\]\n]{1,120})\]\]|\[(E\d{1,4})\]|\[\s*inference\s*\]/gi;
-const ALIAS_SHAPE = /^E\d{1,4}$/; // aliases are case-sensitive: `[e3]` is literal text
+// [[HANDLE]] | [E#] | [R#] | [inference] (whitespace/case tolerant, as the backend's INFERENCE_RE).
+const MARKER_RE = /\[\[([^[\]\n]{1,120})\]\]|\[([ER]\d{1,4})\]|\[\s*inference\s*\]/gi;
+const ALIAS_SHAPE = /^[ER]\d{1,4}$/; // aliases are case-sensitive: `[e3]` is literal text
+const RESULT_PREFIX = "result:";
 const INFERENCE_RE = /\s*\[\s*inference\s*\]/gi;
 
 export const PLACEHOLDER_OPEN = "";
@@ -36,20 +45,59 @@ export const PLACEHOLDER_CLOSE = "";
 const PLACEHOLDER_RE = /(\d+)/g;
 const PRIVATE_MARKS_RE = /[]/g;
 
+interface CardIndex {
+  evidence: ReadonlyMap<string, CitationCard>;
+  results: ReadonlyMap<string, ResultCitationCard>;
+}
+
+function indexCards(cards: readonly AnyCitationCard[]): CardIndex {
+  const evidence = new Map<string, CitationCard>();
+  const results = new Map<string, ResultCitationCard>();
+  for (const card of cards) {
+    if (isResultCard(card)) results.set(card.result_id, card);
+    else evidence.set(card.handle, card);
+  }
+  return { evidence, results };
+}
+
+function resolveResultHandle(handle: string, index: CardIndex): ChipToken | null {
+  if (!handle.startsWith(RESULT_PREFIX)) return null;
+  const resultId = handle.slice(RESULT_PREFIX.length).toLowerCase();
+  if (!isUuid(resultId)) return null;
+  return { kind: "result", resultId, ref: index.results.get(resultId) ?? null };
+}
+
+function resolveAlias(alias: string, ctx: CitationContext): ChipToken | null {
+  const citation = ctx.aliases?.[alias];
+  if (!citation) return null;
+  const isResult = "kind" in citation && citation.kind === "result";
+  // `[E#]` only ever resolves to evidence and `[R#]` only to a result: a mismatched binding is
+  // treated as unannounced so the two families can never be confused.
+  if (alias.startsWith("R")) {
+    return isResult ? { kind: "result", resultId: citation.result_id, ref: citation } : null;
+  }
+  return isResult ? null : { kind: "alias", alias, citation: citation as AliasCitation };
+}
+
 function resolveMarker(
   match: RegExpExecArray,
   ctx: CitationContext,
-  cards: ReadonlyMap<string, CitationCard>,
+  index: CardIndex,
 ): ChipToken | null | "literal" {
   const [, handle, alias] = match;
   if (handle !== undefined) {
     const trimmed = handle.trim();
-    return { kind: "handle", handle: trimmed, card: cards.get(trimmed) ?? null };
+    return (
+      resolveResultHandle(trimmed, index) ?? {
+        kind: "handle",
+        handle: trimmed,
+        card: index.evidence.get(trimmed) ?? null,
+      }
+    );
   }
   if (alias !== undefined) {
     if (!ALIAS_SHAPE.test(alias)) return "literal";
-    const citation = ctx.aliases?.[alias];
-    return citation ? { kind: "alias", alias, citation } : null;
+    return resolveAlias(alias, ctx);
   }
   return { kind: "inference" };
 }
@@ -59,7 +107,7 @@ function resolveMarker(
  * whitespace before them, so "growth [E9]." becomes "growth." rather than "growth .".
  */
 export function tokenizeMarkers(text: string, ctx: CitationContext = {}): MarkerSegment[] {
-  const cards = new Map((ctx.cards ?? []).map((c) => [c.handle, c] as const));
+  const index = indexCards(ctx.cards ?? []);
   const segments: MarkerSegment[] = [];
   let buffer = "";
   let last = 0;
@@ -67,7 +115,7 @@ export function tokenizeMarkers(text: string, ctx: CitationContext = {}): Marker
   for (let match = re.exec(text); match; match = re.exec(text)) {
     buffer += text.slice(last, match.index);
     last = match.index + match[0].length;
-    const token = resolveMarker(match, ctx, cards);
+    const token = resolveMarker(match, ctx, index);
     if (token === "literal") {
       buffer += match[0];
     } else if (token === null) {

@@ -62,6 +62,7 @@ describe("toolSummaryText", () => {
 
   it("prefers the server summary", () => {
     expect(toolSummaryText(step({ summary: 'Searching for "fit"' }))).toBe('Searching for "fit"');
+    expect(toolSummaryText(step({ kind: "analytics", tool: "aggregate" }))).toBe("Computing analytics");
   });
 
   it("falls back to a fixed label per kind", () => {

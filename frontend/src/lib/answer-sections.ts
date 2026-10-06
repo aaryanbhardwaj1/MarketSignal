@@ -11,6 +11,8 @@ export interface GeneratedSections {
   conflicts: string[];
   interpretation: string[];
   gaps: string[];
+  /** Sentences of `answer` that state an unknown / data gap (rendered with gap styling). */
+  answerUnknowns: string[];
 }
 
 export interface EvidenceOnlySections {
@@ -59,6 +61,7 @@ export function parseSections(raw: unknown): AnswerSections {
     conflicts: units(raw.conflicts),
     interpretation: units(raw.interpretation),
     gaps: units(raw.gaps),
+    answerUnknowns: units(raw.answer_unknowns),
   };
   const total =
     generated.answer.length +

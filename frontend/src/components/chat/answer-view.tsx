@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
-import type { CitationCard } from "@/lib/api/types";
+import { isResultCard, type AnyCitationCard, type CitationCard } from "@/lib/api/types";
 import { parseSections } from "@/lib/answer-sections";
 import { stripInference, type CitationContext } from "@/lib/citations";
 import { evidenceViewerHref } from "@/lib/handles";
@@ -12,6 +12,8 @@ interface UnitProps {
   unit: string;
   ws: string;
   citations: CitationContext;
+  /** Answer sentences the backend flagged as unknowns / data gaps. */
+  unknowns?: ReadonlySet<string>;
 }
 
 function InferenceLabel() {
@@ -22,8 +24,27 @@ function InferenceLabel() {
   );
 }
 
-/** One answer sentence: evidence units read normally; `[inference]` units are set apart. */
-function AnswerUnit({ unit, ws, citations }: UnitProps) {
+function UnknownLabel() {
+  return (
+    <span className="mr-1.5 inline-flex items-center rounded bg-slate-200/70 px-1.5 py-px align-middle text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+      Unknown / evidence gap
+    </span>
+  );
+}
+
+/**
+ * One answer sentence: evidence units read normally; `[inference]` units are set apart; a unit the
+ * backend listed in `answer_unknowns` is styled as a gap.
+ */
+function AnswerUnit({ unit, ws, citations, unknowns }: UnitProps) {
+  if (unknowns?.has(unit.trim())) {
+    return (
+      <span className="rounded bg-slate-50 px-0.5 text-slate-600">
+        <UnknownLabel />
+        <SafeMarkdown inline text={unit} ws={ws} citations={citations} />
+      </span>
+    );
+  }
   const { text, inferred } = stripInference(unit);
   if (!inferred) return <SafeMarkdown inline text={text} ws={ws} citations={citations} />;
   return (
@@ -103,7 +124,12 @@ function Banner({ tone, children }: { tone: "amber" | "slate"; children: ReactNo
   );
 }
 
-export function SourceList({ ws, cards }: { ws: string; cards: readonly CitationCard[] }) {
+export function SourceList({ ws, cards }: { ws: string; cards: readonly AnyCitationCard[] }) {
+  const evidence = useMemo(() => cards.filter((c): c is CitationCard => !isResultCard(c)), [cards]);
+  return <EvidenceSources ws={ws} cards={evidence} />;
+}
+
+function EvidenceSources({ ws, cards }: { ws: string; cards: readonly CitationCard[] }) {
   if (cards.length === 0) return null;
   return (
     <details className="text-xs text-slate-600">
@@ -134,7 +160,7 @@ export function SourceList({ ws, cards }: { ws: string; cards: readonly Citation
 export interface AnswerViewProps {
   ws: string;
   content: string;
-  citations: readonly CitationCard[];
+  citations: readonly AnyCitationCard[];
   sections: unknown;
 }
 
@@ -142,6 +168,10 @@ export interface AnswerViewProps {
 export function AnswerView({ ws, content, citations, sections }: AnswerViewProps) {
   const parsed = useMemo(() => parseSections(sections), [sections]);
   const ctx = useMemo<CitationContext>(() => ({ cards: citations }), [citations]);
+  const unknowns = useMemo(
+    () => new Set(parsed.kind === "generated" ? parsed.answerUnknowns.map((u) => u.trim()) : []),
+    [parsed],
+  );
 
   let body: ReactNode;
   if (parsed.kind === "evidence_only") {
@@ -186,7 +216,7 @@ export function AnswerView({ ws, content, citations, sections }: AnswerViewProps
             <p className="leading-relaxed">
               {parsed.answer.map((unit, i) => (
                 <span key={i}>
-                  <AnswerUnit unit={unit} ws={ws} citations={ctx} />{" "}
+                  <AnswerUnit unit={unit} ws={ws} citations={ctx} unknowns={unknowns} />{" "}
                 </span>
               ))}
             </p>

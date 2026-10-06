@@ -7,6 +7,7 @@ export const queryKeys = {
   source: (ws: string, id: string) => ["workspace", ws, "sources", id] as const,
   evidence: (ws: string, handle: string, child: string | null) =>
     ["workspace", ws, "evidence", handle, child] as const,
+  result: (ws: string, resultId: string) => ["workspace", ws, "results", resultId] as const,
   search: (ws: string, q: string, mode: SearchMode, k: number, classes: readonly SourceClass[]) =>
     ["workspace", ws, "search", q, mode, k, classes] as const,
   messages: (ws: string, conversationId: string) =>

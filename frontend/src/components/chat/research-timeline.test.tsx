@@ -35,6 +35,20 @@ describe("ResearchTimeline", () => {
     expect(html).toContain("<ol");
   });
 
+  it("labels analytics steps and shows the plain-text summary", () => {
+    const html = render([
+      step({
+        tool: "aggregate",
+        kind: "analytics",
+        summary: "Computing mean(nps) by region on SURVEY-2026:1 <b>x</b>",
+        resultCount: 5,
+      }),
+    ]);
+    expect(html).toContain("Analytics");
+    expect(html).toContain("Computing mean(nps) by region on SURVEY-2026:1 &lt;b&gt;x&lt;/b&gt;");
+    expect(render([step()])).not.toContain("Analytics");
+  });
+
   it("uses singular result and in-progress marker", () => {
     const html = render([step({ status: "running", resultCount: null, durationMs: null })]);
     expect(html).toContain("In progress");

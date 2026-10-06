@@ -38,6 +38,7 @@ const KIND_FALLBACKS: Record<string, string> = {
   keyword: "Checking exact identifiers",
   lookup: "Opening evidence items",
   catalog: "Listing sources",
+  analytics: "Computing analytics",
 };
 
 /** Plain-text label for a tool call: the server summary, else a fixed label by kind. */

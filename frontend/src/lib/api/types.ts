@@ -241,6 +241,8 @@ export interface SearchParams {
 
 /** Citation card stored with a final answer; `handle` is canonical (never a run-local alias). */
 export interface CitationCard {
+  /** Absent on cards stored before Phase 5: treat as evidence. */
+  kind?: "evidence";
   handle: string;
   source_code: string;
   source_title: string;
@@ -253,6 +255,28 @@ export interface CitationCard {
   parent_content_hash: string | null;
 }
 
+/**
+ * Citation card for a computed (analytics) result, cited as `[[result:<uuid>]]`. `handle` is only
+ * the source-version handle (no locator); it is never an evidence handle.
+ */
+export interface ResultCitationCard {
+  kind: "result";
+  result_id: string;
+  source_code: string;
+  dataset: string;
+  source_version?: number;
+  table?: string;
+  op: string;
+  summary: string;
+  handle?: string;
+}
+
+export type AnyCitationCard = CitationCard | ResultCitationCard;
+
+export function isResultCard(card: AnyCitationCard): card is ResultCitationCard {
+  return card.kind === "result";
+}
+
 export type MessageRole = "user" | "assistant";
 export type MessageStatus = "complete" | "incomplete" | "failed" | "redacted";
 
@@ -260,7 +284,7 @@ export interface ChatMessage {
   message_id: string;
   role: MessageRole;
   content: string;
-  citations: CitationCard[] | null;
+  citations: AnyCitationCard[] | null;
   /** Raw section payload; parse with lib/answer-sections.ts (shape varies by outcome). */
   sections: unknown;
   status: MessageStatus;
@@ -296,4 +320,65 @@ export interface CancelRunResult {
   run_id: string;
   cancel_requested: boolean;
   status: string;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * Phase 5: structured analytics (computed results). Values are rendered as plain text only.
+ * ------------------------------------------------------------------------------------------- */
+
+export type AnalyticsUnit =
+  | "count"
+  | "percent"
+  | "currency_usd"
+  | "number"
+  | "rating"
+  | "ratio"
+  | "date"
+  | "text";
+export type AnalyticsScale = "" | "thousand" | "million" | "billion";
+export type AnalyticsOperation = "aggregate" | "group_compare" | "filter_rows";
+
+export interface MetricValue {
+  key: string;
+  fn: string;
+  column: string | null;
+  value: number | string | null;
+  exact: string | null;
+  unit: AnalyticsUnit;
+  scale?: AnalyticsScale;
+  numerator?: number | null;
+  denominator: number;
+}
+
+export interface ResultRow {
+  group: Record<string, string | number | boolean | null>;
+  metrics: MetricValue[];
+  row_number?: number | null;
+  handle?: string | null;
+}
+
+export interface AnalyticsResult {
+  result_id: string;
+  workspace: string;
+  dataset: string;
+  source_code: string;
+  source_version: number;
+  table: string;
+  operation: AnalyticsOperation;
+  spec: Record<string, unknown>;
+  rows: ResultRow[];
+  rows_scanned: number;
+  rows_matched: number;
+  rounding: string;
+  difference?: MetricValue | null;
+  warnings: string[];
+}
+
+/** `GET /api/workspaces/{ws}/results/{result_id}`. */
+export interface ResultEnvelope {
+  kind: "result";
+  tool: string;
+  query_run_id: string | null;
+  created_at: string;
+  result: AnalyticsResult;
 }

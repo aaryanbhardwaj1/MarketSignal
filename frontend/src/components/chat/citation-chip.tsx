@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ChipToken } from "@/lib/citations";
 import { evidenceViewerHref } from "@/lib/handles";
+import { ResultChip } from "./result-chip";
 
 const CHIP =
   "mx-0.5 inline-flex max-w-[16rem] items-center gap-1 rounded-full px-2 py-0.5 align-baseline text-[11px] font-medium leading-4 ring-1 ring-inset";
@@ -17,7 +18,7 @@ interface ChipTarget {
 }
 
 /** Where a chip links to; null for a canonical handle that has no matching citation card. */
-function chipTarget(token: Exclude<ChipToken, { kind: "inference" }>): ChipTarget | null {
+function chipTarget(token: Exclude<ChipToken, { kind: "inference" | "result" }>): ChipTarget | null {
   if (token.kind === "alias") {
     const c = token.citation;
     return { handle: c.handle, title: c.source_title, locator: c.locator_label, child: null };
@@ -38,6 +39,10 @@ export function CitationChip({ token, ws }: { token: ChipToken; ws: string }) {
         Inference
       </span>
     );
+  }
+
+  if (token.kind === "result") {
+    return <ResultChip ws={ws} resultId={token.resultId} result={token.ref} />;
   }
 
   const target = chipTarget(token);

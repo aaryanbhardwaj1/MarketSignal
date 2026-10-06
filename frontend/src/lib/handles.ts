@@ -50,3 +50,8 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 export function isUuid(value: string): boolean {
   return UUID_PATTERN.test(value);
 }
+
+/** API path for a computed analytics result. */
+export function resultApiPath(workspace: string, resultId: string): string {
+  return `/api/workspaces/${encodeURIComponent(workspace)}/results/${encodeURIComponent(resultId)}`;
+}

@@ -35,7 +35,75 @@ const citation = (seq: number, alias: string, attempt = 1) =>
     locator_label: CARD.locator_label,
   });
 
+const RESULT_ID = "3f2b7c9e-8a41-4d6b-b0a1-5c2d9e7f1a30";
+const resultCitation = (seq: number, alias: string, attempt = 1) =>
+  ev(seq, "citation", {
+    attempt,
+    alias,
+    kind: "result",
+    result_id: RESULT_ID,
+    source_code: "SURVEY-2026",
+    dataset: "SURVEY-2026:1",
+    op: "aggregate",
+    summary: "mean(nps) by region",
+  });
+
+describe("computed result citations", () => {
+  it("binds an [R#] alias announced by a result citation event", () => {
+    const state = foldRunEvents([
+      resultCitation(1, "R1"),
+      citation(2, "E1"),
+      ev(3, "token", { attempt: 1, text: "NPS is 41 [R1][E1]." }),
+    ]);
+    expect(state.citationsByAlias.R1).toEqual({
+      kind: "result",
+      alias: "R1",
+      result_id: RESULT_ID,
+      source_code: "SURVEY-2026",
+      dataset: "SURVEY-2026:1",
+      op: "aggregate",
+      summary: "mean(nps) by region",
+    });
+    expect(state.citationsByAlias.E1).toMatchObject({ handle: CARD.handle });
+  });
+
+  it("ignores a result citation without a result_id", () => {
+    const state = foldRunEvents([ev(1, "citation", { attempt: 1, alias: "R1", kind: "result" })]);
+    expect(state.citationsByAlias).toEqual({});
+  });
+
+  it("keeps a result card (with only a source-version handle) in final citations", () => {
+    const resultCard = {
+      kind: "result",
+      result_id: RESULT_ID,
+      source_code: "SURVEY-2026",
+      dataset: "SURVEY-2026:1",
+      source_version: 1,
+      table: "Survey",
+      op: "aggregate",
+      summary: "mean(nps)",
+      handle: "NORTHSTAR/SURVEY-2026@v1",
+    };
+    const state = foldRunEvents([
+      ev(1, "final", { message_id: "m1", content: "x", citations: [resultCard, CARD, { kind: "result" }], sections: {} }),
+    ]);
+    expect(state.final?.citations).toEqual([resultCard, CARD]);
+  });
+});
+
 describe("reduceRunEvent", () => {
+  it("records an analytics tool step", () => {
+    const state = foldRunEvents([
+      ev(1, "tool_started", {
+        step: 1,
+        tool: "aggregate",
+        kind: "analytics",
+        summary: "Computing mean(nps) by region on SURVEY-2026:1",
+      }),
+    ]);
+    expect(state.tools[0]).toMatchObject({ kind: "analytics", tool: "aggregate" });
+  });
+
   it("folds a normal run in order", () => {
     const state = foldRunEvents([
       ev(1, "run_started", { conversation_id: "c1", persona: "generalist", mode: "standard" }),

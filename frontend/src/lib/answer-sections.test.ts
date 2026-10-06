@@ -17,6 +17,7 @@ describe("parseSections", () => {
       conflicts: [],
       interpretation: ["I [inference]."],
       gaps: ["G"],
+      answerUnknowns: [],
     });
   });
 
@@ -40,5 +41,10 @@ describe("parseSections", () => {
     expect(parseSections(null)).toEqual({ kind: "none" });
     expect(parseSections([])).toEqual({ kind: "none" });
     expect(parseSections({ answer: [] })).toEqual({ kind: "none" });
+  });
+
+  it("keeps answer_unknowns (strings only) for gap styling", () => {
+    const parsed = parseSections({ answer: ["A", "No data."], answer_unknowns: ["No data.", 4, " "] });
+    expect(parsed).toMatchObject({ kind: "generated", answerUnknowns: ["No data."] });
   });
 });

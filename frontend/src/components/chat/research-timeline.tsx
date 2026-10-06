@@ -38,6 +38,14 @@ function TimelineItem({ tool }: { tool: ToolStep }) {
       <span className="font-medium text-slate-500">Step {tool.step}</span>
       <span aria-hidden>·</span>
       {/* Plain text only: the summary may quote model-supplied text and is never parsed as markup. */}
+      {tool.kind === "analytics" && (
+        <span
+          title="Deterministic calculation over a structured table"
+          className="rounded bg-teal-50 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-teal-800 ring-1 ring-inset ring-teal-600/20"
+        >
+          Analytics
+        </span>
+      )}
       <span className="text-slate-800">{toolSummaryText(tool)}</span>
       {parts.map((part) => (
         <span key={part} className="text-slate-500">

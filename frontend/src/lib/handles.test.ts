@@ -5,6 +5,7 @@ import {
   handleAtVersion,
   isUuid,
   parseHandle,
+  resultApiPath,
 } from "./handles";
 
 const HANDLES = ["NORTHSTAR/SURVEY-2026@v1:R185", "NORTHSTAR/Q3-REVIEW@v1:SL6.N1"];
@@ -68,5 +69,14 @@ describe("isUuid", () => {
   it("accepts UUIDs only", () => {
     expect(isUuid("3ff78a09-fb48-4313-9856-c33f561913a0")).toBe(true);
     expect(isUuid("notauuid")).toBe(false);
+  });
+});
+
+describe("resultApiPath", () => {
+  it("encodes workspace and result id as single segments", () => {
+    expect(resultApiPath("NORTHSTAR", "3f2b7c9e-8a41-4d6b-b0a1-5c2d9e7f1a30")).toBe(
+      "/api/workspaces/NORTHSTAR/results/3f2b7c9e-8a41-4d6b-b0a1-5c2d9e7f1a30",
+    );
+    expect(resultApiPath("A/B", "x/y")).toBe("/api/workspaces/A%2FB/results/x%2Fy");
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { CitationCard } from "./api/types";
+import type { CitationCard, ResultCitationCard } from "./api/types";
 import {
   PLACEHOLDER_CLOSE,
   PLACEHOLDER_OPEN,
@@ -8,7 +8,7 @@ import {
   stripInference,
   tokenizeMarkers,
 } from "./citations";
-import type { AliasCitation } from "./run-stream";
+import type { AliasCitation, ResultAliasCitation } from "./run-stream";
 
 const H1 = "NORTHSTAR/SURVEY-2026@v1:R185";
 const H2 = "NORTHSTAR/Q3-REVIEW@v1:SL6.N1";
@@ -132,5 +132,91 @@ describe("stripInference", () => {
 
   it("leaves untagged units alone", () => {
     expect(stripInference(`Up 12% [[${H1}]].`)).toEqual({ text: `Up 12% [[${H1}]].`, inferred: false });
+  });
+});
+
+const RID = "3f2b7c9e-8a41-4d6b-b0a1-5c2d9e7f1a30";
+const RID2 = "9c1d2e3f-4a5b-4c6d-8e7f-0a1b2c3d4e5f";
+
+const resultCard = (id = RID): ResultCitationCard => ({
+  kind: "result",
+  result_id: id,
+  source_code: "SURVEY-2026",
+  dataset: "SURVEY-2026:1",
+  source_version: 1,
+  table: "Survey",
+  op: "aggregate",
+  summary: "mean(nps) by region",
+  handle: "NORTHSTAR/SURVEY-2026@v1",
+});
+
+const resultAlias = (name: string, id = RID): ResultAliasCitation => ({
+  kind: "result",
+  alias: name,
+  result_id: id,
+  source_code: "SURVEY-2026",
+  dataset: "SURVEY-2026:1",
+  op: "aggregate",
+  summary: "mean(nps) by region",
+});
+
+describe("tokenizeMarkers: computed results", () => {
+  it("binds [[result:<uuid>]] to its result card", () => {
+    const cards = [resultCard()];
+    const out = tokenizeMarkers(`NPS is 41 [[result:${RID}]].`, { cards });
+    expect(out).toEqual([
+      { kind: "text", text: "NPS is 41 " },
+      { kind: "result", resultId: RID, ref: cards[0] },
+      { kind: "text", text: "." },
+    ]);
+  });
+
+  it("still yields a result chip (no summary) when the card is missing", () => {
+    const out = tokenizeMarkers(`x [[result:${RID}]]`);
+    expect(out[1]).toEqual({ kind: "result", resultId: RID, ref: null });
+  });
+
+  it("treats a result marker with a non-uuid id as an unverified handle, never a result", () => {
+    const out = tokenizeMarkers("x [[result:not-a-uuid]]");
+    expect(out[1]).toEqual({ kind: "handle", handle: "result:not-a-uuid", card: null });
+  });
+
+  it("matches the result prefix case-sensitively", () => {
+    const out = tokenizeMarkers(`x [[Result:${RID}]]`);
+    expect(out[1]).toMatchObject({ kind: "handle", card: null });
+  });
+
+  it("never lets a result card satisfy an evidence handle (or vice versa)", () => {
+    const cards = [resultCard(), card(H1, "Survey")];
+    const out = tokenizeMarkers(`[[${H1}]] [[NORTHSTAR/SURVEY-2026@v1]]`, { cards });
+    expect(out[0]).toMatchObject({ kind: "handle", card: cards[1] });
+    expect(out[2]).toMatchObject({ kind: "handle", card: null });
+  });
+
+  it("binds [R1] only from a result citation event", () => {
+    const out = tokenizeMarkers("Up [R1] and [E1].", {
+      aliases: { R1: resultAlias("R1"), E1: alias("E1") },
+    });
+    expect(out.map((s) => s.kind)).toEqual(["text", "result", "text", "alias", "text"]);
+    expect(out[1]).toMatchObject({ kind: "result", resultId: RID });
+  });
+
+  it("drops an unannounced [R#] with the whitespace before it, like [E#]", () => {
+    expect(tokenizeMarkers("Up 12% [R9].", { aliases: {} })).toEqual([{ kind: "text", text: "Up 12%." }]);
+  });
+
+  it("does not confuse alias families: [R1] bound to evidence and [E1] bound to a result render nothing", () => {
+    const out = tokenizeMarkers("a [R1] b [E1]", { aliases: { R1: alias("R1"), E1: resultAlias("E1") } });
+    expect(out).toEqual([{ kind: "text", text: "a b" }]);
+  });
+
+  it("keeps lowercase [r1] as literal text", () => {
+    expect(tokenizeMarkers("see [r1]")).toEqual([{ kind: "text", text: "see [r1]" }]);
+  });
+
+  it("round-trips result chips through prepareMarkdown", () => {
+    const prepared = prepareMarkdown(`41 [[result:${RID}]] [[result:${RID2}]]`, { cards: [resultCard()] });
+    expect(prepared.tokens.map((t) => t.kind)).toEqual(["result", "result"]);
+    expect(prepared.source).toBe(`41 ${PLACEHOLDER_OPEN}0${PLACEHOLDER_CLOSE} ${PLACEHOLDER_OPEN}1${PLACEHOLDER_CLOSE}`);
   });
 });
