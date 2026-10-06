@@ -2,7 +2,7 @@
 
 **An agentic growth-strategy intelligence platform for consulting teams.** It turns fragmented customer, competitor, market, and internal evidence into grounded strategic insights. Every material claim resolves to an exact, immutable evidence handle.
 
-> **Status:** Phases 0 and 1 are complete. Phase 0 delivered the repository, local infrastructure, isolation scaffolding and CI ([report](docs/phase-reports/phase-0.md)). Phase 1 delivered ingestion and the evidence model: seven formats through the real upload API, versioned sources, parent/child evidence with exact spans, local embeddings, the evidence resolver and an inspection UI ([report](docs/phase-reports/phase-1.md)). Phase 2 delivered hybrid retrieval with a measured evaluation baseline: a frozen 65-item gold set with a grouped dev/test split, dense and IDF-lexical lanes, parent-level RRF, a local cross-encoder, retrieval traces and a CI retrieval gate ([report](docs/phase-reports/phase-2.md), [deep dive](docs/RETRIEVAL_DEEP_DIVE.md)). Phase 3 (standard-mode answers) is next. The approved design is in [`docs/ARCHITECTURE_PLAN.md`](docs/ARCHITECTURE_PLAN.md), and the decisions behind it are in [`docs/adr/`](docs/adr/).
+> **Status:** Phases 0–2 are complete; Phase 3 core is implemented, with live validation pending. Phase 0 delivered the repository, local infrastructure, isolation scaffolding and CI ([report](docs/phase-reports/phase-0.md)). Phase 1 delivered ingestion and the evidence model: seven formats through the real upload API, versioned sources, parent/child evidence with exact spans, local embeddings, the evidence resolver and an inspection UI ([report](docs/phase-reports/phase-1.md)). Phase 2 delivered hybrid retrieval with a measured evaluation baseline: a frozen 65-item gold set with a grouped dev/test split, dense and IDF-lexical lanes, parent-level RRF, a local cross-encoder, retrieval traces and a CI retrieval gate ([report](docs/phase-reports/phase-2.md), [deep dive](docs/RETRIEVAL_DEEP_DIVE.md)). Phase 3 core is implemented: standard-mode grounded answers with a deterministic evidence pack, run-local alias citations behind a streaming hold-back gate, a deterministic verifier with one regeneration and an evidence-only fallback, empty-pack abstention, a resumable SSE run stream, purge-safe persistence and the chat UI ([system design](docs/SYSTEM_DESIGN.md), [grounded answering](docs/GROUNDED_ANSWERING.md)). Live validation against the Anthropic API (the provider spike and the grounded evaluation) is pending: no API key is configured yet, so no live answer-quality, latency or token results exist. The approved design is in [`docs/ARCHITECTURE_PLAN.md`](docs/ARCHITECTURE_PLAN.md), and the decisions behind it are in [`docs/adr/`](docs/adr/).
 
 ## Quick start (local, light mode)
 
@@ -40,12 +40,14 @@ The demo engagement uses **Northstar Athletics**, a fictional client. Its compet
 | [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md) | Product and engineering specification |
 | [`docs/ARCHITECTURE_PLAN.md`](docs/ARCHITECTURE_PLAN.md) | Approved architecture plan: every major decision with its rationale, alternatives and tradeoffs |
 | [`docs/adr/`](docs/adr/) | Architecture Decision Records and the spec-deviation register |
+| [`docs/SYSTEM_DESIGN.md`](docs/SYSTEM_DESIGN.md) | End-to-end system as built: components, data model, request flow, isolation, purge, termination states, configuration, what is deferred |
+| [`docs/GROUNDED_ANSWERING.md`](docs/GROUNDED_ANSWERING.md) | Evidence pack, prompt and trust policy, alias gate, verifier, abstention, SSE protocol, purge during a run, grounded evaluation |
 | [`docs/RETRIEVAL_DEEP_DIVE.md`](docs/RETRIEVAL_DEEP_DIVE.md) | Retrieval pipeline and the measurements behind each choice: baselines, hybrid, reranking, balancing, RLS cost |
 | [`eval/README.md`](eval/README.md) | Evaluation methodology: gold set, split, metrics, statistics, test-split discipline |
 | [`docs/INGESTION.md`](docs/INGESTION.md) | How a file becomes citable evidence: validation, versioning, parsing, parents and children, embeddings, purge, resolution |
 | [`docs/phase-reports/`](docs/phase-reports/) | Per-phase reports with verification results and measurements |
 
-More documents arrive with the phases that implement them: system design, retrieval deep dive, agent and MCP, evaluation, security, deployment, and an interview guide.
+More documents arrive with the phases that implement them: agent and MCP, evaluation, security, deployment, and an interview guide.
 
 ## Data and confidentiality
 

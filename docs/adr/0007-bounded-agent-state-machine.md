@@ -103,3 +103,14 @@ FINAL → DONE(termination_state)
 - Termination-precedence and degradation-mapping unit tests; every degradation code has a named test.
 - Eval item: 30-turn synthetic conversation confirms bounded per-turn input tokens.
 - Phase 4 exit criterion: the Demo 2 query makes at least 2 tool calls across at least 2 source classes and is grounded.
+
+## Implementation notes (Phase 3, 2026-10-05)
+
+The agent loop is Phase 4. Phase 3 built the parts of this ADR that standard mode shares (`runs/executor.py`, `runs/synthesis.py`, `runs/finalize.py`, `runs/flags.py`, `runs/state.py`, `generation/*`):
+
+- **Bounds as configured defaults:** `pack_max_items` 12, `pack_max_tokens` 9,000 (`PACK_BUDGET_TRUNCATED`), `run_deadline_s` 60 with `run_gather_budget_s` 35. Added: `pack_item_max_tokens` 900 (anchor-centred window), `pack_candidates` 24, `regeneration_min_remaining_s` 15 and `run_finalize_reserve_s` 3 (each LLM call is clamped to the remaining deadline minus this reserve, so a slow model degrades to evidence-only rather than a run timeout).
+- **Pack token unit:** the parents' stored WordPiece `token_count`, a deterministic proxy for model tokens; real usage is recorded from the provider.
+- **`stop_reason` handling as decided:** `refusal` → `MODEL_REFUSAL`, `max_tokens` → `GENERATION_TRUNCATED`, both evidence-only without regeneration.
+- **Termination precedence** implemented as decided, plus `interrupted` from the reaper (ADR-0008). `PRECEDENCE` and `termination_state` live in `runs/flags.py`. Publishing and `done` run once, outside the deadline scope and shielded from further cancels, and are bounded by `run_finalize_timeout_s` (20 s, validated to be less than `run_reap_margin_s`; on expiry a best-effort `done` and row update, and a run with no `final` ends `timeout`/`failed`).
+- **Context management:** rolling summary capped at 1,600 characters (about 400 tokens) from the Answer units of verified answers, `[inference]` units excluded; last 2 questions; up to 20 cited handles (without the one-line labels). Retrieval uses the current question only.
+- **Deviation: spend reservation not built.** No ledger reservation happens before the LLM call (`BUDGET_EXHAUSTED` does not exist yet); see ADR-0014.

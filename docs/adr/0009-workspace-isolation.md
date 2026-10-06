@@ -114,3 +114,11 @@ Non-tenant tables are explicit: `workspaces` and `workspace_members` are read on
   - Execution time is the same: p50 11.6 vs 11.2 ms, p95 20.8 vs 19.6 ms, because IDF scoring dominates.
   - **The RLS model is unchanged.** If a workspace's active children ever make the scan dominant, the documented options are a reviewed leakproof wrapper, partitioning by workspace, or a dedicated search role.
 - **IDF cache:** keyed by (workspace id, corpus version), and computed by `ts_stat` under the workspace scope, so one workspace's document frequencies never influence another's.
+
+## Implementation notes (Phase 3, 2026-10-05)
+
+- **New tenant tables** (migration 0004): `conversations`, `messages`, `query_runs`, `run_events`. Each has ENABLE + **FORCE** RLS with a `USING`/`WITH CHECK` policy on `app.current_workspace()`, and composite `(workspace_id, id)` foreign keys. `run_events` is append-only for `ms_app` (UPDATE revoked). The catalog guard covers them automatically.
+- **Explicit predicates** on every run/answer query in addition to RLS.
+- **Evidence pack admission:** a ranked handle without the scope's `"{workspace_code}/"` prefix is skipped before any read, and parent text is resolved under RLS plus an explicit `workspace_id` predicate.
+- **Stream tokens** are bound to one run and one workspace; a foreign or invalid token is indistinguishable from an unknown run (404).
+- **Grounded evaluation** gates cross-workspace leaks (foreign cited handles and second-workspace marker strings).

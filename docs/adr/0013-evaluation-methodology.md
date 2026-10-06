@@ -154,3 +154,11 @@ The project's claims (hybrid beats dense-only, reranking helps, the agent is wor
   - Phase 2 test, eligible: hybrid (now the default) 0.873 [0.725–1.0]; frozen hybrid + rerank 0.706.
   - At n = 17 the interval is wide; gold v1 will tighten it.
 - **The v0 benchmark is preserved.** Raw metrics are in `SUMMARY.md`, recalculated ones in `SUMMARY-eligible.md` (from recorded results, nothing re-run). The default change used test results, so v0 is no longer a clean holdout for that decision.
+
+## Implementation notes (Phase 3, 2026-10-05)
+
+- **Grounded evaluation harness** (`evaluation/grounded.py`, `grounded_report.py`, CLI `grounded`): drives the real in-process API end to end and scores deterministic properties only (no judge yet). Dataset `grounded-v0` (76 items: 55 retrieval-eligible retrieval-v0 items with frozen gold, 21 hand-written conflict, insufficient, empty-pack and adversarial items).
+- **Hard gates:** citation resolvability 100%, citation-in-pack 100%, zero cross-workspace leaks, empty pack never calls the LLM (100%, at least one item), every run ends with `done`, every answer-expected item gets a `final`. Citation gates read "not evaluated" (fail) when answer-expected items cite nothing, so they cannot pass vacuously.
+- **Measured:** stored-content contract re-check, gold coverage and numeric correctness (generated answers and evidence-only fallbacks reported separately), insufficient-item correctness, over-refusal, conflict surfacing, canary leaks, regenerations, latency and token usage.
+- **Weak-evidence abstention data:** `eval/baselines/phase3/abstention-signals.json` records top dense and lexical scores for 74 items. The insufficient items' scores lie inside the answerable items' range on both signals, so no score threshold was adopted (analysis in [`docs/GROUNDED_ANSWERING.md`](../GROUNDED_ANSWERING.md) §6).
+- **Status:** only an offline `FakeLLM` plumbing run exists (`eval/reports/grounded-fake/`; not a quality measurement). The **live grounded evaluation is pending**: no API key is configured.

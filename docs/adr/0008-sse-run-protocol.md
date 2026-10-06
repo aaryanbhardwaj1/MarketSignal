@@ -82,3 +82,20 @@ Constraints:
 - Integration: SSE resume with `last_event_id` returns exactly the missed events.
 - Frontend: vitest for the SSE reducer and chip parsing; Playwright smoke (ask → stream → open citation) against a FakeLLM backend.
 - Phase 9 exit check: ask → stream → final → reconnect mid-run, manually in Safari and Chrome incognito against the deployed URL.
+
+## Implementation notes (Phase 3, 2026-10-05)
+
+Built in `api/routers/runs.py`, `runs/events.py`, `runs/executor.py`, `runs/broker.py`, `runs/reaper.py`, `runs/tokens.py`, `runs/store.py`, migration 0004 and `frontend/src/lib/run-stream.ts`. Design detail: [`docs/GROUNDED_ANSWERING.md`](../GROUNDED_ANSWERING.md) §7.
+
+- **As decided:** the three endpoints; HS256 stream tokens (`aud=sse`, run- and workspace-bound, lifetime run deadline + 900 s replay window, verified before the stream opens, any mismatch → 404); `id/event/data` wire format; FastAPI's native `EventSourceResponse` with its **15 s `: ping`**; `X-Accel-Buffering: no`, `Cache-Control: no-cache` and `Referrer-Policy: no-referrer`; replay of `seq > Last-Event-ID` (header or `?last_event_id`, the larger wins); `done` always last and exactly once; disconnect is not a cancel.
+- **Persist-then-notify.** Every event is written to `run_events` before subscribers are woken, so replay and live tail are one code path. `seq` is gap-free: it advances only after a committed write, and an interrupted write forces a `max(seq)` re-read. Token text is coalesced (~100 ms) and flushed before any other event.
+- **Deviation: no LISTEN/NOTIFY.** Live tail uses an in-process broker (`RunBroker`) plus a **DB-polling fallback** every `sse_poll_interval_s` (1 s) for subscribers in other processes. LISTEN/NOTIFY remains the documented next step.
+- **Deviation: cancel is process-local.** `POST …/cancel` cancels the task only in the process running it; elsewhere it returns `cancel_requested: false` and the run ends at its deadline. Cross-process cancel needs a shared signal. There is no MCP capability token to revoke in standard mode.
+- **Deviation: `interrupted` termination state.** The reaper (startup, periodic, and on demand from an overdue stream) closes a run still `running` past deadline + reap margin with exactly one `done {termination_state: "interrupted"}` (flag `RUN_INTERRUPTED`) and status `interrupted`. Runs whose executor task is still live in the reaping process (`live_run_ids`, `exclude=`) are skipped, and finalization is bounded by `run_finalize_timeout_s` so a live run concludes before the age threshold. This extends the plan §28 enum; the migration's CHECK constraint includes it.
+- **`done` is last in storage too.** `run_events` inserts are refused once a `done` exists (`append_event` inserts `WHERE NOT EXISTS`), so no writer can add an event after it.
+- **Withheld text.** When a purge removes a pack source mid-run, the first text-bearing event (`token`, `citation`, `final`) is stored as a `SOURCE_DELETED_DURING_RUN` `warning` with its `seq`; `EventWriter` then drops further `token`/`citation` writes, generation stops, and the run ends with the evidence-only fallback. A withheld `final` does not count as emitted. The client shows one warning per `code`.
+- **Never-hanging streams.** A run that is not `running` and has no `done` row (its events were purged) gets a synthesized `done` built from `query_runs`.
+- **`draft_reset` reasons in use:** `verification_failed` (attempt 2), `evidence_only` (attempt 0), or the termination state (attempt 0) when a visible draft is abandoned. Unsent draft text is discarded on abort paths rather than streamed and withdrawn.
+- **Deviation: no `incomplete` messages.** A run without `final` stores no assistant message; the `incomplete` status exists in the schema but is not written.
+- **Retention decision (from ADR-0016):** `run_events` are kept 30 days; the deletion job is Phase 8. UPDATE is revoked from `ms_app`.
+- **Not yet verified:** the manual Safari/Chrome reconnect check against the deployed URL (Phase 9).

@@ -109,3 +109,16 @@ A tombstone is an explicit, resolved state, not a fake citation. The acceptance 
   - resolver ordering with tombstones.
   - On the seeded system: `GENZ-TRENDS` v1 is `superseded` and v2 `ready`; four superseded fact pairs resolve on both versions; a live purge turns 200 into 410.
 - **Not yet built:** `demo_read_only` (Phase 9), hypothesis stale-version flags (Phase 6), and the `run_events` retention decision (Phase 3).
+
+## Implementation notes (Phase 3, 2026-10-05)
+
+Purge now covers conversations, answers and run events. Built in `ingestion/purge.py::_purge_run_artifacts` and `runs/store.py`; the locking argument is in [`docs/GROUNDED_ANSWERING.md`](../GROUNDED_ANSWERING.md) §8.
+
+- **In the purge transaction** (after `FOR UPDATE` on the source row and marking the versions purged, the purge locks every `query_runs` row whose pack included the source `FOR UPDATE`, in `id` order, before anything below):
+  - assistant messages whose run's frozen pack (`query_runs.pack_handles`) included the source, or that cite it, are **redacted**: fixed notice as content, empty sections, `status = 'redacted'`; that source's citation cards become **tombstones** `{handle, source_code, purged: true}`;
+  - conversations that could carry its text have their **rolling summary, recent questions and recent handles reset**;
+  - the **`run_events`** of every run whose pack included the source are **deleted**;
+  - `query_runs` rows are kept (handles only, no text).
+- **Runs in flight.** Purge state is read from `source_versions.status = 'purged'` for the exact `@vN` of each pack handle, never from `sources.deleted_at`. `freeze_pack` (once per run) share-locks the pack's `sources` rows, checks the versions, and drops purged ones before writing `pack_handles`. Every later write that can carry evidence text (`token`/`citation`/`final` events, `persist_answer`, the conversation-summary update) takes **`FOR KEY SHARE`** on the run's own `query_runs` row (it conflicts with the purge's `FOR UPDATE`) and re-checks the pack's version purge state in the same transaction, so source rows are never locked per token. Either the write commits first and the purge removes it, or the purge commits first and the write is refused (events stored as a withheld `warning`, after which the run's `EventWriter` drops further draft text and generation stops; answers replaced by evidence-only from surviving sources or an abstention, flag `SOURCE_DELETED_DURING_RUN`). Re-uploading a purged source cannot revive purged text: the old version stays `purged` and the ingestion supersede step skips purged versions, so a run frozen on `X@v1` stays guarded after `X@v2` arrives. `run_events` also refuses inserts once a `done` exists.
+- **`run_events` retention decided:** 30 days, deletion job in Phase 8.
+- **Cache eviction on purge:** not applicable yet; there is no answer cache (ADR-0011).

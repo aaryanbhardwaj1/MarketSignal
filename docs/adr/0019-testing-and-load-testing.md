@@ -39,7 +39,7 @@ The spec also asks for a load test (spec §26.4) and names Locust or k6.
 - **Frontend.** vitest (chip parsing, SSE reducer, SafeMarkdown stripping `img`, `a` and HTML); a Playwright smoke (ask → stream → open citation) against a FakeLLM backend; a manual Safari and incognito check on the deployed URL.
 - **Coverage target:** 80% on the backend core packages.
 
-**Non-superuser test role.** `db/init/01_roles.sql` creates `ms_owner` (owns the schema, runs migrations) and `ms_app` (`LOGIN NOSUPERUSER NOBYPASSRLS`, DML grants only). Compose initdb and the CI setup step both run it. Integration tests, the API and the worker all connect as `ms_app`. Startup and `/readyz` fail if the current role has `rolsuper OR rolbypassrls`, so a misconfigured test environment fails loudly instead of passing.
+**Non-superuser test role.** `backend/db/init/01_roles.sh` creates `ms_owner` (owns the schema, runs migrations) and `ms_app` (`LOGIN NOSUPERUSER NOBYPASSRLS`, DML grants only). Compose initdb and the CI setup step both run it. Integration tests, the API and the worker all connect as `ms_app`. Startup and `/readyz` fail if the current role has `rolsuper OR rolbypassrls`, so a misconfigured test environment fails loudly instead of passing.
 
 **Load test.** 20 concurrent runs plus concurrent ingestion, reporting p50 and p95 for each stage from `query_runs.timings`. Implemented as a **Locust script, or a documented asyncio script if Locust adds friction**, in `scripts/loadtest`. The results are compared with the §3.2 latency **targets** (for example, end-to-end p50 under 15 s for standard and about 25 s for research), and the measured numbers are published in the engineering report.
 

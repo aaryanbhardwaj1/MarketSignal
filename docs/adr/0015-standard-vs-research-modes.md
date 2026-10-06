@@ -83,3 +83,10 @@ The chosen mode is recorded in `query_runs` and the `run_started` event, and is 
 - Phase 4 exit: the Demo 2 query makes ≥ 2 tool calls across ≥ 2 classes and is grounded. Agent bounds tests run with FakeLLM scripted transcripts.
 - Latency: per-stage p50/p95 per mode from `query_runs.timings` and the load test, compared against the §3.2 targets.
 - Degradation tests for `PLANNER_UNAVAILABLE_FALLBACK` and `PLANNER_NO_TOOL_FALLBACK`.
+
+## Implementation notes (Phase 3, 2026-10-05)
+
+- **Standard mode only.** `mode=research` returns **422 `MODE_UNAVAILABLE`**; `mode=auto` (the request default) is treated as **standard**, because the router and the agent are Phase 4. Runs are stored with `mode = 'standard'`. Persona default modes are not consulted yet.
+- **Deviation: standard gather is hybrid search only.** It calls the retrieval service directly (production default: hybrid RRF, reranker off) under the 35 s gather budget. The keyword search for quoted or capitalized entities, and routing through the tool registry, are deferred to Phase 4 with the registry.
+- **Shared tail as decided.** Pack, synthesis, alias gate, verification, fallback, persistence and SSE are mode-independent modules (`generation/*`, `runs/*`), ready for research mode to reuse.
+- **Latency targets** (§3.2) are **pending live evaluation**; no live model run has been made.

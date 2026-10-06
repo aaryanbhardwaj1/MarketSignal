@@ -69,3 +69,9 @@ Two more constraints apply:
 - Integration: after delete, a repeated question misses the cache (the `corpus_version` bump makes the old key unreachable) and no served answer contains the canary string.
 - Every code path that bumps the version (ingest ready, re-embed, delete/purge, reclassify) has a test asserting the bump.
 - Metrics: Prometheus cache hit ratio; cached-answer latency against the < 1 s target from `query_runs.timings`.
+
+## Implementation notes (Phase 3, 2026-10-05)
+
+- **Not implemented yet.** There is no cache probe and no cache write. Every run records `cache_status = 'disabled'` (column default in `query_runs`, and the value sent in `done`).
+- **Prepared for it:** each run stores `corpus_version_start`, `config_hash` (retrieval configuration) and `prompt_version` (`synth-v1-` + a hash of the system prompt bytes), which are inputs of the decided key and of the conditional write.
+- **Purge interaction** is currently handled without a cache: purge redacts stored answers and deletes run events directly (ADR-0016).

@@ -96,3 +96,9 @@ Constraints:
 - `POLICY_DENIED` on read-only workspaces.
 - Route-scoping contract test.
 - `/readyz` fails if the app role is superuser or BYPASSRLS.
+
+## Implementation notes (Phase 3, 2026-10-05)
+
+- **Stream tokens** are built as decided (ADR-0008). Production refuses to start with the development stream-token key or one shorter than 32 bytes (`config.check_production_secrets`).
+- **Anthropic key handling.** The key is read from `MS_ANTHROPIC_API_KEY` or `ANTHROPIC_API_KEY`, handed to the SDK client and not kept on the provider; the provider is built lazily on first use, never at startup. No key is configured yet, so the live spike is pending.
+- **Deviation: no rate limiting and no spend ledger yet.** Neither the Redis fixed-window limits nor the `spend_ledger` reservation is implemented. The only spend bounds today are `llm_max_tokens`, one provider retry, at most one regeneration per run, and the run deadline. Both must land before the public deployment.

@@ -127,6 +127,21 @@ These refine the plan without changing the approved evidence, versioning, parent
 | 2 | Row child text `{table} \| {context} \| {free text}` | Policy c3: the row's identifier columns are added to the row child text (ID lookups); measured, then approved | 0003 |
 | 2 | Retrieval within one request transaction | Three phases: query embedding and reranking run outside any DB session; lanes, fusion and hydration in one short session | 0005 |
 | 2 | CI gate Recall@10 ≥ 0.85 on test (§27) | Not met on v0 (test 57.1% frozen config, 76.2% hybrid; ceiling 81% from numeric rows); CI runs a dev regression gate | 0013 |
+| 3 | Router: `auto` applies the cue rules (§3 step 4) | Standard mode only: `auto` → standard; `research` → 422 `MODE_UNAVAILABLE` until Phase 4 | 0015 |
+| 3 | Standard gather: `search_evidence` plus a keyword search for quoted/capitalized entities, through the tool registry (§3 step 5) | Hybrid search only (the production default, reranker off), called directly under the 35 s gather budget. Keyword lane and registry routing come with Phase 4 | 0015 |
+| 3 | Pack: reuse rerank scores, collapse, balance, class reservation (§3 step 6) | Fill by retrieval rank, de-duplicated by handle, skipping an item that does not fit and continuing. The token unit is the parents' stored WordPiece `token_count`, a deterministic proxy for model tokens; real usage is recorded from the provider | 0007 |
+| 3 | Abstain/qualify on weak evidence (§26 targets) | Only an empty pack abstains deterministically. A score threshold was not adopted: in `eval/baselines/phase3/abstention-signals.json` the insufficient items' top dense and lexical scores lie inside the answerable items' range. A non-empty pack goes to the model, which must state insufficiency | 0013 |
+| 3 | Alias gate holds at most 4 characters (§21) | Valid-alias prefixes still hold ≤ 4; malformed attempts (`[E]`, `[E123]`, `[E1234]`) are dropped rather than shown, so the worst case is 6 | 0004 |
+| 3 | Verification repair drops uncited sentences (§3 step 8) | Uncited Answer sentences are tagged `[inference]` when all their numbers are in the pack (ADR-0004 permits tagging), otherwise dropped; uncited findings are dropped | 0004 |
+| 3 | `final` → persist (§3 step 9) | Persist first (`FOR KEY SHARE` on the run's own row, then a purged-version check of every pack source), then `final`, so a concurrent purge cannot be outlived by a published answer | 0016 |
+| 3 | `run_started` appended by the POST handler (§3 step 1) | Emitted by the run task as its first event; the POST inserts the run row and the user message | 0008 |
+| 3 | Live tail across processes via LISTEN/NOTIFY (§21) | In-process broker plus a DB poll every `sse_poll_interval_s` (1 s) | 0008 |
+| 3 | Cancel (§21) | Process-local only; a run in another process ends at its deadline. Cross-process cancel is not implemented | 0008 |
+| 3 | Orphan reaper at startup (§21) | Also periodic and on demand from an overdue stream; skips runs live in the same process; adds the `interrupted` termination state. Finalization is bounded by `run_finalize_timeout_s` (20 s, less than `run_reap_margin_s`) | 0008 |
+| 3 | Partial answers persisted as `incomplete` (§21) | Not written: a run without `final` stores no assistant message | 0008 |
+| 3 | Answer cache probe and conditional write (§3 steps 3, 9; §22) | Not implemented; `cache_status = 'disabled'` on every run | 0011 |
+| 3 | Spend-ledger reservation before each LLM call (§32.3) | Deferred; bounded only by `llm_max_tokens`, one provider retry, one regeneration and the run deadline | 0014 |
+| 3 | Rate limits per session and IP (§32.2) | Not implemented yet; required before the public deployment | 0014 |
 
 ---
 
@@ -148,7 +163,7 @@ MarketSignal/                    # NOTE: private notes and non-public reference 
 ├── backend/                     # one Python package; uv; Python 3.13
 │   ├── pyproject.toml  uv.lock  Dockerfile  alembic.ini
 │   ├── migrations/              # Alembic: extensions, roles/grants, RLS policies, indexes
-│   ├── db/init/01_roles.sql     # ms_owner / ms_app roles (compose initdb + CI setup)
+│   ├── db/init/01_roles.sh      # ms_owner / ms_app roles (compose initdb + CI setup)
 │   ├── src/marketsignal/
 │   │   ├── config.py            # pydantic-settings; every tunable; config_hash()
 │   │   ├── domain/              # pydantic models, enums, DegradationCode, TerminationState
@@ -1256,7 +1271,7 @@ Per-dependency circuit breakers move between closed, open and half-open. **Every
 1. ruff, mypy (strict on `evidence`, `retrieval`, `tools`, `agent`, `generation`), eslint, tsc, and the import-linter contracts.
 2. gitleaks, pip-audit / `uv` audit, a check that rejects files over 5 MB, and a check that rejects reference-material path patterns.
 3. Backend unit tests.
-4. Backend integration tests with service containers `pgvector/pgvector:0.8.7-pg18` and `redis:8`. A setup step runs `db/init/01_roles.sql`, and the tests connect as `ms_app`.
+4. Backend integration tests with service containers `pgvector/pgvector:0.8.7-pg18` and `redis:8`. A setup step runs `backend/db/init/01_roles.sh`, and the tests connect as `ms_app`.
 5. **Retrieval eval smoke:**
    - full seeded corpus, dev-split queries;
    - **exact search**, so HNSW randomness never affects the gate;
