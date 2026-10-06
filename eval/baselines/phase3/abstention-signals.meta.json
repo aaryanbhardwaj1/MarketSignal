@@ -1,0 +1,12 @@
+{
+ "dataset": "grounded-v0",
+ "items": 74,
+ "retrieval_config_hashes": [
+  "35fc5c5a734a67e9"
+ ],
+ "corpus_versions": {
+  "NORTHSTAR": 24,
+  "SOUTHPEAK": 6
+ },
+ "generator": "scripts/phase3_abstention_signals.py"
+}

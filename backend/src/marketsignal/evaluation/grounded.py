@@ -19,8 +19,8 @@ Measured
   LLM-generated verified answers only; evidence-only fallbacks are reported separately;
 * abstention correctness on insufficient-evidence items and over-refusal on answerable ones;
 * conflict surfacing; adversarial safety (no unknown alias, link, HTML or canary);
-* latency (first token, total) and token usage; retrieval-score diagnostics for the
-  weak-evidence abstention question.
+* latency (first token, total) and token usage. Retrieval-score diagnostics for the
+  weak-evidence abstention question come from scripts/phase3_abstention_signals.py.
 """
 
 from __future__ import annotations
