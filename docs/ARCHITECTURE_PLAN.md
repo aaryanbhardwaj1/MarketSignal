@@ -142,6 +142,17 @@ These refine the plan without changing the approved evidence, versioning, parent
 | 3 | Answer cache probe and conditional write (§3 steps 3, 9; §22) | Not implemented; `cache_status = 'disabled'` on every run | 0011 |
 | 3 | Spend-ledger reservation before each LLM call (§32.3) | Deferred; bounded only by `llm_max_tokens`, one provider retry, one regeneration and the run deadline | 0014 |
 | 3 | Rate limits per session and IP (§32.2) | Not implemented yet; required before the public deployment | 0014 |
+| 4 | Router in `agent/` (§1, §3 step 4) | `runs/router.py`, a pure function called by the runs router. Absent mode → persona default; `auto` → cue rules; the plural "reviews" only is a customer cue. Decision stored in `query_runs.route` and `run_started` | 0015 |
+| 4 | Six MCP data tools (§17–18) | Four built: `search_evidence`, `search_evidence_keyword`, `get_evidence`, `list_sources`. `get_source_metadata`, `query_structured_metrics` and `analyze_hypothesis_evidence` deferred. Added: a `classes` token claim from the run's `source_classes`, a post-call revocation recheck, fail-closed audit, forwarded-header rejection on `/mcp`, and an in-process fallback for an unreachable HTTP transport | 0006 |
+| 4 | Capability token `exp` = run deadline (§17) | `ttl = min(3600, agent_gather_budget_s + 60)` (95 s); revocation by run status before and after each call | 0006 |
+| 4 | Personas as YAML with priors and prompt policy (§37.1) | Only default modes, as a table in `runs/router.py`. YAML, prompt-policy blocks and source-class priors deferred (balancing is off by default since Phase 2) | 0018 |
+| 4 | Agent thinking adaptive, pinned (ADR-0007 call envelope) | The agent uses the synthesis provider: `between_tools` by default (`llm_thinking=disabled`; Claude 5.x rejects `disabled`). Thinking blocks are kept verbatim in the transcript, never streamed or stored | 0007 |
+| 4 | Fallback search only after `end_turn` with no successful search (§19) | Any empty-handed stop (except a `time_limit` with no time left) runs the standard gather, in the time left before the single gather deadline. Calls beyond a turn's remaining budget get one aggregated trace entry | 0007 |
+| 4 | `tool_runs` append-only for the runtime role | Migration 0006 grants `UPDATE (args)` only, so purge can redact model-written arguments of runs that *saw* a purged handle (affected runs = pack ∪ agent-seen) | 0016, 0006 |
+| 4 | `query_runs.tool_calls` as an atomic per-call counter (§17, optional) | Written once after the gather (executed calls); the per-run bound is enforced in the agent runtime | 0006 |
+| 4 | Verifier evaluation holdout used once | `verifier-v1` holdout evaluated twice: at the end of development, and once more only to measure the review-driven safety fixes (no rule tuned to holdout) | 0013 |
+| 4 | Conflicting evidence section | Advisory conflict signal fed to the prompt; the section is encouraged, never required by the verifier (false triggers on verifier-v1) | 0004 |
+| 4 | Verifier citation re-pointing | Built, but restricted after review (distinctive figures plus subject words in the target); it fired 0 times on verifier-v1, so in practice miscited claims are dropped as in Phase 3 | 0004 |
 
 ---
 

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 4a/4b. **Phase 0 spike passed** (`docs/spikes/0001-mcp-sdk-v2.md`; executable record `backend/tests/spikes/test_mcp_v2_spike.py`): FastAPI mount, HS256 capability-token verification, claims via `get_access_token()`, `Context` hidden from the schema, structured outputs.
+- **Implementation:** Built in Phase 4 (four of six data tools; see Implementation notes). **Phase 0 spike passed** (`docs/spikes/0001-mcp-sdk-v2.md`; executable record `backend/tests/spikes/test_mcp_v2_spike.py`): FastAPI mount, HS256 capability-token verification, claims via `get_access_token()`, `Context` hidden from the schema, structured outputs.
 - **Related:** plan §2.1, §17, §18, §23, §24, §28; ADR-0002 (hybrid retrieval), ADR-0004 (evidence handles), ADR-0005 (cross-encoder reranker), ADR-0007 (agent state machine), ADR-0009 (workspace isolation); approved deviation D3 (and D9, tool allowlist)
 
 ## Context
@@ -90,3 +90,18 @@ Column and table names are validated against the inferred schema and never inter
 - Unit: token rejected on wrong `aud`, expired `exp`, bad signature, non-`running` run; tool outside `claims.tools` returns `POLICY_DENIED`; non-loopback client rejected.
 - Isolation: a handle from another workspace returns `NOT_FOUND` (ADR-0009).
 - Degradation: `TOOLS_TRANSPORT_FALLBACK` has a named test (§28).
+
+## Implementation notes (Phase 4, 2026-10-06)
+
+Built in `backend/src/marketsignal/tools/` and `mcp/`; deep dive in [`docs/GOVERNED_TOOLS_AND_MCP.md`](../GOVERNED_TOOLS_AND_MCP.md).
+
+- **Four of six data tools.** `search_evidence`, `search_evidence_keyword`, `get_evidence` and `list_sources` are implemented (`tools/impl/`). `get_source_metadata`, `query_structured_metrics` and `analyze_hypothesis_evidence` are **deferred**. `finish_research` is harness-local as decided. `search_evidence` always runs the production hybrid pipeline with the reranker off (`production_service`).
+- **Source-class claim (addition).** The token may carry `classes` (the run's `source_classes`). Every tool intersects requested classes with it and never widens (`SOURCE_CLASS_FILTERED` when they do not intersect), and `get_evidence` treats other classes as `NOT_FOUND`. The pool is filtered again from the database class (`agent/pool.py::pool_to_candidates`).
+- **Token lifetime.** `ttl_s = min(3600, agent_gather_budget_s + 60)` (95 s by default) rather than the run deadline. `verify` also requires `jti`, caps `exp − iat` at 3,600 s and rejects a future `iat`, all with ±5 s leeway against one clock.
+- **Pipeline order as built** (`tools/governance.py`): verify → revocation (run `running`) → `claims.tools` policy → registry lookup (`NOT_FOUND`) → strict validation → execute (wall clock + `SET LOCAL statement_timeout`) → cap → **revocation recheck after the body** (output discarded, `UNAUTHENTICATED`, audited) → normalize → audit → return.
+- **Fail-closed audit.** Every authenticated call writes a `tool_runs` row (migration 0005) with sanitized arguments (control characters dropped, strings ≤ 200). A failed audit write turns the call into `INTERNAL`. The insert is purge-safe (`FOR KEY SHARE` on the run row; `{"redacted": true}` if the run already saw a purged handle). Migration 0006 grants `UPDATE (args)` only, so purge can redact arguments in place.
+- **Inputs.** Closed models (`extra="forbid"`), per-item string bounds, and control/surrogate characters rejected (`VALIDATION_ERROR`).
+- **HTTP edge.** `CapabilityTokenVerifier` checks signature, claims and revocation before any MCP handling, `tools/list` included (DB failure → 401). `LoopbackOnly` also rejects (403) any request with `Forwarded`, `X-Forwarded-For` or `X-Real-IP` unless `mcp_public`. Deployment rule: `FORWARDED_ALLOW_IPS` must never be `*`. The `Host`/`Origin` allowlist is loopback-only unless public mode configures `mcp_allowed_hosts`. The session manager runs in its own lifespan task, and `/mcp` is a deferred mount that answers 503 until the governor exists.
+- **Delivery.** In-process remains the default (`tools_transport=inprocess`). With `tools_transport=http`, `HttpToolTransport` is wrapped in `FallbackToolTransport`. A call whose server was never reached (`TRANSPORT_FAILURE`) is re-run in process and flagged `TOOLS_TRANSPORT_FALLBACK`; governor results are never retried. Parity is covered by `tests/integration/test_mcp_parity.py`.
+- **Not built:** analytics handles, per-session/IP rate limits on `/mcp`, and the optional defence-in-depth run-call counter (`query_runs.tool_calls` is written once after the gather, not incremented per call).
+

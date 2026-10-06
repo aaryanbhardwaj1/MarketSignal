@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 4 (router and research mode; standard mode lands end to end in Phase 3; the mandatory agent-vs-single-pass ablation runs in Phase 7) (this ADR is updated with measurements when the component is built)
+- **Implementation:** Router and research mode built in Phase 4 (`runs/router.py`, `runs/research.py`); standard mode since Phase 3. The agent-vs-single-pass ablation remains Phase 7; the Phase 4 paired comparison is in `docs/phase-reports/phase-4.md`.
 - **Related:** plan §0.1, §0.3 (D10), §2, §3 (steps 4–5), §3.2, §19, §20, §26, §28, §33, §37.1, §38; ADR-0006 (MCP governed boundary), ADR-0007 (bounded agent state machine), ADR-0011 (answer cache keys on mode), ADR-0013 (evaluation methodology), ADR-0018 (personas); approved deviation D10
 
 ## Context
@@ -90,3 +90,13 @@ The chosen mode is recorded in `query_runs` and the `run_started` event, and is 
 - **Deviation: standard gather is hybrid search only.** It calls the retrieval service directly (production default: hybrid RRF, reranker off) under the 35 s gather budget. The keyword search for quoted or capitalized entities, and routing through the tool registry, are deferred to Phase 4 with the registry.
 - **Shared tail as decided.** Pack, synthesis, alias gate, verification, fallback, persistence and SSE are mode-independent modules (`generation/*`, `runs/*`), ready for research mode to reuse.
 - **Latency target met.** Plan §3.2 sets standard end-to-end p50 < 15 s. Live-v0 (2026-10-06, 76 items, concurrency 1) measured p50 4.8 s and p95 9.6 s end to end, with first token at p50 1.3 s and p95 4.6 s.
+
+## Implementation notes (Phase 4, 2026-10-06)
+
+- **Router as built** in `runs/router.py` (the plan placed it under `agent/`). `route()` is pure and never calls a model. The precedence is as decided: request `standard`/`research` > request `auto` (cue rules) > persona default `standard`/`research` > persona default `auto` (cue rules). An unknown persona behaves like the generalist.
+- **Mode absent vs `auto`.** `RunCreate.mode` is optional with no default. Absent lets the persona default apply. `auto` always applies the cue rules and overrides the persona. The Phase 3 behaviour (`auto` → standard, `research` → 422 `MODE_UNAVAILABLE`) is gone.
+- **Cues as built:** `hypothesis`, `comparison`, `numeric`, `multi_class` (two or more of five class cue sets) and `follow_up` (only with earlier questions: a leading conjunction or a pronoun in the first four words). The customer cue matches the plural **"reviews"** only, because a singular "review" is usually a meeting or a document.
+- **Route recorded** as `query_runs.route` (`requested`, `persona_default`, `decided`, `reason`, `cues`), returned in the 202 body and sent in `run_started` with `mode`.
+- **Research gather.** The agent over the governed tools, then `pool_to_candidates` into the shared tail. The fallbacks are as decided but wider: any empty-handed stop runs the standard gather, in the time left before the single gather deadline (ADR-0007 notes).
+- **Standard gather unchanged.** It is still hybrid search called directly, with no keyword lane and no tool registry. The Phase 3 deviation stands.
+- **Answer-cache key:** no cache exists yet (ADR-0011), so the mode is not part of a cache key.

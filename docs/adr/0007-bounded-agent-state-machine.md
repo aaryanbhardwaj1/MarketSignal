@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 4a (FakeLLM-tested over the in-process transport; Streamable HTTP in 4b), preceded by a Phase 0 spike on the Anthropic thinking/effort/strict-tool surface (this ADR is updated with measurements when the component is built)
+- **Implementation:** Built in Phase 4 (`backend/src/marketsignal/agent/`, `runs/research.py`), FakeLLM-tested over both transports; see Implementation notes (Phase 4). Preceded by the Phase 0 and Phase 3 live spikes.
 - **Related:** plan §3, §19, §20, §28; ADR-0006 (MCP boundary), ADR-0008 (SSE), ADR-0015 (standard vs research modes); approved deviation D10 (context only; covered by ADR-0015)
 
 ## Context
@@ -120,3 +120,18 @@ The agent loop is Phase 4. Phase 3 built the parts of this ADR that standard mod
 - Claude 5.x rejects `thinking: {"type": "disabled"}`; "no thinking before responding" is `{"type": "between_tools"}`. With tools, the short updates written between tool calls arrive as **thinking blocks**: they must be kept verbatim in the append-only transcript and never streamed or persisted as answer text.
 - `tool_choice` `{"type": "tool"}` and `{"type": "any"}` return 400 on `claude-sonnet-5-5`. Only `auto` (and `none`) is available, as this ADR already assumed (`finish_research` as the expected exit). `auto` produces **parallel** tool calls by default.
 - `output_config.format` json_schema returns schema-valid JSON, and strict tool schemas are accepted by `count_tokens`. See [spike 0002](../spikes/0002-anthropic-live.md).
+
+## Implementation notes (Phase 4, 2026-10-06)
+
+Deep dive: [`docs/RESEARCH_AGENT.md`](../RESEARCH_AGENT.md).
+
+- **State machine as built** (`agent/state.py`): `INIT → AGENT_STEP → EXECUTE → OBSERVE → AGENT_STEP …`, with `DONE` reachable from `INIT`, `AGENT_STEP` and `OBSERVE`. Edges are validated against `TRANSITIONS`, and `DONE` is entered only through `stop(reason)`, so every exit has a `StopReason`. BUILD_PACK and the tail are the executor's shared Phase 3 code, not states of the agent.
+- **Bounds**, checked before every model call in a fixed order (`check_bounds`): time left (`GATHER_TIMEOUT`) → consecutive tool errors 3 (`TOOL_CIRCUIT_OPEN`) → pool 40 (no flag) → steps 4 → executed tool calls 10 (both `AGENT_STEP_BUDGET_EXHAUSTED`) → summed output tokens 12,000 (`AGENT_TOKEN_BUDGET_EXHAUSTED`) → estimated context 40,000 (`AGENT_CONTEXT_LIMIT`). Additional bounds: `agent_max_tokens` 4,096 per step (a `max_tokens` turn stops without running its calls), tool timeout 8 s clamped to the time left (a `TIMEOUT` error code, no separate flag), observation 1,000 tokens, and the 3rd identical call (`AGENT_REPEAT_CALL_STOPPED`). Every bound is a `Settings` field except the repeat threshold. Unlike the table above, the analytics timeout does not exist (no analytics tool).
+- **Thinking mode.** The agent uses the synthesis provider. With the default `llm_thinking=disabled` it sends `thinking: {"type": "between_tools"}`, so between-call updates arrive as thinking blocks, which are kept verbatim in the append-only transcript and never streamed, logged or stored. Effort `low` (`agent_effort`). No `tool_choice` is sent (`auto`). The tools are sorted by name with `finish_research` last.
+- **Context estimate.** `context_tokens` = the last request's reported input (including cache read and creation) + output, plus the new `tool_result` bytes ÷ 3, so non-Latin observations are not under-counted.
+- **Fallback rules**, wider than decided. The first model call or tool listing failing gives `planner_unavailable` (`PLANNER_UNAVAILABLE_FALLBACK`). **Any** stop with zero successful evidence calls and an empty pool (not only `end_turn`) becomes `no_successful_search` (`PLANNER_NO_TOOL_FALLBACK`, appended after the original bound's flag), except a `time_limit` with no gather time left. Both run the standard gather, which gets only the time left before the run's single gather deadline. A later model failure keeps the pool (`AGENT_LLM_UNAVAILABLE`). No provider with `step` (fake, or no API key) behaves as `planner_unavailable`.
+- **Repeat key normalization** (`canonical_args`): contract-validated arguments, tool defaults filled in, whitespace collapsed, set-like lists sorted and de-duplicated (empty dropped), and keyword terms case-folded (`phrase` keeps order). 2nd occurrence → denied (`POLICY_DENIED`, not run); 3rd → stop.
+- **Per-turn denial aggregation.** Only the first *remaining-budget* `tool_use` blocks of a turn are handled per call (progress events, trace entry, audit row). Later blocks are denied without running and recorded as **one** aggregated trace entry (`denied_calls: n`), with no per-call events. The model still gets one `POLICY_DENIED` result per block.
+- **Concurrency and order.** A turn's calls run concurrently in one `TaskGroup`, each with its own capability check. Results are recorded in `tool_use` block order. Cancellation propagates and cancels running calls.
+- **Persistence.** `query_runs.agent` holds stop reason, flags, counts, the state path, `sufficient`, the gap **count**, usage and a per-call trace of validated arguments, status and handles. Model prose, thinking and gap text are never stored. The record is purge-guarded (`trace_redacted`). Progress events are best-effort and bounded by the gather deadline.
+- **Not built:** spend reservation before agent calls (ADR-0014). `finish_research` gaps are not passed to synthesis.

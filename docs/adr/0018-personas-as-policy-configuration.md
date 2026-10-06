@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-05
-- **Implementation:** Planned — Phase 4a/4b (this ADR is updated with measurements when the component is built)
+- **Implementation:** Partially built in Phase 4: default modes only (see Implementation notes).
 - **Related:** plan §37.1 (also §3, §15, §17, §22, §24, §26); ADR-0006, ADR-0007, ADR-0011, ADR-0015; approved deviation D9
 
 ## Context
@@ -85,3 +85,10 @@ Persona is part of the run record (`conversations.persona`, `query_runs.persona`
 - Unit: mode precedence. An explicit `mode` beats the persona default, and `auto` reaches the router.
 - Behavioural eval: abstain/qualify recall ≥ 0.90 and over-refusal ≤ 0.10 hold for every persona (§27 gates), reported per persona when n allows.
 - Phase 4 exit: the Demo 2 query makes at least 2 tool calls across at least 2 classes and is grounded.
+
+## Implementation notes (Phase 4, 2026-10-06)
+
+- **Only the default mode is implemented**, as the `PERSONA_DEFAULT_MODES` table in `runs/router.py` (generalist `auto`, customer_insights `standard`, growth/brand/marketing strategy `research`). Mode precedence is tested in `tests/unit/test_router.py`.
+- **Deferred:** the YAML persona files in `agent/personas/`, the persona prompt-policy blocks, and source-class priors. The priors depend on balancing, which is disabled by default since the Phase 2 measurement (`balance_enabled=False`). The agent's user message states the persona name only, with no policy text.
+- **Same tool set for every persona**, as decided. The capability token carries `persona` and `tools` (all four), and the `claims.tools` check is built and tested (`test_tool_not_granted_is_policy_denied`).
+- Persona is recorded in `query_runs.persona`, `run_started` and the token. The request accepts any persona string up to 40 characters; unknown values route like the generalist.

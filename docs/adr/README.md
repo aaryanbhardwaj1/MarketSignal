@@ -11,8 +11,8 @@ Each ADR records one significant decision: context, decision, alternatives, trad
 | [0003](0003-parent-child-chunks-parent-citation-unit.md) | Parent/child chunking; the parent is the citation unit; parents immutable per version | Accepted | 1; anchor propagation 2–3 |
 | [0004](0004-evidence-handle-grammar-and-alias-citations.md) | Evidence-handle grammar and run-local `[E#]` alias citations with a streaming hold-back gate | Accepted | 1 (grammar, resolver); 3 (alias layer, gate, verifier) |
 | [0005](0005-local-cross-encoder-reranker.md) | Local ONNX cross-encoder reranker (MaxP over parents) with fused-order fallback and hosted-reranker switch | Accepted | 2; 3 (Render CPU spike) |
-| [0006](0006-governed-mcp-tool-boundary.md) | Governed MCP tool boundary | Accepted | 4a/4b (Phase 0 spike) |
-| [0007](0007-bounded-agent-state-machine.md) | Custom bounded agent state machine | Accepted | 4a (Phase 0 spike) |
+| [0006](0006-governed-mcp-tool-boundary.md) | Governed MCP tool boundary | Accepted | 0 (spike); 4 (built: four of six tools, in-process + Streamable HTTP) |
+| [0007](0007-bounded-agent-state-machine.md) | Custom bounded agent state machine | Accepted | 0 (spike); 4 (built) |
 | [0008](0008-sse-run-protocol.md) | SSE run protocol over WebSockets | Accepted | 3; 4 (progress events); 9 (deployed-browser check) |
 | [0009](0009-workspace-isolation.md) | Workspace isolation in depth | Accepted | 0; each tenant table from 1; hardened in 8 |
 | [0010](0010-postgres-native-job-queue.md) | Postgres-native job queue with transactional enqueue | Accepted | 1 |
@@ -20,10 +20,10 @@ Each ADR records one significant decision: context, decision, alternatives, trad
 | [0012](0012-local-embeddings-provider-interface.md) | Local embeddings behind a provider interface, with a per-model embedding table and a file-backed cache | Accepted | 1; 2 (dense retrieval SQL) |
 | [0013](0013-evaluation-methodology.md) | Evaluation methodology: world model, frozen fact ledger, deterministic CI gates, judge calibration and statistics | Accepted | 1–2 (gold v0, CI smoke); 7 (gold v1, calibration) |
 | [0014](0014-deployment-render-vercel.md) | Deployment on Render + Vercel, token-based browser auth, demo mode and spend ledger (AWS ECS/Fargate documented) | Accepted | 9 (spikes in 0 and 3) |
-| [0015](0015-standard-vs-research-modes.md) | Standard (single-pass) and research (agentic) modes, chosen by a deterministic, user-overridable router | Accepted | 3 (standard); 4 (router, research); 7 (ablation) |
+| [0015](0015-standard-vs-research-modes.md) | Standard (single-pass) and research (agentic) modes, chosen by a deterministic, user-overridable router | Accepted | 3 (standard); 4 (router, research: built); 7 (ablation) |
 | [0016](0016-source-versioning-and-purge.md) | Source versioning semantics and purge contract | Accepted | 1; 3 (purge of answers, conversation state and run events) |
 | [0017](0017-fictional-competitor-corpus.md) | Fully fictional demo corpus, including competitors | Accepted | 1 |
-| [0018](0018-personas-as-policy-configuration.md) | Personas as policy configuration, not tool restriction | Accepted | 4a/4b |
+| [0018](0018-personas-as-policy-configuration.md) | Personas as policy configuration, not tool restriction | Accepted | 4 (default modes only); priors and prompt policy deferred |
 | [0019](0019-testing-and-load-testing.md) | Testing strategy and load testing | Accepted | 0, extended every phase; 8 (load test) |
 
 ## Spec deviation register
