@@ -7,7 +7,8 @@ table and source version the computation read, so a result is reproducible and a
 purge can delete every result derived from a purged version (values computed from purged data
 must not outlive it; answers citing them are redacted by ``ingestion/purge.py``).
 
-A computed result is not text evidence: it never becomes a parent/child chunk or an evidence
+A result cannot outlive the table or version it was computed from (``ON DELETE CASCADE``;
+purge also deletes them explicitly, first). A computed result is not text evidence: it never becomes a parent/child chunk or an evidence
 handle. Isolation: ENABLE + FORCE RLS; the runtime role may insert and read, never update.
 
 Revision ID: 0007
@@ -44,9 +45,9 @@ def upgrade() -> None:
             FOREIGN KEY (workspace_id, query_run_id)
                 REFERENCES query_runs (workspace_id, id) ON DELETE SET NULL (query_run_id),
             FOREIGN KEY (workspace_id, source_version_id)
-                REFERENCES source_versions (workspace_id, id) ON DELETE RESTRICT,
+                REFERENCES source_versions (workspace_id, id) ON DELETE CASCADE,
             FOREIGN KEY (workspace_id, table_id)
-                REFERENCES dataset_tables (workspace_id, id) ON DELETE RESTRICT
+                REFERENCES dataset_tables (workspace_id, id) ON DELETE CASCADE
         )
         """
     )

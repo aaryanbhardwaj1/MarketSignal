@@ -48,6 +48,20 @@ async def purge_source(
             )
         ).scalars()
     )
+    # Runs that computed analytics results from this source, captured before its tables (and,
+    # by cascade, those results) are deleted below.
+    computed_runs = [
+        str(r)
+        for r in (
+            await session.execute(
+                text(
+                    "SELECT DISTINCT query_run_id FROM analytics_results "
+                    "WHERE source_version_id = ANY(:ids) AND query_run_id IS NOT NULL"
+                ),
+                {"ids": version_ids},
+            )
+        ).scalars()
+    ]
     for version_id in version_ids:
         await repo.delete_version_content(session, version_id)
     await session.execute(
@@ -65,7 +79,7 @@ async def purge_source(
         text("UPDATE sources SET deleted_at = now(), updated_at = now() WHERE id = :s"),
         {"s": source_id},
     )
-    await _purge_run_artifacts(session, scope, source.source_code)
+    await _purge_run_artifacts(session, scope, source.source_code, computed_runs)
     corpus_version = await repo.bump_corpus_version(session, scope.workspace_id)
     await repo.audit(
         session,
@@ -90,7 +104,19 @@ _SEEN_RUNS = (
     "SELECT query_run_id FROM tool_runs WHERE workspace_id = :ws AND query_run_id IS NOT NULL "
     "AND EXISTS (SELECT 1 FROM unnest(result_handles) h WHERE h LIKE :prefix)"
 )
-_AFFECTED_RUNS = f"{_PACK_RUNS} UNION {_SEEN_RUNS}"
+# Every version of the purged source (computed analytics results are tied to a version).
+_SOURCE_VERSIONS = (
+    "SELECT v.id FROM source_versions v JOIN sources s ON s.id = v.source_id "
+    "WHERE s.workspace_id = :ws AND s.source_code = :code"
+)
+# Runs that computed analytics results from the source: their tool arguments, trace and
+# events can carry values derived from the purged data.
+_COMPUTED_RUNS = "SELECT unnest(CAST(:computed AS uuid[]))"  # captured by purge_source
+_AFFECTED_RUNS = f"{_PACK_RUNS} UNION {_SEEN_RUNS} UNION {_COMPUTED_RUNS}"
+_DELETE_RESULTS = (
+    "DELETE FROM analytics_results WHERE workspace_id = :ws "  # noqa: S608 - constant SQL
+    f"AND source_version_id IN ({_SOURCE_VERSIONS})"
+)
 
 
 def _for_affected_runs(statement: str, column: str) -> str:
@@ -112,7 +138,10 @@ _REDACT_AGENT_TRACE = _for_affected_runs(
 
 
 async def _purge_run_artifacts(
-    session: AsyncSession, scope: WorkspaceScope, source_code: str
+    session: AsyncSession,
+    scope: WorkspaceScope,
+    source_code: str,
+    computed_runs: list[str] | None = None,
 ) -> None:
     """Remove every stored quote of, or citation to, the purged source's evidence.
 
@@ -131,6 +160,7 @@ async def _purge_run_artifacts(
         "ws": scope.workspace_id,
         "code": source_code,
         "prefix": f"{scope.workspace_code}/{source_code}@v%",
+        "computed": computed_runs or [],
     }
     # Lock the affected runs before touching anything they write: a run's text-bearing write
     # holds FOR KEY SHARE on its own row while it re-checks the pack's purge state, so it either
@@ -185,3 +215,7 @@ async def _purge_run_artifacts(
     # Model-written tool arguments and the agent trace can quote what the agent saw.
     await session.execute(text(_REDACT_TOOL_ARGS), params)
     await session.execute(text(_REDACT_AGENT_TRACE), params)
+    # Last: the affected-run subqueries above read analytics_results. Values computed from
+    # purged data must not outlive it (answers citing them are redacted via their cards'
+    # source_code, like evidence citations).
+    await session.execute(text(_DELETE_RESULTS), params)

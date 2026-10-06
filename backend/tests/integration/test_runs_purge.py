@@ -576,3 +576,43 @@ async def test_purge_redacts_agent_tool_args_and_trace_of_runs_that_saw_the_sour
     assert agent["trace_redacted"] is True
     assert agent["tool_calls"] == 2  # counts kept
     assert events == 0
+
+
+async def test_purge_deletes_computed_results_and_cleans_runs_that_computed_them(
+    harness: Harness, app_engine: AsyncEngine
+) -> None:
+    """Phase 5: a computed analytics result is derived from a source version; purging the
+    source deletes the result and treats the run that computed it as affected."""
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    ws = await harness.create_workspace()
+    csv = b"segment,nps,verbatim\nGen Z,9,Fits well\nMillennial,6,Runs small\n"
+    response = await harness.upload(ws, "data.csv", csv, source_code="DATA")
+    assert response.status_code in (200, 202), response.text
+    await harness.drain()
+    # Empty pack (no financial sources): only the computed result ties this run to DATA.
+    _, run = await _ask(harness, ws, "What do buyers say about fit?", source_classes=["financial"])
+    await _stream(harness, run["stream_url"])
+
+    async def count(sql: str) -> int:
+        async with app_engine.begin() as conn:
+            await _scoped(conn, ws)
+            return int((await conn.execute(text(sql), {"r": run["run_id"]})).scalar_one())
+
+    async with app_engine.begin() as conn:
+        await _scoped(conn, ws)
+        await conn.execute(
+            text(
+                "INSERT INTO analytics_results (workspace_id, query_run_id, source_version_id, "
+                "table_id, tool, spec, result) SELECT t.workspace_id, CAST(:r AS uuid), "
+                "t.source_version_id, t.id, 'aggregate', '{}', '{\"rows\": []}' "
+                "FROM dataset_tables t LIMIT 1"
+            ),
+            {"r": run["run_id"]},
+        )
+    results = "SELECT count(*) FROM analytics_results WHERE query_run_id = CAST(:r AS uuid)"
+    events = "SELECT count(*) FROM run_events WHERE run_id = CAST(:r AS uuid)"
+    assert await count(results) == 1
+    assert await count(events) > 0
+    await _purge(harness, ws, "DATA")
+    assert await count(results) == 0
+    assert await count(events) == 0
