@@ -8,7 +8,7 @@ every tool. Both transports execute entries only through ``governance.ToolGovern
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from pydantic import BaseModel
@@ -47,15 +47,21 @@ class ToolEntry:
     items_key: str  # the output list that the item cap applies to
     max_items: int
     field_descriptions: dict[str, str] = field(default_factory=dict)
+    # Strict tool use compiles a grammar, and the live API caps a strict tool array at 16
+    # union-typed and 24 optional parameters (Phase 5 live finding). The analytics tools'
+    # schemas exceed that together, so they are offered non-strict; the server-side strict
+    # Pydantic validation in the governance pipeline is the boundary either way (ADR-0006).
+    strict: bool = True
 
     @property
     def capability(self) -> str:
         return self.name
 
     def spec(self) -> ToolSpec:
-        return to_anthropic_tool(
+        spec = to_anthropic_tool(
             self.name, self.description, self.input_model, self.field_descriptions
         )
+        return spec if self.strict else replace(spec, strict=False)
 
 
 _CLASSES = "Restrict to these source classes (null = all classes)."
@@ -77,6 +83,7 @@ _ANALYTICS_NOTE = (
 DEFAULT_ENTRIES: tuple[ToolEntry, ...] = (
     ToolEntry(
         name="aggregate",
+        strict=False,
         description=(
             "Exact metrics (count, count_distinct, sum, mean, median, min, max, share) over the "
             "filtered rows of one dataset, optionally grouped by up to 2 columns, ordered and "
@@ -98,6 +105,7 @@ DEFAULT_ENTRIES: tuple[ToolEntry, ...] = (
     ),
     ToolEntry(
         name="describe_dataset",
+        strict=False,
         description=(
             "List the workspace's analysable tables (dataset ids, row counts), or with a dataset "
             "id the columns, types, units and categorical levels. Call before computing."
@@ -111,6 +119,7 @@ DEFAULT_ENTRIES: tuple[ToolEntry, ...] = (
     ),
     ToolEntry(
         name="filter_rows",
+        strict=False,
         description=(
             "List up to 20 matching rows of one dataset (selected columns, ordered), each with "
             "its evidence handle so individual rows can be cited." + _ANALYTICS_NOTE
@@ -130,6 +139,7 @@ DEFAULT_ENTRIES: tuple[ToolEntry, ...] = (
     ),
     ToolEntry(
         name="group_compare",
+        strict=False,
         description=(
             "One metric for two levels of one column (group A vs group B) with both values, "
             "denominators and the difference A - B." + _ANALYTICS_NOTE

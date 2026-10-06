@@ -44,8 +44,9 @@ def _walk(node: Any) -> list[dict[str, Any]]:
 def test_specs_sorted_and_cover_the_contract() -> None:
     specs = default_registry().specs()
     assert [s.name for s in specs] == list(TOOL_NAMES)
-    assert all(s.strict for s in specs)
-    assert all(s.to_anthropic()["strict"] is True for s in specs)
+    analytics = {"aggregate", "describe_dataset", "filter_rows", "group_compare"}
+    assert all(s.strict == (s.name not in analytics) for s in specs)
+    assert all(s.to_anthropic()["strict"] is (s.name not in analytics) for s in specs)
 
 
 def test_specs_are_strict_mode_compatible() -> None:
@@ -137,3 +138,44 @@ def test_failure_result_shape() -> None:
     assert r.error.code == "TIMEOUT"
     assert r.observation == "ERROR TIMEOUT: tool timed out"
     assert r.handles() == ()
+
+
+def _count(schema: object, pred: str) -> int:
+    n = 0
+
+    def walk(x: object, required: bool = True) -> None:
+        nonlocal n
+        if isinstance(x, dict):
+            if pred == "union" and (isinstance(x.get("type"), list) or "anyOf" in x):
+                n += 1
+            if pred == "optional" and isinstance(x.get("properties"), dict):
+                req = set(x.get("required", []))
+                n += sum(1 for k in x["properties"] if k not in req)
+            for v in x.values():
+                walk(v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v)
+
+    walk(schema)
+    return n
+
+
+def test_strict_tool_array_stays_within_the_live_api_grammar_limits() -> None:
+    """Live finding (Phase 5): a strict tool array may hold at most 16 union-typed and 24
+    optional parameters, or every agent step is a 400. Non-strict tools are exempt."""
+    from marketsignal.agent.prompts import FINISH_RESEARCH_SPEC
+    from marketsignal.tools.registry import default_registry
+
+    specs = [s.to_anthropic() for s in default_registry().specs()]
+    specs.append(FINISH_RESEARCH_SPEC.to_anthropic())
+    strict = [s["input_schema"] for s in specs if s.get("strict")]
+    assert sum(_count(s, "union") for s in strict) <= 16
+    assert sum(_count(s, "optional") for s in strict) <= 24
+    analytics = {
+        s["name"]: s["strict"]
+        for s in specs
+        if s["name"] in {"aggregate", "describe_dataset", "filter_rows", "group_compare"}
+    }
+    assert len(analytics) == 4
+    assert not any(analytics.values())

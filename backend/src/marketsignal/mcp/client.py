@@ -100,7 +100,14 @@ class HttpToolTransport:
                 for k, v in schema.get("properties", {}).items()
             }
             specs.append(
-                ToolSpec(tool.name, tool.description or "", {**schema, "properties": props})
+                ToolSpec(
+                    tool.name,
+                    tool.description or "",
+                    {**schema, "properties": props},
+                    # MCP listings carry no Anthropic `strict` flag: take it from the shared
+                    # registry (analytics tools are non-strict; see ToolEntry.strict).
+                    strict=entry.strict if entry is not None else True,
+                )
             )
         return specs
 
