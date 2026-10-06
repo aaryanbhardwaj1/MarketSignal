@@ -378,6 +378,8 @@ class StandardRunExecutor:
         )
         if gone:
             pack = without_sources(pack, gone)
+            # Results of a purged source are dropped for good: synthesis re-attaches `results`.
+            results = tuple(r for r in results if r.get("source_code") not in gone)
             state.flag(SOURCE_DELETED_DURING_RUN)
             await writer.emit(
                 "warning",

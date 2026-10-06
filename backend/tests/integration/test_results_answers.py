@@ -167,3 +167,30 @@ async def test_analytics_only_answer_with_empty_evidence_pack(
     run_row = (await harness.client.get(f"/api/workspaces/{ws}/runs/{run['run_id']}")).json()
     source_handle = final["citations"][0]["handle"]
     assert source_handle in run_row["pack_handles"]
+
+
+async def test_results_of_a_source_purged_before_the_freeze_never_reach_synthesis(
+    harness: Harness, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Phase 5 review finding 0/19: when the freeze reports the data source as purged, its
+    computed results are dropped for good: synthesis must not re-attach them from the raw list."""
+    from marketsignal.runs import store as run_store
+
+    original = run_store.freeze_pack
+
+    async def freeze_reports_purge(*args: Any, **kwargs: Any) -> set[str]:
+        gone = await original(*args, **kwargs)
+        return {*gone, CODE}  # as if CODE were purged between the gather and the freeze
+
+    monkeypatch.setattr(run_store, "freeze_pack", freeze_reports_purge)
+    synth = FakeLLM([ANALYTICS_ONLY], repeat_last=True)
+    _install(harness, synth)
+    _install_agent(harness, _aggregate_turns(search=True))
+    ws = await harness.create_workspace()
+    await _upload_csv(harness, ws)
+    await _seed(harness, ws, FACT)
+    _, run = await _ask(harness, ws, "What is the average NPS by segment?", mode="research")
+    events = await _stream(harness, run["stream_url"])
+    assert events[-1]["event"] == "done"
+    assert "<computed_results>" not in synth.sent_text()
+    assert "SOURCE_DELETED_DURING_RUN" in events[-1]["data"]["flags"]
