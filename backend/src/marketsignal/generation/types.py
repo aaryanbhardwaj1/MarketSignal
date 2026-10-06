@@ -99,6 +99,24 @@ class VerificationReport:
     citations: int = 0
     cited_aliases: list[str] = field(default_factory=list)
     sections: list[str] = field(default_factory=list)
+    # Phase 4 attempt report (additive). ``rejected`` quotes dropped model spans, so it is kept
+    # out of :meth:`as_dict` (the UI payload) and stored only in ``verification_attempts``.
+    attempt: int = 1
+    disposition: str = ""  # accepted|repaired|regenerate|rejected|fallback (set by the run)
+    regeneration_requested: bool = False
+    failure_categories: list[str] = field(default_factory=list)
+    rejected: list[dict[str, Any]] = field(default_factory=list)
+    evidence_checked: list[str] = field(default_factory=list)  # aliases whose evidence was used
+    evidence_handles: list[str] = field(default_factory=list)  # their canonical handles
+    gap_statements: list[str] = field(default_factory=list)  # "Answer #2": evidence-gap units
+    conflict_signals: list[str] = field(default_factory=list)
+    max_citations: int = 20
 
     def as_dict(self) -> dict[str, Any]:
+        payload = asdict(self)
+        payload.pop("rejected")
+        return payload
+
+    def attempt_record(self) -> dict[str, Any]:
+        """Everything, including rejected spans: the ``verification_attempts.report`` row."""
         return asdict(self)

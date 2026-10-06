@@ -1,0 +1,2284 @@
+{
+  "families": [
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nCorvane had 12.4 million mobile subscribers at 30 June 2026 [E1]. Half-year group revenue was GBP 1.215 billion [E2].\n\n### Key findings\n- Fixed broadband connections stood at 2.6 million [E1].\n",
+          "case_id": "F03-a",
+          "case_types": [
+            "quantities",
+            "valid_unit_conversion"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Operating Highlights"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "finance",
+              "source_title": "Corvane Telecom Q2 2026 Results",
+              "text": "Mobile subscribers reached 12.4 million at 30 June 2026, up from 11.8 million a year earlier. Fixed broadband connections were 2.06 million."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Financial Summary"
+              ],
+              "locator_label": "Page 7",
+              "source_class": "finance",
+              "source_title": "Corvane Telecom Q2 2026 Results",
+              "text": "Group revenue for the half year was GBP 1,215 million. Capital expenditure was GBP 284 million."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How large is Corvane Telecom's customer base and revenue?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Corvane had 12.4 million mobile subscribers",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantities"
+            },
+            {
+              "key": "Half-year group revenue was GBP 1.215 billion",
+              "label": "supported",
+              "note": "GBP 1,215 million = GBP 1.215 billion",
+              "type": "valid_unit_conversion"
+            },
+            {
+              "key": "Fixed broadband connections stood at 2.6 million",
+              "label": "unsupported",
+              "note": "E1 says 2.06",
+              "type": "quantities"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nCorvane serves more than twelve million mobile subscribers [E1]. Half-year revenue was USD 1,215 million [E2].\n\n### Key findings\n- Capital expenditure was GBP 2.84 billion [E2].\n",
+          "case_id": "F03-b",
+          "case_types": [
+            "currency_mismatch",
+            "invalid_unit_conversion",
+            "quantities"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Operating Highlights"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "finance",
+              "source_title": "Corvane Telecom Q2 2026 Results",
+              "text": "Mobile subscribers reached 12.4 million at 30 June 2026, up from 11.8 million a year earlier. Fixed broadband connections were 2.06 million."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Financial Summary"
+              ],
+              "locator_label": "Page 7",
+              "source_class": "finance",
+              "source_title": "Corvane Telecom Q2 2026 Results",
+              "text": "Group revenue for the half year was GBP 1,215 million. Capital expenditure was GBP 284 million."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How large is Corvane Telecom's customer base and revenue?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "serves more than twelve million mobile subscribers",
+              "label": "supported",
+              "note": "spelled-out lower bound; 12.4 million is more than twelve million",
+              "type": "quantities"
+            },
+            {
+              "key": "Half-year revenue was USD 1,215 million",
+              "label": "unsupported",
+              "note": "evidence is GBP",
+              "type": "currency_mismatch"
+            },
+            {
+              "key": "Capital expenditure was GBP 2.84 billion",
+              "label": "unsupported",
+              "note": "GBP 284 million is GBP 0.284 billion",
+              "type": "invalid_unit_conversion"
+            }
+          ]
+        }
+      ],
+      "family_id": "F03",
+      "scenario": "Telecom results pages: subscribers, revenue and capex"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe Pricing slide proposes a 4.5% rise on legacy mobile plans from January 2027 [E1]. The Network slide reports 5G population coverage of 78% in September 2026 [E2].\n\n### Key findings\n- Management expects a churn uplift of 0.3 percentage points [E1].\n",
+          "case_id": "F07-a",
+          "case_types": [
+            "percentages",
+            "slide_titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Corvane Q3 2026 Board Review",
+                "Pricing"
+              ],
+              "locator_label": "Slide 7",
+              "source_class": "deck",
+              "source_title": "Corvane Q3 2026 Board Review",
+              "text": "Proposed price rise of 4.5% on legacy mobile plans from January 2027. Expected churn uplift: 0.3 percentage points."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Corvane Q3 2026 Board Review",
+                "Network"
+              ],
+              "locator_label": "Slide 9",
+              "source_class": "deck",
+              "source_title": "Corvane Q3 2026 Board Review",
+              "text": "5G population coverage reached 78% in September 2026; target 90% by end-2027."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What pricing and network items did the Corvane board review in Q3 2026?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Pricing slide proposes a 4.5% rise",
+              "label": "supported",
+              "note": "heading Pricing, Slide 7",
+              "type": "slide_titles"
+            },
+            {
+              "key": "Network slide reports 5G population coverage of 78%",
+              "label": "supported",
+              "note": "E2",
+              "type": "slide_titles"
+            },
+            {
+              "key": "churn uplift of 0.3 percentage points",
+              "label": "supported",
+              "note": "E1",
+              "type": "percentages"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nSlide 8 of the Board Review covers the proposed 4.5% price rise [E1]. The Network slide puts 5G coverage at 78% [E1].\n\n### Key findings\n- Churn is expected to rise by 0.3% [E1].\n",
+          "case_id": "F07-b",
+          "case_types": [
+            "percentages",
+            "slide_titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "answer_missing"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Corvane Q3 2026 Board Review",
+                "Pricing"
+              ],
+              "locator_label": "Slide 7",
+              "source_class": "deck",
+              "source_title": "Corvane Q3 2026 Board Review",
+              "text": "Proposed price rise of 4.5% on legacy mobile plans from January 2027. Expected churn uplift: 0.3 percentage points."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Corvane Q3 2026 Board Review",
+                "Network"
+              ],
+              "locator_label": "Slide 9",
+              "source_class": "deck",
+              "source_title": "Corvane Q3 2026 Board Review",
+              "text": "5G population coverage reached 78% in September 2026; target 90% by end-2027."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What pricing and network items did the Corvane board review in Q3 2026?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Slide 8 of the Board Review covers",
+              "label": "unsupported",
+              "note": "the price rise is on Slide 7; Slide 8 is not in the pack",
+              "type": "slide_titles"
+            },
+            {
+              "correct_alias": "E2",
+              "key": "Network slide puts 5G coverage at 78%",
+              "label": "miscited",
+              "note": "78% only in E2",
+              "type": "slide_titles"
+            },
+            {
+              "key": "Churn is expected to rise by 0.3%",
+              "label": "unsupported",
+              "note": "evidence says percentage points, not percent",
+              "type": "percentages"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nThe Q2 2026 Board Review's Pricing slide proposes a 4.5% increase [E1]. [inference] The board appears to be weighing price-led revenue against a modest churn risk.\n\n### Key findings\n- Coverage must rise 12 points to hit the 90% target [E2].\n",
+          "case_id": "F07-c",
+          "case_types": [
+            "computed_values",
+            "slide_titles",
+            "uncited_claim"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "no_citations"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Corvane Q3 2026 Board Review",
+                "Pricing"
+              ],
+              "locator_label": "Slide 7",
+              "source_class": "deck",
+              "source_title": "Corvane Q3 2026 Board Review",
+              "text": "Proposed price rise of 4.5% on legacy mobile plans from January 2027. Expected churn uplift: 0.3 percentage points."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Corvane Q3 2026 Board Review",
+                "Network"
+              ],
+              "locator_label": "Slide 9",
+              "source_class": "deck",
+              "source_title": "Corvane Q3 2026 Board Review",
+              "text": "5G population coverage reached 78% in September 2026; target 90% by end-2027."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What pricing and network items did the Corvane board review in Q3 2026?",
+          "retry_answer": "### Answer\nThe Q2 2026 board deck proposes a 4.5% price increase [E1]. [inference] Coverage still has some way to go.\n\n### Key findings\n- Coverage needs another 12 points [E2].\n",
+          "units": [
+            {
+              "key": "Q2 2026 Board Review's Pricing slide",
+              "label": "unsupported",
+              "note": "deck is Q3 2026; Q2 2026 appears nowhere",
+              "type": "slide_titles"
+            },
+            {
+              "key": "weighing price-led revenue against a modest churn risk",
+              "label": "supported",
+              "note": "inference, no numbers",
+              "type": "uncited_claim"
+            },
+            {
+              "key": "Coverage must rise 12 points",
+              "label": "unsupported",
+              "note": "90 - 78 not stated",
+              "type": "computed_values"
+            }
+          ]
+        }
+      ],
+      "family_id": "F07",
+      "scenario": "Board slide deck with slide locators and section titles"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nHalcyon cut its packaging suppliers from 23 to 9 over eighteen months [E1]. The head of procurement flagged single-sourcing as the main risk, with about four weeks of buffer stock [E2].\n\n### Key findings\n- Under Supplier Consolidation, volume discounts are given as the main motive [E1].\n",
+          "case_id": "F08-a",
+          "case_types": [
+            "quantities",
+            "section_headings"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Supplier Consolidation"
+              ],
+              "locator_label": "Q3",
+              "source_class": "interview",
+              "source_title": "Interview: Head of Procurement, Halcyon Foods",
+              "text": "We cut our packaging suppliers from 23 to 9 over eighteen months, mainly to get volume discounts."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Risks"
+              ],
+              "locator_label": "Q5",
+              "source_class": "interview",
+              "source_title": "Interview: Head of Procurement, Halcyon Foods",
+              "text": "The concern is single-sourcing. If one of those nine has a strike, we have maybe three weeks of buffer stock."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How has Halcyon Foods changed its packaging supply base?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "cut its packaging suppliers from 23 to 9",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantities"
+            },
+            {
+              "key": "head of procurement flagged single-sourcing",
+              "label": "unsupported",
+              "note": "role is right but E2 says three weeks of buffer stock, not four",
+              "type": "quantities"
+            },
+            {
+              "key": "volume discounts are given as the main motive",
+              "label": "supported",
+              "note": "heading Supplier Consolidation",
+              "type": "section_headings"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nHalcyon reduced its packaging supplier count by 61% [E1]. In the Risks section, the interviewee says buffer stock covers roughly three weeks [E2].\n\n### Key findings\n- The CFO said consolidation saved EUR 2.3 million a year [E1].\n",
+          "case_id": "F08-b",
+          "case_types": [
+            "computed_values",
+            "section_headings",
+            "titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Supplier Consolidation"
+              ],
+              "locator_label": "Q3",
+              "source_class": "interview",
+              "source_title": "Interview: Head of Procurement, Halcyon Foods",
+              "text": "We cut our packaging suppliers from 23 to 9 over eighteen months, mainly to get volume discounts."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Risks"
+              ],
+              "locator_label": "Q5",
+              "source_class": "interview",
+              "source_title": "Interview: Head of Procurement, Halcyon Foods",
+              "text": "The concern is single-sourcing. If one of those nine has a strike, we have maybe three weeks of buffer stock."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How has Halcyon Foods changed its packaging supply base?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "reduced its packaging supplier count by 61%",
+              "label": "unsupported",
+              "note": "14/23 = 60.9%, not stated",
+              "type": "computed_values"
+            },
+            {
+              "key": "In the Risks section, the interviewee says",
+              "label": "supported",
+              "note": "E2 heading",
+              "type": "section_headings"
+            },
+            {
+              "key": "The CFO said consolidation saved EUR 2.3 million",
+              "label": "unsupported",
+              "note": "interviewee is head of procurement; no savings figure in pack",
+              "type": "titles"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nThe available evidence does not give a savings figure for Halcyon's supplier consolidation. The interview says only that consolidation was pursued mainly for volume discounts [E1].\n\n### Gaps & unknowns\n- The interview does not report the value of the discounts; procurement cost data would close this gap.\n",
+          "case_id": "F08-c",
+          "case_types": [
+            "insufficiency"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Supplier Consolidation"
+              ],
+              "locator_label": "Q3",
+              "source_class": "interview",
+              "source_title": "Interview: Head of Procurement, Halcyon Foods",
+              "text": "We cut our packaging suppliers from 23 to 9 over eighteen months, mainly to get volume discounts."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Risks"
+              ],
+              "locator_label": "Q5",
+              "source_class": "interview",
+              "source_title": "Interview: Head of Procurement, Halcyon Foods",
+              "text": "The concern is single-sourcing. If one of those nine has a strike, we have maybe three weeks of buffer stock."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How much has Halcyon Foods saved from packaging supplier consolidation?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "does not give a savings figure",
+              "label": "supported",
+              "note": "true insufficiency",
+              "type": "insufficiency"
+            },
+            {
+              "key": "pursued mainly for volume discounts",
+              "label": "supported",
+              "note": "E1",
+              "type": "insufficiency"
+            },
+            {
+              "key": "does not report the value of the discounts",
+              "label": "supported",
+              "note": "true gap",
+              "type": "insufficiency"
+            }
+          ]
+        }
+      ],
+      "family_id": "F08",
+      "scenario": "Interview transcript with question locators and section headings"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nBrightwater's audited FY2025 revenue was GBP 181.7 million [E2]. This supersedes the unaudited GBP 184.2 million reported in the trading update [E2].\n\n### Conflicting evidence\n- The unaudited trading update reported GBP 184.2 million [E1].\n",
+          "case_id": "F10-a",
+          "case_types": [
+            "conflicting_evidence",
+            "dangling_reference"
+          ],
+          "expected": {
+            "conflict_present": true,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Headline Results"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Brightwater Outfitters FY2025 Trading Update",
+              "text": "FY2025 revenue: GBP 184.2 million (unaudited)."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Notes",
+                "Note 4 Revenue"
+              ],
+              "locator_label": "Page 31",
+              "source_class": "finance",
+              "source_title": "Brightwater Outfitters FY2025 Annual Report",
+              "text": "Audited FY2025 revenue was GBP 181.7 million. This supersedes the unaudited GBP 184.2 million in the trading update, after reclassifying gift-card breakage."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What was Brightwater Outfitters' FY2025 revenue?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "audited FY2025 revenue was GBP 181.7 million",
+              "label": "supported",
+              "note": "E2",
+              "type": "conflicting_evidence"
+            },
+            {
+              "key": "This supersedes the unaudited GBP 184.2 million",
+              "label": "supported",
+              "note": "antecedent supported; E2 states the supersession",
+              "type": "dangling_reference"
+            },
+            {
+              "key": "unaudited trading update reported GBP 184.2 million",
+              "label": "supported",
+              "note": "E1",
+              "type": "conflicting_evidence"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nBrightwater's FY2025 revenue was GBP 184.2 million, up 6% on FY2024 [E1]. This growth was driven by gift-card breakage [E2].\n\n### Key findings\n- Audited revenue was GBP 2.5 million lower than the trading update figure [E1][E2].\n",
+          "case_id": "F10-b",
+          "case_types": [
+            "computed_values",
+            "dangling_reference",
+            "multi_clause"
+          ],
+          "expected": {
+            "conflict_present": true,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Headline Results"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Brightwater Outfitters FY2025 Trading Update",
+              "text": "FY2025 revenue: GBP 184.2 million (unaudited)."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Notes",
+                "Note 4 Revenue"
+              ],
+              "locator_label": "Page 31",
+              "source_class": "finance",
+              "source_title": "Brightwater Outfitters FY2025 Annual Report",
+              "text": "Audited FY2025 revenue was GBP 181.7 million. This supersedes the unaudited GBP 184.2 million in the trading update, after reclassifying gift-card breakage."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What was Brightwater Outfitters' FY2025 revenue?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "FY2025 revenue was GBP 184.2 million",
+              "label": "supported",
+              "note": "backed by E1 (superseded but correctly cited)",
+              "type": "multi_clause"
+            },
+            {
+              "key": "up 6% on FY2024",
+              "label": "unsupported",
+              "note": "no growth rate; FY2024 absent from pack",
+              "type": "multi_clause"
+            },
+            {
+              "key": "This growth was driven by gift-card breakage",
+              "label": "unsupported",
+              "note": "antecedent claim unsupported; breakage was a reclassification",
+              "type": "dangling_reference"
+            },
+            {
+              "key": "GBP 2.5 million lower than the trading update",
+              "label": "unsupported",
+              "note": "184.2 - 181.7 not stated",
+              "type": "computed_values"
+            }
+          ]
+        }
+      ],
+      "family_id": "F10",
+      "scenario": "Unaudited figure superseded by audited annual report"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nVantor held a 22.5% value share in 2025 [E1]. Its average price per litre was 26% above the category average in 2024 [E2].\n\n### Key findings\n- Private label led on volume with 30.1% [E1].\n",
+          "case_id": "F17-a",
+          "case_types": [
+            "row_labels",
+            "table_headers",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Market Structure",
+                "Share by Brand"
+              ],
+              "locator_label": "Page 6",
+              "source_class": "market_report",
+              "source_title": "Vantor Paints Category Review 2026 edition",
+              "text": "Brand | Volume share 2025 (%) | Value share 2025 (%)\nVantor | 18.0 | 22.5\nCrestline | 24.3 | 21.0\nPrivate label | 30.1 | 19.4"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Market Structure",
+                "Price Positioning"
+              ],
+              "locator_label": "Page 7",
+              "source_class": "market_report",
+              "source_title": "Vantor Paints Category Review 2026 edition",
+              "text": "Vantor's average price per litre was 26% above the category average in 2025."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Vantor's position in the UK paint market?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Vantor held a 22.5% value share in 2025",
+              "label": "supported",
+              "note": "Value share column",
+              "type": "table_headers"
+            },
+            {
+              "key": "26% above the category average in 2024",
+              "label": "unsupported",
+              "note": "E2 is 2025; 2024 appears nowhere in this pack or question",
+              "type": "years_dates"
+            },
+            {
+              "key": "Private label led on volume with 30.1%",
+              "label": "supported",
+              "note": "Private label row",
+              "type": "row_labels"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nVantor led the market with an 18.0% value share in 2025 [E1]. Under Price Positioning, Vantor is priced 26% above the category average per litre [E2].\n\n### Key findings\n- Crestline's value share was 24.3% [E1].\n",
+          "case_id": "F17-b",
+          "case_types": [
+            "section_headings",
+            "table_headers"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Market Structure",
+                "Share by Brand"
+              ],
+              "locator_label": "Page 6",
+              "source_class": "market_report",
+              "source_title": "Vantor Paints Category Review 2026 edition",
+              "text": "Brand | Volume share 2025 (%) | Value share 2025 (%)\nVantor | 18.0 | 22.5\nCrestline | 24.3 | 21.0\nPrivate label | 30.1 | 19.4"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Market Structure",
+                "Price Positioning"
+              ],
+              "locator_label": "Page 7",
+              "source_class": "market_report",
+              "source_title": "Vantor Paints Category Review 2026 edition",
+              "text": "Vantor's average price per litre was 26% above the category average in 2025."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Vantor's position in the UK paint market?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "led the market with an 18.0% value share",
+              "label": "unsupported",
+              "note": "18.0 is Vantor's volume share; value share is 22.5",
+              "type": "table_headers"
+            },
+            {
+              "key": "Under Price Positioning, Vantor is priced",
+              "label": "supported",
+              "note": "E2 heading",
+              "type": "section_headings"
+            },
+            {
+              "key": "Crestline's value share was 24.3%",
+              "label": "unsupported",
+              "note": "24.3 is Crestline's volume share",
+              "type": "table_headers"
+            }
+          ]
+        }
+      ],
+      "family_id": "F17",
+      "scenario": "Brand share table with volume and value columns"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe store manager reports weekend footfall down about a fifth since the tram works began in May 2026 [E1]. In week 2026-W30 the store recorded <b>8,412 visits</b> against 10,377 a year earlier [E2].\n\n### Key findings\n- Visits fell 18.9% year on year in week 2026-W30 [E2].\n",
+          "case_id": "F18-a",
+          "case_types": [
+            "computed_values",
+            "leak",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Footfall"
+              ],
+              "locator_label": "Q2",
+              "source_class": "interview",
+              "source_title": "Interview: Brightwater Store Manager, Manchester",
+              "text": "Weekend footfall is down about a fifth since the tram works started in May 2026."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Footfall",
+                "Manchester"
+              ],
+              "locator_label": "Row 5",
+              "source_class": "finance",
+              "source_title": "Brightwater Footfall Counter Export",
+              "text": "store: Manchester; week: 2026-W30; visits: 8,412; visits_prior_year: 10,377"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How has footfall changed at Brightwater's Manchester store?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "down about a fifth since the tram works began in May 2026",
+              "label": "supported",
+              "note": "E1",
+              "type": "years_dates"
+            },
+            {
+              "key": "against 10,377 a year earlier",
+              "label": "supported",
+              "note": "HTML tags in the sentence; figures match visits and visits_prior_year",
+              "type": "leak"
+            },
+            {
+              "key": "Visits fell 18.9% year on year",
+              "label": "unsupported",
+              "note": "1 - 8,412/10,377 computed, not stated",
+              "type": "computed_values"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nFootfall is down about a fifth according to the store manager (https://intranet.brightwater.example/footfall) [E1]. The counter logged 8,412 visits in week 2026-W30 [E2].\n\n### Key findings\n- Footfall fell by 1,965 visits in July 2026 [E2].\n",
+          "case_id": "F18-b",
+          "case_types": [
+            "computed_values",
+            "leak",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Footfall"
+              ],
+              "locator_label": "Q2",
+              "source_class": "interview",
+              "source_title": "Interview: Brightwater Store Manager, Manchester",
+              "text": "Weekend footfall is down about a fifth since the tram works started in May 2026."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Footfall",
+                "Manchester"
+              ],
+              "locator_label": "Row 5",
+              "source_class": "finance",
+              "source_title": "Brightwater Footfall Counter Export",
+              "text": "store: Manchester; week: 2026-W30; visits: 8,412; visits_prior_year: 10,377"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How has footfall changed at Brightwater's Manchester store?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "down about a fifth according to the store manager",
+              "label": "supported",
+              "note": "URL in sentence; claim backed by E1",
+              "type": "leak"
+            },
+            {
+              "key": "logged 8,412 visits in week 2026-W30",
+              "label": "supported",
+              "note": "ISO week in E2",
+              "type": "years_dates"
+            },
+            {
+              "key": "fell by 1,965 visits in July 2026",
+              "label": "unsupported",
+              "note": "difference not stated; July 2026 not in pack",
+              "type": "computed_values"
+            }
+          ]
+        }
+      ],
+      "family_id": "F18",
+      "scenario": "Manager interview plus footfall counter row; HTML and URL leaks"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nKestrel Air carried 486,000 passengers in September 2026 [E1]. Three new Bristol routes start in November 2026 [E2].\n\n### Key findings\n- Load factor was 81.4% [E1] (source table: KESTREL/STATS@v1:P1).\n",
+          "case_id": "F21-a",
+          "case_types": [
+            "foreign_handle",
+            "quantities",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Passengers"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Kestrel Air Traffic Statistics September 2026",
+              "text": "Passengers carried in September 2026: 486,000, up 6.1% year on year. Load factor: 81.4%."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "New Routes"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "strategy",
+              "source_title": "Kestrel Air Network Plan Winter 2026",
+              "text": "Three new routes from Bristol start in November 2026: Bergen, Turin and Porto."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How is Kestrel Air's traffic trending, and which routes are being added?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "carried 486,000 passengers in September 2026",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantities"
+            },
+            {
+              "key": "Three new Bristol routes start in November 2026",
+              "label": "supported",
+              "note": "E2",
+              "type": "years_dates"
+            },
+            {
+              "key": "Load factor was 81.4%",
+              "label": "supported",
+              "note": "raw internal handle in text; claim backed by E1",
+              "type": "foreign_handle"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nKestrel carried 486 million passengers in September 2026 [E1]. New routes will serve Bergen, Turin and Porto [E2].\n\n### Key findings\n- On-time performance was 88% [E5].\n- Load factor reached 81.4% [[KESTREL/STATS@v1:P1]].\n",
+          "case_id": "F21-b",
+          "case_types": [
+            "fabricated_citation",
+            "foreign_handle",
+            "million_billion",
+            "section_headings"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Passengers"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Kestrel Air Traffic Statistics September 2026",
+              "text": "Passengers carried in September 2026: 486,000, up 6.1% year on year. Load factor: 81.4%."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "New Routes"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "strategy",
+              "source_title": "Kestrel Air Network Plan Winter 2026",
+              "text": "Three new routes from Bristol start in November 2026: Bergen, Turin and Porto."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How is Kestrel Air's traffic trending, and which routes are being added?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "carried 486 million passengers",
+              "label": "unsupported",
+              "note": "486,000, not million",
+              "type": "million_billion"
+            },
+            {
+              "key": "New routes will serve Bergen, Turin and Porto",
+              "label": "supported",
+              "note": "New Routes section of E2",
+              "type": "section_headings"
+            },
+            {
+              "key": "On-time performance was 88%",
+              "label": "unsupported",
+              "note": "E5 not in pack; absent",
+              "type": "fabricated_citation"
+            },
+            {
+              "key": "Load factor reached 81.4%",
+              "label": "unsupported",
+              "note": "after marker removal the bullet carries a figure and no valid citation",
+              "type": "foreign_handle"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nPassenger numbers rose 6.1% to 486,000 [E3]. The winter network plan adds Bergen, Turin and Porto from Bristol [E2].\n\n### Key findings\n- Load factor was 81.4% in September 2026 [E1].\n",
+          "case_id": "F21-c",
+          "case_types": [
+            "fabricated_citation",
+            "percentages",
+            "titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Passengers"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Kestrel Air Traffic Statistics September 2026",
+              "text": "Passengers carried in September 2026: 486,000, up 6.1% year on year. Load factor: 81.4%."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "New Routes"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "strategy",
+              "source_title": "Kestrel Air Network Plan Winter 2026",
+              "text": "Three new routes from Bristol start in November 2026: Bergen, Turin and Porto."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How is Kestrel Air's traffic trending, and which routes are being added?",
+          "retry_answer": null,
+          "units": [
+            {
+              "correct_alias": "E1",
+              "key": "Passenger numbers rose 6.1% to 486,000",
+              "label": "miscited",
+              "note": "E3 not in pack; both figures are in exactly one pack item",
+              "type": "fabricated_citation"
+            },
+            {
+              "key": "winter network plan adds Bergen, Turin and Porto",
+              "label": "supported",
+              "note": "Winter from E2 source title",
+              "type": "titles"
+            },
+            {
+              "key": "Load factor was 81.4% in September 2026",
+              "label": "supported",
+              "note": "E1",
+              "type": "percentages"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nKestrel Air carried 486,000 passengers in September 2026, up 6.1% year on year [E1]. Three routes from Bristol launch in November 2026 [E2].\n\n### Key findings\n- Load factor reached 81.4% [E1].\n- The new destinations are Bergen, Turin and Porto [E2].\n",
+          "case_id": "F21-d",
+          "case_types": [
+            "citation_cap"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "too_many_citations"
+            ]
+          },
+          "max_citations": 3,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Passengers"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Kestrel Air Traffic Statistics September 2026",
+              "text": "Passengers carried in September 2026: 486,000, up 6.1% year on year. Load factor: 81.4%."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "New Routes"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "strategy",
+              "source_title": "Kestrel Air Network Plan Winter 2026",
+              "text": "Three new routes from Bristol start in November 2026: Bergen, Turin and Porto."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How is Kestrel Air's traffic trending, and which routes are being added?",
+          "retry_answer": "### Answer\nKestrel carried 486,000 passengers in September 2026 [E1]. Load factor was 81.4% [E1].\n\n### Key findings\n- Bergen, Turin and Porto open in November 2026 [E2].\n- Traffic was up 6.1% [E1].\n",
+          "units": [
+            {
+              "key": "carried 486,000 passengers in September 2026, up 6.1%",
+              "label": "supported",
+              "note": "E1",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Three routes from Bristol launch in November 2026",
+              "label": "supported",
+              "note": "E2",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Load factor reached 81.4%",
+              "label": "supported",
+              "note": "E1",
+              "type": "citation_cap"
+            },
+            {
+              "key": "new destinations are Bergen, Turin and Porto",
+              "label": "supported",
+              "note": "E2",
+              "type": "citation_cap"
+            }
+          ]
+        }
+      ],
+      "family_id": "F21",
+      "scenario": "Airline traffic page and network plan; handles, invented aliases, cap"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nSablewood completed 1,912 homes in the six months to 30 June 2026 [E1]. Ashby Fields received planning consent for 420 plots on 14 August 2026 [E2].\n\n### Key findings\n- Prior-year H1 completions totalled 1,744 homes [E1].\n",
+          "case_id": "F22-a",
+          "case_types": [
+            "quantity_as_year_shape",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Completions"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Sablewood Homes Trading Statement",
+              "text": "Completions in the six months to 30 June 2026 were 1,912 homes, compared with 1,744 in the prior-year period. Average selling price was GBP 342,000."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Planning"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "strategy",
+              "source_title": "Sablewood Homes Land Bank Note",
+              "text": "Planning consent for the Ashby Fields site (420 plots) was granted on 2026-08-14."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How many homes did Sablewood complete in H1 2026, and what is in the pipeline?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "completed 1,912 homes in the six months",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantity_as_year_shape"
+            },
+            {
+              "key": "420 plots on 14 August 2026",
+              "label": "supported",
+              "note": "ISO date 2026-08-14 restated",
+              "type": "years_dates"
+            },
+            {
+              "key": "Prior-year H1 completions totalled 1,744 homes",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantity_as_year_shape"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nCompletions rose 9.6% to 1,912 homes in H1 2026 [E1]. Consent for Ashby Fields was granted in September 2026 [E2].\n\n### Key findings\n- Average selling price was GBP 342 million [E1].\n",
+          "case_id": "F22-b",
+          "case_types": [
+            "computed_values",
+            "million_billion",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "answer_missing"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Completions"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Sablewood Homes Trading Statement",
+              "text": "Completions in the six months to 30 June 2026 were 1,912 homes, compared with 1,744 in the prior-year period. Average selling price was GBP 342,000."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Planning"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "strategy",
+              "source_title": "Sablewood Homes Land Bank Note",
+              "text": "Planning consent for the Ashby Fields site (420 plots) was granted on 2026-08-14."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How many homes did Sablewood complete in H1 2026, and what is in the pipeline?",
+          "retry_answer": "### Answer\nCompletions grew by 168 homes to 1,912 [E1]. Ashby Fields was approved in September 2026 [E2].\n",
+          "units": [
+            {
+              "key": "Completions rose 9.6% to 1,912 homes",
+              "label": "unsupported",
+              "note": "1,912/1,744 - 1 computed, not stated",
+              "type": "computed_values"
+            },
+            {
+              "key": "granted in September 2026",
+              "label": "unsupported",
+              "note": "consent was 2026-08-14",
+              "type": "years_dates"
+            },
+            {
+              "key": "Average selling price was GBP 342 million",
+              "label": "unsupported",
+              "note": "GBP 342,000",
+              "type": "million_billion"
+            }
+          ]
+        }
+      ],
+      "family_id": "F22",
+      "scenario": "Housebuilder completions with year-like counts and an ISO date"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\n61% of patients booked their last appointment online [E1]. No-show rates fell from 9% to 6% after SMS reminders were introduced in January 2026 [E2]. [inference] This suggests reminders are an effective lever.\n",
+          "case_id": "F23-a",
+          "case_types": [
+            "dangling_reference",
+            "percentages",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Booking"
+              ],
+              "locator_label": "Q3",
+              "source_class": "survey",
+              "source_title": "Marlowe Dental Patient Survey 2026",
+              "text": "61% of patients booked their last appointment online (n=860)."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "No-shows"
+              ],
+              "locator_label": "Page 8",
+              "source_class": "strategy",
+              "source_title": "Marlowe Dental Operations Review",
+              "text": "No-show rates fell from 9% to 6% after SMS reminders were introduced in January 2026."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How do Marlowe Dental patients book, and what reduced no-shows?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "61% of patients booked their last appointment online",
+              "label": "supported",
+              "note": "E1",
+              "type": "percentages"
+            },
+            {
+              "key": "SMS reminders were introduced in January 2026",
+              "label": "supported",
+              "note": "E2",
+              "type": "years_dates"
+            },
+            {
+              "key": "This suggests reminders are an effective lever",
+              "label": "supported",
+              "note": "antecedent supported; inference adds no numbers",
+              "type": "dangling_reference"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\n61% of patients book online [E1], and online booking cut no-shows by a third [E2]. This reduction saved Marlowe GBP 1.4 million [E2].\n\n### Key findings\n- No-shows fell to 6% [E2].\n",
+          "case_id": "F23-b",
+          "case_types": [
+            "dangling_reference",
+            "multi_clause",
+            "percentages"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Booking"
+              ],
+              "locator_label": "Q3",
+              "source_class": "survey",
+              "source_title": "Marlowe Dental Patient Survey 2026",
+              "text": "61% of patients booked their last appointment online (n=860)."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "No-shows"
+              ],
+              "locator_label": "Page 8",
+              "source_class": "strategy",
+              "source_title": "Marlowe Dental Operations Review",
+              "text": "No-show rates fell from 9% to 6% after SMS reminders were introduced in January 2026."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How do Marlowe Dental patients book, and what reduced no-shows?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "61% of patients book online",
+              "label": "supported",
+              "note": "E1",
+              "type": "multi_clause"
+            },
+            {
+              "key": "online booking cut no-shows by a third",
+              "label": "unsupported",
+              "note": "E2 credits SMS reminders; one third is computed",
+              "type": "multi_clause"
+            },
+            {
+              "key": "This reduction saved Marlowe GBP 1.4 million",
+              "label": "unsupported",
+              "note": "antecedent unsupported; figure absent",
+              "type": "dangling_reference"
+            },
+            {
+              "key": "No-shows fell to 6%",
+              "label": "supported",
+              "note": "E2",
+              "type": "percentages"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nMost patients book online [E1]. The survey sample was 860 patients [E1]. No-shows fell from 9% to 6% [E2]. SMS reminders drove the fall [E2]. Online booking also reduced no-shows by 3 points [E1].\n",
+          "case_id": "F23-c",
+          "case_types": [
+            "computed_values",
+            "percentages",
+            "quantities",
+            "titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "answer_too_long"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Booking"
+              ],
+              "locator_label": "Q3",
+              "source_class": "survey",
+              "source_title": "Marlowe Dental Patient Survey 2026",
+              "text": "61% of patients booked their last appointment online (n=860)."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "No-shows"
+              ],
+              "locator_label": "Page 8",
+              "source_class": "strategy",
+              "source_title": "Marlowe Dental Operations Review",
+              "text": "No-show rates fell from 9% to 6% after SMS reminders were introduced in January 2026."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How do Marlowe Dental patients book, and what reduced no-shows?",
+          "retry_answer": "### Answer\n61% book online [E1]. The sample was 860 [E1]. No-shows fell to 6% [E2]. Reminders started in January 2026 [E2]. Online booking helped too [E1].\n",
+          "units": [
+            {
+              "key": "Most patients book online",
+              "label": "supported",
+              "note": "61% is a majority",
+              "type": "percentages"
+            },
+            {
+              "key": "survey sample was 860 patients",
+              "label": "supported",
+              "note": "n=860",
+              "type": "quantities"
+            },
+            {
+              "key": "No-shows fell from 9% to 6%",
+              "label": "supported",
+              "note": "E2",
+              "type": "percentages"
+            },
+            {
+              "key": "SMS reminders drove the fall",
+              "label": "supported",
+              "note": "E2 text",
+              "type": "titles"
+            },
+            {
+              "key": "Online booking also reduced no-shows by 3 points",
+              "label": "unsupported",
+              "note": "E1 says nothing about no-shows; 9 - 6 computed",
+              "type": "computed_values"
+            }
+          ]
+        }
+      ],
+      "family_id": "F23",
+      "scenario": "Survey and operations review; This-sentences after good and bad claims"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nAccording to page 12 of the Claims Report H1 2026, motor claims frequency was 7.8 per 100 policies [E1]. In the Home section, escape-of-water claims made up 38% of home claim costs [E2].\n\n### Key findings\n- Motor frequency is reported under Claims Frequency [E1].\n",
+          "case_id": "F25-a",
+          "case_types": [
+            "section_headings",
+            "titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Motor",
+                "Claims Frequency"
+              ],
+              "locator_label": "Page 12",
+              "source_class": "finance",
+              "source_title": "Fenwright Insurance Claims Report H1 2026",
+              "text": "Motor claims frequency was 7.8 per 100 policies in H1 2026."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Home",
+                "Escape of Water"
+              ],
+              "locator_label": "Page 15",
+              "source_class": "finance",
+              "source_title": "Fenwright Insurance Claims Report H1 2026",
+              "text": "Escape-of-water claims accounted for 38% of home claim costs."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What does Fenwright's claims report say about motor and home claims?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "According to page 12 of the Claims Report H1 2026",
+              "label": "supported",
+              "note": "locator and source title of E1",
+              "type": "titles"
+            },
+            {
+              "key": "In the Home section, escape-of-water claims",
+              "label": "supported",
+              "note": "E2",
+              "type": "section_headings"
+            },
+            {
+              "key": "reported under Claims Frequency",
+              "label": "supported",
+              "note": "E1 heading",
+              "type": "section_headings"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nPage 14 of the Claims Report shows motor frequency at 7.8 per 100 policies [E1]. Escape-of-water claims were 38% of all home claims [E2].\n\n### Key findings\n- Motor claims frequency was 7.8% [E1].\n",
+          "case_id": "F25-b",
+          "case_types": [
+            "invalid_unit_conversion",
+            "percentages",
+            "titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "answer_missing"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Motor",
+                "Claims Frequency"
+              ],
+              "locator_label": "Page 12",
+              "source_class": "finance",
+              "source_title": "Fenwright Insurance Claims Report H1 2026",
+              "text": "Motor claims frequency was 7.8 per 100 policies in H1 2026."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Home",
+                "Escape of Water"
+              ],
+              "locator_label": "Page 15",
+              "source_class": "finance",
+              "source_title": "Fenwright Insurance Claims Report H1 2026",
+              "text": "Escape-of-water claims accounted for 38% of home claim costs."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What does Fenwright's claims report say about motor and home claims?",
+          "retry_answer": "### Answer\nPage 14 puts motor frequency at 7.8% [E1]. Water claims were 38% of home claims [E2].\n",
+          "units": [
+            {
+              "key": "Page 14 of the Claims Report shows",
+              "label": "unsupported",
+              "note": "E1 is Page 12",
+              "type": "titles"
+            },
+            {
+              "key": "Escape-of-water claims were 38% of all home claims",
+              "label": "unsupported",
+              "note": "38% is of claim costs, not claim count",
+              "type": "percentages"
+            },
+            {
+              "key": "Motor claims frequency was 7.8%",
+              "label": "unsupported",
+              "note": "a rate per 100 policies is not stated as a share",
+              "type": "invalid_unit_conversion"
+            }
+          ]
+        }
+      ],
+      "family_id": "F25",
+      "scenario": "Insurance report with page locators and nested headings"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe North zone is above target, at 48.6 Ml per day against a 45.0 target [E1]. The South zone is 10% below its 41.0 target at 39.2 Ml per day [E2].\n\n### Gaps & unknowns\n- The extract does not cover all zones, so company-wide performance is not established.\n",
+          "case_id": "F27-a",
+          "case_types": [
+            "insufficiency",
+            "row_labels",
+            "unsupported_calculation"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Leakage",
+                "2025-26"
+              ],
+              "locator_label": "Row 21",
+              "source_class": "finance",
+              "source_title": "Northmere Water Performance Dataset",
+              "text": "zone: North; leakage_ml_per_day: 48.6; target_ml_per_day: 45.0"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Leakage",
+                "2025-26"
+              ],
+              "locator_label": "Row 22",
+              "source_class": "finance",
+              "source_title": "Northmere Water Performance Dataset",
+              "text": "zone: South; leakage_ml_per_day: 39.2; target_ml_per_day: 41.0"
+            }
+          ],
+          "pack_truncated": true,
+          "question": "Is Northmere Water meeting its leakage targets?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "North zone is above target, at 48.6 Ml per day",
+              "label": "supported",
+              "note": "E1",
+              "type": "row_labels"
+            },
+            {
+              "key": "South zone is 10% below its 41.0 target",
+              "label": "unsupported",
+              "note": "39.2 is about 4.4% below 41.0, and no gap is stated",
+              "type": "unsupported_calculation"
+            },
+            {
+              "key": "does not cover all zones",
+              "label": "supported",
+              "note": "truncated pack",
+              "type": "insufficiency"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nNorthmere leaks 87.8 Ml per day across both zones [E1][E2]. The South zone beat its leakage target [E2].\n\n### Key findings\n- North exceeds its target by 3.6 Ml per day [E1].\n",
+          "case_id": "F27-b",
+          "case_types": [
+            "computed_values",
+            "row_labels"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "gaps_missing"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Leakage",
+                "2025-26"
+              ],
+              "locator_label": "Row 21",
+              "source_class": "finance",
+              "source_title": "Northmere Water Performance Dataset",
+              "text": "zone: North; leakage_ml_per_day: 48.6; target_ml_per_day: 45.0"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Leakage",
+                "2025-26"
+              ],
+              "locator_label": "Row 22",
+              "source_class": "finance",
+              "source_title": "Northmere Water Performance Dataset",
+              "text": "zone: South; leakage_ml_per_day: 39.2; target_ml_per_day: 41.0"
+            }
+          ],
+          "pack_truncated": true,
+          "question": "Is Northmere Water meeting its leakage targets?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "leaks 87.8 Ml per day across both zones",
+              "label": "unsupported",
+              "note": "sum not stated",
+              "type": "computed_values"
+            },
+            {
+              "key": "South zone beat its leakage target",
+              "label": "supported",
+              "note": "39.2 < 41.0",
+              "type": "row_labels"
+            },
+            {
+              "key": "exceeds its target by 3.6 Ml per day",
+              "label": "unsupported",
+              "note": "difference",
+              "type": "computed_values"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nNorth zone leakage was 48.6 megalitres per day in 2025-26 [E1]. South zone leakage was 39.2 litres per day [E2].\n\n### Gaps & unknowns\n- The dataset does not report leakage for other zones.\n",
+          "case_id": "F27-c",
+          "case_types": [
+            "insufficiency",
+            "invalid_unit_conversion",
+            "valid_unit_conversion"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Leakage",
+                "2025-26"
+              ],
+              "locator_label": "Row 21",
+              "source_class": "finance",
+              "source_title": "Northmere Water Performance Dataset",
+              "text": "zone: North; leakage_ml_per_day: 48.6; target_ml_per_day: 45.0"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Leakage",
+                "2025-26"
+              ],
+              "locator_label": "Row 22",
+              "source_class": "finance",
+              "source_title": "Northmere Water Performance Dataset",
+              "text": "zone: South; leakage_ml_per_day: 39.2; target_ml_per_day: 41.0"
+            }
+          ],
+          "pack_truncated": true,
+          "question": "Is Northmere Water meeting its leakage targets?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "leakage was 48.6 megalitres per day in 2025-26",
+              "label": "supported",
+              "note": "ml_per_day field read as megalitres (Ml), heading 2025-26",
+              "type": "valid_unit_conversion"
+            },
+            {
+              "key": "leakage was 39.2 litres per day",
+              "label": "unsupported",
+              "note": "megalitres, not litres",
+              "type": "invalid_unit_conversion"
+            },
+            {
+              "key": "does not report leakage for other zones",
+              "label": "supported",
+              "note": "truncated pack",
+              "type": "insufficiency"
+            }
+          ]
+        }
+      ],
+      "family_id": "F27",
+      "scenario": "Truncated utility dataset rows; Gaps section required"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe 2026 edition puts 2025 footwear sales at GBP 640 million [E1]. Apparel made up about two thirds of segment sales at GBP 1,120 million [E1].\n\n### Key findings\n- The 2025 edition recorded apparel sales of GBP 1,090 million for 2024 [E2].\n",
+          "case_id": "F29-a",
+          "case_types": [
+            "edition_labels",
+            "unsupported_calculation"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Segments",
+                "Sales by Segment"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "market_report",
+              "source_title": "Pinecrest Outdoor Retail Index, 2026 edition",
+              "text": "Segment | 2025 sales (GBP m) | Growth vs 2024 (%)\nFootwear | 640 | 4.1\nApparel | 1,120 | 2.7\nEquipment | 395 | -1.3"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Segments",
+                "Sales by Segment"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "market_report",
+              "source_title": "Pinecrest Outdoor Retail Index, 2025 edition",
+              "text": "Segment | 2024 sales (GBP m)\nFootwear | 615\nApparel | 1,090\nEquipment | 400"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How large are the UK outdoor retail segments?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "2026 edition puts 2025 footwear sales at GBP 640 million",
+              "label": "supported",
+              "note": "E1 title; GBP m column",
+              "type": "edition_labels"
+            },
+            {
+              "key": "about two thirds of segment sales",
+              "label": "unsupported",
+              "note": "1,120 of 2,155 is about 52%; no share stated",
+              "type": "unsupported_calculation"
+            },
+            {
+              "key": "2025 edition recorded apparel sales of GBP 1,090 million",
+              "label": "supported",
+              "note": "E2",
+              "type": "edition_labels"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nApparel sales were GBP 1.12 billion in 2025 [E1]. The 2024 edition reported footwear sales of GBP 615 million [E2].\n\n### Key findings\n- Equipment sales were GBP 395 billion [E1].\n- Apparel sales grew 2.7% [E2].\n",
+          "case_id": "F29-b",
+          "case_types": [
+            "edition_labels",
+            "million_billion",
+            "table_headers",
+            "valid_unit_conversion"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Segments",
+                "Sales by Segment"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "market_report",
+              "source_title": "Pinecrest Outdoor Retail Index, 2026 edition",
+              "text": "Segment | 2025 sales (GBP m) | Growth vs 2024 (%)\nFootwear | 640 | 4.1\nApparel | 1,120 | 2.7\nEquipment | 395 | -1.3"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Segments",
+                "Sales by Segment"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "market_report",
+              "source_title": "Pinecrest Outdoor Retail Index, 2025 edition",
+              "text": "Segment | 2024 sales (GBP m)\nFootwear | 615\nApparel | 1,090\nEquipment | 400"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How large are the UK outdoor retail segments?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Apparel sales were GBP 1.12 billion in 2025",
+              "label": "supported",
+              "note": "GBP 1,120 m",
+              "type": "valid_unit_conversion"
+            },
+            {
+              "key": "2024 edition reported footwear sales",
+              "label": "unsupported",
+              "note": "615 is in the 2025 edition; no 2024 edition exists in pack",
+              "type": "edition_labels"
+            },
+            {
+              "key": "Equipment sales were GBP 395 billion",
+              "label": "unsupported",
+              "note": "GBP m",
+              "type": "million_billion"
+            },
+            {
+              "correct_alias": "E1",
+              "key": "Apparel sales grew 2.7%",
+              "label": "miscited",
+              "note": "2.7 is only in E1's growth column",
+              "type": "table_headers"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nFootwear sales reached EUR 640 million in 2025 [E1]. Apparel sales were GBP 1,090 million in 2024 according to the 2025 edition [E2].\n\n### Key findings\n- Equipment was the only segment to decline, by 1.3% [E1].\n",
+          "case_id": "F29-c",
+          "case_types": [
+            "currency_mismatch",
+            "edition_labels",
+            "table_headers"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Segments",
+                "Sales by Segment"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "market_report",
+              "source_title": "Pinecrest Outdoor Retail Index, 2026 edition",
+              "text": "Segment | 2025 sales (GBP m) | Growth vs 2024 (%)\nFootwear | 640 | 4.1\nApparel | 1,120 | 2.7\nEquipment | 395 | -1.3"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Segments",
+                "Sales by Segment"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "market_report",
+              "source_title": "Pinecrest Outdoor Retail Index, 2025 edition",
+              "text": "Segment | 2024 sales (GBP m)\nFootwear | 615\nApparel | 1,090\nEquipment | 400"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How large are the UK outdoor retail segments?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Footwear sales reached EUR 640 million",
+              "label": "unsupported",
+              "note": "GBP m",
+              "type": "currency_mismatch"
+            },
+            {
+              "key": "GBP 1,090 million in 2024 according to the 2025 edition",
+              "label": "supported",
+              "note": "E2",
+              "type": "edition_labels"
+            },
+            {
+              "key": "only segment to decline, by 1.3%",
+              "label": "supported",
+              "note": "Growth vs 2024 column",
+              "type": "table_headers"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nFootwear sales were GBP 640 million in 2025 [E1]. Apparel sales were GBP 1,120 million [E1].\n\n### Key findings\n- Equipment sales fell 1.3% [E1].\n- In 2024 apparel sales were GBP 1,090 million [E2].\n",
+          "case_id": "F29-d",
+          "case_types": [
+            "citation_cap"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 4,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Segments",
+                "Sales by Segment"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "market_report",
+              "source_title": "Pinecrest Outdoor Retail Index, 2026 edition",
+              "text": "Segment | 2025 sales (GBP m) | Growth vs 2024 (%)\nFootwear | 640 | 4.1\nApparel | 1,120 | 2.7\nEquipment | 395 | -1.3"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Segments",
+                "Sales by Segment"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "market_report",
+              "source_title": "Pinecrest Outdoor Retail Index, 2025 edition",
+              "text": "Segment | 2024 sales (GBP m)\nFootwear | 615\nApparel | 1,090\nEquipment | 400"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How large are the UK outdoor retail segments?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Footwear sales were GBP 640 million in 2025",
+              "label": "supported",
+              "note": "E1",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Apparel sales were GBP 1,120 million",
+              "label": "supported",
+              "note": "E1",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Equipment sales fell 1.3%",
+              "label": "supported",
+              "note": "E1",
+              "type": "citation_cap"
+            },
+            {
+              "key": "In 2024 apparel sales were GBP 1,090 million",
+              "label": "supported",
+              "note": "E2",
+              "type": "citation_cap"
+            }
+          ]
+        }
+      ],
+      "family_id": "F29",
+      "scenario": "Two editions of an index with different year columns, no conflict"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nArdent Bank's gross SME lending was GBP 3.4 billion in 2025 [E1]. Loan decisions now take about nine working days [E2].\n\n### Key findings\n- Green finance made up 22% of 2025 SME lending, roughly GBP 0.5 billion [E1].\n",
+          "case_id": "F32-a",
+          "case_types": [
+            "million_billion",
+            "multi_clause",
+            "quantities",
+            "unsupported_calculation"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Lending Volumes"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "finance",
+              "source_title": "Ardent Bank SME Lending Factbook",
+              "text": "Gross SME lending in 2025: GBP 3.4 billion, of which 22% was green finance."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Approval Times"
+              ],
+              "locator_label": "Q11",
+              "source_class": "interview",
+              "source_title": "Ardent Bank SME Customer Interviews",
+              "text": "A typical SME loan now takes nine working days from application to decision, down from fourteen."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How much does Ardent Bank lend to SMEs, and how fast are decisions?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "gross SME lending was GBP 3.4 billion",
+              "label": "supported",
+              "note": "E1",
+              "type": "million_billion"
+            },
+            {
+              "key": "Loan decisions now take about nine working days",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "Green finance made up 22%",
+              "label": "supported",
+              "note": "E1",
+              "type": "multi_clause"
+            },
+            {
+              "key": "roughly GBP 0.5 billion",
+              "label": "unsupported",
+              "note": "22% of 3.4bn is about 0.75bn; not stated",
+              "type": "unsupported_calculation"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nArdent lent GBP 3.4 billion to SMEs in 2025 [E1]. Green finance lending totalled GBP 748 million [E1].\n\n### Key findings\n- SME lending reached GBP 3.4 billion [E2].\n",
+          "case_id": "F32-b",
+          "case_types": [
+            "back_reference",
+            "computed_values",
+            "million_billion"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Lending Volumes"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "finance",
+              "source_title": "Ardent Bank SME Lending Factbook",
+              "text": "Gross SME lending in 2025: GBP 3.4 billion, of which 22% was green finance."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Approval Times"
+              ],
+              "locator_label": "Q11",
+              "source_class": "interview",
+              "source_title": "Ardent Bank SME Customer Interviews",
+              "text": "A typical SME loan now takes nine working days from application to decision, down from fourteen."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How much does Ardent Bank lend to SMEs, and how fast are decisions?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Ardent lent GBP 3.4 billion to SMEs",
+              "label": "supported",
+              "note": "E1",
+              "type": "million_billion"
+            },
+            {
+              "key": "Green finance lending totalled GBP 748 million",
+              "label": "unsupported",
+              "note": "22% x 3.4bn computed, not stated",
+              "type": "computed_values"
+            },
+            {
+              "correct_alias": "E1",
+              "key": "SME lending reached GBP 3.4 billion",
+              "label": "miscited",
+              "note": "cited to E1 above, restated citing E2",
+              "type": "back_reference"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nSME loans take nine working days to decide, <a href=\"https://ardent.example/sme\">per customer interviews</a> [E2]. Lending was GBP 3.4 billion in 2025 [[ARDENT/FACTBOOK@v3:P4]].\n\n### Key findings\n- 22% of SME lending was green finance [E1].\n- Approval rates were 64% [E3].\n",
+          "case_id": "F32-c",
+          "case_types": [
+            "fabricated_citation",
+            "foreign_handle",
+            "leak",
+            "percentages"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Lending Volumes"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "finance",
+              "source_title": "Ardent Bank SME Lending Factbook",
+              "text": "Gross SME lending in 2025: GBP 3.4 billion, of which 22% was green finance."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Approval Times"
+              ],
+              "locator_label": "Q11",
+              "source_class": "interview",
+              "source_title": "Ardent Bank SME Customer Interviews",
+              "text": "A typical SME loan now takes nine working days from application to decision, down from fourteen."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How much does Ardent Bank lend to SMEs, and how fast are decisions?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "SME loans take nine working days to decide",
+              "label": "supported",
+              "note": "anchor tag; E2",
+              "type": "leak"
+            },
+            {
+              "key": "Lending was GBP 3.4 billion in 2025",
+              "label": "unsupported",
+              "note": "after marker removal the sentence has a figure and no valid citation",
+              "type": "foreign_handle"
+            },
+            {
+              "key": "22% of SME lending was green finance",
+              "label": "supported",
+              "note": "E1",
+              "type": "percentages"
+            },
+            {
+              "key": "Approval rates were 64%",
+              "label": "unsupported",
+              "note": "E3 not in pack; absent",
+              "type": "fabricated_citation"
+            }
+          ]
+        }
+      ],
+      "family_id": "F32",
+      "scenario": "Bank factbook and interviews; leaks, handles and back-references"
+    }
+  ],
+  "seed": 20261006,
+  "split": "holdout",
+  "version": "verifier-v1"
+}

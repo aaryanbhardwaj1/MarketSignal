@@ -1,0 +1,2922 @@
+{
+  "families": [
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nHalcyon Foods' EMEA revenue rose from EUR 412.6 million in FY2024 to EUR 448.1 million in FY2025 [E1]. APAC grew from EUR 118.4 million to EUR 139.0 million over the same period [E1].\n\n### Key findings\n- Americas revenue moved from EUR 297.3 million to EUR 301.9 million [E1].\n",
+          "case_id": "F01-a",
+          "case_types": [
+            "row_labels",
+            "table_headers"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Financial Review",
+                "Revenue by Region"
+              ],
+              "locator_label": "Page 14",
+              "source_class": "finance",
+              "source_title": "Halcyon Foods FY2025 Annual Report",
+              "text": "Revenue by region (EUR million)\nRegion | FY2024 | FY2025\nEMEA | 412.6 | 448.1\nAmericas | 297.3 | 301.9\nAPAC | 118.4 | 139.0"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Financial Review",
+                "Outlook"
+              ],
+              "locator_label": "Page 15",
+              "source_class": "finance",
+              "source_title": "Halcyon Foods FY2025 Annual Report",
+              "text": "Management expects APAC to remain the fastest-growing region in FY2026, supported by two new co-packing partners in Vietnam."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How did Halcyon Foods' regional revenue change between FY2024 and FY2025?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "EMEA revenue rose from EUR 412.6 million in FY2024",
+              "label": "supported",
+              "note": "EMEA row under the FY2024 and FY2025 column headers",
+              "type": "table_headers"
+            },
+            {
+              "key": "APAC grew from EUR 118.4 million to EUR 139.0 million",
+              "label": "supported",
+              "note": "APAC row",
+              "type": "row_labels"
+            },
+            {
+              "key": "Americas revenue moved from EUR 297.3 million",
+              "label": "supported",
+              "note": "Americas row",
+              "type": "row_labels"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nThe Revenue by Region table shows EMEA revenue reached EUR 448.1 million in FY2025 [E1]. APAC revenue grew 17.4% year on year to EUR 139.0 million [E1].\n\n### Key findings\n- Americas revenue was EUR 301.9 million in FY2023 [E1].\n",
+          "case_id": "F01-b",
+          "case_types": [
+            "computed_values",
+            "section_headings",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Financial Review",
+                "Revenue by Region"
+              ],
+              "locator_label": "Page 14",
+              "source_class": "finance",
+              "source_title": "Halcyon Foods FY2025 Annual Report",
+              "text": "Revenue by region (EUR million)\nRegion | FY2024 | FY2025\nEMEA | 412.6 | 448.1\nAmericas | 297.3 | 301.9\nAPAC | 118.4 | 139.0"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Financial Review",
+                "Outlook"
+              ],
+              "locator_label": "Page 15",
+              "source_class": "finance",
+              "source_title": "Halcyon Foods FY2025 Annual Report",
+              "text": "Management expects APAC to remain the fastest-growing region in FY2026, supported by two new co-packing partners in Vietnam."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How did Halcyon Foods' regional revenue change between FY2024 and FY2025?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Revenue by Region table shows EMEA revenue",
+              "label": "supported",
+              "note": "E1 heading; EMEA FY2025 cell",
+              "type": "section_headings"
+            },
+            {
+              "key": "APAC revenue grew 17.4% year on year",
+              "label": "unsupported",
+              "note": "17.4% = 139.0/118.4 - 1; arithmetically right but not stated",
+              "type": "computed_values"
+            },
+            {
+              "key": "Americas revenue was EUR 301.9 million in FY2023",
+              "label": "unsupported",
+              "note": "301.9 is FY2025; FY2023 appears nowhere in pack or question",
+              "type": "years_dates"
+            }
+          ]
+        }
+      ],
+      "family_id": "F01",
+      "scenario": "Finance table flattened as text: revenue by region and fiscal year"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nDurability was the most cited purchase driver at 38%, ahead of price at 27% [E1]. Overall, 42% of respondents said they would pay more for recycled materials [E2].\n\n### Key findings\n- Among 18-29 year olds the figure was 57% [E2].\n",
+          "case_id": "F02-a",
+          "case_types": [
+            "percentages",
+            "valid_unit_conversion"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Purchase Drivers"
+              ],
+              "locator_label": "Q7",
+              "source_class": "survey",
+              "source_title": "Brightwater Outfitters Customer Pulse Survey 2026",
+              "text": "Q7. Which factor most influenced your last jacket purchase? (n=1,240)\nDurability: 38%\nPrice: 27%\nBrand reputation: 19%\nSustainability claims: 11%\nOther: 5%"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Sustainability"
+              ],
+              "locator_label": "Q12",
+              "source_class": "survey",
+              "source_title": "Brightwater Outfitters Customer Pulse Survey 2026",
+              "text": "Q12. Willing to pay more for recycled materials, as a proportion of all respondents (n=1,240): 0.42. Proportion among respondents aged 18-29: 0.57."
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Methodology"
+              ],
+              "locator_label": "Methodology",
+              "source_class": "survey",
+              "source_title": "Brightwater Outfitters Customer Pulse Survey 2026",
+              "text": "Fieldwork ran 3-21 March 2026 online across the UK and Ireland. Results are unweighted."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What drives Brightwater Outfitters customers' jacket purchases, and how much does sustainability matter?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "most cited purchase driver at 38%",
+              "label": "supported",
+              "note": "Q7 durability 38%, price 27%",
+              "type": "percentages"
+            },
+            {
+              "key": "42% of respondents said they would pay more",
+              "label": "supported",
+              "note": "0.42 is explicitly a proportion of respondents",
+              "type": "valid_unit_conversion"
+            },
+            {
+              "key": "Among 18-29 year olds the figure was 57%",
+              "label": "supported",
+              "note": "0.57 explicitly a proportion",
+              "type": "valid_unit_conversion"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nSustainability claims were the deciding factor for 11% of the 1,240 respondents [E1]. Overall, 0.42% of customers would pay a premium for recycled materials [E2].\n\n### Key findings\n- The question was asked in the April 2026 wave [E3].\n",
+          "case_id": "F02-b",
+          "case_types": [
+            "invalid_unit_conversion",
+            "percentages",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Purchase Drivers"
+              ],
+              "locator_label": "Q7",
+              "source_class": "survey",
+              "source_title": "Brightwater Outfitters Customer Pulse Survey 2026",
+              "text": "Q7. Which factor most influenced your last jacket purchase? (n=1,240)\nDurability: 38%\nPrice: 27%\nBrand reputation: 19%\nSustainability claims: 11%\nOther: 5%"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Sustainability"
+              ],
+              "locator_label": "Q12",
+              "source_class": "survey",
+              "source_title": "Brightwater Outfitters Customer Pulse Survey 2026",
+              "text": "Q12. Willing to pay more for recycled materials, as a proportion of all respondents (n=1,240): 0.42. Proportion among respondents aged 18-29: 0.57."
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Methodology"
+              ],
+              "locator_label": "Methodology",
+              "source_class": "survey",
+              "source_title": "Brightwater Outfitters Customer Pulse Survey 2026",
+              "text": "Fieldwork ran 3-21 March 2026 online across the UK and Ireland. Results are unweighted."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What drives Brightwater Outfitters customers' jacket purchases, and how much does sustainability matter?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "deciding factor for 11% of the 1,240 respondents",
+              "label": "supported",
+              "note": "Q7 row",
+              "type": "percentages"
+            },
+            {
+              "key": "0.42% of customers would pay a premium",
+              "label": "unsupported",
+              "note": "proportion 0.42 is 42%, not 0.42%",
+              "type": "invalid_unit_conversion"
+            },
+            {
+              "key": "asked in the April 2026 wave",
+              "label": "unsupported",
+              "note": "fieldwork was March 2026; April 2026 appears nowhere",
+              "type": "years_dates"
+            }
+          ]
+        }
+      ],
+      "family_id": "F02",
+      "scenario": "Survey question tables and proportions stated as decimals"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nMeridian Bikes held 13.6% of the UK e-bike market in 2025 [E2]. Its 2024 share was restated to 12.9% in the 2026 edition [E2].\n\n### Key findings\n- The 2026 edition attributes the restatement to a change in survey method [E2].\n\n### Conflicting evidence\n- The 2025 edition reported a 14.2% share for 2024 [E1], later revised down [E2].\n",
+          "case_id": "F04-a",
+          "case_types": [
+            "conflicting_evidence",
+            "edition_labels",
+            "percentages"
+          ],
+          "expected": {
+            "conflict_present": true,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Competitive Landscape",
+                "Market Share"
+              ],
+              "locator_label": "Page 22",
+              "source_class": "market_report",
+              "source_title": "Northgate Cycling Market Report 2025 edition",
+              "text": "Meridian Bikes held an estimated 14.2% share of the UK e-bike market in 2024."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Competitive Landscape",
+                "Market Share"
+              ],
+              "locator_label": "Page 19",
+              "source_class": "market_report",
+              "source_title": "Northgate Cycling Market Report 2026 edition",
+              "text": "Restated: Meridian Bikes' 2024 UK e-bike share is revised to 12.9% following a correction to importer data; earlier editions overstated the figure. Meridian's 2025 share was 13.6%."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Meridian Bikes' share of the UK e-bike market?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "held 13.6% of the UK e-bike market in 2025",
+              "label": "supported",
+              "note": "E2",
+              "type": "percentages"
+            },
+            {
+              "key": "restated to 12.9% in the 2026 edition",
+              "label": "supported",
+              "note": "edition label from E2 source title",
+              "type": "edition_labels"
+            },
+            {
+              "key": "attributes the restatement to a change in survey method",
+              "label": "unsupported",
+              "note": "E2 cites corrected importer data",
+              "type": "conflicting_evidence"
+            },
+            {
+              "key": "reported a 14.2% share for 2024",
+              "label": "supported",
+              "note": "E1 is the 2025 edition",
+              "type": "edition_labels"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nMeridian Bikes held 14.2% of the UK e-bike market in 2024 according to the 2025 edition [E1]. Its share then moved to 13.6% in 2025, a gain of 0.7 points [E2].\n\n### Key findings\n- The 2026 edition estimates Meridian's 2025 share at 13.6% [E1].\n",
+          "case_id": "F04-b",
+          "case_types": [
+            "conflicting_evidence",
+            "edition_labels",
+            "multi_clause"
+          ],
+          "expected": {
+            "conflict_present": true,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Competitive Landscape",
+                "Market Share"
+              ],
+              "locator_label": "Page 22",
+              "source_class": "market_report",
+              "source_title": "Northgate Cycling Market Report 2025 edition",
+              "text": "Meridian Bikes held an estimated 14.2% share of the UK e-bike market in 2024."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Competitive Landscape",
+                "Market Share"
+              ],
+              "locator_label": "Page 19",
+              "source_class": "market_report",
+              "source_title": "Northgate Cycling Market Report 2026 edition",
+              "text": "Restated: Meridian Bikes' 2024 UK e-bike share is revised to 12.9% following a correction to importer data; earlier editions overstated the figure. Meridian's 2025 share was 13.6%."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Meridian Bikes' share of the UK e-bike market?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "held 14.2% of the UK e-bike market in 2024",
+              "label": "supported",
+              "note": "backed by E1 text and correctly attributed; superseded but not misquoted",
+              "type": "conflicting_evidence"
+            },
+            {
+              "key": "Its share then moved to 13.6% in 2025",
+              "label": "supported",
+              "note": "E2",
+              "type": "multi_clause"
+            },
+            {
+              "key": "a gain of 0.7 points",
+              "label": "unsupported",
+              "note": "13.6 - 12.9 computed, not stated",
+              "type": "multi_clause"
+            },
+            {
+              "correct_alias": "E2",
+              "key": "estimates Meridian's 2025 share at 13.6%",
+              "label": "miscited",
+              "note": "13.6% and the 2026 edition label belong to E2",
+              "type": "edition_labels"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nMeridian's share was 13.6% in 2025 according to the 2027 edition [E2]. [inference] The downward restatement suggests importer data for the category is still being corrected.\n\n### Key findings\n- Meridian's 2024 share was revised to 12.9% [E2].\n",
+          "case_id": "F04-c",
+          "case_types": [
+            "conflicting_evidence",
+            "edition_labels",
+            "uncited_claim"
+          ],
+          "expected": {
+            "conflict_present": true,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Competitive Landscape",
+                "Market Share"
+              ],
+              "locator_label": "Page 22",
+              "source_class": "market_report",
+              "source_title": "Northgate Cycling Market Report 2025 edition",
+              "text": "Meridian Bikes held an estimated 14.2% share of the UK e-bike market in 2024."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Competitive Landscape",
+                "Market Share"
+              ],
+              "locator_label": "Page 19",
+              "source_class": "market_report",
+              "source_title": "Northgate Cycling Market Report 2026 edition",
+              "text": "Restated: Meridian Bikes' 2024 UK e-bike share is revised to 12.9% following a correction to importer data; earlier editions overstated the figure. Meridian's 2025 share was 13.6%."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Meridian Bikes' share of the UK e-bike market?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "13.6% in 2025 according to the 2027 edition",
+              "label": "unsupported",
+              "note": "no 2027 edition anywhere in pack or question",
+              "type": "edition_labels"
+            },
+            {
+              "key": "suggests importer data for the category is still being corrected",
+              "label": "supported",
+              "note": "tagged inference, no new numbers",
+              "type": "uncited_claim"
+            },
+            {
+              "key": "2024 share was revised to 12.9%",
+              "label": "supported",
+              "note": "E2",
+              "type": "conflicting_evidence"
+            }
+          ]
+        }
+      ],
+      "family_id": "F04",
+      "scenario": "Market share restated between report editions (genuine conflict)"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nAldermoor had 441 stores at the end of 2025, of which 312 were company-operated [E1][E2]. It targets 35 openings in 2026, lifting company-operated stores by 11% [E3].\n",
+          "case_id": "F05-a",
+          "case_types": [
+            "computed_values",
+            "multi_clause"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Estate",
+                "Company-operated"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "finance",
+              "source_title": "Aldermoor Coffee Investor Factsheet",
+              "text": "Company-operated stores: 312 at 31 December 2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Estate",
+                "Franchise"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "finance",
+              "source_title": "Aldermoor Coffee Investor Factsheet",
+              "text": "Franchised stores: 129 at 31 December 2025. Total estate (company-operated plus franchised): 441."
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Openings"
+              ],
+              "locator_label": "Page 5",
+              "source_class": "strategy",
+              "source_title": "Aldermoor Coffee Expansion Plan 2026",
+              "text": "Target: 35 new company-operated openings in 2026."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How many stores does Aldermoor Coffee operate?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "had 441 stores at the end of 2025",
+              "label": "supported",
+              "note": "E2 total estate",
+              "type": "multi_clause"
+            },
+            {
+              "key": "of which 312 were company-operated",
+              "label": "supported",
+              "note": "E1",
+              "type": "multi_clause"
+            },
+            {
+              "key": "lifting company-operated stores by 11%",
+              "label": "unsupported",
+              "note": "35/312 computed; one claim with the openings target",
+              "type": "computed_values"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nAldermoor operated 312 company-run stores at 31 December 2025 [E1]. It will reach 476 stores by the end of 2026 [E3].\n\n### Key findings\n- Franchised stores totalled 129 [E2].\n\n### Conflicting evidence\n- Store counts of 312 and 441 both appear in the factsheet for 31 December 2025 [E1][E2].\n",
+          "case_id": "F05-b",
+          "case_types": [
+            "conflicting_evidence",
+            "quantities",
+            "unsupported_calculation"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Estate",
+                "Company-operated"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "finance",
+              "source_title": "Aldermoor Coffee Investor Factsheet",
+              "text": "Company-operated stores: 312 at 31 December 2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Estate",
+                "Franchise"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "finance",
+              "source_title": "Aldermoor Coffee Investor Factsheet",
+              "text": "Franchised stores: 129 at 31 December 2025. Total estate (company-operated plus franchised): 441."
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Openings"
+              ],
+              "locator_label": "Page 5",
+              "source_class": "strategy",
+              "source_title": "Aldermoor Coffee Expansion Plan 2026",
+              "text": "Target: 35 new company-operated openings in 2026."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How many stores does Aldermoor Coffee operate?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "operated 312 company-run stores",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantities"
+            },
+            {
+              "key": "will reach 476 stores by the end of 2026",
+              "label": "unsupported",
+              "note": "441 + 35 assumes no closures or franchise change; not stated",
+              "type": "unsupported_calculation"
+            },
+            {
+              "key": "Franchised stores totalled 129",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "Store counts of 312 and 441 both appear",
+              "label": "supported",
+              "note": "accurate, but the figures measure different things: a false conflict",
+              "type": "conflicting_evidence"
+            }
+          ]
+        }
+      ],
+      "family_id": "F05",
+      "scenario": "Store counts by ownership type; similar-looking numbers, no conflict"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe Leeds warehouse holds 2025 units of Storm Shell [E1]. The line's reorder point is 1990 units [E1].\n\n### Key findings\n- Fabric lead time is eleven weeks, up from eight [E2].\n",
+          "case_id": "F06-a",
+          "case_types": [
+            "quantities",
+            "quantity_as_year_shape"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Inventory",
+                "Outerwear"
+              ],
+              "locator_label": "Row 44",
+              "source_class": "finance",
+              "source_title": "Brightwater Outfitters Inventory Ledger",
+              "text": "sku_family: Storm Shell; units_on_hand: 2025; reorder_point: 1990; warehouse: Leeds"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Lead Times"
+              ],
+              "locator_label": "Q4",
+              "source_class": "interview",
+              "source_title": "Interview: Brightwater Supplier Account Manager",
+              "text": "Lead time for Storm Shell fabric is currently eleven weeks, up from eight weeks last season."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Brightwater's current stock position on the Storm Shell line?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Leeds warehouse holds 2025 units of Storm Shell",
+              "label": "supported",
+              "note": "units_on_hand: 2025",
+              "type": "quantity_as_year_shape"
+            },
+            {
+              "key": "reorder point is 1990 units",
+              "label": "supported",
+              "note": "reorder_point: 1990",
+              "type": "quantity_as_year_shape"
+            },
+            {
+              "key": "Fabric lead time is eleven weeks, up from eight",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nStorm Shell stock was last counted in 2025 at the Leeds warehouse [E1]. Units on hand stand at 2,025, above the reorder point [E1].\n\n### Key findings\n- Lead times have lengthened by three weeks [E2].\n",
+          "case_id": "F06-b",
+          "case_types": [
+            "computed_values",
+            "quantity_as_year_shape",
+            "row_labels"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Inventory",
+                "Outerwear"
+              ],
+              "locator_label": "Row 44",
+              "source_class": "finance",
+              "source_title": "Brightwater Outfitters Inventory Ledger",
+              "text": "sku_family: Storm Shell; units_on_hand: 2025; reorder_point: 1990; warehouse: Leeds"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Lead Times"
+              ],
+              "locator_label": "Q4",
+              "source_class": "interview",
+              "source_title": "Interview: Brightwater Supplier Account Manager",
+              "text": "Lead time for Storm Shell fabric is currently eleven weeks, up from eight weeks last season."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Brightwater's current stock position on the Storm Shell line?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "stock was last counted in 2025",
+              "label": "unsupported",
+              "note": "2025 is a unit count, not a count date",
+              "type": "quantity_as_year_shape"
+            },
+            {
+              "key": "Units on hand stand at 2,025",
+              "label": "supported",
+              "note": "units_on_hand field",
+              "type": "row_labels"
+            },
+            {
+              "key": "lengthened by three weeks",
+              "label": "unsupported",
+              "note": "11 - 8 not stated",
+              "type": "computed_values"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nThe Leeds warehouse stocks the Storm Shell line [E1]. Units on hand are 2025 [E1]. The reorder point is set at 1990 [E1]. Storm Shell fabric lead time is eleven weeks [E2]. Last season it was eight weeks [E2].\n",
+          "case_id": "F06-c",
+          "case_types": [
+            "quantities",
+            "quantity_as_year_shape",
+            "row_labels"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "answer_too_long"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Inventory",
+                "Outerwear"
+              ],
+              "locator_label": "Row 44",
+              "source_class": "finance",
+              "source_title": "Brightwater Outfitters Inventory Ledger",
+              "text": "sku_family: Storm Shell; units_on_hand: 2025; reorder_point: 1990; warehouse: Leeds"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Lead Times"
+              ],
+              "locator_label": "Q4",
+              "source_class": "interview",
+              "source_title": "Interview: Brightwater Supplier Account Manager",
+              "text": "Lead time for Storm Shell fabric is currently eleven weeks, up from eight weeks last season."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Brightwater's current stock position on the Storm Shell line?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Leeds warehouse stocks the Storm Shell line",
+              "label": "supported",
+              "note": "E1",
+              "type": "row_labels"
+            },
+            {
+              "key": "Units on hand are 2025",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantity_as_year_shape"
+            },
+            {
+              "key": "reorder point is set at 1990",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantity_as_year_shape"
+            },
+            {
+              "key": "fabric lead time is eleven weeks",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "Last season it was eight weeks",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            }
+          ]
+        }
+      ],
+      "family_id": "F06",
+      "scenario": "Dataset row whose quantities look like years"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nEMEA revenue was USD 612.0 million [E1]. LATAM grew faster at 21.7% on revenue of USD 204.5 million [E2].\n\n### Key findings\n- ARPU was USD 18.40 in EMEA and USD 9.10 in LATAM [E1][E2].\n",
+          "case_id": "F09-a",
+          "case_types": [
+            "row_labels"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "KPI Extract",
+                "Regions"
+              ],
+              "locator_label": "Row 12",
+              "source_class": "finance",
+              "source_title": "Corvane Regional KPI Extract",
+              "text": "region: EMEA; revenue_musd: 612.0; yoy_growth_pct: 12.3; arpu_usd: 18.40"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "KPI Extract",
+                "Regions"
+              ],
+              "locator_label": "Row 13",
+              "source_class": "finance",
+              "source_title": "Corvane Regional KPI Extract",
+              "text": "region: LATAM; revenue_musd: 204.5; yoy_growth_pct: 21.7; arpu_usd: 9.10"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "Compare Corvane's EMEA and LATAM performance.",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "EMEA revenue was USD 612.0 million",
+              "label": "supported",
+              "note": "revenue_musd field",
+              "type": "row_labels"
+            },
+            {
+              "key": "LATAM grew faster at 21.7%",
+              "label": "supported",
+              "note": "21.7 > 12.3",
+              "type": "row_labels"
+            },
+            {
+              "key": "ARPU was USD 18.40 in EMEA",
+              "label": "supported",
+              "note": "arpu_usd fields",
+              "type": "row_labels"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nEMEA revenue was USD 612.0 billion [E1]. LATAM revenue growth was USD 21.7 million [E2].\n\n### Key findings\n- Combined EMEA and LATAM revenue was USD 816.5 million [E1][E2].\n- EMEA ARPU is three times LATAM ARPU [E1][E2].\n",
+          "case_id": "F09-b",
+          "case_types": [
+            "computed_values",
+            "million_billion",
+            "percentages",
+            "unsupported_calculation"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "answer_missing"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "KPI Extract",
+                "Regions"
+              ],
+              "locator_label": "Row 12",
+              "source_class": "finance",
+              "source_title": "Corvane Regional KPI Extract",
+              "text": "region: EMEA; revenue_musd: 612.0; yoy_growth_pct: 12.3; arpu_usd: 18.40"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "KPI Extract",
+                "Regions"
+              ],
+              "locator_label": "Row 13",
+              "source_class": "finance",
+              "source_title": "Corvane Regional KPI Extract",
+              "text": "region: LATAM; revenue_musd: 204.5; yoy_growth_pct: 21.7; arpu_usd: 9.10"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "Compare Corvane's EMEA and LATAM performance.",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "EMEA revenue was USD 612.0 billion",
+              "label": "unsupported",
+              "note": "field is musd",
+              "type": "million_billion"
+            },
+            {
+              "key": "LATAM revenue growth was USD 21.7 million",
+              "label": "unsupported",
+              "note": "21.7 is yoy_growth_pct, a percent, not an amount",
+              "type": "percentages"
+            },
+            {
+              "key": "Combined EMEA and LATAM revenue was USD 816.5 million",
+              "label": "unsupported",
+              "note": "sum not stated",
+              "type": "computed_values"
+            },
+            {
+              "key": "EMEA ARPU is three times LATAM ARPU",
+              "label": "unsupported",
+              "note": "18.40/9.10 is about 2, and no ratio is stated",
+              "type": "unsupported_calculation"
+            }
+          ]
+        }
+      ],
+      "family_id": "F09",
+      "scenario": "Dataset rows with field-name labels"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nDirect-to-consumer was Pellucid's largest channel at 41% of net revenue in H1 2026 [E1]. Pharmacy chains were second at 33% [E2].\n\n### Key findings\n- Shares were DTC 41%, pharmacy 33%, marketplaces 19% and salons and duty-free 7% [E1][E2][E3][E4].\n- Marketplaces were the third-largest channel at 19% [E3].\n",
+          "case_id": "F11-a",
+          "case_types": [
+            "citation_cap"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 8,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Channels",
+                "Direct-to-consumer"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "strategy",
+              "source_title": "Pellucid Skincare Channel Review 2026",
+              "text": "Direct-to-consumer sales were 41% of net revenue in H1 2026."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Channels",
+                "Pharmacy"
+              ],
+              "locator_label": "Page 5",
+              "source_class": "strategy",
+              "source_title": "Pellucid Skincare Channel Review 2026",
+              "text": "Pharmacy chains contributed 33% of net revenue in H1 2026."
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Channels",
+                "Marketplaces"
+              ],
+              "locator_label": "Page 6",
+              "source_class": "strategy",
+              "source_title": "Pellucid Skincare Channel Review 2026",
+              "text": "Online marketplaces contributed 19% of net revenue in H1 2026."
+            },
+            {
+              "alias": "E4",
+              "heading_path": [
+                "Channels",
+                "Other"
+              ],
+              "locator_label": "Page 7",
+              "source_class": "strategy",
+              "source_title": "Pellucid Skincare Channel Review 2026",
+              "text": "Salons and duty-free contributed the remaining 7% of net revenue."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Pellucid Skincare's channel mix?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "largest channel at 41% of net revenue",
+              "label": "supported",
+              "note": "E1",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Pharmacy chains were second at 33%",
+              "label": "supported",
+              "note": "E2",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Shares were DTC 41%, pharmacy 33%",
+              "label": "supported",
+              "note": "all four items",
+              "type": "citation_cap"
+            },
+            {
+              "key": "third-largest channel at 19%",
+              "label": "supported",
+              "note": "E3",
+              "type": "citation_cap"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nDirect-to-consumer was Pellucid's largest channel at 41% of net revenue in H1 2026 [E1]. Pharmacy chains were second at 33% [E2].\n\n### Key findings\n- Shares were DTC 41%, pharmacy 33%, marketplaces 19% and salons and duty-free 7% [E1][E2][E3][E4].\n- Marketplaces were the third-largest channel at 19% [E3].\n- Pharmacy and salons contributed 33% and 7% respectively [E2][E4].\n",
+          "case_id": "F11-c",
+          "case_types": [
+            "citation_cap"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "too_many_citations"
+            ]
+          },
+          "max_citations": 8,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Channels",
+                "Direct-to-consumer"
+              ],
+              "locator_label": "Page 4",
+              "source_class": "strategy",
+              "source_title": "Pellucid Skincare Channel Review 2026",
+              "text": "Direct-to-consumer sales were 41% of net revenue in H1 2026."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Channels",
+                "Pharmacy"
+              ],
+              "locator_label": "Page 5",
+              "source_class": "strategy",
+              "source_title": "Pellucid Skincare Channel Review 2026",
+              "text": "Pharmacy chains contributed 33% of net revenue in H1 2026."
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Channels",
+                "Marketplaces"
+              ],
+              "locator_label": "Page 6",
+              "source_class": "strategy",
+              "source_title": "Pellucid Skincare Channel Review 2026",
+              "text": "Online marketplaces contributed 19% of net revenue in H1 2026."
+            },
+            {
+              "alias": "E4",
+              "heading_path": [
+                "Channels",
+                "Other"
+              ],
+              "locator_label": "Page 7",
+              "source_class": "strategy",
+              "source_title": "Pellucid Skincare Channel Review 2026",
+              "text": "Salons and duty-free contributed the remaining 7% of net revenue."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Pellucid Skincare's channel mix?",
+          "retry_answer": "### Answer\nDirect-to-consumer was Pellucid's largest channel at 41% of net revenue in H1 2026 [E1]. Pharmacy chains were second at 33% [E2].\n\n### Key findings\n- Shares were DTC 41%, pharmacy 33%, marketplaces 19% and salons and duty-free 7% [E1][E2][E3][E4].\n- Marketplaces were the third-largest channel at 19% [E3].\n- Pharmacy and salons contributed 33% and 7% respectively [E2][E4].\n- Salons and duty-free were the smallest channel [E4].\n",
+          "units": [
+            {
+              "key": "largest channel at 41% of net revenue",
+              "label": "supported",
+              "note": "E1",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Pharmacy chains were second at 33%",
+              "label": "supported",
+              "note": "E2",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Shares were DTC 41%, pharmacy 33%",
+              "label": "supported",
+              "note": "all four items",
+              "type": "citation_cap"
+            },
+            {
+              "key": "third-largest channel at 19%",
+              "label": "supported",
+              "note": "E3",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Pharmacy and salons contributed 33% and 7%",
+              "label": "supported",
+              "note": "E2, E4",
+              "type": "citation_cap"
+            }
+          ]
+        }
+      ],
+      "family_id": "F11",
+      "scenario": "Channel mix across four pages; citation count 7 vs 9 at cap 8"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nQuillon's Business tier costs USD 29 per seat versus Fennick's USD 32 [E2][E3]. Quillon also offers a Starter tier at USD 12 per seat [E1].\n\n### Key findings\n- Annual discounts are 15% for Quillon Starter, 20% for Quillon Business and 10% for Fennick Business [E1][E2][E3].\n- Both vendors sell a Business tier priced per seat [E2][E3].\n",
+          "case_id": "F12-a",
+          "case_types": [
+            "citation_cap",
+            "row_labels"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 8,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Benchmark",
+                "Quillon"
+              ],
+              "locator_label": "Row 3",
+              "source_class": "competitor",
+              "source_title": "Quillon Pricing Benchmark 2026",
+              "text": "vendor: Quillon; tier: Starter; price_per_seat_usd: 12; annual_discount_pct: 15"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Benchmark",
+                "Quillon"
+              ],
+              "locator_label": "Row 4",
+              "source_class": "competitor",
+              "source_title": "Quillon Pricing Benchmark 2026",
+              "text": "vendor: Quillon; tier: Business; price_per_seat_usd: 29; annual_discount_pct: 20"
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Benchmark",
+                "Fennick"
+              ],
+              "locator_label": "Row 7",
+              "source_class": "competitor",
+              "source_title": "Quillon Pricing Benchmark 2026",
+              "text": "vendor: Fennick; tier: Business; price_per_seat_usd: 32; annual_discount_pct: 10"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How does Quillon's pricing compare with Fennick's?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Business tier costs USD 29 per seat versus Fennick's USD 32",
+              "label": "supported",
+              "note": "E2, E3",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Starter tier at USD 12 per seat",
+              "label": "supported",
+              "note": "price_per_seat_usd",
+              "type": "row_labels"
+            },
+            {
+              "key": "Annual discounts are 15% for Quillon Starter",
+              "label": "supported",
+              "note": "annual_discount_pct fields",
+              "type": "row_labels"
+            },
+            {
+              "key": "Both vendors sell a Business tier",
+              "label": "supported",
+              "note": "E2, E3",
+              "type": "citation_cap"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nQuillon's Business tier costs USD 29 per seat versus Fennick's USD 32 [E2][E3]. Quillon also offers a Starter tier at USD 12 per seat [E1].\n\n### Key findings\n- Annual discounts are 15% for Quillon Starter, 20% for Quillon Business and 10% for Fennick Business [E1][E2][E3].\n- Both vendors sell a Business tier priced per seat [E2][E3].\n- Fennick Business lists at USD 32 per seat with a 10% annual discount, against USD 29 and 20% at Quillon [E3][E2].\n",
+          "case_id": "F12-b",
+          "case_types": [
+            "citation_cap",
+            "row_labels"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "too_many_citations"
+            ]
+          },
+          "max_citations": 8,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Benchmark",
+                "Quillon"
+              ],
+              "locator_label": "Row 3",
+              "source_class": "competitor",
+              "source_title": "Quillon Pricing Benchmark 2026",
+              "text": "vendor: Quillon; tier: Starter; price_per_seat_usd: 12; annual_discount_pct: 15"
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Benchmark",
+                "Quillon"
+              ],
+              "locator_label": "Row 4",
+              "source_class": "competitor",
+              "source_title": "Quillon Pricing Benchmark 2026",
+              "text": "vendor: Quillon; tier: Business; price_per_seat_usd: 29; annual_discount_pct: 20"
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Benchmark",
+                "Fennick"
+              ],
+              "locator_label": "Row 7",
+              "source_class": "competitor",
+              "source_title": "Quillon Pricing Benchmark 2026",
+              "text": "vendor: Fennick; tier: Business; price_per_seat_usd: 32; annual_discount_pct: 10"
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How does Quillon's pricing compare with Fennick's?",
+          "retry_answer": "### Answer\nQuillon's Business tier costs USD 29 per seat versus Fennick's USD 32 [E2][E3]. Quillon also offers a Starter tier at USD 12 per seat [E1].\n\n### Key findings\n- Annual discounts are 15% for Quillon Starter, 20% for Quillon Business and 10% for Fennick Business [E1][E2][E3].\n- Fennick Business lists at USD 32 per seat with a 10% annual discount, against USD 29 and 20% at Quillon [E3][E2].\n",
+          "units": [
+            {
+              "key": "Business tier costs USD 29 per seat versus Fennick's USD 32",
+              "label": "supported",
+              "note": "E2, E3",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Starter tier at USD 12 per seat",
+              "label": "supported",
+              "note": "price_per_seat_usd",
+              "type": "row_labels"
+            },
+            {
+              "key": "Annual discounts are 15% for Quillon Starter",
+              "label": "supported",
+              "note": "annual_discount_pct fields",
+              "type": "row_labels"
+            },
+            {
+              "key": "Both vendors sell a Business tier",
+              "label": "supported",
+              "note": "E2, E3",
+              "type": "citation_cap"
+            },
+            {
+              "key": "Fennick Business lists at USD 32 per seat",
+              "label": "supported",
+              "note": "E3, E2",
+              "type": "citation_cap"
+            }
+          ]
+        }
+      ],
+      "family_id": "F12",
+      "scenario": "Competitor pricing rows; citation count exactly 8 vs 10 at cap 8"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\n34% of dog owners and 22% of cat owners use a pet-food subscription [E1]. Cancellations typically follow two consecutive skipped deliveries [E2].\n\n### Key findings\n- Subscription use is higher among dog owners than cat owners.\n",
+          "case_id": "F13-a",
+          "case_types": [
+            "percentages",
+            "quantities",
+            "uncited_claim"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Subscriptions"
+              ],
+              "locator_label": "Q9",
+              "source_class": "survey",
+              "source_title": "Tessaly Pet Care Owner Survey 2026",
+              "text": "34% of dog owners currently use a pet-food subscription; 22% of cat owners do (n=1,506)."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Retention"
+              ],
+              "locator_label": "Q2",
+              "source_class": "interview",
+              "source_title": "Interview: Tessaly Pet Care Head of Growth",
+              "text": "Subscribers who skip two deliveries in a row usually cancel within a month, so we now send a pause offer after the first skip."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How widely are pet-food subscriptions used, and what drives cancellations?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "34% of dog owners and 22% of cat owners",
+              "label": "supported",
+              "note": "E1",
+              "type": "percentages"
+            },
+            {
+              "key": "follow two consecutive skipped deliveries",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "higher among dog owners than cat owners",
+              "label": "unsupported",
+              "note": "Key findings bullet with no citation",
+              "type": "uncited_claim"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nSubscription use is more common among dog owners than cat owners. Monthly churn among subscribers is 6% [E2].\n\n### Key findings\n- 41% of subscribers skip at least one delivery a year [E3].\n",
+          "case_id": "F13-c",
+          "case_types": [
+            "fabricated_citation",
+            "percentages",
+            "uncited_claim"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "no_citations"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Subscriptions"
+              ],
+              "locator_label": "Q9",
+              "source_class": "survey",
+              "source_title": "Tessaly Pet Care Owner Survey 2026",
+              "text": "34% of dog owners currently use a pet-food subscription; 22% of cat owners do (n=1,506)."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Retention"
+              ],
+              "locator_label": "Q2",
+              "source_class": "interview",
+              "source_title": "Interview: Tessaly Pet Care Head of Growth",
+              "text": "Subscribers who skip two deliveries in a row usually cancel within a month, so we now send a pause offer after the first skip."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How widely are pet-food subscriptions used, and what drives cancellations?",
+          "retry_answer": "### Answer\nDog owners use subscriptions more than cat owners. About 6% of subscribers cancel each month [E2].\n",
+          "units": [
+            {
+              "key": "more common among dog owners than cat owners",
+              "label": "supported",
+              "note": "uncited Answer sentence restating pack facts without numbers",
+              "type": "uncited_claim"
+            },
+            {
+              "key": "Monthly churn among subscribers is 6%",
+              "label": "unsupported",
+              "note": "no churn rate in pack",
+              "type": "percentages"
+            },
+            {
+              "key": "41% of subscribers skip at least one delivery",
+              "label": "unsupported",
+              "note": "E3 not in pack; figure absent",
+              "type": "fabricated_citation"
+            }
+          ]
+        }
+      ],
+      "family_id": "F13",
+      "scenario": "Survey plus interview; uncited claims and an uncitable answer"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe evidence does not name the operator that cut its SIM-only 30GB plan to GBP 10 per month [E1]. Postpaid churn rose to 1.1% in August 2026 from 0.9% in July [E2].\n\n### Gaps & unknowns\n- Churn is not broken down by reason, so the effect of the price cut cannot be isolated.\n",
+          "case_id": "F14-a",
+          "case_types": [
+            "insufficiency",
+            "percentages"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Pricing Moves"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "competitor",
+              "source_title": "Corvane Competitor Tracker",
+              "text": "A rival operator cut its SIM-only 30GB plan to GBP 10 per month in August 2026. Corvane's equivalent plan remains GBP 12."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Monthly Churn"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Corvane Churn Dashboard",
+              "text": "Postpaid churn was 1.1% in August 2026 versus 0.9% in July 2026."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "Which competitor cut prices, and how much churn did the cut cause at Corvane?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "does not name the operator that cut",
+              "label": "supported",
+              "note": "true",
+              "type": "insufficiency"
+            },
+            {
+              "key": "Postpaid churn rose to 1.1% in August 2026",
+              "label": "supported",
+              "note": "E2",
+              "type": "percentages"
+            },
+            {
+              "key": "Churn is not broken down by reason",
+              "label": "supported",
+              "note": "true gap",
+              "type": "insufficiency"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nFennick Mobile cut its SIM-only 30GB plan to GBP 10 per month [E1]. The cut raised Corvane's postpaid churn by 0.2 percentage points [E2].\n\n### Key findings\n- Corvane's equivalent plan still costs GBP 12 [E1].\n",
+          "case_id": "F14-b",
+          "case_types": [
+            "computed_values",
+            "insufficiency",
+            "quantities"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "answer_missing"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Pricing Moves"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "competitor",
+              "source_title": "Corvane Competitor Tracker",
+              "text": "A rival operator cut its SIM-only 30GB plan to GBP 10 per month in August 2026. Corvane's equivalent plan remains GBP 12."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Monthly Churn"
+              ],
+              "locator_label": "Page 1",
+              "source_class": "finance",
+              "source_title": "Corvane Churn Dashboard",
+              "text": "Postpaid churn was 1.1% in August 2026 versus 0.9% in July 2026."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "Which competitor cut prices, and how much churn did the cut cause at Corvane?",
+          "retry_answer": "### Answer\nFennick Mobile's price cut pushed Corvane's churn up to 1.1% [E1][E2]. The cut accounts for the 0.2 point rise [E2].\n",
+          "units": [
+            {
+              "key": "Fennick Mobile cut its SIM-only 30GB plan",
+              "label": "unsupported",
+              "note": "the evidence does not name the rival",
+              "type": "insufficiency"
+            },
+            {
+              "key": "raised Corvane's postpaid churn by 0.2 percentage points",
+              "label": "unsupported",
+              "note": "difference and causation not stated",
+              "type": "computed_values"
+            },
+            {
+              "key": "equivalent plan still costs GBP 12",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantities"
+            }
+          ]
+        }
+      ],
+      "family_id": "F14",
+      "scenario": "Competitor move without a named rival; causal question unanswerable"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe six-piece tumbler set lists at EUR 48.00 ex-works [E1]. The US distributor retails it at USD 89 [E2].\n\n### Key findings\n- The 1.2 litre carafe (1,200 ml) is EUR 36.50 ex-works [E1].\n",
+          "case_id": "F15-a",
+          "case_types": [
+            "currency_mismatch",
+            "valid_unit_conversion"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Export Prices",
+                "Tableware"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "finance",
+              "source_title": "Ostrava Glassworks Export Price List 2026",
+              "text": "Tumbler set (6 pieces): EUR 48.00 ex-works. Carafe, 1.2 litre: EUR 36.50 ex-works."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "US Distribution"
+              ],
+              "locator_label": "Q6",
+              "source_class": "interview",
+              "source_title": "Interview: Ostrava Glassworks Export Director",
+              "text": "Our US distributor sells the tumbler set at USD 89 retail."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What are Ostrava Glassworks' export and US retail prices for tableware?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "six-piece tumbler set lists at EUR 48.00",
+              "label": "supported",
+              "note": "currency matches evidence",
+              "type": "currency_mismatch"
+            },
+            {
+              "key": "US distributor retails it at USD 89",
+              "label": "supported",
+              "note": "E2 in USD",
+              "type": "currency_mismatch"
+            },
+            {
+              "key": "carafe (1,200 ml) is EUR 36.50 ex-works",
+              "label": "supported",
+              "note": "1.2 litre = 1,200 ml",
+              "type": "valid_unit_conversion"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nThe tumbler set lists at USD 48.00 ex-works [E1]. US retail is USD 89 [E2].\n\n### Key findings\n- The US retail markup on the tumbler set is about 85% [E1][E2].\n- The carafe holds 12 litres [E1].\n",
+          "case_id": "F15-b",
+          "case_types": [
+            "currency_mismatch",
+            "invalid_unit_conversion",
+            "quantities",
+            "unsupported_calculation"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Export Prices",
+                "Tableware"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "finance",
+              "source_title": "Ostrava Glassworks Export Price List 2026",
+              "text": "Tumbler set (6 pieces): EUR 48.00 ex-works. Carafe, 1.2 litre: EUR 36.50 ex-works."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "US Distribution"
+              ],
+              "locator_label": "Q6",
+              "source_class": "interview",
+              "source_title": "Interview: Ostrava Glassworks Export Director",
+              "text": "Our US distributor sells the tumbler set at USD 89 retail."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What are Ostrava Glassworks' export and US retail prices for tableware?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "tumbler set lists at USD 48.00 ex-works",
+              "label": "unsupported",
+              "note": "evidence is EUR",
+              "type": "currency_mismatch"
+            },
+            {
+              "key": "US retail is USD 89",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "US retail markup on the tumbler set is about 85%",
+              "label": "unsupported",
+              "note": "cross-currency ratio, not stated",
+              "type": "unsupported_calculation"
+            },
+            {
+              "key": "The carafe holds 12 litres",
+              "label": "unsupported",
+              "note": "1.2 litre",
+              "type": "invalid_unit_conversion"
+            }
+          ]
+        }
+      ],
+      "family_id": "F15",
+      "scenario": "Price list in EUR and distributor price in USD"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nOnline grocery accounted for 13.8% of UK grocery sales in 2025 [E1]. Under Online Habits, 52% of shoppers bought groceries online in the past month [E2].\n\n### Key findings\n- Online penetration stood at 13.8% in 2025 [E2].\n",
+          "case_id": "F16-a",
+          "case_types": [
+            "back_reference",
+            "percentages",
+            "section_headings"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Online Grocery"
+              ],
+              "locator_label": "Page 11",
+              "source_class": "market_report",
+              "source_title": "Larkspur Grocery Market Report 2026",
+              "text": "Online grocery penetration reached 13.8% of UK grocery sales in 2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Online Habits"
+              ],
+              "locator_label": "Q4",
+              "source_class": "survey",
+              "source_title": "Larkspur Shopper Survey 2026",
+              "text": "52% of respondents bought groceries online at least once in the past month (n=2,010)."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How large is online grocery in the UK?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "accounted for 13.8% of UK grocery sales",
+              "label": "supported",
+              "note": "E1",
+              "type": "percentages"
+            },
+            {
+              "key": "Under Online Habits, 52% of shoppers",
+              "label": "supported",
+              "note": "E2 heading and text",
+              "type": "section_headings"
+            },
+            {
+              "correct_alias": "E1",
+              "key": "Online penetration stood at 13.8% in 2025",
+              "label": "miscited",
+              "note": "figure cited correctly to E1 above, restated citing E2",
+              "type": "back_reference"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nThe shopper survey sampled 2,010 respondents [E2]. Online grocery penetration reached 13.8% in 2025 [E1].\n\n### Key findings\n- The survey was fielded in 2010 [E2].\n",
+          "case_id": "F16-c",
+          "case_types": [
+            "percentages",
+            "quantity_as_year_shape"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Online Grocery"
+              ],
+              "locator_label": "Page 11",
+              "source_class": "market_report",
+              "source_title": "Larkspur Grocery Market Report 2026",
+              "text": "Online grocery penetration reached 13.8% of UK grocery sales in 2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Online Habits"
+              ],
+              "locator_label": "Q4",
+              "source_class": "survey",
+              "source_title": "Larkspur Shopper Survey 2026",
+              "text": "52% of respondents bought groceries online at least once in the past month (n=2,010)."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How large is online grocery in the UK?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "survey sampled 2,010 respondents",
+              "label": "supported",
+              "note": "n=2,010",
+              "type": "quantity_as_year_shape"
+            },
+            {
+              "key": "penetration reached 13.8% in 2025",
+              "label": "supported",
+              "note": "E1",
+              "type": "percentages"
+            },
+            {
+              "key": "The survey was fielded in 2010",
+              "label": "unsupported",
+              "note": "2,010 is the sample size; 2010 appears nowhere as a year",
+              "type": "quantity_as_year_shape"
+            }
+          ]
+        }
+      ],
+      "family_id": "F16",
+      "scenario": "Market report share plus survey incidence"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nRowan & Finch plans to cut its range from 140 to 95 SKUs by Q2 2027 [E1]. [inference] The shift toward loose leaf fits the segment's stronger value growth.\n\n### Key findings\n- Loose-leaf value sales grew 7.2% in 2025 [E2].\n\n### Interpretation\n[inference] Range cuts may free around 30% of shelf space for loose-leaf lines.\n",
+          "case_id": "F19-a",
+          "case_types": [
+            "percentages",
+            "uncited_claim",
+            "unsupported_calculation",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Priorities",
+                "Premiumisation"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "strategy",
+              "source_title": "Rowan & Finch Tea Strategy Memo 2026",
+              "text": "We will reduce the number of SKUs from 140 to 95 by Q2 2027 and shift marketing spend toward loose-leaf ranges."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Loose Leaf"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "market_report",
+              "source_title": "Rowan & Finch Tea Category Data",
+              "text": "Loose-leaf tea value sales grew 7.2% in 2025 while teabag value sales fell 1.8%."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Rowan & Finch's strategy, and does it fit category trends?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "cut its range from 140 to 95 SKUs by Q2 2027",
+              "label": "supported",
+              "note": "E1",
+              "type": "years_dates"
+            },
+            {
+              "key": "fits the segment's stronger value growth",
+              "label": "supported",
+              "note": "inference, no numbers",
+              "type": "uncited_claim"
+            },
+            {
+              "key": "Loose-leaf value sales grew 7.2% in 2025",
+              "label": "supported",
+              "note": "E2",
+              "type": "percentages"
+            },
+            {
+              "key": "may free around 30% of shelf space",
+              "label": "unsupported",
+              "note": "inference introduces a number",
+              "type": "unsupported_calculation"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nRowan & Finch will remove 45 SKUs by Q2 2027 [E1]. [inference] The plan should lift loose-leaf share by roughly 5 points.\n\n### Key findings\n- Loose-leaf grew 7.2% by value in 2025 [E2].\n",
+          "case_id": "F19-b",
+          "case_types": [
+            "computed_values",
+            "percentages",
+            "unsupported_calculation"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "answer_missing"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Priorities",
+                "Premiumisation"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "strategy",
+              "source_title": "Rowan & Finch Tea Strategy Memo 2026",
+              "text": "We will reduce the number of SKUs from 140 to 95 by Q2 2027 and shift marketing spend toward loose-leaf ranges."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Loose Leaf"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "market_report",
+              "source_title": "Rowan & Finch Tea Category Data",
+              "text": "Loose-leaf tea value sales grew 7.2% in 2025 while teabag value sales fell 1.8%."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Rowan & Finch's strategy, and does it fit category trends?",
+          "retry_answer": "### Answer\nRowan & Finch is dropping 45 SKUs [E1]. [inference] Loose leaf could reach a 5 point higher share.\n\n### Key findings\n- Teabags fell 1.8% [E2].\n",
+          "units": [
+            {
+              "key": "will remove 45 SKUs by Q2 2027",
+              "label": "unsupported",
+              "note": "140 - 95 not stated",
+              "type": "computed_values"
+            },
+            {
+              "key": "lift loose-leaf share by roughly 5 points",
+              "label": "unsupported",
+              "note": "inference introduces a number with no basis",
+              "type": "unsupported_calculation"
+            },
+            {
+              "key": "Loose-leaf grew 7.2% by value in 2025",
+              "label": "supported",
+              "note": "E2",
+              "type": "percentages"
+            }
+          ]
+        }
+      ],
+      "family_id": "F19",
+      "scenario": "Strategy memo plus category data; inference with and without numbers"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe Chilled Division slide shows a 12.0% operating margin in FY2025 [E1]. The Ambient division earned 12.4% and targets 14% by FY2027 [E2].\n\n### Key findings\n- Each division is presented on its own slide in the Strategy Day 2026 deck [E1][E2].\n",
+          "case_id": "F20-a",
+          "case_types": [
+            "multi_clause",
+            "slide_titles",
+            "titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Strategy Day 2026",
+                "Chilled Division"
+              ],
+              "locator_label": "Slide 4",
+              "source_class": "deck",
+              "source_title": "Halcyon Foods Strategy Day 2026",
+              "text": "Chilled division operating margin: 12.0% in FY2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Strategy Day 2026",
+                "Ambient Division"
+              ],
+              "locator_label": "Slide 5",
+              "source_class": "deck",
+              "source_title": "Halcyon Foods Strategy Day 2026",
+              "text": "Ambient division operating margin: 12.4% in FY2025; target 14% by FY2028."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What are Halcyon Foods' divisional operating margins?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Chilled Division slide shows a 12.0% operating margin",
+              "label": "supported",
+              "note": "E1",
+              "type": "slide_titles"
+            },
+            {
+              "key": "Ambient division earned 12.4%",
+              "label": "supported",
+              "note": "E2",
+              "type": "multi_clause"
+            },
+            {
+              "key": "targets 14% by FY2027",
+              "label": "unsupported",
+              "note": "target year is FY2028; FY2027 absent",
+              "type": "multi_clause"
+            },
+            {
+              "key": "presented on its own slide in the Strategy Day 2026 deck",
+              "label": "supported",
+              "note": "source titles and locators",
+              "type": "titles"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nHalcyon's group operating margin was 12.0% in FY2025 [E1]. The Ambient division targets a 14% margin by FY2028 [E2].\n\n### Key findings\n- Ambient division operating margin data sit on Slide 5 [E2].\n\n### Conflicting evidence\n- Slide 4 reports a 12.0% margin while Slide 5 reports 12.4% for FY2025 [E1][E2].\n",
+          "case_id": "F20-b",
+          "case_types": [
+            "conflicting_evidence",
+            "slide_titles",
+            "years_dates"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Strategy Day 2026",
+                "Chilled Division"
+              ],
+              "locator_label": "Slide 4",
+              "source_class": "deck",
+              "source_title": "Halcyon Foods Strategy Day 2026",
+              "text": "Chilled division operating margin: 12.0% in FY2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Strategy Day 2026",
+                "Ambient Division"
+              ],
+              "locator_label": "Slide 5",
+              "source_class": "deck",
+              "source_title": "Halcyon Foods Strategy Day 2026",
+              "text": "Ambient division operating margin: 12.4% in FY2025; target 14% by FY2028."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What are Halcyon Foods' divisional operating margins?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "group operating margin was 12.0%",
+              "label": "unsupported",
+              "note": "12.0% is the Chilled division slide, not group",
+              "type": "slide_titles"
+            },
+            {
+              "key": "targets a 14% margin by FY2028",
+              "label": "supported",
+              "note": "E2",
+              "type": "years_dates"
+            },
+            {
+              "key": "operating margin data sit on Slide 5",
+              "label": "supported",
+              "note": "E2 locator",
+              "type": "slide_titles"
+            },
+            {
+              "key": "Slide 4 reports a 12.0% margin while Slide 5",
+              "label": "supported",
+              "note": "accurate, but two divisions are not a conflict",
+              "type": "conflicting_evidence"
+            }
+          ]
+        }
+      ],
+      "family_id": "F20",
+      "scenario": "Two deck slides with near-identical divisional margins, no conflict"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe distributor survey puts on-shelf availability across surveyed pubs at 92% [E1]. The regional sales lead estimates it is nearer 80% this summer [E2].\n\n### Conflicting evidence\n- Survey: 92% availability [E1]; sales lead: nearer 80% [E2].\n",
+          "case_id": "F24-a",
+          "case_types": [
+            "conflicting_evidence",
+            "titles"
+          ],
+          "expected": {
+            "conflict_present": true,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Stock Availability"
+              ],
+              "locator_label": "Q5",
+              "source_class": "survey",
+              "source_title": "Orchard Lane Cider Distributor Survey 2026",
+              "text": "On-shelf availability across surveyed pubs: 92%."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Stock Availability"
+              ],
+              "locator_label": "Q8",
+              "source_class": "interview",
+              "source_title": "Interview: Orchard Lane Regional Sales Lead",
+              "text": "Honestly our on-shelf availability in pubs is nearer 80% this summer; the 92% survey number only counts managed estates."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Orchard Lane's on-shelf availability in pubs?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "availability across surveyed pubs at 92%",
+              "label": "supported",
+              "note": "E1",
+              "type": "conflicting_evidence"
+            },
+            {
+              "key": "regional sales lead estimates it is nearer 80%",
+              "label": "supported",
+              "note": "role from E2 source title",
+              "type": "titles"
+            },
+            {
+              "key": "Survey: 92% availability",
+              "label": "supported",
+              "note": "both sides cited",
+              "type": "conflicting_evidence"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nOrchard Lane's pub availability is 92% [E1]. This is consistent with the sales lead's view [E2].\n\n### Key findings\n- Availability in managed estates is 80% [E2].\n",
+          "case_id": "F24-b",
+          "case_types": [
+            "conflicting_evidence",
+            "dangling_reference"
+          ],
+          "expected": {
+            "conflict_present": true,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Stock Availability"
+              ],
+              "locator_label": "Q5",
+              "source_class": "survey",
+              "source_title": "Orchard Lane Cider Distributor Survey 2026",
+              "text": "On-shelf availability across surveyed pubs: 92%."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Stock Availability"
+              ],
+              "locator_label": "Q8",
+              "source_class": "interview",
+              "source_title": "Interview: Orchard Lane Regional Sales Lead",
+              "text": "Honestly our on-shelf availability in pubs is nearer 80% this summer; the 92% survey number only counts managed estates."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What is Orchard Lane's on-shelf availability in pubs?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "pub availability is 92%",
+              "label": "supported",
+              "note": "backed by E1 text; omits the disagreement",
+              "type": "conflicting_evidence"
+            },
+            {
+              "key": "This is consistent with the sales lead's view",
+              "label": "unsupported",
+              "note": "E2 contradicts the survey figure",
+              "type": "dangling_reference"
+            },
+            {
+              "key": "Availability in managed estates is 80%",
+              "label": "unsupported",
+              "note": "E2: 92% counts managed estates; 80% is the overall estimate",
+              "type": "conflicting_evidence"
+            }
+          ]
+        }
+      ],
+      "family_id": "F24",
+      "scenario": "Survey figure disputed by an interviewee (genuine conflict)"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nNone of the sources give Halden's share of the UK prestige fragrance market. The market itself was worth GBP 1.1 billion in 2025 [E1].\n\n### Gaps & unknowns\n- Halden's sales are not broken down by channel; retailer sell-out data would close this gap.\n",
+          "case_id": "F26-a",
+          "case_types": [
+            "insufficiency",
+            "million_billion"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Market Size"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "market_report",
+              "source_title": "Halden Cosmetics Market Sizing",
+              "text": "The UK prestige fragrance market was worth GBP 1.1 billion in 2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Purchase Channels"
+              ],
+              "locator_label": "Q2",
+              "source_class": "survey",
+              "source_title": "Halden Cosmetics Consumer Panel",
+              "text": "Department stores remain the top purchase channel for prestige fragrance."
+            }
+          ],
+          "pack_truncated": true,
+          "question": "What is Halden's share of the UK prestige fragrance market, by channel?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "None of the sources give Halden's share",
+              "label": "supported",
+              "note": "true",
+              "type": "insufficiency"
+            },
+            {
+              "key": "market itself was worth GBP 1.1 billion",
+              "label": "supported",
+              "note": "E1",
+              "type": "million_billion"
+            },
+            {
+              "key": "not broken down by channel",
+              "label": "supported",
+              "note": "true gap",
+              "type": "insufficiency"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nHalden's market share is not reported in the evidence. The UK prestige fragrance market was worth GBP 1.1 billion in 2025 [E1].\n\n### Key findings\n- Department stores account for 45% of prestige fragrance sales [E2].\n",
+          "case_id": "F26-b",
+          "case_types": [
+            "insufficiency",
+            "million_billion",
+            "percentages"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": false,
+            "structural_failures": [
+              "gaps_missing"
+            ]
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Market Size"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "market_report",
+              "source_title": "Halden Cosmetics Market Sizing",
+              "text": "The UK prestige fragrance market was worth GBP 1.1 billion in 2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Purchase Channels"
+              ],
+              "locator_label": "Q2",
+              "source_class": "survey",
+              "source_title": "Halden Cosmetics Consumer Panel",
+              "text": "Department stores remain the top purchase channel for prestige fragrance."
+            }
+          ],
+          "pack_truncated": true,
+          "question": "What is Halden's share of the UK prestige fragrance market, by channel?",
+          "retry_answer": "### Answer\nThe evidence does not report Halden's share. The market was GBP 1.1 billion in 2025 [E1].\n\n### Key findings\n- Department stores lead [E2].\n",
+          "units": [
+            {
+              "key": "market share is not reported in the evidence",
+              "label": "supported",
+              "note": "true",
+              "type": "insufficiency"
+            },
+            {
+              "key": "prestige fragrance market was worth GBP 1.1 billion",
+              "label": "supported",
+              "note": "E1",
+              "type": "million_billion"
+            },
+            {
+              "key": "Department stores account for 45%",
+              "label": "unsupported",
+              "note": "no share in E2",
+              "type": "percentages"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nThe evidence does not establish Halden's market share. The market was worth GBP 1,100 million in 2025 [E1].\n\n### Gaps & unknowns\n- Halden's share is likely below 10%, but no source confirms it.\n",
+          "case_id": "F26-c",
+          "case_types": [
+            "insufficiency",
+            "valid_unit_conversion"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Market Size"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "market_report",
+              "source_title": "Halden Cosmetics Market Sizing",
+              "text": "The UK prestige fragrance market was worth GBP 1.1 billion in 2025."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Purchase Channels"
+              ],
+              "locator_label": "Q2",
+              "source_class": "survey",
+              "source_title": "Halden Cosmetics Consumer Panel",
+              "text": "Department stores remain the top purchase channel for prestige fragrance."
+            }
+          ],
+          "pack_truncated": true,
+          "question": "What is Halden's share of the UK prestige fragrance market, by channel?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "does not establish Halden's market share",
+              "label": "supported",
+              "note": "true",
+              "type": "insufficiency"
+            },
+            {
+              "key": "worth GBP 1,100 million in 2025",
+              "label": "supported",
+              "note": "GBP 1.1 billion",
+              "type": "valid_unit_conversion"
+            },
+            {
+              "key": "share is likely below 10%",
+              "label": "unsupported",
+              "note": "number in Gaps with no basis",
+              "type": "insufficiency"
+            }
+          ]
+        }
+      ],
+      "family_id": "F26",
+      "scenario": "Truncated pack: market size known, company share unknown"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nQuarry Lane had 214,000 members at 31 December 2025 [E1]. Membership reached 241,000 by 30 June 2026 [E2].\n\n### Key findings\n- Membership grew 12.6% in six months [E1][E2].\n",
+          "case_id": "F28-a",
+          "case_types": [
+            "computed_values",
+            "quantities"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Members",
+                "December 2025"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "finance",
+              "source_title": "Quarry Lane Gyms Membership Report",
+              "text": "Members at 31 December 2025: 214,000."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Members",
+                "June 2026"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "finance",
+              "source_title": "Quarry Lane Gyms Membership Report",
+              "text": "Members at 30 June 2026: 241,000. Net joiners in H1 2026: 27,000."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How has Quarry Lane Gyms' membership changed?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "had 214,000 members at 31 December 2025",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantities"
+            },
+            {
+              "key": "Membership reached 241,000 by 30 June 2026",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "Membership grew 12.6% in six months",
+              "label": "unsupported",
+              "note": "not stated",
+              "type": "computed_values"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nMembership was 241,000 at 30 June 2026 [E2]. The December 2025 figure was 241,000 [E1].\n\n### Key findings\n- Net joiners totalled 27,000 in H1 2026 [E2].\n\n### Conflicting evidence\n- The report gives 214,000 members on page 2 but 241,000 on page 3 [E1][E2].\n",
+          "case_id": "F28-b",
+          "case_types": [
+            "conflicting_evidence",
+            "quantities"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Members",
+                "December 2025"
+              ],
+              "locator_label": "Page 2",
+              "source_class": "finance",
+              "source_title": "Quarry Lane Gyms Membership Report",
+              "text": "Members at 31 December 2025: 214,000."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Members",
+                "June 2026"
+              ],
+              "locator_label": "Page 3",
+              "source_class": "finance",
+              "source_title": "Quarry Lane Gyms Membership Report",
+              "text": "Members at 30 June 2026: 241,000. Net joiners in H1 2026: 27,000."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "How has Quarry Lane Gyms' membership changed?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Membership was 241,000 at 30 June 2026",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "The December 2025 figure was 241,000",
+              "label": "unsupported",
+              "note": "E1 gives 214,000 (transposed); E2's 241,000 is a June figure, so not miscited",
+              "type": "quantities"
+            },
+            {
+              "key": "Net joiners totalled 27,000 in H1 2026",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "gives 214,000 members on page 2 but 241,000 on page 3",
+              "label": "supported",
+              "note": "accurate but different dates: a false conflict",
+              "type": "conflicting_evidence"
+            }
+          ]
+        }
+      ],
+      "family_id": "F28",
+      "scenario": "Membership at two dates with digit-swapped numbers, no conflict"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nThe Store Roll-out slide plans 18 new stores in FY2027 [E1]. The Digital slide targets an online share of sales of 35% by FY2029 [E2].\n\n### Key findings\n- Online share of sales was 28% in FY2025 [E2] <img src=\"chart.png\">.\n",
+          "case_id": "F30-a",
+          "case_types": [
+            "leak",
+            "slide_titles"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Investor Day 2026",
+                "Store Roll-out"
+              ],
+              "locator_label": "Slide 12",
+              "source_class": "deck",
+              "source_title": "Brightwater Outfitters Investor Day 2026",
+              "text": "Plan: 18 new stores in FY2027, of which 6 in Scotland."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Investor Day 2026",
+                "Digital"
+              ],
+              "locator_label": "Slide 14",
+              "source_class": "deck",
+              "source_title": "Brightwater Outfitters Investor Day 2026",
+              "text": "Online share of sales: 28% in FY2026; ambition 35% by FY2029."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What growth plans did Brightwater set out at its Investor Day?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Store Roll-out slide plans 18 new stores in FY2027",
+              "label": "supported",
+              "note": "E1",
+              "type": "slide_titles"
+            },
+            {
+              "key": "Digital slide targets an online share of sales of 35%",
+              "label": "supported",
+              "note": "E2",
+              "type": "slide_titles"
+            },
+            {
+              "key": "Online share of sales was 28% in FY2025",
+              "label": "unsupported",
+              "note": "img tag; E2 says FY2026 and FY2025 is absent",
+              "type": "leak"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nSlide 13 sets out plans for 18 new stores [E1]. Online share was 28% in FY2026 [[BRIGHTWATER/INVDAY@v1:S14]] [E2].\n\n### Key findings\n- 12 of the new stores will be in England [E1].\n",
+          "case_id": "F30-b",
+          "case_types": [
+            "foreign_handle",
+            "slide_titles",
+            "unsupported_calculation"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Investor Day 2026",
+                "Store Roll-out"
+              ],
+              "locator_label": "Slide 12",
+              "source_class": "deck",
+              "source_title": "Brightwater Outfitters Investor Day 2026",
+              "text": "Plan: 18 new stores in FY2027, of which 6 in Scotland."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Investor Day 2026",
+                "Digital"
+              ],
+              "locator_label": "Slide 14",
+              "source_class": "deck",
+              "source_title": "Brightwater Outfitters Investor Day 2026",
+              "text": "Online share of sales: 28% in FY2026; ambition 35% by FY2029."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What growth plans did Brightwater set out at its Investor Day?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Slide 13 sets out plans for 18 new stores",
+              "label": "unsupported",
+              "note": "E1 is Slide 12",
+              "type": "slide_titles"
+            },
+            {
+              "key": "Online share was 28% in FY2026",
+              "label": "supported",
+              "note": "foreign marker plus a valid alias; claim backed by E2",
+              "type": "foreign_handle"
+            },
+            {
+              "key": "12 of the new stores will be in England",
+              "label": "unsupported",
+              "note": "18 - 6 and the England attribution are not stated",
+              "type": "unsupported_calculation"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nBrightwater plans 18 new stores in FY2027 [E1]. Online share should rise 7 points by FY2029 [E2].\n\n### Key findings\n- Six new stores are planned for Scotland [E2].\n",
+          "case_id": "F30-c",
+          "case_types": [
+            "computed_values",
+            "quantities"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Investor Day 2026",
+                "Store Roll-out"
+              ],
+              "locator_label": "Slide 12",
+              "source_class": "deck",
+              "source_title": "Brightwater Outfitters Investor Day 2026",
+              "text": "Plan: 18 new stores in FY2027, of which 6 in Scotland."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Investor Day 2026",
+                "Digital"
+              ],
+              "locator_label": "Slide 14",
+              "source_class": "deck",
+              "source_title": "Brightwater Outfitters Investor Day 2026",
+              "text": "Online share of sales: 28% in FY2026; ambition 35% by FY2029."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What growth plans did Brightwater set out at its Investor Day?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "plans 18 new stores in FY2027",
+              "label": "supported",
+              "note": "E1",
+              "type": "quantities"
+            },
+            {
+              "key": "Online share should rise 7 points",
+              "label": "unsupported",
+              "note": "35 - 28 not stated",
+              "type": "computed_values"
+            },
+            {
+              "correct_alias": "E1",
+              "key": "Six new stores are planned for Scotland",
+              "label": "miscited",
+              "note": "spelled-out 6, only in E1",
+              "type": "quantities"
+            }
+          ]
+        }
+      ],
+      "family_id": "F30",
+      "scenario": "Investor day slide deck with HTML, handles and slide numbers"
+    },
+    {
+      "cases": [
+        {
+          "answer": "### Answer\nResidential solar installations reached 186,000 in 2025 [E2]. Installations grew 22.4% year on year [E2].\n\n### Key findings\n- A 4 kW system cost GBP 6,200 on average in 2025 [E3].\n",
+          "case_id": "F31-a",
+          "case_types": [
+            "computed_values",
+            "quantities"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Lead Sources"
+              ],
+              "locator_label": "Q3",
+              "source_class": "survey",
+              "source_title": "Lumen Grove Installer Survey 2026",
+              "text": "Referrals generated 44% of installer leads; online ads 31%; trade shows 9%."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Installations"
+              ],
+              "locator_label": "Page 10",
+              "source_class": "market_report",
+              "source_title": "Lumen Grove Market Report 2026",
+              "text": "Residential solar installations reached 186,000 in 2025, up from 152,000 in 2024."
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Pricing"
+              ],
+              "locator_label": "Page 12",
+              "source_class": "market_report",
+              "source_title": "Lumen Grove Market Report 2026",
+              "text": "Average installed price for a 4 kW system fell to GBP 6,200 in 2025."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What does the UK residential solar installer market look like?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "installations reached 186,000 in 2025",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "Installations grew 22.4% year on year",
+              "label": "unsupported",
+              "note": "186,000/152,000 - 1 computed, not stated",
+              "type": "computed_values"
+            },
+            {
+              "key": "A 4 kW system cost GBP 6,200",
+              "label": "supported",
+              "note": "E3",
+              "type": "quantities"
+            }
+          ]
+        },
+        {
+          "answer": "### Answer\nInstallations reached 186,000 in 2025 [E2]. Referrals generated 44% of installer leads [E1].\n\n### Key findings\n- The 186,000 installations in 2025 coincided with a fall in system prices [E3].\n- Installers earned about GBP 1.15 billion from residential systems in 2025.\n",
+          "case_id": "F31-c",
+          "case_types": [
+            "back_reference",
+            "percentages",
+            "quantities",
+            "uncited_claim"
+          ],
+          "expected": {
+            "conflict_present": false,
+            "ok": true,
+            "structural_failures": []
+          },
+          "max_citations": 20,
+          "pack": [
+            {
+              "alias": "E1",
+              "heading_path": [
+                "Lead Sources"
+              ],
+              "locator_label": "Q3",
+              "source_class": "survey",
+              "source_title": "Lumen Grove Installer Survey 2026",
+              "text": "Referrals generated 44% of installer leads; online ads 31%; trade shows 9%."
+            },
+            {
+              "alias": "E2",
+              "heading_path": [
+                "Installations"
+              ],
+              "locator_label": "Page 10",
+              "source_class": "market_report",
+              "source_title": "Lumen Grove Market Report 2026",
+              "text": "Residential solar installations reached 186,000 in 2025, up from 152,000 in 2024."
+            },
+            {
+              "alias": "E3",
+              "heading_path": [
+                "Pricing"
+              ],
+              "locator_label": "Page 12",
+              "source_class": "market_report",
+              "source_title": "Lumen Grove Market Report 2026",
+              "text": "Average installed price for a 4 kW system fell to GBP 6,200 in 2025."
+            }
+          ],
+          "pack_truncated": false,
+          "question": "What does the UK residential solar installer market look like?",
+          "retry_answer": null,
+          "units": [
+            {
+              "key": "Installations reached 186,000 in 2025",
+              "label": "supported",
+              "note": "E2",
+              "type": "quantities"
+            },
+            {
+              "key": "Referrals generated 44% of installer leads",
+              "label": "supported",
+              "note": "E1",
+              "type": "percentages"
+            },
+            {
+              "correct_alias": "E2",
+              "key": "coincided with a fall in system prices",
+              "label": "miscited",
+              "note": "186,000 cited to E2 above, restated citing E3",
+              "type": "back_reference"
+            },
+            {
+              "key": "earned about GBP 1.15 billion",
+              "label": "unsupported",
+              "note": "uncited bullet; 186,000 x 6,200 computed",
+              "type": "uncited_claim"
+            }
+          ]
+        }
+      ],
+      "family_id": "F31",
+      "scenario": "Solar market survey and report; growth rate and back-reference"
+    }
+  ],
+  "seed": 20261006,
+  "split": "dev",
+  "version": "verifier-v1"
+}

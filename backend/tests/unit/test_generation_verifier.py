@@ -328,10 +328,23 @@ def test_numeric_violation_drops_cited_sentence() -> None:
 
 
 def test_number_must_come_from_the_cited_item_not_the_pack() -> None:
+    # Phase 4 (A3): the figure is stated exactly in one other item only, so the citation is
+    # re-pointed there instead of dropping a true claim; ambiguous figures are still dropped.
     raw = _answer("Revenue was 612.0 [E2].", findings="- Revenue 612.0 [E1].")
     result = verify_answer(raw, PACK, pack_truncated=False)
-    assert FINDINGS not in result.sections
-    assert result.report.numeric_violations == [
+    assert result.sections[FINDINGS] == [f"Revenue 612.0 [[{H2}]]."]
+    assert result.report.repairs == [
+        "Key findings #1: re-pointed citation E1 -> E2 (only item with the figures)"
+    ]
+    assert result.report.numeric_violations == []
+    twice = EvidencePack(
+        items=(*PACK.items, _item(4, "NORTHSTAR/FINANCE@v1:P1", "Net revenue 612.0")),
+        tokens=70,
+        truncated=False,
+    )
+    ambiguous = verify_answer(raw, twice, pack_truncated=False)
+    assert FINDINGS not in ambiguous.sections
+    assert ambiguous.report.numeric_violations == [
         "Key findings #1: 612.0 not found in cited evidence E1"
     ]
 
@@ -440,9 +453,9 @@ def test_no_citations_vs_insufficiency_statement() -> None:
     insufficient = "### Answer\nThe evidence does not contain regional pricing data."
     result = verify_answer(insufficient, PACK, pack_truncated=False)
     assert result.ok
-    assert result.sections[ANSWER] == [
-        "The evidence does not contain regional pricing data [inference]."
-    ]
+    # Phase 4 (A5): an evidence-gap statement is not an inference, so it stays untagged.
+    assert result.sections[ANSWER] == ["The evidence does not contain regional pricing data."]
+    assert result.report.gap_statements == ["Answer #1"]
     assert verify_answer(uncited, EMPTY_PACK, pack_truncated=False).ok
 
 

@@ -1,0 +1,1512 @@
+{
+  "cases": [
+    {
+      "case_id": "F03-a",
+      "case_types": [
+        "quantities",
+        "valid_unit_conversion"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.578,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Corvane had 12.4 million mobile subscribers",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Half-year group revenue was GBP 1.215 billion",
+          "label": "supported",
+          "result": "kept",
+          "type": "valid_unit_conversion"
+        },
+        {
+          "key": "Fixed broadband connections stood at 2.6 million",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "quantities"
+        }
+      ]
+    },
+    {
+      "case_id": "F03-b",
+      "case_types": [
+        "currency_mismatch",
+        "invalid_unit_conversion",
+        "quantities"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": true,
+      "latency_ms": 0.5658,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "answer_missing",
+        "no_citations"
+      ],
+      "units": [
+        {
+          "key": "serves more than twelve million mobile subscribers",
+          "label": "supported",
+          "result": "removed",
+          "type": "quantities"
+        },
+        {
+          "key": "Half-year revenue was USD 1,215 million",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "currency_mismatch"
+        },
+        {
+          "key": "Capital expenditure was GBP 2.84 billion",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "invalid_unit_conversion"
+        }
+      ]
+    },
+    {
+      "case_id": "F07-a",
+      "case_types": [
+        "percentages",
+        "slide_titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.5308,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Pricing slide proposes a 4.5% rise",
+          "label": "supported",
+          "result": "kept",
+          "type": "slide_titles"
+        },
+        {
+          "key": "Network slide reports 5G population coverage of 78%",
+          "label": "supported",
+          "result": "kept",
+          "type": "slide_titles"
+        },
+        {
+          "key": "churn uplift of 0.3 percentage points",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        }
+      ]
+    },
+    {
+      "case_id": "F07-b",
+      "case_types": [
+        "percentages",
+        "slide_titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [
+        "answer_missing"
+      ],
+      "expected_ok": false,
+      "fallback": true,
+      "latency_ms": 0.5198,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "answer_missing"
+      ],
+      "units": [
+        {
+          "key": "Slide 8 of the Board Review covers",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "slide_titles"
+        },
+        {
+          "key": "Network slide puts 5G coverage at 78%",
+          "label": "miscited",
+          "result": "removed",
+          "type": "slide_titles"
+        },
+        {
+          "key": "Churn is expected to rise by 0.3%",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "percentages"
+        }
+      ]
+    },
+    {
+      "case_id": "F07-c",
+      "case_types": [
+        "computed_values",
+        "slide_titles",
+        "uncited_claim"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [
+        "no_citations"
+      ],
+      "expected_ok": false,
+      "fallback": false,
+      "latency_ms": 0.6146,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Q2 2026 Board Review's Pricing slide",
+          "label": "unsupported",
+          "result": "tagged",
+          "type": "slide_titles"
+        },
+        {
+          "key": "weighing price-led revenue against a modest churn risk",
+          "label": "supported",
+          "result": "kept",
+          "type": "uncited_claim"
+        },
+        {
+          "key": "Coverage must rise 12 points",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F08-a",
+      "case_types": [
+        "quantities",
+        "section_headings"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4112,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "cut its packaging suppliers from 23 to 9",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "head of procurement flagged single-sourcing",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "quantities"
+        },
+        {
+          "key": "volume discounts are given as the main motive",
+          "label": "supported",
+          "result": "kept",
+          "type": "section_headings"
+        }
+      ]
+    },
+    {
+      "case_id": "F08-b",
+      "case_types": [
+        "computed_values",
+        "section_headings",
+        "titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4284,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "reduced its packaging supplier count by 61%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "In the Risks section, the interviewee says",
+          "label": "supported",
+          "result": "kept",
+          "type": "section_headings"
+        },
+        {
+          "key": "The CFO said consolidation saved EUR 2.3 million",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "titles"
+        }
+      ]
+    },
+    {
+      "case_id": "F08-c",
+      "case_types": [
+        "insufficiency"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.424,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "does not give a savings figure",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        },
+        {
+          "key": "pursued mainly for volume discounts",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        },
+        {
+          "key": "does not report the value of the discounts",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        }
+      ]
+    },
+    {
+      "case_id": "F10-a",
+      "case_types": [
+        "conflicting_evidence",
+        "dangling_reference"
+      ],
+      "conflict_expected": true,
+      "conflict_signal": true,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3916,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "audited FY2025 revenue was GBP 181.7 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "conflicting_evidence"
+        },
+        {
+          "key": "This supersedes the unaudited GBP 184.2 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "dangling_reference"
+        },
+        {
+          "key": "unaudited trading update reported GBP 184.2 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "conflicting_evidence"
+        }
+      ]
+    },
+    {
+      "case_id": "F10-b",
+      "case_types": [
+        "computed_values",
+        "dangling_reference",
+        "multi_clause"
+      ],
+      "conflict_expected": true,
+      "conflict_signal": true,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.5315,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "FY2025 revenue was GBP 184.2 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "multi_clause"
+        },
+        {
+          "key": "up 6% on FY2024",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "multi_clause"
+        },
+        {
+          "key": "This growth was driven by gift-card breakage",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "dangling_reference"
+        },
+        {
+          "key": "GBP 2.5 million lower than the trading update",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F17-a",
+      "case_types": [
+        "row_labels",
+        "table_headers",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.6692,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Vantor held a 22.5% value share in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "table_headers"
+        },
+        {
+          "key": "26% above the category average in 2024",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "years_dates"
+        },
+        {
+          "key": "Private label led on volume with 30.1%",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        }
+      ]
+    },
+    {
+      "case_id": "F17-b",
+      "case_types": [
+        "section_headings",
+        "table_headers"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.6282,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "led the market with an 18.0% value share",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "table_headers"
+        },
+        {
+          "key": "Under Price Positioning, Vantor is priced",
+          "label": "supported",
+          "result": "kept",
+          "type": "section_headings"
+        },
+        {
+          "key": "Crestline's value share was 24.3%",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "table_headers"
+        }
+      ]
+    },
+    {
+      "case_id": "F18-a",
+      "case_types": [
+        "computed_values",
+        "leak",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.5725,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "down about a fifth since the tram works began in May 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "years_dates"
+        },
+        {
+          "key": "against 10,377 a year earlier",
+          "label": "supported",
+          "result": "kept",
+          "type": "leak"
+        },
+        {
+          "key": "Visits fell 18.9% year on year",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F18-b",
+      "case_types": [
+        "computed_values",
+        "leak",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4889,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "down about a fifth according to the store manager",
+          "label": "supported",
+          "result": "kept",
+          "type": "leak"
+        },
+        {
+          "key": "logged 8,412 visits in week 2026-W30",
+          "label": "supported",
+          "result": "kept",
+          "type": "years_dates"
+        },
+        {
+          "key": "fell by 1,965 visits in July 2026",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F21-a",
+      "case_types": [
+        "foreign_handle",
+        "quantities",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.5051,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "carried 486,000 passengers in September 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Three new Bristol routes start in November 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "years_dates"
+        },
+        {
+          "key": "Load factor was 81.4%",
+          "label": "supported",
+          "result": "kept",
+          "type": "foreign_handle"
+        }
+      ]
+    },
+    {
+      "case_id": "F21-b",
+      "case_types": [
+        "fabricated_citation",
+        "foreign_handle",
+        "million_billion",
+        "section_headings"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4945,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "carried 486 million passengers",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "million_billion"
+        },
+        {
+          "key": "New routes will serve Bergen, Turin and Porto",
+          "label": "supported",
+          "result": "kept",
+          "type": "section_headings"
+        },
+        {
+          "key": "On-time performance was 88%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "fabricated_citation"
+        },
+        {
+          "key": "Load factor reached 81.4%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "foreign_handle"
+        }
+      ]
+    },
+    {
+      "case_id": "F21-c",
+      "case_types": [
+        "fabricated_citation",
+        "percentages",
+        "titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4614,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Passenger numbers rose 6.1% to 486,000",
+          "label": "miscited",
+          "result": "tagged",
+          "type": "fabricated_citation"
+        },
+        {
+          "key": "winter network plan adds Bergen, Turin and Porto",
+          "label": "supported",
+          "result": "kept",
+          "type": "titles"
+        },
+        {
+          "key": "Load factor was 81.4% in September 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        }
+      ]
+    },
+    {
+      "case_id": "F21-d",
+      "case_types": [
+        "citation_cap"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [
+        "too_many_citations"
+      ],
+      "expected_ok": false,
+      "fallback": true,
+      "latency_ms": 0.5128,
+      "ok": false,
+      "repaired": false,
+      "structural_failures": [
+        "too_many_citations"
+      ],
+      "units": [
+        {
+          "key": "carried 486,000 passengers in September 2026, up 6.1%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Three routes from Bristol launch in November 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Load factor reached 81.4%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "new destinations are Bergen, Turin and Porto",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        }
+      ]
+    },
+    {
+      "case_id": "F22-a",
+      "case_types": [
+        "quantity_as_year_shape",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.6605,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "completed 1,912 homes in the six months",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantity_as_year_shape"
+        },
+        {
+          "key": "420 plots on 14 August 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "years_dates"
+        },
+        {
+          "key": "Prior-year H1 completions totalled 1,744 homes",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantity_as_year_shape"
+        }
+      ]
+    },
+    {
+      "case_id": "F22-b",
+      "case_types": [
+        "computed_values",
+        "million_billion",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [
+        "answer_missing"
+      ],
+      "expected_ok": false,
+      "fallback": false,
+      "latency_ms": 0.6834,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Completions rose 9.6% to 1,912 homes",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "granted in September 2026",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "years_dates"
+        },
+        {
+          "key": "Average selling price was GBP 342 million",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "million_billion"
+        }
+      ]
+    },
+    {
+      "case_id": "F23-a",
+      "case_types": [
+        "dangling_reference",
+        "percentages",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4445,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "61% of patients booked their last appointment online",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "SMS reminders were introduced in January 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "years_dates"
+        },
+        {
+          "key": "This suggests reminders are an effective lever",
+          "label": "supported",
+          "result": "kept",
+          "type": "dangling_reference"
+        }
+      ]
+    },
+    {
+      "case_id": "F23-b",
+      "case_types": [
+        "dangling_reference",
+        "multi_clause",
+        "percentages"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4141,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "61% of patients book online",
+          "label": "supported",
+          "result": "kept",
+          "type": "multi_clause"
+        },
+        {
+          "key": "online booking cut no-shows by a third",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "multi_clause"
+        },
+        {
+          "key": "This reduction saved Marlowe GBP 1.4 million",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "dangling_reference"
+        },
+        {
+          "key": "No-shows fell to 6%",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        }
+      ]
+    },
+    {
+      "case_id": "F23-c",
+      "case_types": [
+        "computed_values",
+        "percentages",
+        "quantities",
+        "titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [
+        "answer_too_long"
+      ],
+      "expected_ok": false,
+      "fallback": true,
+      "latency_ms": 0.4755,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "answer_too_long"
+      ],
+      "units": [
+        {
+          "key": "Most patients book online",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "survey sample was 860 patients",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "No-shows fell from 9% to 6%",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "SMS reminders drove the fall",
+          "label": "supported",
+          "result": "kept",
+          "type": "titles"
+        },
+        {
+          "key": "Online booking also reduced no-shows by 3 points",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F25-a",
+      "case_types": [
+        "section_headings",
+        "titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4481,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "According to page 12 of the Claims Report H1 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "titles"
+        },
+        {
+          "key": "In the Home section, escape-of-water claims",
+          "label": "supported",
+          "result": "kept",
+          "type": "section_headings"
+        },
+        {
+          "key": "reported under Claims Frequency",
+          "label": "supported",
+          "result": "kept",
+          "type": "section_headings"
+        }
+      ]
+    },
+    {
+      "case_id": "F25-b",
+      "case_types": [
+        "invalid_unit_conversion",
+        "percentages",
+        "titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [
+        "answer_missing"
+      ],
+      "expected_ok": false,
+      "fallback": false,
+      "latency_ms": 0.468,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Page 14 of the Claims Report shows",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "titles"
+        },
+        {
+          "key": "Escape-of-water claims were 38% of all home claims",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "percentages"
+        },
+        {
+          "key": "Motor claims frequency was 7.8%",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "invalid_unit_conversion"
+        }
+      ]
+    },
+    {
+      "case_id": "F27-a",
+      "case_types": [
+        "insufficiency",
+        "row_labels",
+        "unsupported_calculation"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.5223,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "North zone is above target, at 48.6 Ml per day",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "South zone is 10% below its 41.0 target",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "unsupported_calculation"
+        },
+        {
+          "key": "does not cover all zones",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        }
+      ]
+    },
+    {
+      "case_id": "F27-b",
+      "case_types": [
+        "computed_values",
+        "row_labels"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [
+        "gaps_missing"
+      ],
+      "expected_ok": false,
+      "fallback": true,
+      "latency_ms": 0.383,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "gaps_missing"
+      ],
+      "units": [
+        {
+          "key": "leaks 87.8 Ml per day across both zones",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "South zone beat its leakage target",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "exceeds its target by 3.6 Ml per day",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F27-c",
+      "case_types": [
+        "insufficiency",
+        "invalid_unit_conversion",
+        "valid_unit_conversion"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4515,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "leakage was 48.6 megalitres per day in 2025-26",
+          "label": "supported",
+          "result": "removed",
+          "type": "valid_unit_conversion"
+        },
+        {
+          "key": "leakage was 39.2 litres per day",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "invalid_unit_conversion"
+        },
+        {
+          "key": "does not report leakage for other zones",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        }
+      ]
+    },
+    {
+      "case_id": "F29-a",
+      "case_types": [
+        "edition_labels",
+        "unsupported_calculation"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": true,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.6683,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "2026 edition puts 2025 footwear sales at GBP 640 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "edition_labels"
+        },
+        {
+          "key": "about two thirds of segment sales",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "unsupported_calculation"
+        },
+        {
+          "key": "2025 edition recorded apparel sales of GBP 1,090 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "edition_labels"
+        }
+      ]
+    },
+    {
+      "case_id": "F29-b",
+      "case_types": [
+        "edition_labels",
+        "million_billion",
+        "table_headers",
+        "valid_unit_conversion"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": true,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.6928,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Apparel sales were GBP 1.12 billion in 2025",
+          "label": "supported",
+          "result": "removed",
+          "type": "valid_unit_conversion"
+        },
+        {
+          "key": "2024 edition reported footwear sales",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "edition_labels"
+        },
+        {
+          "key": "Equipment sales were GBP 395 billion",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "million_billion"
+        },
+        {
+          "key": "Apparel sales grew 2.7%",
+          "label": "miscited",
+          "result": "removed",
+          "type": "table_headers"
+        }
+      ]
+    },
+    {
+      "case_id": "F29-c",
+      "case_types": [
+        "currency_mismatch",
+        "edition_labels",
+        "table_headers"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": true,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.6415,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Footwear sales reached EUR 640 million",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "currency_mismatch"
+        },
+        {
+          "key": "GBP 1,090 million in 2024 according to the 2025 edition",
+          "label": "supported",
+          "result": "kept",
+          "type": "edition_labels"
+        },
+        {
+          "key": "only segment to decline, by 1.3%",
+          "label": "supported",
+          "result": "kept",
+          "type": "table_headers"
+        }
+      ]
+    },
+    {
+      "case_id": "F29-d",
+      "case_types": [
+        "citation_cap"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": true,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.6155,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Footwear sales were GBP 640 million in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Apparel sales were GBP 1,120 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Equipment sales fell 1.3%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "In 2024 apparel sales were GBP 1,090 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        }
+      ]
+    },
+    {
+      "case_id": "F32-a",
+      "case_types": [
+        "million_billion",
+        "multi_clause",
+        "quantities",
+        "unsupported_calculation"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4819,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "gross SME lending was GBP 3.4 billion",
+          "label": "supported",
+          "result": "kept",
+          "type": "million_billion"
+        },
+        {
+          "key": "Loan decisions now take about nine working days",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Green finance made up 22%",
+          "label": "supported",
+          "result": "removed",
+          "type": "multi_clause"
+        },
+        {
+          "key": "roughly GBP 0.5 billion",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "unsupported_calculation"
+        }
+      ]
+    },
+    {
+      "case_id": "F32-b",
+      "case_types": [
+        "back_reference",
+        "computed_values",
+        "million_billion"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4162,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Ardent lent GBP 3.4 billion to SMEs",
+          "label": "supported",
+          "result": "kept",
+          "type": "million_billion"
+        },
+        {
+          "key": "Green finance lending totalled GBP 748 million",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "SME lending reached GBP 3.4 billion",
+          "label": "miscited",
+          "result": "removed",
+          "type": "back_reference"
+        }
+      ]
+    },
+    {
+      "case_id": "F32-c",
+      "case_types": [
+        "fabricated_citation",
+        "foreign_handle",
+        "leak",
+        "percentages"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": false,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4291,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "SME loans take nine working days to decide",
+          "label": "supported",
+          "result": "kept",
+          "type": "leak"
+        },
+        {
+          "key": "Lending was GBP 3.4 billion in 2025",
+          "label": "unsupported",
+          "result": "tagged",
+          "type": "foreign_handle"
+        },
+        {
+          "key": "22% of SME lending was green finance",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "Approval rates were 64%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "fabricated_citation"
+        }
+      ]
+    }
+  ],
+  "split": "holdout",
+  "summary": {
+    "by_type": {
+      "back_reference": {
+        "miscited:removed": 1
+      },
+      "citation_cap": {
+        "supported:kept": 8
+      },
+      "computed_values": {
+        "unsupported:removed": 10
+      },
+      "conflicting_evidence": {
+        "supported:kept": 2
+      },
+      "currency_mismatch": {
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "dangling_reference": {
+        "supported:kept": 2,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "edition_labels": {
+        "supported:kept": 3,
+        "unsupported:accepted": 1
+      },
+      "fabricated_citation": {
+        "miscited:tagged": 1,
+        "unsupported:removed": 2
+      },
+      "foreign_handle": {
+        "supported:kept": 1,
+        "unsupported:removed": 1,
+        "unsupported:tagged": 1
+      },
+      "insufficiency": {
+        "supported:kept": 5
+      },
+      "invalid_unit_conversion": {
+        "unsupported:accepted": 2,
+        "unsupported:removed": 1
+      },
+      "leak": {
+        "supported:kept": 3
+      },
+      "million_billion": {
+        "supported:kept": 2,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 2
+      },
+      "multi_clause": {
+        "supported:kept": 2,
+        "supported:removed": 1,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "percentages": {
+        "supported:kept": 7,
+        "unsupported:accepted": 2
+      },
+      "quantities": {
+        "supported:kept": 5,
+        "supported:removed": 1,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "quantity_as_year_shape": {
+        "supported:kept": 2
+      },
+      "row_labels": {
+        "supported:kept": 3
+      },
+      "section_headings": {
+        "supported:kept": 6
+      },
+      "slide_titles": {
+        "miscited:removed": 1,
+        "supported:kept": 2,
+        "unsupported:removed": 1,
+        "unsupported:tagged": 1
+      },
+      "table_headers": {
+        "miscited:removed": 1,
+        "supported:kept": 2,
+        "unsupported:accepted": 2
+      },
+      "titles": {
+        "supported:kept": 3,
+        "unsupported:removed": 2
+      },
+      "uncited_claim": {
+        "supported:kept": 1
+      },
+      "unsupported_calculation": {
+        "unsupported:accepted": 1,
+        "unsupported:removed": 2
+      },
+      "valid_unit_conversion": {
+        "supported:kept": 1,
+        "supported:removed": 2
+      },
+      "years_dates": {
+        "supported:kept": 5,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      }
+    },
+    "cases": 35,
+    "conflict_signal": {
+      "false_negative": 0,
+      "false_positive": 4,
+      "true_negative": 29,
+      "true_positive": 2
+    },
+    "fallback_frequency": 0.1429,
+    "false_negative_acceptance_rate": 0.3043,
+    "false_positive_rejection_rate": 0.058,
+    "latency_ms_p50": 0.5051,
+    "latency_ms_p95": 0.6692,
+    "miscited_repaired": 0,
+    "outcomes": {
+      "miscited:removed": 3,
+      "miscited:tagged": 1,
+      "supported:kept": 65,
+      "supported:removed": 4,
+      "unsupported:accepted": 14,
+      "unsupported:removed": 26,
+      "unsupported:tagged": 2
+    },
+    "regeneration_request_frequency": 0.1429,
+    "repair_frequency": 0.6571,
+    "structural_agreement": 0.8857,
+    "supported_retention": 0.942,
+    "supported_units": 69,
+    "units": 115,
+    "unsupported_units": 46
+  }
+}

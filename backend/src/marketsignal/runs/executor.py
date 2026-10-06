@@ -308,7 +308,7 @@ class StandardRunExecutor:
         max_conf = await self._llm_max_confidentiality(req.scope)
         if req.mode == "research" and self._agent_factory is not None:
             # 1. Research gather: the bounded agent over the governed tools (ADR-0007/0015).
-            await writer.emit("status", {"phase": "planning", "message": STATUS["planning"]})
+            # The agent itself reports the planning/searching phases.
             research = await research_gather(
                 factory=self._factory,
                 settings=settings,
@@ -412,7 +412,16 @@ class StandardRunExecutor:
         started: float,
     ) -> tuple[VerifiedAnswer | None, VerificationReport | None, str]:
         return await generate_and_verify(
-            self._settings, self._llm, req, writer, state, pack, summary, recent_q, started
+            self._settings,
+            self._llm,
+            req,
+            writer,
+            state,
+            pack,
+            summary,
+            recent_q,
+            started,
+            factory=self._factory,
         )
 
     async def _finish(

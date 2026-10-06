@@ -1,0 +1,1808 @@
+{
+  "cases": [
+    {
+      "case_id": "F01-a",
+      "case_types": [
+        "row_labels",
+        "table_headers"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3788,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "EMEA revenue rose from EUR 412.6 million in FY2024",
+          "label": "supported",
+          "result": "kept",
+          "type": "table_headers"
+        },
+        {
+          "key": "APAC grew from EUR 118.4 million to EUR 139.0 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "Americas revenue moved from EUR 297.3 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        }
+      ]
+    },
+    {
+      "case_id": "F01-b",
+      "case_types": [
+        "computed_values",
+        "section_headings",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3354,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Revenue by Region table shows EMEA revenue",
+          "label": "supported",
+          "result": "kept",
+          "type": "section_headings"
+        },
+        {
+          "key": "APAC revenue grew 17.4% year on year",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "Americas revenue was EUR 301.9 million in FY2023",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "years_dates"
+        }
+      ]
+    },
+    {
+      "case_id": "F02-a",
+      "case_types": [
+        "percentages",
+        "valid_unit_conversion"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4477,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "most cited purchase driver at 38%",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "42% of respondents said they would pay more",
+          "label": "supported",
+          "result": "removed",
+          "type": "valid_unit_conversion"
+        },
+        {
+          "key": "Among 18-29 year olds the figure was 57%",
+          "label": "supported",
+          "result": "removed",
+          "type": "valid_unit_conversion"
+        }
+      ]
+    },
+    {
+      "case_id": "F02-b",
+      "case_types": [
+        "invalid_unit_conversion",
+        "percentages",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4165,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "deciding factor for 11% of the 1,240 respondents",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "0.42% of customers would pay a premium",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "invalid_unit_conversion"
+        },
+        {
+          "key": "asked in the April 2026 wave",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "years_dates"
+        }
+      ]
+    },
+    {
+      "case_id": "F04-a",
+      "case_types": [
+        "conflicting_evidence",
+        "edition_labels",
+        "percentages"
+      ],
+      "conflict_expected": true,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.5095,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "held 13.6% of the UK e-bike market in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "restated to 12.9% in the 2026 edition",
+          "label": "supported",
+          "result": "removed",
+          "type": "edition_labels"
+        },
+        {
+          "key": "attributes the restatement to a change in survey method",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "conflicting_evidence"
+        },
+        {
+          "key": "reported a 14.2% share for 2024",
+          "label": "supported",
+          "result": "kept",
+          "type": "edition_labels"
+        }
+      ]
+    },
+    {
+      "case_id": "F04-b",
+      "case_types": [
+        "conflicting_evidence",
+        "edition_labels",
+        "multi_clause"
+      ],
+      "conflict_expected": true,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": true,
+      "latency_ms": 0.3496,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "answer_missing",
+        "no_citations"
+      ],
+      "units": [
+        {
+          "key": "held 14.2% of the UK e-bike market in 2024",
+          "label": "supported",
+          "result": "removed",
+          "type": "conflicting_evidence"
+        },
+        {
+          "key": "Its share then moved to 13.6% in 2025",
+          "label": "supported",
+          "result": "removed",
+          "type": "multi_clause"
+        },
+        {
+          "key": "a gain of 0.7 points",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "multi_clause"
+        },
+        {
+          "key": "estimates Meridian's 2025 share at 13.6%",
+          "label": "miscited",
+          "result": "removed",
+          "type": "edition_labels"
+        }
+      ]
+    },
+    {
+      "case_id": "F04-c",
+      "case_types": [
+        "conflicting_evidence",
+        "edition_labels",
+        "uncited_claim"
+      ],
+      "conflict_expected": true,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3385,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "13.6% in 2025 according to the 2027 edition",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "edition_labels"
+        },
+        {
+          "key": "suggests importer data for the category is still being corrected",
+          "label": "supported",
+          "result": "kept",
+          "type": "uncited_claim"
+        },
+        {
+          "key": "2024 share was revised to 12.9%",
+          "label": "supported",
+          "result": "kept",
+          "type": "conflicting_evidence"
+        }
+      ]
+    },
+    {
+      "case_id": "F05-a",
+      "case_types": [
+        "computed_values",
+        "multi_clause"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2762,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "had 441 stores at the end of 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "multi_clause"
+        },
+        {
+          "key": "of which 312 were company-operated",
+          "label": "supported",
+          "result": "kept",
+          "type": "multi_clause"
+        },
+        {
+          "key": "lifting company-operated stores by 11%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F05-b",
+      "case_types": [
+        "conflicting_evidence",
+        "quantities",
+        "unsupported_calculation"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3963,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "operated 312 company-run stores",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "will reach 476 stores by the end of 2026",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "unsupported_calculation"
+        },
+        {
+          "key": "Franchised stores totalled 129",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Store counts of 312 and 441 both appear",
+          "label": "supported",
+          "result": "kept",
+          "type": "conflicting_evidence"
+        }
+      ]
+    },
+    {
+      "case_id": "F06-a",
+      "case_types": [
+        "quantities",
+        "quantity_as_year_shape"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2118,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Leeds warehouse holds 2025 units of Storm Shell",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantity_as_year_shape"
+        },
+        {
+          "key": "reorder point is 1990 units",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantity_as_year_shape"
+        },
+        {
+          "key": "Fabric lead time is eleven weeks, up from eight",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        }
+      ]
+    },
+    {
+      "case_id": "F06-b",
+      "case_types": [
+        "computed_values",
+        "quantity_as_year_shape",
+        "row_labels"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2241,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "stock was last counted in 2025",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "quantity_as_year_shape"
+        },
+        {
+          "key": "Units on hand stand at 2,025",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "lengthened by three weeks",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F06-c",
+      "case_types": [
+        "quantities",
+        "quantity_as_year_shape",
+        "row_labels"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [
+        "answer_too_long"
+      ],
+      "expected_ok": false,
+      "fallback": true,
+      "latency_ms": 0.2931,
+      "ok": false,
+      "repaired": false,
+      "structural_failures": [
+        "answer_too_long"
+      ],
+      "units": [
+        {
+          "key": "Leeds warehouse stocks the Storm Shell line",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "Units on hand are 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantity_as_year_shape"
+        },
+        {
+          "key": "reorder point is set at 1990",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantity_as_year_shape"
+        },
+        {
+          "key": "fabric lead time is eleven weeks",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Last season it was eight weeks",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        }
+      ]
+    },
+    {
+      "case_id": "F09-a",
+      "case_types": [
+        "row_labels"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2997,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "EMEA revenue was USD 612.0 million",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "LATAM grew faster at 21.7%",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "ARPU was USD 18.40 in EMEA",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        }
+      ]
+    },
+    {
+      "case_id": "F09-b",
+      "case_types": [
+        "computed_values",
+        "million_billion",
+        "percentages",
+        "unsupported_calculation"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [
+        "answer_missing"
+      ],
+      "expected_ok": false,
+      "fallback": false,
+      "latency_ms": 0.3465,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "EMEA revenue was USD 612.0 billion",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "million_billion"
+        },
+        {
+          "key": "LATAM revenue growth was USD 21.7 million",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "percentages"
+        },
+        {
+          "key": "Combined EMEA and LATAM revenue was USD 816.5 million",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "EMEA ARPU is three times LATAM ARPU",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "unsupported_calculation"
+        }
+      ]
+    },
+    {
+      "case_id": "F11-a",
+      "case_types": [
+        "citation_cap"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4583,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "largest channel at 41% of net revenue",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Pharmacy chains were second at 33%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Shares were DTC 41%, pharmacy 33%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "third-largest channel at 19%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        }
+      ]
+    },
+    {
+      "case_id": "F11-c",
+      "case_types": [
+        "citation_cap"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [
+        "too_many_citations"
+      ],
+      "expected_ok": false,
+      "fallback": false,
+      "latency_ms": 0.5267,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "largest channel at 41% of net revenue",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Pharmacy chains were second at 33%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Shares were DTC 41%, pharmacy 33%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "third-largest channel at 19%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Pharmacy and salons contributed 33% and 7%",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        }
+      ]
+    },
+    {
+      "case_id": "F12-a",
+      "case_types": [
+        "citation_cap",
+        "row_labels"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.4587,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Business tier costs USD 29 per seat versus Fennick's USD 32",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Starter tier at USD 12 per seat",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "Annual discounts are 15% for Quillon Starter",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "Both vendors sell a Business tier",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        }
+      ]
+    },
+    {
+      "case_id": "F12-b",
+      "case_types": [
+        "citation_cap",
+        "row_labels"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [
+        "too_many_citations"
+      ],
+      "expected_ok": false,
+      "fallback": false,
+      "latency_ms": 0.5808,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Business tier costs USD 29 per seat versus Fennick's USD 32",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Starter tier at USD 12 per seat",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "Annual discounts are 15% for Quillon Starter",
+          "label": "supported",
+          "result": "kept",
+          "type": "row_labels"
+        },
+        {
+          "key": "Both vendors sell a Business tier",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        },
+        {
+          "key": "Fennick Business lists at USD 32 per seat",
+          "label": "supported",
+          "result": "kept",
+          "type": "citation_cap"
+        }
+      ]
+    },
+    {
+      "case_id": "F13-a",
+      "case_types": [
+        "percentages",
+        "quantities",
+        "uncited_claim"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2306,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "34% of dog owners and 22% of cat owners",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "follow two consecutive skipped deliveries",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "higher among dog owners than cat owners",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "uncited_claim"
+        }
+      ]
+    },
+    {
+      "case_id": "F13-c",
+      "case_types": [
+        "fabricated_citation",
+        "percentages",
+        "uncited_claim"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [
+        "no_citations"
+      ],
+      "expected_ok": false,
+      "fallback": true,
+      "latency_ms": 0.1715,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "no_citations"
+      ],
+      "units": [
+        {
+          "key": "more common among dog owners than cat owners",
+          "label": "supported",
+          "result": "kept",
+          "type": "uncited_claim"
+        },
+        {
+          "key": "Monthly churn among subscribers is 6%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "percentages"
+        },
+        {
+          "key": "41% of subscribers skip at least one delivery",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "fabricated_citation"
+        }
+      ]
+    },
+    {
+      "case_id": "F14-a",
+      "case_types": [
+        "insufficiency",
+        "percentages"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3482,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "does not name the operator that cut",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        },
+        {
+          "key": "Postpaid churn rose to 1.1% in August 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "Churn is not broken down by reason",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        }
+      ]
+    },
+    {
+      "case_id": "F14-b",
+      "case_types": [
+        "computed_values",
+        "insufficiency",
+        "quantities"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [
+        "answer_missing"
+      ],
+      "expected_ok": false,
+      "fallback": false,
+      "latency_ms": 0.3603,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Fennick Mobile cut its SIM-only 30GB plan",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "insufficiency"
+        },
+        {
+          "key": "raised Corvane's postpaid churn by 0.2 percentage points",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "equivalent plan still costs GBP 12",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        }
+      ]
+    },
+    {
+      "case_id": "F15-a",
+      "case_types": [
+        "currency_mismatch",
+        "valid_unit_conversion"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3056,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "six-piece tumbler set lists at EUR 48.00",
+          "label": "supported",
+          "result": "kept",
+          "type": "currency_mismatch"
+        },
+        {
+          "key": "US distributor retails it at USD 89",
+          "label": "supported",
+          "result": "kept",
+          "type": "currency_mismatch"
+        },
+        {
+          "key": "carafe (1,200 ml) is EUR 36.50 ex-works",
+          "label": "supported",
+          "result": "removed",
+          "type": "valid_unit_conversion"
+        }
+      ]
+    },
+    {
+      "case_id": "F15-b",
+      "case_types": [
+        "currency_mismatch",
+        "invalid_unit_conversion",
+        "quantities",
+        "unsupported_calculation"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3551,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "tumbler set lists at USD 48.00 ex-works",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "currency_mismatch"
+        },
+        {
+          "key": "US retail is USD 89",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "US retail markup on the tumbler set is about 85%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "unsupported_calculation"
+        },
+        {
+          "key": "The carafe holds 12 litres",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "invalid_unit_conversion"
+        }
+      ]
+    },
+    {
+      "case_id": "F16-a",
+      "case_types": [
+        "back_reference",
+        "percentages",
+        "section_headings"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2761,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "accounted for 13.8% of UK grocery sales",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "Under Online Habits, 52% of shoppers",
+          "label": "supported",
+          "result": "kept",
+          "type": "section_headings"
+        },
+        {
+          "key": "Online penetration stood at 13.8% in 2025",
+          "label": "miscited",
+          "result": "removed",
+          "type": "back_reference"
+        }
+      ]
+    },
+    {
+      "case_id": "F16-c",
+      "case_types": [
+        "percentages",
+        "quantity_as_year_shape"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2492,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "survey sampled 2,010 respondents",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantity_as_year_shape"
+        },
+        {
+          "key": "penetration reached 13.8% in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "The survey was fielded in 2010",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "quantity_as_year_shape"
+        }
+      ]
+    },
+    {
+      "case_id": "F19-a",
+      "case_types": [
+        "percentages",
+        "uncited_claim",
+        "unsupported_calculation",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3704,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "cut its range from 140 to 95 SKUs by Q2 2027",
+          "label": "supported",
+          "result": "kept",
+          "type": "years_dates"
+        },
+        {
+          "key": "fits the segment's stronger value growth",
+          "label": "supported",
+          "result": "kept",
+          "type": "uncited_claim"
+        },
+        {
+          "key": "Loose-leaf value sales grew 7.2% in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "may free around 30% of shelf space",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "unsupported_calculation"
+        }
+      ]
+    },
+    {
+      "case_id": "F19-b",
+      "case_types": [
+        "computed_values",
+        "percentages",
+        "unsupported_calculation"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [
+        "answer_missing"
+      ],
+      "expected_ok": false,
+      "fallback": true,
+      "latency_ms": 0.294,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "answer_missing"
+      ],
+      "units": [
+        {
+          "key": "will remove 45 SKUs by Q2 2027",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "lift loose-leaf share by roughly 5 points",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "unsupported_calculation"
+        },
+        {
+          "key": "Loose-leaf grew 7.2% by value in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        }
+      ]
+    },
+    {
+      "case_id": "F20-a",
+      "case_types": [
+        "multi_clause",
+        "slide_titles",
+        "titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.266,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Chilled Division slide shows a 12.0% operating margin",
+          "label": "supported",
+          "result": "kept",
+          "type": "slide_titles"
+        },
+        {
+          "key": "Ambient division earned 12.4%",
+          "label": "supported",
+          "result": "kept",
+          "type": "multi_clause"
+        },
+        {
+          "key": "targets 14% by FY2027",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "multi_clause"
+        },
+        {
+          "key": "presented on its own slide in the Strategy Day 2026 deck",
+          "label": "supported",
+          "result": "removed",
+          "type": "titles"
+        }
+      ]
+    },
+    {
+      "case_id": "F20-b",
+      "case_types": [
+        "conflicting_evidence",
+        "slide_titles",
+        "years_dates"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3213,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "group operating margin was 12.0%",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "slide_titles"
+        },
+        {
+          "key": "targets a 14% margin by FY2028",
+          "label": "supported",
+          "result": "kept",
+          "type": "years_dates"
+        },
+        {
+          "key": "operating margin data sit on Slide 5",
+          "label": "supported",
+          "result": "removed",
+          "type": "slide_titles"
+        },
+        {
+          "key": "Slide 4 reports a 12.0% margin while Slide 5",
+          "label": "supported",
+          "result": "removed",
+          "type": "conflicting_evidence"
+        }
+      ]
+    },
+    {
+      "case_id": "F24-a",
+      "case_types": [
+        "conflicting_evidence",
+        "titles"
+      ],
+      "conflict_expected": true,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3058,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "availability across surveyed pubs at 92%",
+          "label": "supported",
+          "result": "kept",
+          "type": "conflicting_evidence"
+        },
+        {
+          "key": "regional sales lead estimates it is nearer 80%",
+          "label": "supported",
+          "result": "kept",
+          "type": "titles"
+        },
+        {
+          "key": "Survey: 92% availability",
+          "label": "supported",
+          "result": "kept",
+          "type": "conflicting_evidence"
+        }
+      ]
+    },
+    {
+      "case_id": "F24-b",
+      "case_types": [
+        "conflicting_evidence",
+        "dangling_reference"
+      ],
+      "conflict_expected": true,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2466,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "pub availability is 92%",
+          "label": "supported",
+          "result": "kept",
+          "type": "conflicting_evidence"
+        },
+        {
+          "key": "This is consistent with the sales lead's view",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "dangling_reference"
+        },
+        {
+          "key": "Availability in managed estates is 80%",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "conflicting_evidence"
+        }
+      ]
+    },
+    {
+      "case_id": "F26-a",
+      "case_types": [
+        "insufficiency",
+        "million_billion"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2196,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "None of the sources give Halden's share",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        },
+        {
+          "key": "market itself was worth GBP 1.1 billion",
+          "label": "supported",
+          "result": "kept",
+          "type": "million_billion"
+        },
+        {
+          "key": "not broken down by channel",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        }
+      ]
+    },
+    {
+      "case_id": "F26-b",
+      "case_types": [
+        "insufficiency",
+        "million_billion",
+        "percentages"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [
+        "gaps_missing"
+      ],
+      "expected_ok": false,
+      "fallback": true,
+      "latency_ms": 0.2062,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "gaps_missing"
+      ],
+      "units": [
+        {
+          "key": "market share is not reported in the evidence",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        },
+        {
+          "key": "prestige fragrance market was worth GBP 1.1 billion",
+          "label": "supported",
+          "result": "kept",
+          "type": "million_billion"
+        },
+        {
+          "key": "Department stores account for 45%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "percentages"
+        }
+      ]
+    },
+    {
+      "case_id": "F26-c",
+      "case_types": [
+        "insufficiency",
+        "valid_unit_conversion"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": true,
+      "latency_ms": 0.1885,
+      "ok": false,
+      "repaired": true,
+      "structural_failures": [
+        "gaps_missing"
+      ],
+      "units": [
+        {
+          "key": "does not establish Halden's market share",
+          "label": "supported",
+          "result": "kept",
+          "type": "insufficiency"
+        },
+        {
+          "key": "worth GBP 1,100 million in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "valid_unit_conversion"
+        },
+        {
+          "key": "share is likely below 10%",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "insufficiency"
+        }
+      ]
+    },
+    {
+      "case_id": "F28-a",
+      "case_types": [
+        "computed_values",
+        "quantities"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3175,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "had 214,000 members at 31 December 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Membership reached 241,000 by 30 June 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Membership grew 12.6% in six months",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        }
+      ]
+    },
+    {
+      "case_id": "F28-b",
+      "case_types": [
+        "conflicting_evidence",
+        "quantities"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3994,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Membership was 241,000 at 30 June 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "The December 2025 figure was 241,000",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "quantities"
+        },
+        {
+          "key": "Net joiners totalled 27,000 in H1 2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "gives 214,000 members on page 2 but 241,000 on page 3",
+          "label": "supported",
+          "result": "removed",
+          "type": "conflicting_evidence"
+        }
+      ]
+    },
+    {
+      "case_id": "F30-a",
+      "case_types": [
+        "leak",
+        "slide_titles"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.2695,
+      "ok": true,
+      "repaired": false,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Store Roll-out slide plans 18 new stores in FY2027",
+          "label": "supported",
+          "result": "kept",
+          "type": "slide_titles"
+        },
+        {
+          "key": "Digital slide targets an online share of sales of 35%",
+          "label": "supported",
+          "result": "kept",
+          "type": "slide_titles"
+        },
+        {
+          "key": "Online share of sales was 28% in FY2025",
+          "label": "unsupported",
+          "result": "accepted",
+          "type": "leak"
+        }
+      ]
+    },
+    {
+      "case_id": "F30-b",
+      "case_types": [
+        "foreign_handle",
+        "slide_titles",
+        "unsupported_calculation"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.239,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Slide 13 sets out plans for 18 new stores",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "slide_titles"
+        },
+        {
+          "key": "Online share was 28% in FY2026",
+          "label": "supported",
+          "result": "kept",
+          "type": "foreign_handle"
+        },
+        {
+          "key": "12 of the new stores will be in England",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "unsupported_calculation"
+        }
+      ]
+    },
+    {
+      "case_id": "F30-c",
+      "case_types": [
+        "computed_values",
+        "quantities"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.214,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "plans 18 new stores in FY2027",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Online share should rise 7 points",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "Six new stores are planned for Scotland",
+          "label": "miscited",
+          "result": "accepted",
+          "type": "quantities"
+        }
+      ]
+    },
+    {
+      "case_id": "F31-a",
+      "case_types": [
+        "computed_values",
+        "quantities"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3341,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "installations reached 186,000 in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Installations grew 22.4% year on year",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "computed_values"
+        },
+        {
+          "key": "A 4 kW system cost GBP 6,200",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        }
+      ]
+    },
+    {
+      "case_id": "F31-c",
+      "case_types": [
+        "back_reference",
+        "percentages",
+        "quantities",
+        "uncited_claim"
+      ],
+      "conflict_expected": false,
+      "conflict_signal": null,
+      "expected_failures": [],
+      "expected_ok": true,
+      "fallback": false,
+      "latency_ms": 0.3284,
+      "ok": true,
+      "repaired": true,
+      "structural_failures": [],
+      "units": [
+        {
+          "key": "Installations reached 186,000 in 2025",
+          "label": "supported",
+          "result": "kept",
+          "type": "quantities"
+        },
+        {
+          "key": "Referrals generated 44% of installer leads",
+          "label": "supported",
+          "result": "kept",
+          "type": "percentages"
+        },
+        {
+          "key": "coincided with a fall in system prices",
+          "label": "miscited",
+          "result": "removed",
+          "type": "back_reference"
+        },
+        {
+          "key": "earned about GBP 1.15 billion",
+          "label": "unsupported",
+          "result": "removed",
+          "type": "uncited_claim"
+        }
+      ]
+    }
+  ],
+  "split": "dev",
+  "summary": {
+    "by_type": {
+      "back_reference": {
+        "miscited:removed": 2
+      },
+      "citation_cap": {
+        "supported:kept": 14
+      },
+      "computed_values": {
+        "unsupported:accepted": 1,
+        "unsupported:removed": 8
+      },
+      "conflicting_evidence": {
+        "supported:kept": 5,
+        "supported:removed": 3,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "currency_mismatch": {
+        "supported:kept": 2,
+        "unsupported:removed": 1
+      },
+      "dangling_reference": {
+        "unsupported:accepted": 1
+      },
+      "edition_labels": {
+        "miscited:removed": 1,
+        "supported:kept": 1,
+        "supported:removed": 1,
+        "unsupported:removed": 1
+      },
+      "fabricated_citation": {
+        "unsupported:removed": 1
+      },
+      "foreign_handle": {
+        "supported:kept": 1
+      },
+      "insufficiency": {
+        "supported:kept": 6,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "invalid_unit_conversion": {
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "leak": {
+        "unsupported:accepted": 1
+      },
+      "million_billion": {
+        "supported:kept": 2,
+        "unsupported:accepted": 1
+      },
+      "multi_clause": {
+        "supported:kept": 3,
+        "supported:removed": 1,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "percentages": {
+        "supported:kept": 10,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 2
+      },
+      "quantities": {
+        "miscited:accepted": 1,
+        "supported:kept": 16,
+        "unsupported:removed": 1
+      },
+      "quantity_as_year_shape": {
+        "supported:kept": 5,
+        "unsupported:accepted": 2
+      },
+      "row_labels": {
+        "supported:kept": 11
+      },
+      "section_headings": {
+        "supported:kept": 2
+      },
+      "slide_titles": {
+        "supported:kept": 3,
+        "supported:removed": 1,
+        "unsupported:accepted": 1,
+        "unsupported:removed": 1
+      },
+      "table_headers": {
+        "supported:kept": 1
+      },
+      "titles": {
+        "supported:kept": 1,
+        "supported:removed": 1
+      },
+      "uncited_claim": {
+        "supported:kept": 3,
+        "unsupported:removed": 2
+      },
+      "unsupported_calculation": {
+        "unsupported:accepted": 1,
+        "unsupported:removed": 5
+      },
+      "valid_unit_conversion": {
+        "supported:kept": 1,
+        "supported:removed": 3
+      },
+      "years_dates": {
+        "supported:kept": 2,
+        "unsupported:accepted": 2
+      }
+    },
+    "cases": 42,
+    "fallback_frequency": 0.1429,
+    "false_negative_acceptance_rate": 0.3556,
+    "false_positive_rejection_rate": 0.101,
+    "latency_ms_p50": 0.3175,
+    "latency_ms_p95": 0.5095,
+    "miscited_repaired": 0,
+    "outcomes": {
+      "miscited:accepted": 1,
+      "miscited:removed": 3,
+      "supported:kept": 89,
+      "supported:removed": 10,
+      "unsupported:accepted": 15,
+      "unsupported:removed": 26
+    },
+    "regeneration_request_frequency": 0.1429,
+    "repair_frequency": 0.6429,
+    "structural_agreement": 0.8571,
+    "supported_retention": 0.899,
+    "supported_units": 99,
+    "units": 144,
+    "unsupported_units": 45
+  }
+}

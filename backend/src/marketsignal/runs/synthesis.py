@@ -2,6 +2,10 @@
 
 Each LLM call is clamped to the time left before the run deadline (minus a finalize reserve),
 so a slow or broken provider degrades to an evidence-only answer instead of a run timeout.
+
+Every verified attempt is persisted to ``verification_attempts`` (Phase 4, A6) via
+:mod:`marketsignal.runs.verification_log`; the citation cap comes from
+``settings.verifier_max_citations`` and is stated in the system prompt and the feedback.
 """
 
 from __future__ import annotations
@@ -13,10 +17,17 @@ from collections.abc import AsyncGenerator, Callable
 from typing import Any
 
 from marketsignal.config import Settings
+from marketsignal.db.session import SessionFactory
 from marketsignal.generation.aliases import AliasGate, GateCitation, GateText, GateWarning
-from marketsignal.generation.prompts import SYSTEM_PROMPT, render_user_turn
+from marketsignal.generation.prompts import build_system_prompt, render_user_turn
 from marketsignal.generation.types import EvidencePack, VerificationReport
-from marketsignal.generation.verifier import VerifiedAnswer, regeneration_feedback, verify_answer
+from marketsignal.generation.verifier import (
+    VERIFIER_ERROR,
+    VerifiedAnswer,
+    detect_conflicts,
+    regeneration_feedback,
+    verify_answer,
+)
 from marketsignal.providers.llm.base import (
     LLMChunk,
     LLMProvider,
@@ -34,6 +45,7 @@ from marketsignal.runs.flags import (
     STATUS,
 )
 from marketsignal.runs.state import RunRequest, _Attempt, _RunState, _SourceWithheldError
+from marketsignal.runs.verification_log import disposition, record_attempt
 from marketsignal.telemetry.logging import get_logger
 
 log = get_logger(__name__)
@@ -49,14 +61,17 @@ async def generate_and_verify(
     summary: str,
     recent_q: tuple[str, ...],
     started: float,
+    *,
+    factory: SessionFactory | None = None,
 ) -> tuple[VerifiedAnswer | None, VerificationReport | None, str]:
+    """Generate, verify, and regenerate at most once. ``factory`` (optional, keyword-only)
+    persists one ``verification_attempts`` row per verified attempt (the executor always passes
+    it; without it nothing is recorded)."""
+    audit = factory
     feedback: str | None = None
     report: VerificationReport | None = None
     for attempt in (1, 2):
         if attempt == 2:
-            remaining = settings.run_deadline_s - (time.monotonic() - started)
-            if remaining < settings.regeneration_min_remaining_s:
-                return None, report, CITATION_VERIFICATION_FAILED
             await writer.emit("draft_reset", {"attempt": attempt, "reason": "verification_failed"})
         await writer.emit("status", {"phase": "synthesizing", "message": STATUS["synthesizing"]})
         try:
@@ -101,9 +116,20 @@ async def generate_and_verify(
             return None, report, GENERATION_TRUNCATED
         await writer.emit("status", {"phase": "verifying", "message": STATUS["verifying"]})
         t0 = time.monotonic()
-        verified = verify_answer(generated.raw, pack, pack_truncated=pack.truncated)
+        verified = _verify_safely(req, settings, generated.raw, pack)
         state.timings[f"verify_ms_{attempt}"] = round((time.monotonic() - t0) * 1000, 2)
         report = verified.report
+        remaining = settings.run_deadline_s - (time.monotonic() - started)
+        regenerate = (
+            not verified.ok and attempt == 1 and remaining >= settings.regeneration_min_remaining_s
+        )
+        report.attempt = attempt
+        report.regeneration_requested = regenerate
+        report.disposition = disposition(
+            report, ok=verified.ok, regenerate=regenerate, final=attempt == 2
+        )
+        if audit is not None:
+            await record_attempt(audit, req.scope, req.run_id, report)
         if verified.ok:
             state.timings["attempts"] = attempt
             return verified, report, ""
@@ -114,7 +140,33 @@ async def generate_and_verify(
             attempt=attempt,
             failures=verified.report.structural_failures,
         )
+        if not regenerate:
+            break
     return None, report, CITATION_VERIFICATION_FAILED
+
+
+def _verify_safely(
+    req: RunRequest, settings: Settings, raw: str, pack: EvidencePack
+) -> VerifiedAnswer:
+    """``verify_answer``, with any unexpected verifier error counted as a failed verification
+    (regenerate or evidence-only), never a crashed run. Only the exception type is logged."""
+    try:
+        return verify_answer(
+            raw,
+            pack,
+            pack_truncated=pack.truncated,
+            question=req.question,
+            max_citations=settings.verifier_max_citations,
+        )
+    except Exception as exc:
+        log.warning("verifier_error", run_id=str(req.run_id), error=type(exc).__name__)
+        report = VerificationReport(
+            passed=False,
+            structural_failures=[VERIFIER_ERROR],
+            failure_categories=[VERIFIER_ERROR],
+            max_citations=settings.verifier_max_citations,
+        )
+        return VerifiedAnswer(content="", sections={}, citations=[], report=report, ok=False)
 
 
 async def generate(
@@ -136,7 +188,7 @@ async def generate(
     if budget <= 0:
         raise LLMUnavailableError("no time left before the run deadline")
     request = LLMRequest(
-        system=SYSTEM_PROMPT,
+        system=build_system_prompt(settings.verifier_max_citations),
         messages=(
             {
                 "role": "user",
@@ -146,6 +198,7 @@ async def generate(
                     summary=summary,
                     recent_questions=recent_q,
                     feedback=feedback,
+                    notes=detect_conflicts(pack),
                 ),
             },
         ),
