@@ -10,7 +10,7 @@ buckets with concrete examples (found by one arm only, missed by both, distracto
 from __future__ import annotations
 
 import json
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -181,7 +181,12 @@ def build_report(
     manifest: Mapping[str, Any],
     arm_configs: Mapping[str, Any],
     run_info: Mapping[str, Any],
+    task_types: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
+    """``task_types`` (item id -> retrieval | analytics | multi_tool): when given, every arm also
+    reports a ``retrieval_eligible`` summary over ``retrieval`` items (the retrieval-quality
+    denominator) and a per-task-type breakdown; full-set metrics are always kept."""
+    task_types = task_types or {}
     report: dict[str, Any] = {
         "run": dict(run_info),
         "split": split,
@@ -200,11 +205,27 @@ def build_report(
         entry["by_format"] = breakdown(runs, lambda r: item_formats(r, fact_formats))
         entry["by_overlap_bin"] = breakdown(runs, lambda r: [r.item.overlap_bin or "?"])
         entry["distractors"] = distractor_outranking(runs)
+        if task_types:
+            eligible = [r for r in runs if task_types.get(r.item.id) == "retrieval"]
+            entry["retrieval_eligible"] = summarize(eligible)
+            entry["by_task_type"] = breakdown(
+                runs, lambda r: [task_types.get(r.item.id, "unclassified")]
+            )
         entry["items"] = [r.as_dict() for r in runs]
         report["arms"][name] = entry
+    if task_types:
+        report["task_composition"] = dict(
+            Counter(task_types.get(r.item.id, "unclassified") for r in next(iter(arms.values())))
+        )
     for name in arms:
         if name != reference:
             report["comparisons"][f"{reference}->{name}"] = compare(arms[reference], arms[name])
+            if task_types:
+                keep = {i for i, t in task_types.items() if t == "retrieval"}
+                report["comparisons"][f"{reference}->{name} [retrieval-eligible]"] = compare(
+                    [r for r in arms[reference] if r.item.id in keep],
+                    [r for r in arms[name] if r.item.id in keep],
+                )
             report["failures"][f"{reference}|{name}"] = failure_buckets(arms, reference, name)
     return report
 
@@ -252,6 +273,24 @@ def render_markdown(report: Mapping[str, Any], title: str) -> str:
             f"{_ci(iv['recall@10'])} | {_ci(iv['recall@20'])} | {_ci(iv['mrr'])} | "
             f"{lat['p50']} | {lat['p95']} |"
         )
+    if "task_composition" in report:
+        lines += [
+            "",
+            "## Retrieval-eligible items (task_type = retrieval)",
+            "",
+            f"Task composition of this split: {report['task_composition']}. Analytics-only and "
+            "multi-tool items stay in the dataset but are outside the retrieval denominator.",
+            "",
+            "| Arm | n | hit@1 | hit@10 | recall@10 | recall@20 (pool) | MRR |",
+            "|---|---|---|---|---|---|---|",
+        ]
+        for name, arm in report["arms"].items():
+            el = arm["retrieval_eligible"]
+            iv = el["intervals"]
+            lines.append(
+                f"| {name} | {el['metrics']['n']} | {_ci(iv['hit@1'])} | {_ci(iv['hit@10'])} | "
+                f"{_ci(iv['recall@10'])} | {_ci(iv['recall@20'])} | {_ci(iv['mrr'])} |"
+            )
     lines += ["", "## Latency by stage (ms, p50 / p95)", ""]
     for name, arm in report["arms"].items():
         stages = ", ".join(f"{k} {v['p50']}/{v['p95']}" for k, v in arm["latency_ms"].items())

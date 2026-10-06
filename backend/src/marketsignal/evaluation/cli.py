@@ -229,8 +229,11 @@ async def _run(args: argparse.Namespace, settings: Settings) -> int:
     }
     if args.milestone:
         run_info["milestone"] = args.milestone
+    from marketsignal.evaluation.task_types import load_task_types
+
     report = build_report(
         results,
+        task_types=load_task_types(args.dataset.parent / "task-types.json"),
         split=args.split,
         reference=_reference(args.reference, args.suffix, arms),
         fact_formats=fact_formats,
@@ -362,6 +365,25 @@ async def _reachability(args: argparse.Namespace, settings: Settings) -> int:
     return 0
 
 
+async def _classify(args: argparse.Namespace, settings: Settings) -> int:
+    """Write task-types.json beside the frozen dataset (structural rule, logged: covers test)."""
+    from marketsignal.evaluation.task_types import classify
+
+    dataset = load_frozen(args.dataset)
+    engine = create_engine(settings)
+    try:
+        result = await classify(dataset, create_session_factory(engine))
+    finally:
+        await engine.dispose()
+    out = args.dataset.parent / "task-types.json"
+    out.write_text(json.dumps(result, indent=1) + "\n", encoding="utf-8")
+    with TEST_LOG.open("a", encoding="utf-8") as log:
+        entry = {"git": _git_sha(), "at": datetime.now(UTC).isoformat(timespec="seconds")}
+        log.write(json.dumps({**entry, "command": "classify", "milestone": args.milestone}) + "\n")
+    print(json.dumps(result["composition"]))
+    return 0
+
+
 async def _seed(args: argparse.Namespace, settings: Settings) -> int:
     from marketsignal.evaluation.seed_local import seed_in_process
 
@@ -434,9 +456,18 @@ def _compare(args: argparse.Namespace) -> int:
 
 
 def _gate(args: argparse.Namespace) -> int:
-    """Fail (exit 1) when an arm's metric falls below its floor in a results file."""
+    """Fail (exit 1) when an arm's metric falls below its floor in a results file. With
+    ``--task-type retrieval`` the floors apply to the retrieval-eligible summary."""
     report = json.loads(args.results.read_text(encoding="utf-8"))
-    metrics = report["arms"][args.arm]["metrics"]
+    arm_report = report["arms"][args.arm]
+    if args.task_type:
+        if "retrieval_eligible" not in arm_report:
+            print("no retrieval-eligible summary in this results file", file=sys.stderr)
+            return 2
+        metrics = arm_report["retrieval_eligible"]["metrics"]
+        print(f"gate over retrieval-eligible items (n={metrics['n']})")
+    else:
+        metrics = arm_report["metrics"]
     failures = []
     for spec in args.min:
         name, _, floor = spec.partition("=")
@@ -486,6 +517,10 @@ def main(argv: list[str] | None = None) -> int:
     p_gate.add_argument("--results", type=Path, required=True)
     p_gate.add_argument("--arm", required=True)
     p_gate.add_argument("--min", action="append", required=True, help="metric=floor")
+    p_gate.add_argument("--task-type", choices=("retrieval",))
+    p_cls = sub.add_parser("classify")
+    p_cls.add_argument("--dataset", type=Path, default=DATASET_DIR / "frozen.json")
+    p_cls.add_argument("--milestone", required=True, help="covers the test split: logged")
     p_cmp = sub.add_parser("compare")
     p_cmp.add_argument("--a", required=True, help="results.json:arm")
     p_cmp.add_argument("--b", required=True, help="results.json:arm")
@@ -503,5 +538,6 @@ def main(argv: list[str] | None = None) -> int:
         "profile": _profile,
         "reachability": _reachability,
         "seed": _seed,
+        "classify": _classify,
     }[args.command]
     return asyncio.run(handler(args, settings))

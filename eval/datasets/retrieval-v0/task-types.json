@@ -1,0 +1,504 @@
+{
+ "dataset_version": "retrieval-v0",
+ "items_sha256": "8519fbe778771927c145d1126ae246a3ec2004a2831a95a2a10b333775d823dd",
+ "rule": "a fact is 'retrieval' if any satisfying parent has retrieval children in the index, else 'analytics' (child-less numeric row, ADR-0003); item = retrieval | analytics | multi_tool (mixed)",
+ "index": {
+  "NORTHSTAR": [
+   {
+    "parser": "p1",
+    "structure": "s1",
+    "chunking": "c3",
+    "embedding_model": "bge-small-en-v1.5"
+   }
+  ],
+  "SOUTHPEAK": [
+   {
+    "parser": "p1",
+    "structure": "s1",
+    "chunking": "c3",
+    "embedding_model": "bge-small-en-v1.5"
+   }
+  ]
+ },
+ "composition": {
+  "dev": {
+   "retrieval": 38,
+   "analytics": 4,
+   "multi_tool": 2
+  },
+  "test": {
+   "retrieval": 17,
+   "analytics": 4
+  }
+ },
+ "items": {
+  "R0-001": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-083": "retrieval"
+   }
+  },
+  "R0-002": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-101": "retrieval"
+   }
+  },
+  "R0-003": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-053": "retrieval"
+   }
+  },
+  "R0-004": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-112": "retrieval"
+   }
+  },
+  "R0-005": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-094": "retrieval"
+   }
+  },
+  "R0-006": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-073": "retrieval"
+   }
+  },
+  "R0-007": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "SP-C07": "retrieval"
+   }
+  },
+  "R0-008": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-125": "retrieval"
+   }
+  },
+  "R0-009": {
+   "split": "dev",
+   "task_type": "analytics",
+   "facts": {
+    "NS-140": "analytics"
+   }
+  },
+  "R0-010": {
+   "split": "test",
+   "task_type": "analytics",
+   "facts": {
+    "NS-142": "analytics"
+   }
+  },
+  "R0-011": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-080": "retrieval"
+   }
+  },
+  "R0-012": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-013": "retrieval"
+   }
+  },
+  "R0-013": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-100": "retrieval"
+   }
+  },
+  "R0-014": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-110": "retrieval"
+   }
+  },
+  "R0-015": {
+   "split": "test",
+   "task_type": "analytics",
+   "facts": {
+    "NS-122": "analytics"
+   }
+  },
+  "R0-016": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-052": "retrieval"
+   }
+  },
+  "R0-017": {
+   "split": "dev",
+   "task_type": "analytics",
+   "facts": {
+    "SP-C06": "analytics"
+   }
+  },
+  "R0-018": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-104": "retrieval"
+   }
+  },
+  "R0-019": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-094": "retrieval"
+   }
+  },
+  "R0-020": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-105": "retrieval"
+   }
+  },
+  "R0-021": {
+   "split": "test",
+   "task_type": "analytics",
+   "facts": {
+    "NS-121": "analytics"
+   }
+  },
+  "R0-022": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-007": "retrieval"
+   }
+  },
+  "R0-023": {
+   "split": "test",
+   "task_type": "analytics",
+   "facts": {
+    "NS-124": "analytics"
+   }
+  },
+  "R0-024": {
+   "split": "dev",
+   "task_type": "analytics",
+   "facts": {
+    "NS-120": "analytics"
+   }
+  },
+  "R0-025": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-143": "retrieval"
+   }
+  },
+  "R0-026": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-144": "retrieval"
+   }
+  },
+  "R0-027": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-148": "retrieval"
+   }
+  },
+  "R0-028": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-147": "retrieval"
+   }
+  },
+  "R0-029": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-146": "retrieval"
+   }
+  },
+  "R0-030": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-091": "retrieval"
+   }
+  },
+  "R0-031": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "SP-C02": "retrieval"
+   }
+  },
+  "R0-032": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "SP-C04": "retrieval"
+   }
+  },
+  "R0-033": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-143": "retrieval"
+   }
+  },
+  "R0-034": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-146": "retrieval"
+   }
+  },
+  "R0-035": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-066": "retrieval"
+   }
+  },
+  "R0-036": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-070": "retrieval"
+   }
+  },
+  "R0-037": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-072": "retrieval"
+   }
+  },
+  "R0-038": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-012": "retrieval"
+   }
+  },
+  "R0-039": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "SP-C05": "retrieval"
+   }
+  },
+  "R0-040": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-005": "retrieval"
+   }
+  },
+  "R0-041": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-013": "retrieval"
+   }
+  },
+  "R0-042": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-040": "retrieval"
+   }
+  },
+  "R0-043": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-109": "retrieval"
+   }
+  },
+  "R0-044": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-112": "retrieval"
+   }
+  },
+  "R0-045": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-102": "retrieval"
+   }
+  },
+  "R0-046": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-054": "retrieval"
+   }
+  },
+  "R0-047": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-043": "retrieval"
+   }
+  },
+  "R0-048": {
+   "split": "dev",
+   "task_type": "multi_tool",
+   "facts": {
+    "NS-012": "retrieval",
+    "NS-123": "analytics",
+    "NS-082": "retrieval"
+   }
+  },
+  "R0-049": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-054": "retrieval",
+    "NS-105": "retrieval"
+   }
+  },
+  "R0-050": {
+   "split": "dev",
+   "task_type": "multi_tool",
+   "facts": {
+    "NS-085": "retrieval",
+    "NS-140": "analytics"
+   }
+  },
+  "R0-051": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-004": "retrieval",
+    "NS-070": "retrieval"
+   }
+  },
+  "R0-052": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "SP-C02": "retrieval",
+    "SP-C05": "retrieval"
+   }
+  },
+  "R0-053": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-104": "retrieval",
+    "NS-105": "retrieval",
+    "NS-094": "retrieval"
+   }
+  },
+  "R0-054": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-062": "retrieval",
+    "NS-145": "retrieval",
+    "NS-147": "retrieval"
+   }
+  },
+  "R0-055": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-063": "retrieval",
+    "NS-146": "retrieval"
+   }
+  },
+  "R0-056": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-100": "retrieval",
+    "NS-101": "retrieval",
+    "NS-102": "retrieval"
+   }
+  },
+  "R0-057": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-041": "retrieval"
+   }
+  },
+  "R0-058": {
+   "split": "dev",
+   "task_type": "analytics",
+   "facts": {
+    "NS-120": "analytics"
+   }
+  },
+  "R0-059": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-086": "retrieval"
+   }
+  },
+  "R0-060": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-129": "retrieval"
+   }
+  },
+  "R0-061": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-127": "retrieval"
+   }
+  },
+  "R0-062": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-035": "retrieval"
+   }
+  },
+  "R0-063": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-036": "retrieval"
+   }
+  },
+  "R0-064": {
+   "split": "dev",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-038": "retrieval"
+   }
+  },
+  "R0-065": {
+   "split": "test",
+   "task_type": "retrieval",
+   "facts": {
+    "NS-037": "retrieval"
+   }
+  }
+ }
+}

@@ -192,3 +192,23 @@ def test_committed_dataset_is_pinned_and_leak_free() -> None:
                 assert handle.startswith(f"{item.workspace}/")
     counts = manifest["counts"]
     assert counts["dev"] + counts["test"] == counts["items"] == len(dataset.items)
+
+
+def test_task_type_rule() -> None:
+    from marketsignal.evaluation.task_types import item_task_type
+
+    assert item_task_type({"F1": "retrieval", "F2": "retrieval"}) == "retrieval"
+    assert item_task_type({"F1": "analytics"}) == "analytics"
+    assert item_task_type({"F1": "retrieval", "F2": "analytics"}) == "multi_tool"
+
+
+def test_committed_task_types_match_the_frozen_dataset() -> None:
+    import json
+
+    path = FROZEN.parent / "task-types.json"
+    data = json.loads(path.read_text())
+    dataset = load_frozen(FROZEN)
+    assert data["items_sha256"] == dataset.manifest["items_sha256"]
+    assert set(data["items"]) == {i.id for i in dataset.items}
+    for item in dataset.items:
+        assert set(data["items"][item.id]["facts"]) == set(item.fact_ids())
