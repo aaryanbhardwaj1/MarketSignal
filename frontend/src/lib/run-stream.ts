@@ -24,7 +24,14 @@ export const RUN_EVENT_TYPES = [
 ] as const;
 export type RunEventType = (typeof RUN_EVENT_TYPES)[number];
 
-export const RUN_PHASES = ["searching", "analyzing", "synthesizing", "verifying"] as const;
+export const RUN_PHASES = [
+  "routing",
+  "planning",
+  "searching",
+  "analyzing",
+  "synthesizing",
+  "verifying",
+] as const;
 export type RunPhase = (typeof RUN_PHASES)[number];
 
 /** Alias binding received in a `citation` event (draft-only; final uses canonical cards). */
@@ -35,6 +42,42 @@ export interface AliasCitation {
   source_class: string;
   locator_label: string;
 }
+
+export const ROUTE_MODES = ["standard", "research"] as const;
+export type RouteMode = (typeof ROUTE_MODES)[number];
+
+/** Router decision from `run_started.route` (ADR-0015). Absent for older runs. */
+export interface RunRoute {
+  /** What the user asked for: `auto`, `standard` or `research`. */
+  requested: string;
+  personaDefault: string;
+  decided: RouteMode;
+  /** Deterministic server-authored reason code (never model text). */
+  reason: string;
+  cues: string[];
+}
+
+export const TOOL_KINDS = ["search", "keyword", "lookup", "catalog", "other"] as const;
+export type ToolKind = (typeof TOOL_KINDS)[number];
+export type ToolStatus = "running" | "ok" | "error" | "denied" | "timeout";
+
+/** One research tool call, keyed by (step, callIndex). Only fields of the SSE contract. */
+export interface ToolStep {
+  step: number;
+  callIndex: number;
+  tool: string;
+  kind: ToolKind;
+  /** Deterministic summary; may embed model-supplied text as a quoted string. Plain text only. */
+  summary: string;
+  status: ToolStatus;
+  resultCount: number | null;
+  durationMs: number | null;
+  errorCode: string | null;
+}
+
+/** Defensive bounds: the server caps tool calls at 10 per run. */
+export const MAX_TOOL_STEPS = 50;
+const MAX_SUMMARY_CHARS = 200;
 
 export interface RunWarning {
   code: string;
@@ -78,6 +121,9 @@ export interface RunEvent {
 export interface RunStreamState {
   lastSeq: number;
   conversationId: string | null;
+  route: RunRoute | null;
+  /** Research tool calls ordered by (step, callIndex), independent of arrival order. */
+  tools: readonly ToolStep[];
   phase: RunPhase | null;
   /** Deterministic, server-authored status text (never model reasoning). */
   statusMessage: string | null;
@@ -98,6 +144,8 @@ export interface RunStreamState {
 export const initialRunStreamState: RunStreamState = Object.freeze({
   lastSeq: 0,
   conversationId: null,
+  route: null,
+  tools: Object.freeze([]),
   phase: null,
   statusMessage: null,
   attempt: 0,
@@ -146,6 +194,78 @@ export function parseRunEvent(type: string, rawData: string, lastEventId?: strin
   const seq = typeof data.seq === "number" ? data.seq : Number(lastEventId);
   if (!Number.isInteger(seq) || seq < 1) return null;
   return { type, seq, data };
+}
+
+function parseRoute(value: unknown): RunRoute | null {
+  if (!isRecord(value)) return null;
+  const decided = str(value.decided);
+  if (!(ROUTE_MODES as readonly string[]).includes(decided)) return null;
+  return {
+    requested: str(value.requested),
+    personaDefault: str(value.persona_default),
+    decided: decided as RouteMode,
+    reason: str(value.reason),
+    cues: strList(value.cues),
+  };
+}
+
+const TOOL_STATUSES = ["ok", "error", "denied", "timeout"] as const;
+const optNum = (value: unknown): number | null =>
+  typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
+const nonNegInt = (value: unknown): number | null =>
+  typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : null;
+
+/**
+ * Upserts a tool call by (step, call_index) so `tool_started`/`tool_completed` merge into one row
+ * whichever arrives first, then keeps the list sorted. Events without a valid step are ignored.
+ */
+function applyToolEvent(
+  state: RunStreamState,
+  data: Record<string, unknown>,
+  completed: boolean,
+): RunStreamState {
+  const step = nonNegInt(data.step);
+  if (step === null) return state;
+  const callIndex = nonNegInt(data.call_index) ?? 0;
+  const existing = state.tools.find((t) => t.step === step && t.callIndex === callIndex);
+  if (!existing && state.tools.length >= MAX_TOOL_STEPS) return state;
+
+  const base: ToolStep = existing ?? {
+    step,
+    callIndex,
+    tool: "",
+    kind: "other",
+    summary: "",
+    status: "running",
+    resultCount: null,
+    durationMs: null,
+    errorCode: null,
+  };
+  const tool = str(data.tool) || base.tool;
+  let next: ToolStep;
+  if (completed) {
+    const status = str(data.status);
+    next = {
+      ...base,
+      tool,
+      status: (TOOL_STATUSES as readonly string[]).includes(status) ? (status as ToolStatus) : "error",
+      resultCount: optNum(data.result_count),
+      durationMs: optNum(data.duration_ms),
+      errorCode: str(data.error_code) || null,
+    };
+  } else {
+    const kind = str(data.kind);
+    next = {
+      ...base,
+      tool,
+      kind: (TOOL_KINDS as readonly string[]).includes(kind) ? (kind as ToolKind) : "other",
+      summary: str(data.summary).slice(0, MAX_SUMMARY_CHARS),
+    };
+  }
+  const tools = [...state.tools.filter((t) => t !== existing), next].sort(
+    (a, b) => a.step - b.step || a.callIndex - b.callIndex,
+  );
+  return { ...state, tools };
 }
 
 function applyToken(state: RunStreamState, data: Record<string, unknown>): RunStreamState {
@@ -227,7 +347,11 @@ function applyEvent(state: RunStreamState, event: RunEvent): RunStreamState {
   const { data } = event;
   switch (event.type as RunEventType) {
     case "run_started":
-      return { ...state, conversationId: str(data.conversation_id) || state.conversationId };
+      return {
+        ...state,
+        conversationId: str(data.conversation_id) || state.conversationId,
+        route: parseRoute(data.route) ?? state.route,
+      };
     case "status": {
       const phase = str(data.phase);
       return {
@@ -272,8 +396,9 @@ function applyEvent(state: RunStreamState, event: RunEvent): RunStreamState {
     case "done":
       return applyDone(state, data);
     case "tool_started":
+      return applyToolEvent(state, data, false);
     case "tool_completed":
-      return state; // progress detail is not rendered; `status` carries the user-facing phase
+      return applyToolEvent(state, data, true);
     default:
       return state; // unknown event types are ignored (forward compatible)
   }

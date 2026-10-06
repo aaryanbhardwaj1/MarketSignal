@@ -277,8 +277,9 @@ export interface CreateConversationResult {
   conversation_id: string;
 }
 
-/** Phase 3 serves standard mode; `auto` is routed to standard. `research` is refused (422). */
-export type RunMode = "auto" | "standard";
+/** `auto` is routed deterministically by the server; an explicit `standard`/`research` always wins. */
+export const RUN_MODES = ["auto", "standard", "research"] as const;
+export type RunMode = (typeof RUN_MODES)[number];
 
 export interface StartRunInput {
   question: string;

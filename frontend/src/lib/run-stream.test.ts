@@ -214,3 +214,166 @@ describe("terminationLabel", () => {
     expect(terminationLabel("brand_new_state")).toBe("brand new state");
   });
 });
+
+describe("research route and tool timeline", () => {
+  const ROUTE = {
+    requested: "auto",
+    persona_default: "generalist",
+    decided: "research",
+    reason: "multi_source_cue",
+    cues: ["compare", "across"],
+  };
+
+  it("parses run_started.route and the mode", () => {
+    const state = reduceRunEvent(
+      initialRunStreamState,
+      ev(1, "run_started", { conversation_id: "c1", mode: "research", route: ROUTE }),
+    );
+    expect(state.route).toEqual({
+      requested: "auto",
+      personaDefault: "generalist",
+      decided: "research",
+      reason: "multi_source_cue",
+      cues: ["compare", "across"],
+    });
+  });
+
+  it("leaves route null when absent or malformed", () => {
+    expect(reduceRunEvent(initialRunStreamState, ev(1, "run_started", { conversation_id: "c1" })).route).toBeNull();
+    expect(
+      reduceRunEvent(initialRunStreamState, ev(1, "run_started", { route: "research" })).route,
+    ).toBeNull();
+    expect(
+      reduceRunEvent(initialRunStreamState, ev(1, "run_started", { route: { decided: "bogus" } })).route,
+    ).toBeNull();
+  });
+
+  it("drops non-string cues and tolerates a missing reason", () => {
+    const state = reduceRunEvent(
+      initialRunStreamState,
+      ev(1, "run_started", { route: { requested: "standard", decided: "standard", cues: ["a", 3, null] } }),
+    );
+    expect(state.route).toMatchObject({ requested: "standard", decided: "standard", reason: "", cues: ["a"] });
+  });
+
+  it("accepts planning and routing phases", () => {
+    expect(reduceRunEvent(initialRunStreamState, ev(1, "status", { phase: "planning", message: "Planning" })).phase).toBe(
+      "planning",
+    );
+    expect(reduceRunEvent(initialRunStreamState, ev(1, "status", { phase: "routing", message: "Routing" })).phase).toBe(
+      "routing",
+    );
+  });
+
+  it("merges tool_started and tool_completed into one ordered entry", () => {
+    const state = foldRunEvents([
+      ev(1, "tool_started", { step: 1, call_index: 0, tool: "search_evidence", kind: "search", summary: 'Searching for "fit"' }),
+      ev(2, "tool_completed", {
+        step: 1,
+        call_index: 0,
+        tool: "search_evidence",
+        status: "ok",
+        result_count: 8,
+        duration_ms: 412,
+      }),
+    ]);
+    expect(state.tools).toEqual([
+      {
+        step: 1,
+        callIndex: 0,
+        tool: "search_evidence",
+        kind: "search",
+        summary: 'Searching for "fit"',
+        status: "ok",
+        resultCount: 8,
+        durationMs: 412,
+        errorCode: null,
+      },
+    ]);
+  });
+
+  it("marks an unfinished call as running", () => {
+    const state = reduceRunEvent(
+      initialRunStreamState,
+      ev(1, "tool_started", { step: 1, call_index: 0, tool: "t", kind: "lookup", summary: "Opening 3 evidence items" }),
+    );
+    expect(state.tools[0]).toMatchObject({ status: "running", resultCount: null, durationMs: null });
+  });
+
+  it("orders by (step, call_index) regardless of arrival order", () => {
+    const start = (seq: number, step: number, call_index: number) =>
+      ev(seq, "tool_started", { step, call_index, tool: "t", kind: "search", summary: `s${step}.${call_index}` });
+    const state = foldRunEvents([start(1, 2, 0), start(2, 1, 1), start(3, 1, 0), start(4, 2, 1)]);
+    expect(state.tools.map((t) => [t.step, t.callIndex])).toEqual([
+      [1, 0],
+      [1, 1],
+      [2, 0],
+      [2, 1],
+    ]);
+  });
+
+  it("tolerates tool_completed arriving before tool_started", () => {
+    const state = foldRunEvents([
+      ev(1, "tool_completed", { step: 1, call_index: 0, tool: "t", status: "timeout", duration_ms: 8000, error_code: "TOOL_TIMEOUT" }),
+      ev(2, "tool_started", { step: 1, call_index: 0, tool: "t", kind: "keyword", summary: "Checking exact identifiers" }),
+    ]);
+    expect(state.tools).toHaveLength(1);
+    expect(state.tools[0]).toMatchObject({
+      status: "timeout",
+      errorCode: "TOOL_TIMEOUT",
+      kind: "keyword",
+      summary: "Checking exact identifiers",
+    });
+  });
+
+  it("keeps a completed status when a replayed-late tool_started does not carry one", () => {
+    const state = foldRunEvents([
+      ev(1, "tool_started", { step: 1, call_index: 0, tool: "t", kind: "search", summary: "x" }),
+      ev(2, "tool_completed", { step: 1, call_index: 0, tool: "t", status: "denied", error_code: "POLICY_DENIED" }),
+      ev(3, "tool_started", { step: 1, call_index: 0, tool: "t", kind: "search", summary: "x" }),
+    ]);
+    expect(state.tools[0]?.status).toBe("denied");
+  });
+
+  it("defaults a missing call_index to 0 and coerces unknown status to error", () => {
+    const state = foldRunEvents([
+      ev(1, "tool_started", { step: 1, tool: "search_evidence", kind: "search", summary: "hybrid" }),
+      ev(2, "tool_completed", { step: 1, tool: "search_evidence", status: "weird", result_count: 5 }),
+    ]);
+    expect(state.tools).toHaveLength(1);
+    expect(state.tools[0]).toMatchObject({ callIndex: 0, status: "error", resultCount: 5 });
+  });
+
+  it("ignores tool events without a valid step", () => {
+    const state = foldRunEvents([
+      ev(1, "tool_started", { tool: "t", summary: "x" }),
+      ev(2, "tool_started", { step: -1, tool: "t", summary: "x" }),
+      ev(3, "tool_completed", { step: "1", tool: "t", status: "ok" }),
+    ]);
+    expect(state.tools).toEqual([]);
+    expect(state.lastSeq).toBe(3);
+  });
+
+  it("ignores replayed tool events (seq <= last)", () => {
+    const first = ev(5, "tool_started", { step: 1, call_index: 0, tool: "t", kind: "search", summary: "x" });
+    const replay = ev(5, "tool_completed", { step: 1, call_index: 0, tool: "t", status: "ok", result_count: 1 });
+    const state = foldRunEvents([first, replay]);
+    expect(state.tools[0]?.status).toBe("running");
+  });
+
+  it("falls back to unknown kind and bounds summary length", () => {
+    const state = reduceRunEvent(
+      initialRunStreamState,
+      ev(1, "tool_started", { step: 1, call_index: 0, tool: "t", kind: "novel", summary: "x".repeat(500) }),
+    );
+    expect(state.tools[0]?.kind).toBe("other");
+    expect(state.tools[0]?.summary.length).toBeLessThanOrEqual(200);
+  });
+
+  it("caps the number of tracked calls", () => {
+    const events = Array.from({ length: 80 }, (_, i) =>
+      ev(i + 1, "tool_started", { step: 1, call_index: i, tool: "t", kind: "search", summary: "x" }),
+    );
+    expect(foldRunEvents(events).tools.length).toBeLessThanOrEqual(50);
+  });
+});

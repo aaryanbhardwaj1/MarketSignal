@@ -6,6 +6,8 @@ import { humanize } from "@/lib/format";
 import type { RunStreamState } from "@/lib/run-stream";
 import { buttonClass } from "../ui/form-controls";
 import { AnswerView } from "./answer-view";
+import { ResearchTimeline } from "./research-timeline";
+import { RouteBadge } from "./route-badge";
 import { RunNotices } from "./run-notices";
 import { SafeMarkdown } from "./safe-markdown";
 import type { StreamConnection } from "./use-run-stream";
@@ -71,6 +73,7 @@ export function RunPanel({ ws, state, connection, onCancel, cancelling }: RunPan
 
   return (
     <div className="flex flex-col gap-3">
+      <RouteBadge route={state.route} />
       {running && (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <StatusLine state={state} connection={connection} />
@@ -84,6 +87,7 @@ export function RunPanel({ ws, state, connection, onCancel, cancelling }: RunPan
           </button>
         </div>
       )}
+      <ResearchTimeline tools={state.tools} phase={state.phase} running={running} />
       {state.final ? (
         <AnswerView
           ws={ws}

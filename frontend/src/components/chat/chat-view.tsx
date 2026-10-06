@@ -11,6 +11,7 @@ import {
   runStreamUrl,
   startRun,
 } from "@/lib/api/endpoints";
+import type { RunMode } from "@/lib/api/types";
 import { ApiError } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/api/query-keys";
 import { isUuid } from "@/lib/handles";
@@ -65,14 +66,14 @@ export function ChatView({ ws }: { ws: string }) {
   }, [settled, conversationId, ws, queryClient]);
 
   const start = useMutation({
-    mutationFn: async (question: string): Promise<ActiveRun> => {
+    mutationFn: async ({ question, mode }: { question: string; mode: RunMode }): Promise<ActiveRun> => {
       let cid = conversationId;
       if (!cid) {
         cid = (await createConversation(ws, { title: question.slice(0, TITLE_MAX) })).conversation_id;
         // Put the conversation in the URL right away so a reload restores it via GET messages.
         window.history.replaceState(null, "", chatHref(ws, cid));
       }
-      const run = await startRun(ws, cid, { question });
+      const run = await startRun(ws, cid, { question, mode });
       const streamUrl = runStreamUrl(run.stream_url);
       if (!streamUrl) {
         throw new ApiError(0, "INVALID_STREAM_URL", "The API returned an unexpected stream URL.");
@@ -84,10 +85,10 @@ export function ChatView({ ws }: { ws: string }) {
 
   const cancel = useMutation({ mutationFn: (runId: string) => cancelRun(ws, runId) });
 
-  const ask = async (question: string): Promise<boolean> => {
+  const ask = async (question: string, mode: RunMode): Promise<boolean> => {
     cancel.reset();
     try {
-      await start.mutateAsync(question);
+      await start.mutateAsync({ question, mode });
       return true;
     } catch {
       return false; // surfaced via start.error
