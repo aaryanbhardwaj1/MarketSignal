@@ -1,0 +1,1316 @@
+{
+ "elapsed_s": 38.8,
+ "summary": {
+  "n": 6,
+  "hard_gates": {
+   "citation_resolvability": {
+    "value": 1.0,
+    "pass": true
+   },
+   "citation_in_pack": {
+    "value": 1.0,
+    "pass": true
+   },
+   "every_run_done": {
+    "value": 0,
+    "pass": true,
+    "missing": []
+   },
+   "answer_items_have_final": {
+    "value": 0,
+    "pass": true,
+    "missing": []
+   },
+   "cross_workspace_leaks": {
+    "value": 0,
+    "pass": true
+   },
+   "empty_pack_never_calls_llm": {
+    "value": "not applicable",
+    "pass": true
+   }
+  },
+  "contract_recheck_failures": [
+   {
+    "id": "E5-004",
+    "problems": [
+     "uncited answer sentence: The evidence does not contain the actual product performance"
+    ]
+   },
+   {
+    "id": "E5-006",
+    "problems": [
+     "uncited answer sentence: The evidence does not contain the Gen Z and millennial chann"
+    ]
+   }
+  ],
+  "over_refusal": {
+   "k": 0,
+   "n": 6
+  },
+  "insufficient_correct": {
+   "k": 0,
+   "n": 0
+  },
+  "canary_leaks": [],
+  "categories": {
+   "enumeration": {
+    "n": 6,
+    "behaviour_pass": "6/6",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.6096657120978346,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 0.0,
+    "numeric_correct_mean": 0.336,
+    "answered": 6,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   }
+  },
+  "latency_ms": {
+   "first_token_p50": 680.3,
+   "first_token_p95": 3788.5249999999996,
+   "total_p50": 6106.200000000001,
+   "total_p95": 7612.9
+  },
+  "usage_total": {
+   "input_tokens": 27965,
+   "llm_attempts": 6,
+   "output_tokens": 3795,
+   "cache_read_input_tokens": 5022,
+   "cache_creation_input_tokens": 0
+  },
+  "usage_per_llm_run_mean": {
+   "input_tokens": 4660.8,
+   "llm_attempts": 1.0,
+   "output_tokens": 632.5,
+   "cache_read_input_tokens": 837.0,
+   "cache_creation_input_tokens": 0.0
+  },
+  "regenerations": 0,
+  "termination_states": {
+   "completed": 6
+  }
+ },
+ "runs": {
+  "mode": "standard",
+  "n": 6,
+  "model_calls": {
+   "total": 6,
+   "mean": 1.0
+  },
+  "tool_calls": {
+   "total": 0,
+   "mean": 0.0
+  },
+  "tool_failures": {
+   "total": 0,
+   "mean": 0.0
+  },
+  "retrieval_calls": {
+   "total": 6,
+   "mean": 1.0
+  },
+  "steps": {
+   "total": 0,
+   "mean": 0.0
+  },
+  "tokens_total": {
+   "input": 27965,
+   "output": 3795,
+   "cache_read": 5022,
+   "cache_write": 0
+  },
+  "cost_usd": {
+   "total": 0.094882,
+   "per_run": 0.015814
+  },
+  "latency_ms": {
+   "first_token_p50": 680.3,
+   "first_token_p95": 3788.5249999999996,
+   "total_p50": 6106.200000000001,
+   "total_p95": 7612.9
+  },
+  "routes_decided": {
+   "standard": 6
+  },
+  "stop_reasons": {},
+  "termination_states": {
+   "completed": 6
+  },
+  "research_fallbacks": 0,
+  "regenerations": 0,
+  "evidence_only": 0,
+  "behaviour_pass": {
+   "k": 6,
+   "n": 6,
+   "ci": {
+    "estimate": 1.0,
+    "low": 0.6096657120978346,
+    "high": 1.0
+   }
+  },
+  "gold_coverage_mean": 0.0,
+  "answer_completeness_mean": 0.3361,
+  "gold_handle_recall_mean": null,
+  "conflict_coverage": null,
+  "abstention_correct": null,
+  "unsupported_claim_rate": {
+   "unsupported_units": 2,
+   "cited_units": 52,
+   "rate": 0.0385
+  },
+  "router_agreement": null,
+  "categories": {
+   "enumeration": {
+    "n": 6,
+    "behaviour_pass": {
+     "k": 6,
+     "n": 6,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.6096657120978346,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 0.0,
+    "answer_completeness_mean": 0.3361,
+    "gold_handle_recall_mean": null,
+    "conflict_coverage": null,
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 2,
+     "cited_units": 52,
+     "rate": 0.0385
+    },
+    "total_ms_p50": 6106.200000000001,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.094882
+   }
+  }
+ },
+ "pipeline": {
+  "stage_latency_ms": {
+   "agent": {
+    "n": 0,
+    "p50": null,
+    "p95": null,
+    "max": null
+   },
+   "retrieval": {
+    "n": 6,
+    "p50": 112.3,
+    "p95": 505.6,
+    "max": 631.3
+   },
+   "pack": {
+    "n": 6,
+    "p50": 2.5,
+    "p95": 2.7,
+    "max": 2.7
+   },
+   "model": {
+    "n": 6,
+    "p50": 5854.1,
+    "p95": 7243.9,
+    "max": 7403.7
+   },
+   "verification": {
+    "n": 6,
+    "p50": 17.7,
+    "p95": 28.9,
+    "max": 31.2
+   },
+   "end_to_end": {
+    "n": 6,
+    "p50": 6106.2,
+    "p95": 7612.9,
+    "max": 7631.4
+   }
+  },
+  "verification": {
+   "verified_answers": 6,
+   "runs_with_repairs": 6,
+   "repairs_total": 16,
+   "unknown_aliases_removed": 0,
+   "numeric_units_dropped": 4,
+   "leaks_removed": 0,
+   "first_attempt_failed": 0,
+   "regenerated": 0,
+   "fallback_after_verification": 0,
+   "evidence_only_total": 0
+  },
+  "cost_usd": {
+   "input": 0.0559,
+   "output": 0.0379,
+   "cache_write": 0.0,
+   "cache_read": 0.001,
+   "total": 0.0949,
+   "per_model_run": 0.01581
+  },
+  "prices_usd_per_mtok": {
+   "input": 2.0,
+   "output": 10.0,
+   "cache_write": 2.5,
+   "cache_read": 0.2
+  }
+ },
+ "items": [
+  {
+   "id": "E5-001",
+   "category": "enumeration",
+   "workspace": "NORTHSTAR",
+   "split": null,
+   "expect": "answer",
+   "question": "List every Gen Z shopper statistic in the 2026 edition of the Gen Z trends report, one bullet per statistic.",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "task_type": "retrieval",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe provided excerpts of the 2026 Gen Z Athletic Trends report contain only a few explicit statistics, so this is not a complete list of the report's figures [inference]. Within the excerpts, the report states one Gen Z shopper statistic on social commerce share of athletic footwear purchases, plus panel sample details [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]][[NORTHSTAR/GENZ-TRENDS@v2:P1.B3]]. The report text also mentions other measures (market size, sustainability, consideration set, delivery, trust) without giving their values in the excerpts [[NORTHSTAR/GENZ-TRENDS@v2:P2.B1]].\n\n### Key findings\n\n- Social commerce platforms account for 26% of Gen Z athletic footwear purchases, per the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]].\n- The 2026 usable sample was 5,400 respondents, aged 16 to 27, fielded across five weeks in June and July 2026 [[NORTHSTAR/GENZ-TRENDS@v2:P1.B3]].\n- The report names the social commerce, 2025 market size, sustainability and consideration set measures as restated in 2026, but the excerpts do not give their values [[NORTHSTAR/GENZ-TRENDS@v2:P2.B1]].\n- New 2026 modules on delivery expectations and sources of trust are described, without figures in the excerpts [[NORTHSTAR/GENZ-TRENDS@v2:P1.B3]].\n\n### Conflicting evidence\n\n- The 2026 report treats the 2025 edition's social commerce, market size, sustainability and consideration set values as superseded and advises against subtracting one edition from the other [[NORTHSTAR/GENZ-TRENDS@v2:P2.B1]].\n- An analyst said the panel's social commerce measure would be restated upward in the next edition, because earlier panels undercounted young shoppers [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]]. The 2026 report states 26% [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]].\n\n### Interpretation\n\nThe 26% figure is the only 2026 Gen Z shopper percentage visible here; other sections of the report likely hold the remaining statistics [inference].\n\n### Gaps & unknowns\n\nThe evidence does not include the report's sections on market size, sustainability messaging, consideration set, delivery expectations or trust, so a full statistic-by-statistic list cannot be compiled.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #1: tagged uncited sentence as [inference]",
+     "Gaps & unknowns #2: dropped unit containing numbers"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 10,
+    "result_ids": [],
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E6",
+     "E9",
+     "E3",
+     "E11"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "citation_budget": {},
+    "results_checked": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E1 says some figures were restated or superseded",
+     "E3 says some figures were restated or superseded",
+     "E11 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E6",
+     "E9",
+     "E3",
+     "E11"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+     "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+     "NORTHSTAR/GENZ-TRENDS@v2:P2.B1",
+     "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps"
+    ],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+    "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+    "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+    "NORTHSTAR/GENZ-TRENDS@v2:P1.B3",
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B2"
+   ],
+   "usage": {
+    "input_tokens": 5912,
+    "llm_attempts": 1,
+    "output_tokens": 635,
+    "cache_read_input_tokens": 837,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.4,
+    "attempts": 1,
+    "total_ms": 7557.4,
+    "verify_ms_1": 31.2,
+    "retrieval_ms": 631.3,
+    "first_token_ms": 1566.5,
+    "synthesis_ms_1": 6764.5
+   },
+   "checks": {
+    "citations": 4,
+    "resolvable": 4,
+    "in_pack": 4,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.0,
+    "numeric_correct": 0.16666666666666666,
+    "answer_completeness": 0.16666666666666666,
+    "gold_handle_recall": null,
+    "cited_units": 8,
+    "unsupported_units": 2,
+    "unsupported_numbers": [
+     "2026",
+     "2026"
+    ],
+    "unsupported_claim_rate": 0.25,
+    "pass_behaviour": true,
+    "first_token_ms": 1566.5,
+    "total_ms": 7557.4
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": null,
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5912,
+     "output": 635,
+     "cache_read": 837,
+     "cache_write": 0
+    },
+    "cost_usd": 0.018341,
+    "first_token_ms": 1566.5,
+    "total_ms": 7557.4,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "E5-002",
+   "category": "enumeration",
+   "workspace": "NORTHSTAR",
+   "split": null,
+   "expect": "answer",
+   "question": "Enumerate all of the Kinetic Lab financial and customer metrics reported in its annual report.",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "task_type": "retrieval",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nKinetic Lab's annual report gives net revenue of $148M for fiscal 2025 (up 64%), a 38% gross margin, about 655,000 pairs shipped, a 31% repeat customer share and a 6% return rate on customized midsoles [[NORTHSTAR/KINETIC-AR@v1:P2.B3]]. Fiscal 2024 comparatives are given only for revenue and pairs shipped [[NORTHSTAR/KINETIC-AR@v1:P2.B3]]. The return-rate figure is defined narrowly and is disputed by third-party checks [[NORTHSTAR/KINETIC-AR@v1:P3.B1]][[NORTHSTAR/ANALYST-CALL@v1:S1.B1]].\n\n### Key findings\n\n- Net revenue was $90M in fiscal 2024 and $148M in fiscal 2025 [[NORTHSTAR/KINETIC-AR@v1:P2.B3]].\n- Year-on-year growth was 64% [[NORTHSTAR/KINETIC-AR@v1:P2.B3]].\n- Gross margin in fiscal 2025 was 38% [[NORTHSTAR/KINETIC-AR@v1:P2.B3]].\n- Pairs shipped were about 410,000 in fiscal 2024 and about 655,000 in fiscal 2025 [[NORTHSTAR/KINETIC-AR@v1:P2.B3]].\n- Repeat customer share was 31%, defined as customers who order a second pair within twelve months [[NORTHSTAR/KINETIC-AR@v1:P2.B3]][[NORTHSTAR/KINETIC-AR@v1:P2.B4]].\n- The reported return rate on customized midsoles was 6%, which the report says counts only refunds within the guarantee window and excludes remakes under the fit guarantee [[NORTHSTAR/KINETIC-AR@v1:P2.B3]][[NORTHSTAR/KINETIC-AR@v1:P3.B1]].\n- The report cites a category norm near 20% for returns as a comparison point, not as a Kinetic Lab metric [[NORTHSTAR/KINETIC-AR@v1:P3.B1]].\n- Qualitative drivers are also reported: a modest increase in average order value, though no figure is given [[NORTHSTAR/KINETIC-AR@v1:P2.B2]].\n\n### Conflicting evidence\n\n- The company reports a 6% return rate, excluding remakes [[NORTHSTAR/KINETIC-AR@v1:P3.B1]].\n- Brightline's channel checks suggest returns run closer to 15% once remakes are counted [[NORTHSTAR/ANALYST-CALL@v1:S1.B1]]. Northstar's internal strategy document similarly says the true figure is materially higher [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B3]].\n- Brightline also argues the 31% repeat share is dominated by customers who never needed a remake [[NORTHSTAR/ANALYST-CALL@v1:S1.B1]].\n\n### Gaps & unknowns\n\nNo operating expenses, net income or profit or loss, cash balance, or funding round amount are stated in the excerpt [inference]. Average order value, customer count, customer acquisition cost and delivery-time metrics are not quantified [inference]. The excerpt may omit financial statements; the full annual report would close this gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: dropped unit containing numbers",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "gaps"
+    ],
+    "citations": 18,
+    "result_ids": [],
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E2",
+     "E4",
+     "E8",
+     "E5",
+     "E3",
+     "E9"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "citation_budget": {},
+    "results_checked": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E7 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E2",
+     "E4",
+     "E8",
+     "E5",
+     "E3",
+     "E9"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/KINETIC-AR@v1:P2.B3",
+     "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+     "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+     "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+     "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps"
+    ],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/KINETIC-AR@v1:P2.B3",
+    "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+    "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/KINETIC-AR@v1:P1.B1",
+    "NORTHSTAR/KINETIC-AR@v1:P2.B3",
+    "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+    "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+    "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+    "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+    "NORTHSTAR/KINETIC-AR@v1:P1.B3",
+    "NORTHSTAR/KINETIC-AR@v1:P1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL13"
+   ],
+   "usage": {
+    "input_tokens": 5148,
+    "llm_attempts": 1,
+    "output_tokens": 759,
+    "cache_read_input_tokens": 837,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.6,
+    "attempts": 1,
+    "total_ms": 6177.1,
+    "verify_ms_1": 14.43,
+    "retrieval_ms": 97.6,
+    "first_token_ms": 616.1,
+    "synthesis_ms_1": 5942.5
+   },
+   "checks": {
+    "citations": 6,
+    "resolvable": 6,
+    "in_pack": 6,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": null,
+    "cited_units": 14,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 616.1,
+    "total_ms": 6177.1
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": null,
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5148,
+     "output": 759,
+     "cache_read": 837,
+     "cache_write": 0
+    },
+    "cost_usd": 0.018053,
+    "first_token_ms": 616.1,
+    "total_ms": 6177.1,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "E5-003",
+   "category": "enumeration",
+   "workspace": "NORTHSTAR",
+   "split": null,
+   "expect": "answer",
+   "question": "List each support-contact theme Northstar tracked in Q3 2026 with its figure.",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "task_type": "retrieval",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nNorthstar's Q3 2026 support contacts were tagged against a seven-category theme taxonomy, and the evidence gives each theme's share of contacts separately for customers under 28 and for customers aged 28 and older [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B2]][[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]]. The overall volume was about 86,400 contacts [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B2]].\n\n### Key findings\n\n- Sizing and fit: 31% (under 28) and 22% (28 and older) [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]].\n- Product quality: 17% (under 28) and 15% (28 and older) [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]].\n- Delivery and order status: 19% (under 28) and 21% (28 and older) [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]].\n- Returns policy: 14% (under 28) and 17% (28 and older) [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]].\n- Sustainability questions: 4% (under 28) and 6% (28 and older) [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]].\n- App issues: 8% (under 28) and 9% (28 and older) [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]].\n- Other: 7% (under 28) and 10% (28 and older) [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]].\n- Shares sum to 100% in each age column [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B3]].\n- Customers under 28 generated 58% of all contacts [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B2]].\n\n### Gaps & unknowns\n\nThe evidence does not give a single blended share per theme across all customers, nor contact counts per theme. A blended figure would require the underlying contact-level data or a report table with overall theme shares [inference]. The text also calls delivery and order status the second largest theme overall, but the evidence does not state the overall ranking figures.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "gaps"
+    ],
+    "citations": 12,
+    "result_ids": [],
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E2",
+     "E3"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "citation_budget": {},
+    "results_checked": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E8 and E10 state different values for 'nps'",
+     "E10 and E11 state different values for 'nps'"
+    ],
+    "evidence_checked": [
+     "E2",
+     "E3"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+     "NORTHSTAR/SUPPORT-THEMES@v1:P1.B3"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B3"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B3",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P3.B2",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+    "NORTHSTAR/SURVEY-2026@v1:R455",
+    "NORTHSTAR/Q3-REVIEW@v1:SL1",
+    "NORTHSTAR/SURVEY-2026@v1:R434",
+    "NORTHSTAR/SURVEY-2026@v1:R54",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B9"
+   ],
+   "usage": {
+    "input_tokens": 3164,
+    "llm_attempts": 1,
+    "output_tokens": 469,
+    "cache_read_input_tokens": 837,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.7,
+    "attempts": 1,
+    "total_ms": 7631.4,
+    "verify_ms_1": 7.99,
+    "retrieval_ms": 98.1,
+    "first_token_ms": 4529.2,
+    "synthesis_ms_1": 7403.7
+   },
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.0,
+    "numeric_correct": 0.25,
+    "answer_completeness": 0.25,
+    "gold_handle_recall": null,
+    "cited_units": 11,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 4529.2,
+    "total_ms": 7631.4
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": null,
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 3164,
+     "output": 469,
+     "cache_read": 837,
+     "cache_write": 0
+    },
+    "cost_usd": 0.011185,
+    "first_token_ms": 4529.2,
+    "total_ms": 7631.4,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "E5-004",
+   "category": "enumeration",
+   "workspace": "NORTHSTAR",
+   "split": null,
+   "expect": "answer",
+   "question": "Give a bullet list of every product performance figure reported for Northstar's footwear and apparel lines (return rates, units, margins, return reasons).",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "task_type": "retrieval",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe evidence does not contain the actual product performance figures for Northstar's footwear and apparel lines. The product performance workbooks (SKU, monthly category, returns) are provided only as schema descriptions listing column names, with no row values [inference]. The only numbers available are a few external or pilot figures, listed below [inference].\n\n### Key findings\n\n- The SKU performance table lists columns for price, units, net sales, return rate, rating and Gen Z share, but no values are shown [[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n- The monthly category table lists columns for net sales, units, gross margin %, sell-through % and Gen Z share, but no values are shown [[NORTHSTAR/PRODUCT-PERF@v1:SH1.T1]].\n- The returns table lists return reasons (e.g., \"Fit - runs small\", \"Fit - runs large\", \"Durability - upper wear\", \"Durability - fabric or seams\", \"Changed mind\", \"Color not as shown\", \"Arrived late\") and count columns, but no counts or shares are shown [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n- Channel data has a return_rate_pct column by channel and segment, but no values are shown [[NORTHSTAR/CHANNEL-PERF@v1:T1]].\n- Panel analyst estimate: Gen Z shoppers return athletic apparel at roughly 1.5 times the rate of shoppers over 35, concentrated in leggings and tops, with much smaller differences in footwear [[NORTHSTAR/ANALYST-CALL@v1:S1.B1]].\n- Personalization pilot: return rate of 11% for personalized items versus 16% for standard items; average lead time of 12 days [[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n- Customer feedback: a Knit Runner 2 review rated 2 mentions a slow return process, but gives no rate [[NORTHSTAR/REVIEWS@v1:R360]].\n\n### Conflicting evidence\n\n- The personalization pilot's week-six early read of 27% repeat purchase is superseded by the full-window result of 18% (versus 24% control) [[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n\n### Gaps & unknowns\n\nNo return rates, unit volumes, gross margins or return-reason shares for any Northstar SKU or category are given. The underlying rows of the SKU performance, category monthly and returns sheets are needed [inference]. The panel's apparel return multiple is a third-party estimate and not a Northstar-reported figure [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #2: tagged uncited sentence as [inference]",
+     "Answer #3: tagged uncited sentence as [inference]",
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #2: dropped unit containing numbers",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "gaps"
+    ],
+    "citations": 8,
+    "result_ids": [],
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E2",
+     "E4",
+     "E7",
+     "E8",
+     "E5",
+     "E12"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [
+     "Answer #1"
+    ],
+    "citation_budget": {},
+    "results_checked": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E5 says some figures were restated or superseded",
+     "E6 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E2",
+     "E4",
+     "E7",
+     "E8",
+     "E5",
+     "E12"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1",
+     "NORTHSTAR/PRODUCT-PERF@v1:SH1.T1",
+     "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+     "NORTHSTAR/CHANNEL-PERF@v1:T1",
+     "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+     "NORTHSTAR/REVIEWS@v1:R360"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps"
+    ],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH1.T1",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+    "NORTHSTAR/CHANNEL-PERF@v1:T1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+    "NORTHSTAR/REVIEWS@v1:R360"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH1.T1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/CHANNEL-PERF@v1:T1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/REVIEWS@v1:T1",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1",
+    "NORTHSTAR/SURVEY-2026@v1:R374",
+    "NORTHSTAR/REVIEWS@v1:R360"
+   ],
+   "usage": {
+    "input_tokens": 4787,
+    "llm_attempts": 1,
+    "output_tokens": 711,
+    "cache_read_input_tokens": 837,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.5,
+    "attempts": 1,
+    "total_ms": 6035.3,
+    "verify_ms_1": 21.92,
+    "retrieval_ms": 128.4,
+    "first_token_ms": 646.7,
+    "synthesis_ms_1": 5765.6
+   },
+   "checks": {
+    "citations": 7,
+    "resolvable": 7,
+    "in_pack": 7,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [
+     "uncited answer sentence: The evidence does not contain the actual product performance"
+    ],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.0,
+    "numeric_correct": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": null,
+    "cited_units": 8,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 646.7,
+    "total_ms": 6035.3
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": null,
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4787,
+     "output": 711,
+     "cache_read": 837,
+     "cache_write": 0
+    },
+    "cost_usd": 0.016851,
+    "first_token_ms": 646.7,
+    "total_ms": 6035.3,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "E5-005",
+   "category": "enumeration",
+   "workspace": "NORTHSTAR",
+   "split": null,
+   "expect": "answer",
+   "question": "List all the headline figures in Northstar's FY26 finance summary.",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "task_type": "retrieval",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe only FY26 finance-summary figures actually available in the evidence are the segment revenue rows; the P&L sheet's values are not shown, only its structure [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1]]. Headline FY26 latest-estimate net revenue is $612 million [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6]]. Gen Z revenue is projected at $126.1 million, up 13.8% [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]].\n\n### Key findings\n\n- The P&L sheet lists these line items: Net revenue, Cost of goods sold, Gross profit, Gross margin %, Marketing expense, SG&A excluding marketing, Operating income, Operating margin %, DTC share of revenue %, Inventory at year end, but the values are not given [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1]].\n- Gross margin of 47.2% is quoted in a strategy deck, not in the finance sheet extract [[NORTHSTAR/Q3-REVIEW@v1:SL3]].\n- The segment table also includes a Boomer and older (60+) row, whose values are not shown [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.T1]].\n\n### Gaps & unknowns\n\nThe numeric values for cost of goods sold, gross profit, marketing expense, SG&A, operating income, operating margin, DTC share and year-end inventory are not in the evidence. The actual PnL_Summary sheet rows would close this [inference]. Because the P&L values are absent, this list cannot be called complete for the whole finance summary.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #2: removed 1 unsupported clause(s)",
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #2: dropped unit containing numbers"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "gaps"
+    ],
+    "citations": 6,
+    "result_ids": [],
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E7",
+     "E4",
+     "E2",
+     "E5"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "citation_budget": {},
+    "results_checked": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E4 and E9 state different values for 'definition'",
+     "E4 and E10 state different values for 'definition'",
+     "E9 and E10 state different values for 'definition'"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E7",
+     "E4",
+     "E10",
+     "E9",
+     "E2",
+     "E5"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4",
+     "NORTHSTAR/Q3-REVIEW@v1:SL3",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.T1"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps",
+     "numbers_not_in_cited_evidence",
+     "unsupported_clause_removed"
+    ],
+    "numeric_violations": [
+     "Key findings #1: FY25 not found in cited evidence E7",
+     "Key findings #2: FY25 not found in cited evidence E4",
+     "Key findings #3: FY25 not found in cited evidence E10",
+     "Key findings #4: FY25 not found in cited evidence E9"
+    ],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.T1"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.T1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL2",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3"
+   ],
+   "usage": {
+    "input_tokens": 3462,
+    "llm_attempts": 1,
+    "output_tokens": 692,
+    "cache_read_input_tokens": 837,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.6,
+    "attempts": 1,
+    "total_ms": 5716.9,
+    "verify_ms_1": 9.23,
+    "retrieval_ms": 118.9,
+    "first_token_ms": 658.7,
+    "synthesis_ms_1": 5470.6
+   },
+   "checks": {
+    "citations": 5,
+    "resolvable": 5,
+    "in_pack": 5,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.0,
+    "numeric_correct": 0.6,
+    "answer_completeness": 0.6,
+    "gold_handle_recall": null,
+    "cited_units": 6,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 658.7,
+    "total_ms": 5716.9
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": null,
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 3462,
+     "output": 692,
+     "cache_read": 837,
+     "cache_write": 0
+    },
+    "cost_usd": 0.014011,
+    "first_token_ms": 658.7,
+    "total_ms": 5716.9,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "E5-006",
+   "category": "enumeration",
+   "workspace": "NORTHSTAR",
+   "split": null,
+   "expect": "answer",
+   "question": "Enumerate every Gen Z channel KPI from the channel performance data (conversion, order value, return rate), plus the millennial comparison.",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "task_type": "analytics",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe evidence does not contain the Gen Z and millennial channel KPI values requested. The channel performance table is described only by its structure, so no conversion, order value or return rate figures can be enumerated from it [inference].\n\n### Key findings\n\n- The Northstar Channel Performance table has 120 data rows, covering five channels (Brand Site, App, Social Shop, Marketplace, Stores) and two segments (Gen Z, Millennial) [[NORTHSTAR/CHANNEL-PERF@v1:T1]].\n- The table's KPI columns are conversion_rate_pct, aov_usd and return_rate_pct, alongside sessions, orders and net_sales_usd [[NORTHSTAR/CHANNEL-PERF@v1:T1]]. Only column names and types are provided, not the values.\n- Qualitative channel reads exist but are not segment-level KPIs: App has the \"highest order values,\" and Brand Site has \"conversion up modestly\" [[NORTHSTAR/Q3-REVIEW@v1:SL5]].\n- Gen Z conversion on Social Shop is said to \"continue to outperform millennials,\" with no figures given [[NORTHSTAR/FY27-MEMO@v1:S1.B5]].\n- Panel commentary says social checkout converts better than a brand site for impulse categories, but social orders also have higher return rates. This is an analyst view, not Northstar channel data, and it gives no figures [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Gaps & unknowns\n\nThe row-level values of the channel performance table (by channel, segment and month) are not in the evidence. Closing this gap requires the actual table data or an export of its conversion, order value and return rate columns. No aggregation basis is given, such as which months are covered or how averages should be weighted. No Gen Z versus millennial comparison is available for any channel, including the Social Shop outperformance claim, which is stated without figures [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #2: tagged uncited sentence as [inference]",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "gaps"
+    ],
+    "citations": 5,
+    "result_ids": [],
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E3",
+     "E10",
+     "E9"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [
+     "Answer #1"
+    ],
+    "citation_budget": {},
+    "results_checked": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E5 says some figures were restated or superseded",
+     "E8 says some figures were restated or superseded",
+     "E9 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E3",
+     "E10",
+     "E9"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/CHANNEL-PERF@v1:T1",
+     "NORTHSTAR/Q3-REVIEW@v1:SL5",
+     "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+     "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/CHANNEL-PERF@v1:T1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL5",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/CHANNEL-PERF@v1:T1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL5",
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.T1",
+    "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1"
+   ],
+   "usage": {
+    "input_tokens": 5492,
+    "llm_attempts": 1,
+    "output_tokens": 529,
+    "cache_read_input_tokens": 837,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.2,
+    "attempts": 1,
+    "total_ms": 5030.7,
+    "verify_ms_1": 21.06,
+    "retrieval_ms": 105.7,
+    "first_token_ms": 701.9,
+    "synthesis_ms_1": 4766.2
+   },
+   "checks": {
+    "citations": 4,
+    "resolvable": 4,
+    "in_pack": 4,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [
+     "uncited answer sentence: The evidence does not contain the Gen Z and millennial chann"
+    ],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.0,
+    "numeric_correct": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": null,
+    "cited_units": 5,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 701.9,
+    "total_ms": 5030.7
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": null,
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5492,
+     "output": 529,
+     "cache_read": 837,
+     "cache_write": 0
+    },
+    "cost_usd": 0.016441,
+    "first_token_ms": 701.9,
+    "total_ms": 5030.7,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  }
+ ],
+ "run": {
+  "git": "7028a6c",
+  "at": "2026-10-06T23:03:55+00:00",
+  "model": "claude-sonnet-5-5",
+  "effort": "low",
+  "thinking": "disabled",
+  "retrieval_config_hash": "35fc5c5a734a67e9",
+  "dataset": "eval/datasets/enumeration-dev-p5/items.json",
+  "split": "all",
+  "items": 6,
+  "mode": "standard"
+ }
+}
