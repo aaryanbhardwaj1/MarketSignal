@@ -57,10 +57,10 @@ def test_sse_parser() -> None:
 
 
 class _Client:
-    """Every cited handle resolves."""
+    """Every cited handle resolves (to a text stating the numbers the tests cite)."""
 
     async def get(self, _url: str) -> Any:
-        return SimpleNamespace(status_code=200)
+        return SimpleNamespace(status_code=200, json=lambda: {"text": "27 percent; 40 percent"})
 
 
 def _item(expect: str, **extra: Any) -> dict[str, Any]:

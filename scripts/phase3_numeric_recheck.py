@@ -1,21 +1,26 @@
-"""Independent numeric-faithfulness re-check of stored live answers (Phase 3).
+"""Independent numeric-faithfulness re-check of stored grounded-eval answers (Phase 3/4).
 
 The verifier reports what it dropped; this checks what it *kept*. For every stored answer in a
-grounded-eval results file, each unit's canonical ``[[HANDLE]]`` citations are resolved through
-the evidence API (the stored text, not the run's pack), and every number in the unit is checked
-against the resolved parent texts with the same support rule the verifier uses. Units without
-citations (``[inference]`` and gap statements) are reported separately and are checked against
-the run's whole pack. Writes ``numeric-recheck.json`` next to the results file.
+grounded-eval results file (``results.json`` or a per-mode ``results-<mode>.json``), each unit's
+canonical ``[[HANDLE]]`` citations are resolved through the evidence API and every number in the
+unit is checked against the resolved parent texts with the verifier's support rule. Uncited units
+(``[inference]`` and gap statements) are checked against the run's whole pack. The logic lives in
+``marketsignal.evaluation.numeric_recheck`` (the grounded harness runs the cited-unit part inline
+as ``unsupported_claim_rate``). Writes ``numeric-recheck[-<mode>].json`` next to each results file.
 
     uv --directory backend run python ../scripts/phase3_numeric_recheck.py \
-        ../eval/baselines/phase3/live-v0/results.json
+        ../eval/baselines/phase3/live-v0/results.json [more results files] \
+        [--items ../eval/datasets/research-v0/items.json]
+
+Workspaces come from each stored item (``workspace``); older results files without it fall back
+to ``--items`` (default grounded-v0).
 """
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import json
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -23,80 +28,40 @@ from httpx import ASGITransport, AsyncClient
 
 from marketsignal.api.app import create_app
 from marketsignal.config import get_settings
-from marketsignal.generation import contract
+from marketsignal.evaluation.numeric_recheck import fetch_texts, recheck_content
 from marketsignal.generation.types import CANONICAL_RE
 
-
-async def _texts(client: AsyncClient, ws: str, handles: set[str]) -> dict[str, str]:
-    out: dict[str, str] = {}
-    for handle in sorted(handles):
-        response = await client.get(f"/api/workspaces/{ws}/evidence/{handle}")
-        if response.status_code == 200:
-            out[handle] = str(response.json()["text"])
-    return out
-
-
-def _units(content: str) -> list[tuple[str, str]]:
-    sections = contract.parse_sections(content)
-    return [(name, unit) for name, body in sections.items() for unit in contract.split_units(body)]
+DEFAULT_ITEMS = Path(__file__).resolve().parents[1] / "eval/datasets/grounded-v0/items.json"
 
 
 async def recheck(client: AsyncClient, item: dict[str, Any], ws: str) -> dict[str, Any]:
     content = item.get("content") or ""
-    pack = set(item.get("pack_handles") or [])
-    cited_all = set(CANONICAL_RE.findall(content))
-    texts = await _texts(client, ws, cited_all | pack)
-    pack_values = contract.number_values(texts[h] for h in pack if h in texts)
-    cited_units = uncited_units = 0
-    unsupported: list[dict[str, Any]] = []
-    for section, unit in _units(content):
-        handles = set(CANONICAL_RE.findall(unit))
-        if handles:
-            cited_units += 1
-            values = contract.number_values(texts[h] for h in handles if h in texts)
-            scope = "cited"
-        else:
-            uncited_units += 1
-            values = pack_values
-            scope = "pack"
-        missing = contract.unsupported_numbers(CANONICAL_RE.sub("", unit), values)
-        if missing:
-            unsupported.append(
-                {
-                    "section": section,
-                    "scope": scope,
-                    "numbers": [m.text for m in missing],
-                    "unit": unit[:240],
-                }
-            )
-    return {
-        "id": item["id"],
-        "cited_units": cited_units,
-        "uncited_units": uncited_units,
-        "unresolvable_citations": sorted(cited_all - set(texts)),
-        "unsupported": unsupported,
-    }
+    pack = list(item.get("pack_handles") or [])
+    texts = await fetch_texts(client, ws, set(CANONICAL_RE.findall(content)) | set(pack))
+    return {"id": item["id"], **recheck_content(content, texts, pack=pack)}
 
 
-async def recheck_all(results: dict[str, Any], workspaces: dict[str, str]) -> list[dict[str, Any]]:
+async def recheck_all(
+    results: list[dict[str, Any]], workspaces: dict[str, str]
+) -> list[list[dict[str, Any]]]:
     app = create_app(get_settings())
-    rows: list[dict[str, Any]] = []
+    out: list[list[dict[str, Any]]] = []
     async with (
         app.router.lifespan_context(app),
         AsyncClient(transport=ASGITransport(app=app), base_url="http://recheck") as client,
     ):
-        for item in results["items"]:
-            if item.get("content"):
-                rows.append(await recheck(client, item, workspaces[item["id"]]))
-    return rows
+        for result in results:
+            rows = []
+            for item in result["items"]:
+                if item.get("content"):
+                    ws = item.get("workspace") or workspaces[item["id"]]
+                    rows.append(await recheck(client, item, ws))
+            out.append(rows)
+    return out
 
 
-def main(results_path: Path) -> int:
-    results = json.loads(results_path.read_text())
-    dataset = Path(__file__).resolve().parents[1] / "eval/datasets/grounded-v0/items.json"
-    workspaces = {i["id"]: i["workspace"] for i in json.loads(dataset.read_text())["items"]}
-    rows = asyncio.run(recheck_all(results, workspaces))
-    summary = {
+def _summary(rows: list[dict[str, Any]]) -> dict[str, int]:
+    return {
         "answers": len(rows),
         "cited_units": sum(r["cited_units"] for r in rows),
         "uncited_units": sum(r["uncited_units"] for r in rows),
@@ -108,11 +73,24 @@ def main(results_path: Path) -> int:
         ),
         "unresolvable_citations": sum(len(r["unresolvable_citations"]) for r in rows),
     }
-    out = results_path.parent / "numeric-recheck.json"
-    out.write_text(json.dumps({"summary": summary, "items": rows}, indent=1) + "\n")
-    print(json.dumps(summary, indent=1))
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("results", type=Path, nargs="+")
+    parser.add_argument("--items", type=Path, default=DEFAULT_ITEMS)
+    args = parser.parse_args(argv)
+    dataset = json.loads(args.items.read_text())["items"]
+    workspaces = {i["id"]: i["workspace"] for i in dataset}
+    results = [json.loads(path.read_text()) for path in args.results]
+    for path, rows in zip(args.results, asyncio.run(recheck_all(results, workspaces)), strict=True):
+        summary = _summary(rows)
+        suffix = path.stem.removeprefix("results")
+        out = path.parent / f"numeric-recheck{suffix}.json"
+        out.write_text(json.dumps({"summary": summary, "items": rows}, indent=1) + "\n")
+        print(path.name, json.dumps(summary, indent=1))
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(Path(sys.argv[1])))
+    raise SystemExit(main())

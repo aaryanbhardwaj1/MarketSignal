@@ -491,18 +491,22 @@ FAKE_ANSWER = (
 
 
 async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
-    """Grounded-answer evaluation through the real in-process API (live model by default)."""
+    """Grounded-answer evaluation through the real in-process API (live model by default).
+
+    ``--mode`` absent: requests carry no mode (backwards compatible); ``standard``/``research``/
+    ``auto``: every request carries that mode; ``both``: every item runs standard then research
+    and the paired comparison is written (results-standard.json, results-research.json,
+    compare.json, report.md)."""
     from marketsignal.api.app import create_app
-    from marketsignal.evaluation.grounded import evaluate
-    from marketsignal.evaluation.grounded_report import render
+    from marketsignal.evaluation.grounded import evaluate_modes, select_items
+    from marketsignal.evaluation.grounded_compare import compare
+    from marketsignal.evaluation.grounded_report import MODES, render, render_comparison
     from marketsignal.evaluation.grounded_stats import Prices
 
-    items = json.loads(args.items.read_text(encoding="utf-8"))["items"]
-    if args.ids:
-        wanted = set(args.ids.split(","))
-        items = [i for i in items if i["id"] in wanted]
-    if args.limit:
-        items = items[: args.limit]
+    dataset = json.loads(args.items.read_text(encoding="utf-8"))["items"]
+    items = select_items(dataset, split=args.split, ids=args.ids, limit=args.limit)
+    # The empty-pack gate is required only for datasets that contain empty-pack items.
+    require_empty_pack = any(i["expect"] == "abstain_no_llm" for i in dataset)
     if not args.fake and settings.anthropic_api_key is None:
         print(
             "ANTHROPIC_API_KEY is not configured (use --fake for an offline run)", file=sys.stderr
@@ -524,23 +528,43 @@ async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
             cache_read=settings.llm_price_cache_read_per_mtok,
         )
     )
-    result = await evaluate(app, items, concurrency=args.concurrency, prices=prices)
-    result["run"] = {
+    modes: tuple[str | None, ...] = MODES if args.mode == "both" else (args.mode,)
+    results = await evaluate_modes(
+        app,
+        items,
+        modes,
+        concurrency=args.concurrency,
+        prices=prices,
+        require_empty_pack=require_empty_pack,
+    )
+    meta = {
         "git": _git_sha(),
         "at": datetime.now(UTC).isoformat(timespec="seconds"),
         "model": "fake-llm" if args.fake else settings.llm_model,
         "effort": settings.llm_effort,
         "thinking": settings.llm_thinking,
         "retrieval_config_hash": app.state.retrieval_service.config_hash,
+        "dataset": str(args.items),
+        "split": args.split,
         "items": len(items),
     }
     args.out.mkdir(parents=True, exist_ok=True)
-    (args.out / "results.json").write_text(json.dumps(result, indent=1, default=str) + "\n")
-    (args.out / "report.md").write_text(render(result))
-    gates = result["summary"]["hard_gates"]
-    for name, gate in gates.items():
-        print(f"{'ok  ' if gate['pass'] else 'FAIL'} {name}: {gate['value']}")
-    return 0 if all(g["pass"] for g in gates.values()) else 1
+    for key, result in results.items():
+        result["run"] = {**meta, "mode": None if key == "default" else key}
+        name = "results.json" if len(results) == 1 else f"results-{key}.json"
+        (args.out / name).write_text(json.dumps(result, indent=1, default=str) + "\n")
+    if args.mode == "both":
+        cmp = compare(results["standard"]["items"], results["research"]["items"])
+        (args.out / "compare.json").write_text(json.dumps(cmp, indent=1, default=str) + "\n")
+        (args.out / "report.md").write_text(render_comparison(cmp, results, run=meta))
+    else:
+        (args.out / "report.md").write_text(render(next(iter(results.values()))))
+    ok = True
+    for key, result in results.items():
+        for name, gate in result["summary"]["hard_gates"].items():
+            ok = ok and gate["pass"]
+            print(f"{'ok  ' if gate['pass'] else 'FAIL'} [{key}] {name}: {gate['value']}")
+    return 0 if ok else 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -586,6 +610,12 @@ def main(argv: list[str] | None = None) -> int:
         "--items", type=Path, default=corpus.EVAL_DIR / "datasets" / "grounded-v0" / "items.json"
     )
     p_g.add_argument("--out", type=Path, required=True)
+    p_g.add_argument("--split", choices=("dev", "test", "all"), default="all")
+    p_g.add_argument(
+        "--mode",
+        choices=("standard", "research", "auto", "both"),
+        help="request mode (absent: no mode field); both = paired standard vs research",
+    )
     p_g.add_argument("--fake", action="store_true", help="offline plumbing run with FakeLLM")
     p_g.add_argument("--ids")
     p_g.add_argument("--limit", type=int)

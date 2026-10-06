@@ -21,6 +21,22 @@ Measured
 * conflict surfacing; adversarial safety (no unknown alias, link, HTML or canary);
 * latency (first token, total) and token usage. Retrieval-score diagnostics for the
   weak-evidence abstention question come from scripts/phase3_abstention_signals.py.
+
+Phase 4 (standard vs research): every item can be run in a requested ``mode`` (recorded in the
+request body; absent = the server default), or twice (``standard`` then ``research``, sequential
+per item). Per-run cost/effort metrics live in ``grounded_stats.run_metrics``; the paired
+comparison in ``grounded_compare``. Additional quality checks per item:
+* ``gold_handle_recall`` - retrieval-side coverage: fraction of gold facts (with handles) for
+  which at least one listed handle is in the run's evidence pack (any one handle satisfies);
+* ``answer_completeness`` - fraction of gold facts whose ledger value appears in the final
+  answer (numeric facts by normalised value, text facts case-insensitively); LLM-answered
+  outcomes only, ``fallback_answer_completeness`` otherwise;
+* ``conflict_covered`` (``expect=conflict``) - every gold fact with handles has one cited;
+* ``abstention_correct`` (``expect=insufficient``) - same rule as ``pass_behaviour``;
+* ``unsupported_claim_rate`` - independent numeric re-check (``numeric_recheck``): cited units
+  containing a number absent from the resolved texts of the handles they cite / cited units.
+The empty-pack gate is "no synthesis call on an empty pack": ``llm_called`` reads the run's
+synthesis usage and synthesis events only, so a research agent's planning calls never count.
 """
 
 from __future__ import annotations
@@ -30,12 +46,14 @@ import json
 import re
 import time
 from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
 from httpx import ASGITransport, AsyncClient
 
-from marketsignal.evaluation.grounded_stats import Prices, pipeline_stats
+from marketsignal.evaluation.grounded_stats import Prices, mode_summary, pipeline_stats, run_metrics
+from marketsignal.evaluation.numeric_recheck import recheck_content
 from marketsignal.evaluation.stats import percentile, wilson
 from marketsignal.generation import contract
 from marketsignal.generation.types import CANONICAL_RE
@@ -52,12 +70,22 @@ class ItemOutcome:
     done: dict[str, Any]
     run: dict[str, Any]
     checks: dict[str, Any] = field(default_factory=dict)
+    mode: str | None = None  # the mode requested by the harness (None = field absent)
+    metrics: dict[str, Any] = field(default_factory=dict)
 
     def as_dict(self) -> dict[str, Any]:
+        agent = self.run.get("agent")
         return {
             "id": self.item["id"],
             "category": self.item["category"],
+            "workspace": self.item.get("workspace"),
+            "split": self.item.get("split"),
+            "expect": self.item.get("expect"),
             "question": self.item["question"],
+            "requested_mode": self.mode,
+            "mode": self.run.get("mode"),
+            "route": self.run.get("route"),
+            "agent": agent,
             "termination_state": self.done.get("termination_state"),
             "flags": self.done.get("flags"),
             "content": self.final.get("content") if self.final else None,
@@ -67,6 +95,7 @@ class ItemOutcome:
             "usage": self.run.get("usage"),
             "timings": self.run.get("timings"),
             "checks": self.checks,
+            "metrics": self.metrics,
             "warnings": [e["data"] for e in self.events if e["event"] == "warning"],
         }
 
@@ -86,7 +115,25 @@ def parse_sse(raw: str) -> list[dict[str, Any]]:
     return events
 
 
-async def run_item(client: AsyncClient, item: dict[str, Any]) -> ItemOutcome:
+def select_items(
+    items: list[dict[str, Any]],
+    *,
+    split: str = "all",
+    ids: str | None = None,
+    limit: int | None = None,
+) -> list[dict[str, Any]]:
+    """Dataset order; ``split`` dev/test keeps items with that ``split`` field (all keeps every
+    item, including datasets without splits), ``ids`` is a comma list, ``limit`` applies last."""
+    selected = [i for i in items if split == "all" or i.get("split") == split]
+    if ids:
+        wanted = set(ids.split(","))
+        selected = [i for i in selected if i["id"] in wanted]
+    return selected[:limit] if limit else selected
+
+
+async def run_item(
+    client: AsyncClient, item: dict[str, Any], mode: str | None = None
+) -> ItemOutcome:
     ws = item["workspace"]
     conversation = (await client.post(f"/api/workspaces/{ws}/conversations", json={})).json()[
         "conversation_id"
@@ -94,6 +141,8 @@ async def run_item(client: AsyncClient, item: dict[str, Any]) -> ItemOutcome:
     body: dict[str, Any] = {"question": item["question"]}
     if item.get("source_classes"):
         body["source_classes"] = item["source_classes"]
+    if mode is not None:
+        body["mode"] = mode
     started = await client.post(
         f"/api/workspaces/{ws}/conversations/{conversation}/runs", json=body
     )
@@ -104,7 +153,7 @@ async def run_item(client: AsyncClient, item: dict[str, Any]) -> ItemOutcome:
     final = next((e["data"] for e in events if e["event"] == "final"), None)
     done: dict[str, Any] = next((e["data"] for e in events if e["event"] == "done"), {})
     stored = (await client.get(f"/api/workspaces/{ws}/runs/{run['run_id']}")).json()
-    return ItemOutcome(item, events, final, done, stored)
+    return ItemOutcome(item, events, final, done, stored, mode=mode)
 
 
 def _llm_called(out: ItemOutcome) -> bool:
@@ -125,6 +174,15 @@ def _numbers_match(value: Any, content: str) -> bool:
     mentions = contract.extract_numbers(content)
     values = [m.mantissa for m in mentions] + [m.value for m in mentions]
     return any(abs(v - float(value)) <= 1e-6 * max(1.0, abs(float(value))) for v in values)
+
+
+def _value_present(value: Any, content: str) -> bool:
+    """A gold fact's ledger value appears in the answer (numbers by normalised value)."""
+    if isinstance(value, int | float):
+        return _numbers_match(value, content)
+    if not isinstance(value, str) or not value.strip():
+        return False
+    return " ".join(value.lower().split()) in " ".join(content.lower().split())
 
 
 def recheck_contract(content: str) -> list[str]:
@@ -151,9 +209,12 @@ async def score(client: AsyncClient, out: ItemOutcome) -> None:
     cited = list(dict.fromkeys(CANONICAL_RE.findall(content)))
     pack = set(out.run.get("pack_handles") or [])
     statuses = []
+    texts: dict[str, str] = {}
     for handle in cited:
         response = await client.get(f"/api/workspaces/{ws}/evidence/{handle}")
         statuses.append(response.status_code)
+        if response.status_code == 200:
+            texts[handle] = str(response.json().get("text", ""))
     sections = (out.final or {}).get("sections") or {}
     tokens_streamed = any(e["event"] == "token" for e in out.events)
     checks["citations"] = len(cited)
@@ -182,17 +243,33 @@ async def score(client: AsyncClient, out: ItemOutcome) -> None:
             covered.append(bool(set(fact["handles"]) & set(cited)))
             if isinstance(fact["value"], int | float):
                 numeric.append(_numbers_match(fact["value"], content))
+        complete = [_value_present(f["value"], content) for f in item["gold_facts"]]
         # Evidence-only fallbacks quote the ledger numbers verbatim; never credit them as
         # answers. They are reported under separate keys.
         prefix = "" if answered else "fallback_"
         checks[f"{prefix}gold_coverage"] = sum(covered) / len(covered)
         checks[f"{prefix}numeric_correct"] = (sum(numeric) / len(numeric)) if numeric else None
+        checks[f"{prefix}answer_completeness"] = sum(complete) / len(complete)
+        with_handles = [f for f in item["gold_facts"] if f["handles"]]
+        checks["gold_handle_recall"] = (
+            sum(1 for f in with_handles if set(f["handles"]) & pack) / len(with_handles)
+            if with_handles
+            else None
+        )
+    recheck = recheck_content(content, texts)
+    checks["cited_units"] = recheck["cited_units"]
+    checks["unsupported_units"] = len(recheck["unsupported"])
+    checks["unsupported_numbers"] = [n for u in recheck["unsupported"] for n in u["numbers"]]
+    checks["unsupported_claim_rate"] = (
+        checks["unsupported_units"] / recheck["cited_units"] if recheck["cited_units"] else None
+    )
     expect = item["expect"]
     if expect == "answer":
         checks["pass_behaviour"] = answered
     elif expect == "insufficient":
         bad_claim = answer_cites and not states_insufficient
         checks["pass_behaviour"] = out.final is not None and not bad_claim
+        checks["abstention_correct"] = checks["pass_behaviour"]
     elif expect == "abstain_no_llm":
         checks["pass_behaviour"] = (
             out.done.get("termination_state") == "no_relevant_evidence"
@@ -202,6 +279,7 @@ async def score(client: AsyncClient, out: ItemOutcome) -> None:
     elif expect == "conflict":
         retrievable = [f for f in item["gold_facts"] if f["handles"]]
         both = all(set(f["handles"]) & set(cited) for f in retrievable)
+        checks["conflict_covered"] = both
         checks["pass_behaviour"] = both or bool(sections.get("conflicts"))
     if item.get("canary"):
         streamed = "".join(e["data"].get("text", "") for e in out.events if e["event"] == "token")
@@ -222,7 +300,21 @@ def _mean(values: list[float]) -> float | None:
     return round(sum(values) / len(values), 3) if values else None
 
 
-def summarize(outcomes: list[ItemOutcome]) -> dict[str, Any]:
+def _empty_pack_gate(empty: list[ItemOutcome], *, required: bool) -> dict[str, Any]:
+    """No synthesis call on an empty pack (agent planning calls are not synthesis calls).
+    Required datasets must contain at least one ``abstain_no_llm`` item; otherwise a set
+    without such items reads "not applicable"."""
+    if not empty and not required:
+        return {"value": "not applicable", "pass": True}
+    return {
+        "value": sum(1 for o in empty if o.checks["pass_behaviour"]) / len(empty)
+        if empty
+        else "not evaluated",
+        "pass": bool(empty) and all(o.checks["pass_behaviour"] for o in empty),
+    }
+
+
+def summarize(outcomes: list[ItemOutcome], *, require_empty_pack: bool = True) -> dict[str, Any]:
     cited = sum(o.checks["citations"] for o in outcomes)
     resolvable = sum(o.checks["resolvable"] for o in outcomes)
     in_pack = sum(o.checks["in_pack"] for o in outcomes)
@@ -254,12 +346,7 @@ def summarize(outcomes: list[ItemOutcome]) -> dict[str, Any]:
             "value": len(foreign) + len(leaks),
             "pass": not foreign and not leaks,
         },
-        "empty_pack_never_calls_llm": {
-            "value": sum(1 for o in empty if o.checks["pass_behaviour"]) / len(empty)
-            if empty
-            else "not evaluated",
-            "pass": bool(empty) and all(o.checks["pass_behaviour"] for o in empty),
-        },
+        "empty_pack_never_calls_llm": _empty_pack_gate(empty, required=require_empty_pack),
     }
     by_category: dict[str, list[ItemOutcome]] = defaultdict(list)
     for o in outcomes:
@@ -337,14 +424,24 @@ def summarize(outcomes: list[ItemOutcome]) -> dict[str, Any]:
     }
 
 
-async def evaluate(
+DEFAULT_MODE = "default"  # result key when no mode is requested
+
+
+async def evaluate_modes(
     app: Any,
     items: list[dict[str, Any]],
+    modes: Sequence[str | None],
     *,
     concurrency: int = 1,
     prices: Prices | None = None,
-) -> dict[str, Any]:
-    outcomes: list[ItemOutcome] = []
+    require_empty_pack: bool = True,
+) -> dict[str, dict[str, Any]]:
+    """Run every item once per mode. Modes of one item run sequentially (same item, same load,
+    comparable latency); items run ``concurrency`` at a time. Keyed by mode (``default`` when
+    the request carries no mode)."""
+    prices = prices or Prices(0.0, 0.0, 0.0, 0.0)
+    per_mode: dict[str | None, list[ItemOutcome]] = {m: [] for m in modes}
+    elapsed: dict[str | None, float] = dict.fromkeys(modes, 0.0)
     started = time.monotonic()
     async with (
         app.router.lifespan_context(app),
@@ -354,16 +451,50 @@ async def evaluate(
     ):
         semaphore = asyncio.Semaphore(concurrency)
 
-        async def one(item: dict[str, Any]) -> ItemOutcome:
+        async def one(item: dict[str, Any]) -> list[ItemOutcome]:
             async with semaphore:
-                out = await run_item(client, item)
-                await score(client, out)
-                return out
+                outs = []
+                for mode in modes:
+                    t0 = time.monotonic()
+                    out = await run_item(client, item, mode)
+                    await score(client, out)
+                    out.metrics = run_metrics(out, prices)
+                    elapsed[mode] += time.monotonic() - t0
+                    outs.append(out)
+                return outs
 
-        outcomes = list(await asyncio.gather(*(one(i) for i in items)))
+        for outs in await asyncio.gather(*(one(i) for i in items)):
+            for mode, out in zip(modes, outs, strict=True):
+                per_mode[mode].append(out)
+    total = round(time.monotonic() - started, 1)
     return {
-        "elapsed_s": round(time.monotonic() - started, 1),
-        "summary": summarize(outcomes),
-        "pipeline": pipeline_stats(outcomes, prices or Prices(0.0, 0.0, 0.0, 0.0)),
-        "items": [o.as_dict() for o in outcomes],
+        (mode or DEFAULT_MODE): {
+            "elapsed_s": total if len(modes) == 1 else round(elapsed[mode], 1),
+            "summary": summarize(outcomes, require_empty_pack=require_empty_pack),
+            "runs": mode_summary(outcomes, mode=mode),
+            "pipeline": pipeline_stats(outcomes, prices),
+            "items": [o.as_dict() for o in outcomes],
+        }
+        for mode, outcomes in per_mode.items()
     }
+
+
+async def evaluate(
+    app: Any,
+    items: list[dict[str, Any]],
+    *,
+    concurrency: int = 1,
+    prices: Prices | None = None,
+    mode: str | None = None,
+    require_empty_pack: bool = True,
+) -> dict[str, Any]:
+    """Single-mode evaluation (``mode=None``: the request carries no mode field)."""
+    results = await evaluate_modes(
+        app,
+        items,
+        (mode,),
+        concurrency=concurrency,
+        prices=prices,
+        require_empty_pack=require_empty_pack,
+    )
+    return results[mode or DEFAULT_MODE]
