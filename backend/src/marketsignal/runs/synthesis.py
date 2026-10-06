@@ -16,6 +16,7 @@ import time
 from collections.abc import AsyncGenerator, Callable
 from typing import Any
 
+from marketsignal.agent.summary import ResearchSummary
 from marketsignal.config import Settings
 from marketsignal.db.session import SessionFactory
 from marketsignal.generation.aliases import AliasGate, GateCitation, GateText, GateWarning
@@ -63,11 +64,16 @@ async def generate_and_verify(
     started: float,
     *,
     factory: SessionFactory | None = None,
+    research_summary: ResearchSummary | None = None,
 ) -> tuple[VerifiedAnswer | None, VerificationReport | None, str]:
     """Generate, verify, and regenerate at most once. ``factory`` (optional, keyword-only)
     persists one ``verification_attempts`` row per verified attempt (the executor always passes
-    it; without it nothing is recorded)."""
+    it; without it nothing is recorded). ``research_summary`` (research runs) is bound to the
+    final pack and rendered into every attempt's user turn as ``<research_summary>``."""
     audit = factory
+    rendered_summary = research_summary.bind_pack(pack).render() if research_summary else None
+    if rendered_summary is not None:
+        state.timings["research_summary_chars"] = len(rendered_summary)
     feedback: str | None = None
     report: VerificationReport | None = None
     for attempt in (1, 2):
@@ -87,6 +93,7 @@ async def generate_and_verify(
                 attempt,
                 feedback,
                 started,
+                research_summary=rendered_summary,
             )
         except _SourceWithheldError:
             state.flag(SOURCE_DELETED_DURING_RUN)
@@ -181,6 +188,8 @@ async def generate(
     attempt: int,
     feedback: str | None,
     started: float,
+    *,
+    research_summary: str | None = None,
 ) -> _Attempt:
     state.count("llm_attempts")  # recorded even when the call fails (evaluation needs it)
     remaining = settings.run_deadline_s - (time.monotonic() - started)
@@ -199,6 +208,7 @@ async def generate(
                     recent_questions=recent_q,
                     feedback=feedback,
                     notes=detect_conflicts(pack),
+                    research_summary=research_summary,
                 ),
             },
         ),

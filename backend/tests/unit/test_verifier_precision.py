@@ -226,9 +226,11 @@ def test_magnitude_currency_percent_and_computed_values_still_rejected(claim: st
 
 @pytest.mark.parametrize(("count", "ok"), [(7, True), (8, True), (9, False)])
 def test_configurable_citation_cap(count: int, ok: bool) -> None:
-    findings = "\n".join("- Members rated delivery 4.2 [E1]." for _ in range(count - 1))
-    raw = _ans("Delivery rated 4.2 [E1].", findings)
-    result = verify_answer(raw, PACK, pack_truncated=False, max_citations=8)
+    # Single-citation answer + conflict bullets: nothing the citation budget may remove.
+    pack = _pack(*(_item(n, f"Fact {n} holds.") for n in range(1, count + 1)))
+    sides = "\n".join(f"- Fact {n} holds [E{n}]." for n in range(2, count + 1))
+    raw = f"### Answer\nFact 1 holds [E1].\n\n### Conflicting evidence\n{sides}\n"
+    result = verify_answer(raw, pack, pack_truncated=False, max_citations=8)
     assert result.ok is ok
     if not ok:
         assert TOO_MANY_CITATIONS in result.report.structural_failures

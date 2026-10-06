@@ -32,6 +32,7 @@ from typing import Any
 from sqlalchemy import text
 
 from marketsignal.agent.runtime import ResearchAgent
+from marketsignal.agent.summary import ResearchSummary
 from marketsignal.config import Settings
 from marketsignal.db.scope import WorkspaceScope
 from marketsignal.db.session import SessionFactory, scoped_session
@@ -306,6 +307,7 @@ class StandardRunExecutor:
         recent_q = convo.recent_questions if convo else ()
 
         max_conf = await self._llm_max_confidentiality(req.scope)
+        research_summary: ResearchSummary | None = None
         if req.mode == "research" and self._agent_factory is not None:
             # 1. Research gather: the bounded agent over the governed tools (ADR-0007/0015).
             # The agent itself reports the planning/searching phases.
@@ -321,6 +323,7 @@ class StandardRunExecutor:
                 recent_questions=recent_q,
             )
             ranked = research.ranked
+            research_summary = research.summary
             if research.fallback:  # plan §19: no plan or no successful search → standard gather
                 ranked = await self._standard_gather(
                     req,
@@ -391,7 +394,7 @@ class StandardRunExecutor:
 
         # 4. Synthesis -> 5. verification (at most one regeneration) -> fallback.
         verified, report, reason = await self._generate_and_verify(
-            req, writer, state, pack, summary, recent_q, started
+            req, writer, state, pack, summary, recent_q, started, research_summary=research_summary
         )
         if verified is None:
             state.states.add("generation_unavailable")
@@ -415,6 +418,8 @@ class StandardRunExecutor:
         summary: str,
         recent_q: tuple[str, ...],
         started: float,
+        *,
+        research_summary: ResearchSummary | None = None,
     ) -> tuple[VerifiedAnswer | None, VerificationReport | None, str]:
         return await generate_and_verify(
             self._settings,
@@ -427,6 +432,7 @@ class StandardRunExecutor:
             recent_q,
             started,
             factory=self._factory,
+            research_summary=research_summary,
         )
 
     async def _finish(

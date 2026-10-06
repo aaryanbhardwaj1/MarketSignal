@@ -23,6 +23,13 @@ what is left (none left: the fallback reports RETRIEVAL_TIMEOUT, see the executo
 
 Progress events are best-effort (:func:`progress_emitter`): a failed event write is logged
 (type only) and skipped, so the agent outcome is always persisted.
+
+Synthesis hand-off (Phase 5, A3): :attr:`ResearchResult.summary` is the deterministic, bounded
+:class:`~marketsignal.agent.summary.ResearchSummary` of the gather (observable state and the
+question only; ``finish_research`` gap text is never included). The executor passes it to
+synthesis, which binds it to the final pack and renders it as ``<research_summary>``. It is on
+by default; the ``research_summary`` setting (env ``MS_RESEARCH_SUMMARY``) turns it off, for the
+before/after evaluation only.
 """
 
 from __future__ import annotations
@@ -36,6 +43,7 @@ from sqlalchemy import text
 
 from marketsignal.agent.pool import pool_to_candidates
 from marketsignal.agent.runtime import AgentContext, AgentOutcome, ResearchAgent
+from marketsignal.agent.summary import ResearchSummary, build_research_summary
 from marketsignal.config import Settings
 from marketsignal.db.scope import WorkspaceScope
 from marketsignal.db.session import SessionFactory, scoped_session
@@ -62,6 +70,7 @@ class ResearchResult:
     fallback: bool  # True: the caller runs the standard gather
     outcome: AgentOutcome
     gather_deadline: float  # time.monotonic() deadline shared by the agent and the fallback
+    summary: ResearchSummary | None = None  # the synthesis hand-off (None: switched off)
 
 
 def agent_record(outcome: AgentOutcome, *, duration_ms: float) -> dict[str, Any]:
@@ -186,11 +195,12 @@ async def research_gather(
         agent_record(outcome, duration_ms=duration_ms),
         tool_calls=outcome.tool_calls,
     )
+    handoff = build_research_summary(req.question, outcome) if settings.research_summary else None
     if outcome.stop_reason in FALLBACK_STOPS:
-        return ResearchResult([], True, outcome, gather_deadline)
+        return ResearchResult([], True, outcome, gather_deadline, handoff)
     ranked = await pool_to_candidates(
         factory, req.scope, outcome.pool, source_classes=req.source_classes
     )
     if outcome.stop_reason == "tool_errors" and not ranked:
         state.states.add("tool_failure")  # plan §28: circuit open and nothing gathered
-    return ResearchResult(ranked, False, outcome, gather_deadline)
+    return ResearchResult(ranked, False, outcome, gather_deadline, handoff)

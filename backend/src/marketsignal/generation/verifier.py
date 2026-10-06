@@ -26,6 +26,8 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from typing import Any, Final
 
+from marketsignal.generation.citation_budget import Unit as _Unit
+from marketsignal.generation.citation_budget import fit_citations
 from marketsignal.generation.contract import (
     ALIASISH_RE,
     ANSWER,
@@ -86,8 +88,10 @@ _FAILURE_FEEDBACK: Final = {
         "pack, or state plainly that the evidence is insufficient."
     ),
     TOO_MANY_CITATIONS: (
-        "The answer uses more than {cap} citations. Use at most {cap} [E#] markers in total "
-        "(repeats count); cite only the strongest evidence for each claim."
+        "The answer uses {used} citation markers; the limit is {cap}. Use at most {cap} [E#] "
+        "markers in total (repeats count). Cite each source at most once per bullet; for "
+        "enumerations cite each item once; do not repeat Key findings citations in the "
+        "Answer; cite only the strongest evidence for each claim.{over}"
     ),
     VERIFIER_ERROR: (
         "The previous answer could not be checked. Rewrite it following the answer contract "
@@ -99,6 +103,7 @@ _FAILURE_FEEDBACK: Final = {
     ),
 }
 _MAX_FEEDBACK_VIOLATIONS: Final = 8
+_MAX_OVER_CITED: Final = 8
 _TERMINAL_RE: Final = re.compile(r"[.!?][\"'\u201d\u2019)*_]*$")
 _TRAILING_MARKERS_RE: Final = re.compile(
     r"(?:\s*(?:\[\[[^\[\]]*\]\]|\[E\d{1,2}\]|\[inference\]))+$"
@@ -152,14 +157,6 @@ class VerifiedAnswer:
     citations: list[dict[str, Any]]  # PackItem.card() per cited item, first-citation order
     report: VerificationReport
     ok: bool  # no structural failure remains
-
-
-@dataclass(frozen=True, slots=True)
-class _Unit:
-    text: str  # still in alias form ("[E3]"); canonicalised at render time
-    cited: tuple[str, ...]  # valid aliases, in order, unique
-    inferred: bool
-    gap: bool = False  # an evidence-gap statement (A5), rendered untagged
 
 
 @dataclass
@@ -673,6 +670,14 @@ def verify_answer(
             if units:
                 final[key] = units
 
+    budget = fit_citations(
+        final,
+        max_citations,
+        supported=lambda text, cited: not run.unsupported(text, cited),
+        parents={alias: item.handle for alias, item in aliases.items()},
+    )
+    final = budget.sections
+    run.repairs.extend(budget.repairs)
     cited_in_order = [alias for units in final.values() for u in units for alias in u.cited]
     cited_aliases = list(dict.fromkeys(cited_in_order))
     failures = _structural(parsed, final, len(cited_in_order), pack, pack_truncated, max_citations)
@@ -702,6 +707,11 @@ def verify_answer(
         gap_statements=run.gaps,
         conflict_signals=detect_conflicts(pack),
         max_citations=max_citations,
+        citation_budget=(
+            {"before": budget.before, "after": budget.after, "over_cited": list(budget.over_cited)}
+            if budget.before > max_citations
+            else {}
+        ),
     )
     return VerifiedAnswer(
         content=_content(sections),
@@ -762,6 +772,16 @@ def detect_conflicts(pack: EvidencePack) -> list[str]:
     return signals
 
 
+def _format_feedback(message: str, report: VerificationReport) -> str:
+    budget = report.citation_budget
+    over = budget.get("over_cited", [])[:_MAX_OVER_CITED]
+    return message.format(
+        cap=report.max_citations,
+        used=budget.get("before", report.citations),
+        over=f" Over-cited: {', '.join(over)}." if over else "",
+    )
+
+
 def regeneration_feedback(report: VerificationReport) -> str:
     """Plain-language instruction for the single bounded regeneration.
 
@@ -772,7 +792,7 @@ def regeneration_feedback(report: VerificationReport) -> str:
     lines: list[str] = []
     for failure in report.structural_failures:
         message = _FAILURE_FEEDBACK.get(failure, f"Fix the {failure} problem.")
-        lines.append(f"- {message.format(cap=report.max_citations)}")
+        lines.append(f"- {_format_feedback(message, report)}")
     violations = report.numeric_violations[:_MAX_FEEDBACK_VIOLATIONS]
     for violation in violations:
         lines.append(f"- Unsupported number ({violation}). Use figures exactly as cited.")

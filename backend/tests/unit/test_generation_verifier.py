@@ -474,10 +474,19 @@ def test_insufficiency_regex_is_conservative(text: str, expected: bool) -> None:
     assert states_insufficient(text) is expected
 
 
-def test_too_many_citations() -> None:
+def test_over_cited_list_is_fitted_under_the_cap_with_repairs() -> None:
     findings = "\n".join(f"- Point {n} led [E1] [E2] [E3]." for n in "ABCDEFG")
     result = verify_answer(_answer("Price led [E1].", findings), PACK, pack_truncated=False)
-    assert result.report.citations > 20
+    assert result.ok
+    assert result.report.citations <= 20
+    assert result.report.citation_budget["before"] == 22
+    assert any("citation cap 20" in r for r in result.report.repairs)
+
+
+def test_too_many_citations_when_no_citation_can_be_removed() -> None:
+    answer = "Price led [E1]. Range mattered [E2]. Speed mattered [E3]."
+    result = verify_answer(_answer(answer), PACK, pack_truncated=False, max_citations=3)
+    assert result.report.citations == 4  # 3 distinct Answer claims + the single finding
     assert TOO_MANY_CITATIONS in result.report.structural_failures
 
 

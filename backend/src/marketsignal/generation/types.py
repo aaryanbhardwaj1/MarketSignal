@@ -111,6 +111,9 @@ class VerificationReport:
     gap_statements: list[str] = field(default_factory=list)  # "Answer #2": evidence-gap units
     conflict_signals: list[str] = field(default_factory=list)
     max_citations: int = 20
+    # Phase 5 (A1): set only when the raw answer exceeded the cap: markers before/after the
+    # deterministic citation budget and the aliases cited by more than one unit.
+    citation_budget: dict[str, Any] = field(default_factory=dict)
 
     def as_dict(self) -> dict[str, Any]:
         payload = asdict(self)

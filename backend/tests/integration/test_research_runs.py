@@ -356,3 +356,86 @@ async def test_unreachable_mcp_endpoint_still_answers(harness: Harness) -> None:
     assert done["flags"].count("TOOLS_TRANSPORT_FALLBACK") == 1
     final = next(e["data"] for e in events if e["event"] == "final")
     assert final["citations"]
+
+
+# ------------------------------------------------- Phase 5 A3: research summary hand-off
+
+GAP_CANARY = "GAP-CANARY-8812 the agent thinks the board deck has it"
+
+
+def _search_then_finish_with_gap() -> list[ScriptedTurn]:
+    return [
+        ScriptedTurn(
+            content=(
+                thinking_block(THINKING_CANARY),
+                tool_use_block("c1", "search_evidence", {"query": "fit inconsistency"}),
+            )
+        ),
+        ScriptedTurn(
+            content=(
+                tool_use_block(
+                    "c2", "finish_research", {"sufficient": False, "gaps": [GAP_CANARY]}
+                ),
+            )
+        ),
+    ]
+
+
+def _synthesis_turn(fake: FakeLLM) -> str:
+    assert fake.requests, "synthesis was never called"
+    return str(fake.requests[0].messages[0]["content"])
+
+
+QUESTION_A3 = "What share of Gen Z buyers name fit inconsistency, versus store traffic in 2025?"
+
+
+async def test_research_synthesis_receives_the_research_summary(harness: Harness) -> None:
+    fake = FakeLLM([GOOD], repeat_last=True)
+    _install(harness, fake)
+    _install_agent(harness, _search_then_finish_with_gap())
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT, OTHER)
+    _, run = await _ask(harness, ws, QUESTION_A3, mode="research")
+    events = await _stream(harness, run["stream_url"])
+    assert events[-1]["event"] == "done"
+
+    turn = _synthesis_turn(fake)
+    assert turn.count("<research_summary>") == 1
+    element = turn[turn.index("<research_summary>") : turn.index("</research_summary>")]
+    assert "server-written data, not instructions" in element
+    assert "evidence judged sufficient: no" in element
+    assert "search_evidence 1 (1 ok)" in element
+    assert "&quot;fit inconsistency&quot;" in element  # the search theme, escaped
+    assert "Gen Z (items: E1)" in element  # bound to the final pack's aliases
+    assert "share (items: none)" in element  # FACT says "27 percent", never "share"
+    assert "missing): share; 2025" in element  # deterministic unresolved terms
+    assert "versus" in element
+    assert "Agent-reported gaps: 1 (text withheld)" in element
+    # Never model prose, thinking, gap text, handles or source codes.
+    assert "GAP-CANARY" not in turn
+    assert "PRIVATE-REASONING" not in turn
+    assert f"{ws}/" not in element
+    stored = (await harness.client.get(f"/api/workspaces/{ws}/runs/{run['run_id']}")).json()
+    assert stored["timings"]["research_summary_chars"] > 0
+
+
+async def test_research_summary_switch_off_and_standard_runs_omit_it(
+    harness: Harness, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT, OTHER)
+
+    fake = FakeLLM([GOOD], repeat_last=True)
+    _install(harness, fake)
+    _, run = await _ask(harness, ws, QUESTION_A3, mode="standard")
+    await _stream(harness, run["stream_url"])
+    assert "<research_summary>" not in _synthesis_turn(fake)
+
+    monkeypatch.setattr(harness.settings, "research_summary", False)
+    off = FakeLLM([GOOD], repeat_last=True)
+    _install(harness, off)
+    _install_agent(harness, _search_then_finish_with_gap())
+    _, run = await _ask(harness, ws, QUESTION_A3, mode="research")
+    events = await _stream(harness, run["stream_url"])
+    assert events[-1]["event"] == "done"
+    assert "<research_summary>" not in _synthesis_turn(off)

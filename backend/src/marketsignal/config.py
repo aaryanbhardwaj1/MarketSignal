@@ -191,6 +191,8 @@ class Settings(BaseSettings):
     agent_max_tokens: int = Field(default=4_096, ge=256)  # per agent step
     agent_effort: str = "low"
     agent_gather_budget_s: float = Field(default=35.0, gt=0)
+    # Phase 5 A3: hand a bounded, deterministic research summary to synthesis (on by default).
+    research_summary: bool = True
     evidence_pool_max: int = Field(default=40, ge=1)
 
     # --- Structured analytics (Phase 5; plan §18). Deterministic engine limits. ---
