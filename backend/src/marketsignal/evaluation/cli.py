@@ -490,6 +490,15 @@ FAKE_ANSWER = (
 )
 
 
+def _repo_relative(path: Path) -> str:
+    """A dataset path as committed results record it: relative to the repo, never a home path."""
+    root = corpus.EVAL_DIR.parent.resolve()
+    try:
+        return str(path.resolve().relative_to(root))
+    except ValueError:
+        return path.name
+
+
 async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
     """Grounded-answer evaluation through the real in-process API (live model by default).
 
@@ -544,7 +553,7 @@ async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
         "effort": settings.llm_effort,
         "thinking": settings.llm_thinking,
         "retrieval_config_hash": app.state.retrieval_service.config_hash,
-        "dataset": str(args.items),
+        "dataset": _repo_relative(args.items),
         "split": args.split,
         "items": len(items),
     }
