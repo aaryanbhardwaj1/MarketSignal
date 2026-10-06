@@ -1,5 +1,11 @@
 # Retrieval deep dive
 
+> **Phase 2 review decision (2026-10-05):** the production default is **hybrid RRF without the reranker**. The cross-encoder is experimental (`MS_RERANK_ENABLED`, search mode `rerank`).
+>
+> Retrieval-quality metrics are reported over **retrieval-eligible** items: analytics-only numeric-row questions are excluded from the denominator (see `eval/baselines/phase2/SUMMARY-eligible.md`).
+>
+> On eligible test items, hybrid reaches recall@10 0.873 and the reranker changes it by −0.167 [−0.343, −0.020]. The sections below are the Phase 2 record as written; where they call hybrid + rerank "final", read "the Phase 2 frozen configuration".
+
 How MarketSignal turns a question into ranked, citable evidence, and the measurements behind each design choice. Every number here comes from a recorded run under [`eval/baselines/phase2/`](../eval/baselines/phase2/), listed in [`SUMMARY.md`](../eval/baselines/phase2/SUMMARY.md). The methodology is in [`eval/README.md`](../eval/README.md). Decisions are in ADR-0002 (hybrid + RRF), ADR-0003 (parents and children), ADR-0005 (reranker), ADR-0012 (embeddings) and ADR-0013 (evaluation).
 
 ## The question this document answers

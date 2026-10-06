@@ -141,3 +141,16 @@ The project's claims (hybrid beats dense-only, reranking helps, the agent is wor
 - **Deviation: no ablation set.** The ledger-generated "ablation set" of about 250 template queries was **not** built in Phase 2; the curated v0 was the only instrument.
 - **Deviation: sample size.** At n = 21, the test split distinguishes only large effects. **Gold v1 (~120 items) and a fresh test split are needed** before Phase 7 tuning, because the v0 test split has now been seen once.
 - **Gate status.** The plan's Recall@10 ≥ 0.85 on test is **not met**: 57.1% for the frozen config, 76.2% for hybrid without rerank. The ceiling at this corpus is 81%, because 4/21 test items are numeric-row-only. The CI gate is therefore a *regression* gate on dev (floors just below the recorded result), not the spec target.
+
+## Phase 2 review decisions (approved 2026-10-05): the evaluation denominator
+
+- **Task-type eligibility.** Items carry `retrieval | analytics | multi_tool` in `eval/datasets/retrieval-v0/task-types.json`, beside the frozen dataset, so v0 items and hashes are unchanged.
+  - **Rule:** a fact is analytics-only when every satisfying parent is a child-less numeric row (ADR-0003). The rule is structural; retrieval results play no part in it.
+  - **Composition:** dev 38 / 4 / 2, test 17 / 4 / 0.
+- **Retrieval-quality metrics** (Recall@k, hit@k, MRR) are reported over `retrieval` items. Full-set raw metrics and task composition are always reported alongside them.
+  - Analytics and multi-tool items stay in the corpus and become routing and system-success cases in Phase 5.
+  - The CI gate targets retrieval-eligible dev items.
+- **The Recall@10 ≥ 0.85 target applies to the retrieval-eligible curated set.**
+  - Phase 2 test, eligible: hybrid (now the default) 0.873 [0.725–1.0]; frozen hybrid + rerank 0.706.
+  - At n = 17 the interval is wide; gold v1 will tighten it.
+- **The v0 benchmark is preserved.** Raw metrics are in `SUMMARY.md`, recalculated ones in `SUMMARY-eligible.md` (from recorded results, nothing re-run). The default change used test results, so v0 is no longer a clean holdout for that decision.

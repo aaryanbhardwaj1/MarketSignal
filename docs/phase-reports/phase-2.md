@@ -289,3 +289,28 @@ Exit checks from the plan: 100% of cited handles resolve; no-hit items abstain; 
 | `452c212` | fix(retrieval): address the Phase 2 adversarial review |
 | `d0baf56` | fix(eval): stricter integrity, recorded index state, test-split guards |
 | (docs) | docs: Phase 2 report, retrieval deep dive, ADR implementation notes |
+
+## Addendum: review decisions (2026-10-05, after approval)
+
+The report above is preserved as written at the Phase 2 exit. The review then decided:
+
+1. **Production default: hybrid RRF without the reranker.** The reranker is experimental, behind `MS_RERANK_ENABLED` and search mode `rerank`. Future reranker experiments must use new dev questions and a newly frozen holdout; the v0 test split must not be used to tune them.
+2. **Evaluation denominator.** Retrieval-quality metrics are reported over retrieval-eligible items (`task-types.json`; dev 38/44, test 17/21). The four analytics-only test items and the four analytics-only plus two multi-tool dev items are excluded from the denominator and stay in the dataset.
+3. **Recalculated Phase 2 metrics** (`eval/baselines/phase2/SUMMARY-eligible.md`, recalculated from the recorded results):
+
+   | Split, eligible | Arm | hit@1 | hit@10 | recall@10 | MRR |
+   |---|---|---|---|---|---|
+   | Dev (n = 38) | dense | 60.5 | 92.1 | 89.9 | 0.716 |
+   | Dev (n = 38) | **hybrid (default)** | 63.2 | 94.7 | 93.9 | 0.750 |
+   | Dev (n = 38) | hybrid + rerank | 76.3 | 97.4 | 93.4 | 0.844 |
+   | Test (n = 17) | baseline dense (c2) | 35.3 | 70.6 | 63.7 | 0.473 |
+   | Test (n = 17) | dense (c3) | 35.3 | 58.8 | 54.9 | 0.461 |
+   | Test (n = 17) | **hybrid (default)** | 47.1 | **94.1** | **87.3 [72.5–100]** | 0.605 |
+   | Test (n = 17) | hybrid + rerank | 52.9 | 70.6 | 70.6 | 0.603 |
+
+   **Paired comparisons on eligible test items:**
+   - hybrid vs dense: hit@10 +6 / −0 (p = 0.031), Δrecall@10 +0.324 [+0.118, +0.529];
+   - hybrid + rerank vs hybrid: Δrecall@10 **−0.167 [−0.343, −0.020]**.
+4. **The Recall@10 ≥ 0.85 target** applies to the retrieval-eligible set. The new default meets it on the point estimate (0.873); the 95% lower bound is 0.725 at n = 17.
+5. **Binding outcomes:** BGE instruction disabled, balancing disabled, forced RLS unchanged, HNSW not forced. These are recorded in ADR-0002, ADR-0005, ADR-0012 and ADR-0013.
+6. **Holdout caveat.** The default choice used v0 test results, so v0 is no longer a clean holdout for it.

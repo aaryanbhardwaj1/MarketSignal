@@ -87,3 +87,18 @@ Rerank the fused pool with **fastembed `Xenova/ms-marco-MiniLM-L-6-v2`** (ONNX, 
   - exact-match protection;
   - `bge-reranker-base`.
 - **Not yet done.** The target-instance timeout and hosted-reranker decision belong to the Phase 3 spike. Reranked runs also slowed the next query's lane SQL (dense about 4 ms → 13 ms), consistent with ONNX Runtime worker threads spinning after inference; this is to be measured on the target.
+
+## Phase 2 review decisions (approved 2026-10-05)
+
+Binding implementation outcomes. Evidence: `eval/baselines/phase2/` (raw: `SUMMARY.md`; retrieval-eligible: `SUMMARY-eligible.md`).
+
+| Outcome | Measurement | Status |
+|---|---|---|
+| **Hybrid RRF is the production default** (dense + lexical → parent-level RRF → deterministic post-fusion) | Test, retrieval-eligible: hit@10 94.1, recall@10 87.3 [72.5–100]; vs dense, hit@10 +6 / −0 (p = 0.031), Δrecall@10 +0.324 [+0.118, +0.529] | Default |
+| **The cross-encoder is experimental** (`rerank_enabled = false`; search mode `rerank`) | Dev ΔMRR +0.094 [+0.006, +0.192] vs hybrid; **test Δrecall@10 −0.167 [−0.343, −0.020]** | Off by default. Future reranker experiments must use new dev questions and a newly frozen holdout. The v0 test split must not be used to tune it. |
+| BGE query instruction | Dev: dense hit@10 −3 / +0 | Disabled |
+| Source/class balancing | Dev: hit@10 −1, hit@20 −2 | Disabled |
+| Forced RLS kept; GIN unused under RLS | Lexical exec p50 11.6 vs 11.2 ms without RLS | Unchanged |
+| HNSW not forced | Planner picks an exact scan at about 2.2k children (1.6 ms) | Unchanged; HNSW serves scale |
+
+**Holdout caveat.** The choice of hybrid as the default was made after the v0 test results were seen. v0 is therefore no longer a clean holdout for that choice, and the next dataset version needs a newly frozen holdout. The v0 results are preserved unchanged.

@@ -42,6 +42,14 @@ All of this happened **before any retrieval run**. Provenance is `llm_draft_agen
 
   The offline half also runs in the unit tests.
 
+## Task types and the retrieval denominator
+
+`datasets/retrieval-v0/task-types.json` marks each item `retrieval`, `analytics` or `multi_tool`.
+
+- **Rule (structural):** a fact is analytics-only when every satisfying parent is a child-less numeric row.
+- **Retrieval-quality metrics** use `retrieval` items. Full-set raw metrics and composition are reported beside them.
+- **Analytics and multi-tool items** remain for the Phase 5 routing and system evaluation.
+
 ## Metrics
 
 Every arm maps child hits to **distinct parents** (first occurrence wins) before scoring.

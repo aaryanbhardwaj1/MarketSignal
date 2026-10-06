@@ -109,3 +109,8 @@ Dense retrieval needs an embedding model at ingest time (every child chunk) and 
   - It reproduces the Phase 1 baseline's top-20 exactly on all 44 dev items.
 - **ANN vs exact, measured with EXPLAIN.** At about 2,200 children per corpus the planner **never chooses HNSW**, with or without RLS. It uses the `(workspace_id, source_version_id)` btree plus exact distances in about 1.6 ms. HNSW is valid (chosen when sequential scans are discouraged) and serves the scaling story. ANN and exact results are identical at this size.
 - **Ingest re-embedding** for `ready_degraded` versions is still not built; it is not needed by any Phase 2 decision. Policy c3 changed child text, which was handled by re-seeding through the upload API (cache hits for unchanged text).
+
+## Phase 2 review decisions (approved 2026-10-05)
+
+- The BGE query instruction stays **disabled** (measured negative on dev: dense hit@10 −3 / +0).
+- HNSW is **not forced** while Postgres correctly prefers an exact scan at the current corpus size.
