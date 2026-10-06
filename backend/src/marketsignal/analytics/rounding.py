@@ -10,11 +10,16 @@
 ``exact`` always holds the unrounded value as a plain decimal string (28 significant digits
 for non-terminating quotients); ``value`` is the rounded number (``int`` when the rule is exact
 and the value is integral).
+
+Magnitude: sums and differences are exact at any size (:data:`EXACT`), quotients keep at least
+:data:`QUOTIENT_FRACTION_DIGITS` fractional digits however large the dividend (:func:`divide`),
+and rounding quantizes in a context sized to the value, so one huge cell (``1e30``) never makes
+a metric fail; ``value`` is then the nearest float.
 """
 
 from __future__ import annotations
 
-from decimal import ROUND_HALF_EVEN, Context, Decimal
+from decimal import MAX_EMAX, MAX_PREC, MIN_EMIN, ROUND_HALF_EVEN, Context, Decimal
 
 from marketsignal.tools.analytics_contracts import AggFn, Unit
 
@@ -23,6 +28,9 @@ ROUNDING = (
     "fractional sums 2dp; counts, integer sums, min/max exact"
 )
 CTX = Context(prec=28, rounding=ROUND_HALF_EVEN)
+# additions/subtractions only (never a division): exact whatever the operands' magnitudes
+EXACT = Context(prec=MAX_PREC, rounding=ROUND_HALF_EVEN, Emax=MAX_EMAX, Emin=MIN_EMIN)
+QUOTIENT_FRACTION_DIGITS = 10
 _UNIT_DP: dict[str, int] = {"percent": 1, "currency_usd": 2, "ratio": 3}
 
 
@@ -51,10 +59,25 @@ def exact_str(value: Decimal) -> str:
     return "0" if text in ("-0", "") else text
 
 
+def exact_sum(values: list[Decimal]) -> Decimal:
+    total = Decimal(0)
+    for v in values:
+        total = EXACT.add(total, v)
+    return total
+
+
+def divide(dividend: Decimal, divisor: Decimal) -> Decimal:
+    """``CTX`` (28 significant digits) unless the dividend is so large that fewer than
+    :data:`QUOTIENT_FRACTION_DIGITS` fractional digits would remain."""
+    prec = max(CTX.prec, dividend.adjusted() + 1 + QUOTIENT_FRACTION_DIGITS)
+    return Context(prec=prec, rounding=ROUND_HALF_EVEN).divide(dividend, divisor)
+
+
 def round_value(value: Decimal, places: int | None) -> int | float:
     if places is None:
         return int(value) if value == value.to_integral_value() else float(value)
-    quantized = value.quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_EVEN)
+    ctx = Context(prec=max(CTX.prec, value.adjusted() + places + 2), rounding=ROUND_HALF_EVEN)
+    quantized = value.quantize(Decimal(1).scaleb(-places), context=ctx)
     if not places:
         return int(quantized)
     return float(quantized) if quantized else 0.0  # never "-0.0"

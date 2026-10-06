@@ -258,6 +258,18 @@ class ToolError:
     message: str  # safe for the model and logs: no SQL, paths, tokens or stack traces
 
 
+def _result_handles(result: Any) -> list[str]:
+    """An analytics result's source-version handle plus its filter_rows row handles."""
+    if not isinstance(result, dict):
+        return []
+    ws, code, version = (result.get(k) for k in ("workspace", "source_code", "source_version"))
+    if not (isinstance(ws, str) and isinstance(code, str) and isinstance(version, int)):
+        return []
+    rows = result.get("rows") if result.get("operation") == "filter_rows" else None
+    listed = [str(r["handle"]) for r in rows or [] if isinstance(r, dict) and r.get("handle")]
+    return [f"{ws}/{code}@v{version}", *listed]
+
+
 @dataclass(frozen=True, slots=True)
 class ToolResult:
     call_id: str
@@ -272,12 +284,17 @@ class ToolResult:
     transport: Transport = "inprocess"
 
     def handles(self) -> tuple[str, ...]:
-        """Evidence handles returned (search hits and found resolutions), in output order."""
+        """Handles returned, in output order: search hits and found resolutions; for a computed
+        analytics result, its source-version handle ``<WS>/<SOURCE_CODE>@v<N>`` and then (for
+        ``filter_rows``) each listed row's handle. The version handle is not evidence; it is
+        what the purge guards match (``tool_runs.result_handles``, the agent trace), so a purge
+        of the analysed source redacts this run's later tool arguments and its trace."""
         if not self.ok or not self.output:
             return ()
         hits = self.output.get("hits") or []
         items = [i for i in self.output.get("items") or [] if i.get("found")]
-        return tuple(str(h["handle"]) for h in [*hits, *items])
+        found = [str(h["handle"]) for h in [*hits, *items]]
+        return (*found, *_result_handles(self.output.get("result")))
 
 
 @dataclass(frozen=True, slots=True)

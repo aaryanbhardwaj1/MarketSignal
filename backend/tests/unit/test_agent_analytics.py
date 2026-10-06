@@ -206,7 +206,8 @@ async def test_filter_rows_handles_join_the_pool_and_the_trace() -> None:
     assert [p.handle for p in rows] == [f"{WS}/SURVEY-2026@v1:R5", f"{WS}/SURVEY-2026@v1:R9"]
     assert all(p.anchor_child_id == "" and p.source_code == "SURVEY-2026" for p in rows)
     assert [r["result_id"] for r in out.results] == ["rows-1"]
-    assert out.trace[0]["handles"] == [p.handle for p in rows]
+    # the source-version handle (ToolResult.handles(): the purge guard's match), then the rows
+    assert out.trace[0]["handles"] == [f"{WS}/SURVEY-2026@v1", *(p.handle for p in rows)]
     completed = sink.named("tool_completed")
     assert completed[0]["result_count"] == 3
     started = sink.named("tool_started")

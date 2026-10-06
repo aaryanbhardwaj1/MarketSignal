@@ -5,6 +5,7 @@ RETURNS and PURGEME; B holds its own SALES (canary values) and ONLYB."""
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from dataclasses import dataclass
 from typing import Any
@@ -389,3 +390,129 @@ async def test_configured_limits_and_timeout(aw: AW) -> None:
     )
     assert r.error is not None
     assert r.error.code == "TIMEOUT"
+
+
+# --- Phase 5 security-review fixes ------------------------------------------------------------
+
+
+async def _purge(aw: AW, key: str) -> None:
+    a = aw.w.ws_a.workspace_code
+    deleted = await aw.w.h.client.delete(f"/api/workspaces/{a}/sources/{aw.source_ids[key]}")
+    assert deleted.status_code == 200
+
+
+async def test_analytics_calls_record_version_handles_for_the_purge_guards(aw: AW) -> None:
+    a = aw.w.ws_a.workspace_code
+    run_id = await aw.w.start_run()
+    token = aw.w.token(run_id=run_id)
+    count = {"dataset": "PURGEME:1", "metrics": [{"fn": "count"}]}
+    agg = await aw.call("aggregate", count, credential=token, idx=0)
+    assert agg.handles() == (f"{a}/PURGEME@v1",)
+    rows = await aw.call("filter_rows", {"dataset": "PURGEME:1"}, credential=token, idx=1)
+    assert rows.output is not None
+    listed = [r["handle"] for r in rows.output["result"]["rows"]]
+    assert len(listed) == 2
+    assert all(h.startswith(f"{a}/PURGEME@v1:R") for h in listed)
+    assert rows.handles() == (f"{a}/PURGEME@v1", *listed)
+    audit = {r["call_index"]: r for r in await aw.w.audit() if r["query_run_id"] == run_id}
+    assert audit[0]["result_handles"] == [f"{a}/PURGEME@v1"]
+    assert audit[1]["result_handles"] == list(rows.handles())
+    await _purge(aw, "PURGEME")
+    # a later call of the same run quoting the purged data is audited redacted
+    quoting = {
+        "dataset": "SALES:1",
+        "metrics": [{"fn": "count"}],
+        "filters": [{"column": "segment", "op": "eq", "value": "Gen Z"}],
+    }
+    later = await aw.call("aggregate", quoting, credential=token, idx=2)
+    assert later.ok
+    after = {r["call_index"]: r for r in await aw.w.audit() if r["query_run_id"] == run_id}
+    assert after[2]["args"] == {"redacted": True}
+
+
+async def test_non_finite_operands_are_validation_errors(aw: AW) -> None:
+    for value in (float("nan"), float("inf")):
+        gt = {"column": "spend_usd", "op": "gt", "value": value}
+        assert (
+            await aw.code(
+                "aggregate", {"dataset": "SALES:1", "metrics": [{"fn": "count"}], "filters": [gt]}
+            )
+            == "VALIDATION_ERROR"
+        )
+        compare = {
+            "dataset": "SALES:1",
+            "metric": {"fn": "count"},
+            "compare_column": "units",
+            "group_a": value,
+            "group_b": 1,
+        }
+        assert await aw.code("group_compare", compare) == "VALIDATION_ERROR"
+
+
+async def test_boolean_xlsx_column_filters_by_its_listed_levels(aw: AW) -> None:
+    a = aw.w.ws_a.workspace_code
+    xlsx = make_xlsx(
+        {"Subs": [["id", "subscribed", "spend"], ["a", True, 1], ["b", False, 2], ["c", True, 3]]}
+    )
+    await _up(aw.w, a, "subs.xlsx", xlsx, source_code="SUBS")
+    await aw.w.h.drain()
+    described = await aw.ok("describe_dataset", {"dataset": "SUBS:1"})
+    column = next(c for c in described["datasets"][0]["columns"] if c["name"] == "subscribed")
+    assert sorted(column["levels"]) == ["False", "True"]
+    for operand in (True, "True"):
+        eq = {"column": "subscribed", "op": "eq", "value": operand}
+        out = await aw.ok(
+            "aggregate", {"dataset": "SUBS:1", "metrics": [{"fn": "count"}], "filters": [eq]}
+        )
+        assert out["result"]["rows"][0]["metrics"][0]["value"] == 2
+
+
+async def _lock_waiters(aw: AW) -> int:
+    async with scoped_session(aw.w.factory, aw.w.ws_a) as session:
+        return int(
+            (
+                await session.execute(
+                    text(
+                        "SELECT count(*) FROM pg_stat_activity WHERE wait_event_type = 'Lock' "
+                        "AND query ILIKE '%FROM sources%FOR SHARE%'"
+                    )
+                )
+            ).scalar_one()
+        )
+
+
+async def test_result_insert_waits_for_a_concurrent_purge_and_is_not_stored(aw: AW) -> None:
+    """The insert takes FOR SHARE on the source row (the purge holds FOR UPDATE) and re-checks
+    the version: a purge that commits first leaves no result behind (NOT_FOUND)."""
+    ws, source_id = aw.w.ws_a, uuid.UUID(aw.source_ids["PURGEME"])
+    async with scoped_session(aw.w.factory, ws) as purge:
+        await purge.execute(
+            text("SELECT id FROM sources WHERE id = :s FOR UPDATE"), {"s": source_id}
+        )
+        await purge.execute(
+            text("UPDATE source_versions SET status = 'purged' WHERE source_id = :s"),
+            {"s": source_id},
+        )
+        task = asyncio.create_task(
+            aw.call("aggregate", {"dataset": "PURGEME:1", "metrics": [{"fn": "count"}]})
+        )
+        for _ in range(200):  # up to ~10 s for the tool to reach the source-row lock
+            if task.done() or await _lock_waiters(aw):
+                break
+            await asyncio.sleep(0.05)
+        assert not task.done(), "the result insert did not wait for the purge's source lock"
+        await purge.commit()
+    result = await task
+    assert result.error is not None
+    assert result.error.code == "NOT_FOUND"
+    async with scoped_session(aw.w.factory, ws) as session:
+        stored = (
+            await session.execute(
+                text(
+                    "SELECT count(*) FROM analytics_results r JOIN source_versions v "
+                    "ON v.id = r.source_version_id WHERE v.source_id = :s"
+                ),
+                {"s": source_id},
+            )
+        ).scalar_one()
+    assert stored == 0

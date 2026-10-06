@@ -1,5 +1,14 @@
 """The only SQL the analytics engine runs on data: one parameterized, RLS-scoped row fetch by
-table id (column names never reach SQL) and the ``analytics_results`` insert."""
+table id (column names never reach SQL) and the ``analytics_results`` insert.
+
+Purge ordering (:func:`lock_live_version`): in the insert's transaction, the source row is
+locked ``FOR SHARE`` (``purge_source`` takes ``FOR UPDATE`` on it first), then the version's
+status is re-read in a new statement (a fresh READ COMMITTED snapshot, taken after any lock
+wait). Either the purge waits for this insert to commit and then sees the result (its
+``computed_runs`` capture and the cascade delete cover it), or this insert waits for the purge,
+sees the version ``purged`` and stores nothing: the tool returns ``NOT_FOUND``, exactly as a
+call made after the purge (the dataset is no longer analysable).
+"""
 
 from __future__ import annotations
 
@@ -26,6 +35,28 @@ INSERT INTO analytics_results
     (id, workspace_id, query_run_id, source_version_id, table_id, tool, spec, result)
 VALUES (:id, :ws, :run, :v, :t, :tool, CAST(:spec AS jsonb), CAST(:result AS jsonb))
 """
+
+
+_LOCK_SOURCE = """
+SELECT id FROM sources WHERE workspace_id = :ws AND source_code = :code FOR SHARE
+"""
+_VERSION_STATUS = "SELECT status FROM source_versions WHERE id = :v"
+
+
+async def lock_live_version(
+    session: AsyncSession, workspace_id: uuid.UUID, source_code: str, source_version_id: uuid.UUID
+) -> bool:
+    """Lock the source row ``FOR SHARE`` and report whether the version is still unpurged.
+    Must run in the transaction that inserts the result, right before the insert."""
+    locked = (
+        await session.execute(text(_LOCK_SOURCE), {"ws": workspace_id, "code": source_code})
+    ).scalar_one_or_none()
+    if locked is None:
+        return False
+    status = (
+        await session.execute(text(_VERSION_STATUS), {"v": source_version_id})
+    ).scalar_one_or_none()
+    return status is not None and status != "purged"
 
 
 class ScanLimitError(ToolInputError):

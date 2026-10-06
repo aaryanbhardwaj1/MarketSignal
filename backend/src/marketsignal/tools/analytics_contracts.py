@@ -33,7 +33,12 @@ VALUE_MAX_CHARS = 120
 
 DatasetId = Annotated[str, StringConstraints(min_length=3, max_length=DATASET_ID_MAX_CHARS)]
 Column = Annotated[str, StringConstraints(min_length=1, max_length=COLUMN_MAX_CHARS)]
-Scalar = Annotated[str, StringConstraints(max_length=VALUE_MAX_CHARS)] | int | float | bool | None
+# Finite floats only: NaN/Infinity (which ``json`` emits and pydantic parses by default) can
+# never be compared or stored in jsonb, so they fail validation (VALIDATION_ERROR) up front.
+FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]
+Scalar = (
+    Annotated[str, StringConstraints(max_length=VALUE_MAX_CHARS)] | int | FiniteFloat | bool | None
+)
 
 AggFn = Literal["count", "count_distinct", "sum", "mean", "median", "min", "max", "share"]
 FilterOp = Literal[

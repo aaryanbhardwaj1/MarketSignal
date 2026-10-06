@@ -6,6 +6,9 @@ sees only analysable datasets (``analytics.schema``), validates against the stor
 (``analytics.validate``), computes in Python (``analytics.engine``) within
 ``analytics_timeout_s`` and, for the three computing tools, persists the ``AnalyticsResult`` in
 ``analytics_results`` *before* returning it: the stored JSON and the returned JSON are equal.
+The insert is ordered against a concurrent purge of the source (``analytics.store`` module
+docstring): if the version was purged meanwhile, nothing is stored and the call is
+``NOT_FOUND``.
 """
 
 from __future__ import annotations
@@ -20,7 +23,7 @@ from typing import Any
 from marketsignal.analytics import engine
 from marketsignal.analytics.rounding import ROUNDING
 from marketsignal.analytics.schema import DatasetRef, find_datasets
-from marketsignal.analytics.store import fetch_rows, save_result
+from marketsignal.analytics.store import fetch_rows, lock_live_version, save_result
 from marketsignal.analytics.validate import (
     AggregatePlan,
     FilterRowsPlan,
@@ -113,6 +116,10 @@ async def _compute(
                 warnings=computed.warnings,
             )
             result = _bounded(result)
+            if not await lock_live_version(
+                session, env.scope.workspace_id, ref.source_code, ref.source_version_id
+            ):
+                raise ToolNotFoundError("unknown dataset (see describe_dataset)")
             await save_result(
                 session,
                 workspace_id=env.scope.workspace_id,

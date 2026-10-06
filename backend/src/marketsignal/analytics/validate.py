@@ -11,8 +11,18 @@ document data):
 * ``eq``/``ne`` need a non-null ``value``; ``in``/``not_in`` need 1+ non-null ``values``;
   ``between`` needs exactly 2 non-null ``values`` with low <= high; ``is_null``/``not_null``
   take neither; ``value`` and ``values`` are never both given;
-* numeric columns take numeric operands only (never bool); ``gt``/``gte``/``lt``/``lte``/
-  ``between`` apply to numeric and date columns only (date operands: ISO ``YYYY-MM[-DD]``);
+* numeric operands are finite (never NaN/Infinity, never bool); numeric columns take numeric
+  operands only; ``gt``/``gte``/``lt``/``lte``/``between`` apply to numeric and date columns
+  only;
+* date operands of ordered ops are real ISO dates ``YYYY-MM-DD`` or months ``YYYY-MM``, parsed
+  into a :class:`Period` (a day, or every day of the month), never compared as text. Date cells
+  are periods too, and a cell matches only when its *whole* period satisfies the predicate:
+  ``gte X``: cell start >= X start; ``gt X``: cell start > X end; ``lte X``: cell end <= X end;
+  ``lt X``: cell end < X start; ``between [A, B]``: cell start >= A start and cell end <= B end
+  (A start <= B end is required). So ``lte 2024-01`` includes 2024-01-31 and a month cell
+  ``2024-02`` matches neither ``gte 2024-02-15`` nor ``lte 2024-02-15``. A cell that is not a
+  real date never matches an ordered filter. ``eq``/``ne``/``in``/``not_in`` on a date column
+  compare the stored ISO text exactly;
 * a categorical column whose stored levels are complete accepts only known levels in ``eq``/
   ``ne``/``in``/``not_in`` and as ``group_a``/``group_b`` (an unknown level is almost always a
   typo; ``describe_dataset`` lists the levels). Columns with a capped level list accept any
@@ -28,6 +38,9 @@ document data):
 
 from __future__ import annotations
 
+import calendar
+import datetime as dt
+import math
 import re
 from dataclasses import dataclass
 from decimal import Decimal
@@ -85,7 +98,34 @@ class Limits:
         )
 
 
-Operand = Decimal | str
+@dataclass(frozen=True, slots=True)
+class Period:
+    """A parsed ISO date (one day) or month (its first..last day); ``text`` is the input."""
+
+    text: str
+    start: dt.date
+    end: dt.date
+
+    def __str__(self) -> str:
+        return self.text
+
+
+def parse_period(value: Any) -> Period | None:
+    """``YYYY-MM-DD`` -> that day; ``YYYY-MM`` -> the whole month; anything else -> ``None``."""
+    if not isinstance(value, str) or not ISO_DATE_RE.match(value):
+        return None
+    try:
+        if len(value) == 7:
+            year, month = int(value[:4]), int(value[5:])
+            start = dt.date(year, month, 1)
+            return Period(value, start, start.replace(day=calendar.monthrange(year, month)[1]))
+        day = dt.date.fromisoformat(value)
+    except ValueError:
+        return None
+    return Period(value, day, day)
+
+
+Operand = Decimal | str | Period
 
 
 @dataclass(frozen=True, slots=True)
@@ -165,12 +205,20 @@ class FilterRowsPlan:
 
 
 def canon(value: Any) -> str:
-    """Canonical string of a cell/operand for equality: ``2023`` == ``"2023"`` == ``2023.0``."""
+    """Canonical string of a cell/operand for equality: ``2023`` == ``"2023"`` == ``2023.0``.
+
+    Cells and operands take the form the ingestion profile stores categorical levels in
+    (``str(cell)``, with integral floats stored as ints), so a level listed by
+    ``describe_dataset`` matches its cells: ``True`` -> ``"True"``, ``1e-07`` -> ``"1e-07"``.
+    Decimals (parsed numeric operands, numeric-column labels) are plain decimal strings."""
     if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, int | float | Decimal):
-        number = value if isinstance(value, Decimal) else to_decimal(value)
-        text = format(number, "f")
+        return str(value)
+    if isinstance(value, float) and math.isfinite(value) and value.is_integer():
+        return str(int(value))
+    if isinstance(value, int | float):
+        return str(value)
+    if isinstance(value, Decimal):
+        text = format(value, "f")
         return text.rstrip("0").rstrip(".") if "." in text else text
     return str(value)
 
@@ -197,6 +245,8 @@ def _is_number(value: Any) -> bool:
 def _operand(col: ColumnSpec, op: str, value: Any) -> Operand:
     if value is None:
         raise _fail(f"filter on '{_short(col.name)}' ({op}) needs non-null operands")
+    if isinstance(value, float) and not math.isfinite(value):
+        raise _fail(f"filter on '{_short(col.name)}' ({op}) needs finite numbers")
     if col.type == "numeric":
         if not _is_number(value):
             raise _fail(f"column '{_short(col.name)}' is numeric: operands must be numbers")
@@ -204,9 +254,10 @@ def _operand(col: ColumnSpec, op: str, value: Any) -> Operand:
     if op in _ORDERED:
         if col.type != "date":
             raise _fail(f"{op} applies to numeric or date columns, not '{_short(col.name)}'")
-        if not isinstance(value, str) or not ISO_DATE_RE.match(value):
-            raise _fail(f"date column '{_short(col.name)}' needs ISO dates (YYYY-MM[-DD])")
-        return value
+        period = parse_period(value)
+        if period is None:
+            raise _fail(f"date column '{_short(col.name)}' needs real ISO dates (YYYY-MM[-DD])")
+        return period
     text = canon(value)
     if op in _LEVEL_OPS and col.complete_levels and text not in col.levels:
         raise _fail(
@@ -241,7 +292,9 @@ def predicate(ref: DatasetRef, f: Filter, limits: Limits) -> Pred:
 
 
 def _gt(a: Operand, b: Operand) -> bool:
-    return bool(a > b)  # type: ignore[operator]  # both Decimal or both str (same column)
+    if isinstance(a, Period) and isinstance(b, Period):
+        return a.start > b.end  # between [A, B] is empty only when A starts after B ends
+    return bool(a > b)  # type: ignore[operator]  # both Decimal (same column)
 
 
 def filters(ref: DatasetRef, raw: list[Filter] | None, limits: Limits) -> tuple[Pred, ...]:

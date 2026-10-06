@@ -28,8 +28,11 @@ from typing import Any
 
 from marketsignal.analytics.rounding import (
     CTX,
+    EXACT,
     decimal_places,
+    divide,
     exact_str,
+    exact_sum,
     round_value,
     to_decimal,
 )
@@ -39,8 +42,10 @@ from marketsignal.analytics.validate import (
     FilterRowsPlan,
     GroupComparePlan,
     MetricPlan,
+    Period,
     Pred,
     canon,
+    parse_period,
 )
 from marketsignal.tools.analytics_contracts import (
     EMPTY_SELECTION,
@@ -98,8 +103,10 @@ def matches(pred: Pred, row: Row) -> bool:
         return False
     if pred.op == "not_null":
         return True
-    key: Any = v if isinstance(v, Decimal) else (str(v) if pred.op in _ORDERED else canon(v))
     ops = pred.operands
+    if pred.op in _ORDERED and pred.column.type == "date":
+        return _date_matches(pred.op, parse_period(v), ops)
+    key: Any = v if isinstance(v, Decimal) else canon(v)
     if pred.op == "eq":
         return bool(key == ops[0])
     if pred.op == "ne":
@@ -114,6 +121,24 @@ def matches(pred: Pred, row: Row) -> bool:
 
 
 _ORDERED = frozenset({"gt", "gte", "lt", "lte", "between"})
+
+
+def _date_matches(op: str, cell_period: Period | None, ops: tuple[Any, ...]) -> bool:
+    """The cell's whole period satisfies the predicate (``validate`` module docstring)."""
+    if cell_period is None:
+        return False
+    start, end = cell_period.start, cell_period.end
+    if op == "gte":
+        return bool(start >= ops[0].start)
+    if op == "gt":
+        return bool(start > ops[0].end)
+    if op == "lte":
+        return bool(end <= ops[0].end)
+    if op == "lt":
+        return bool(end < ops[0].start)
+    return bool(start >= ops[0].start and end <= ops[1].end)  # between
+
+
 _COMPARE = {
     "gt": lambda a, b: a > b,
     "gte": lambda a, b: a >= b,
@@ -181,14 +206,16 @@ def metric_value(plan: MetricPlan, rows: Sequence[Row], warnings: set[str]) -> M
         return _mv(plan, min(nums), n, None, integral=integral)
     if plan.fn == "max":
         return _mv(plan, max(nums), n, None, integral=integral)
-    total = sum(nums, Decimal(0))
+    total = exact_sum(nums)
     if plan.fn == "sum":
         return _mv(plan, total, n, None, integral=integral)
     if plan.fn == "mean":
-        return _mv(plan, CTX.divide(total, Decimal(n)), n, None, integral=integral)
+        return _mv(plan, divide(total, Decimal(n)), n, None, integral=integral)
     ordered = sorted(nums)
     mid = n // 2
-    median = ordered[mid] if n % 2 else CTX.divide(ordered[mid - 1] + ordered[mid], Decimal(2))
+    median = (
+        ordered[mid] if n % 2 else divide(EXACT.add(ordered[mid - 1], ordered[mid]), Decimal(2))
+    )
     return _mv(plan, median, n, None, integral=integral)
 
 
@@ -247,6 +274,19 @@ def ordered_warnings(found: set[str]) -> list[str]:
     return [w for w in WARNING_ORDER if w in found]
 
 
+def _group_ident(row: Row, col: ColumnSpec) -> tuple[str, str] | None:
+    """A group's identity: ``("n", canonical number)`` for a numeric cell, ``("t", canonical
+    raw text)`` otherwise. A non-numeric cell in a numeric column is its own group per distinct
+    raw value (never merged with other text under the first label seen), ordered after numbers."""
+    raw = raw_cell(row, col)
+    if raw is None:
+        return None
+    value = cell(row, col)
+    if isinstance(value, Decimal):
+        return ("n", canon(value))
+    return ("t", canon(raw))
+
+
 def aggregate(plan: AggregatePlan, rows: Sequence[Row], *, deadline: float | None) -> Computed:
     clock = _Clock(deadline)
     selected = select(rows, plan.filters, clock)
@@ -259,10 +299,7 @@ def aggregate(plan: AggregatePlan, rows: Sequence[Row], *, deadline: float | Non
     for i, row in enumerate(selected):
         clock.tick(i)
         shown = tuple(_bounded(raw_cell(row, g)) for g in plan.group_by)
-        ident = tuple(
-            None if v is None else canon(cell(row, g))
-            for g, v in zip(plan.group_by, shown, strict=True)
-        )
+        ident = tuple(_group_ident(row, g) for g in plan.group_by)
         groups.setdefault(ident, (shown, []))[1].append(row)
     keyed = sorted(groups.values(), key=lambda item: _group_sort(item[0]))
     computed = [
@@ -338,7 +375,7 @@ def _difference(
             denominator=denominator,
             scale=plan.scale,
         )
-    diff = CTX.subtract(Decimal(a.exact), Decimal(b.exact))
+    diff = EXACT.subtract(Decimal(a.exact), Decimal(b.exact))
     integral = all(isinstance(v.value, int) for v in (a, b)) and diff == diff.to_integral_value()
     places = decimal_places(plan.fn, plan.unit, integral=integral)
     return MetricValue(
