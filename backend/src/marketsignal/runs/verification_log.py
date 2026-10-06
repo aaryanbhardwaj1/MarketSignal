@@ -4,7 +4,8 @@ One row per verified synthesis attempt: the structured :class:`VerificationRepor
 number, failure categories, rejected spans with their aliases, evidence checked, repairs,
 regeneration requested, disposition). Reports hold only model answer spans, aliases and
 canonical handles: no prompts, no hidden reasoning, no secrets. The table is append-only for
-the runtime role; purge deletes the rows of runs whose pack included a purged source.
+the runtime role; purge deletes the rows of runs whose pack included a purged source or whose
+research agent saw one of its handles, and an insert after a purge is refused (``record_attempt``).
 
 Disposition (DB CHECK): ``accepted`` (passed, nothing changed), ``repaired`` (passed after
 repairs), ``regenerate`` (failed; one regeneration follows), ``rejected`` (failed; no time

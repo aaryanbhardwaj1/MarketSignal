@@ -7,10 +7,12 @@
 * ``verification_attempts`` - one structured report per verification attempt (attempt number,
   failure categories, rejected spans with their aliases, evidence checked, repairs,
   regeneration requested, final disposition). Rejected spans quote model output, which can
-  quote evidence, so purge deletes the attempts of every run whose pack included the source.
+  quote evidence, so purge deletes the attempts of every run whose pack included the source
+  (and, since the Phase 4 security review, every run whose research agent saw it).
 * ``query_runs`` gains ``route`` (why this mode: requested mode, persona default, cue rules
   matched, final mode), ``agent`` (steps, tool calls, termination reason, bounds hit; never
-  model reasoning) and ``tool_calls`` (the atomic per-run budget counter, plan §17).
+  model reasoning) and ``tool_calls`` (executed tool calls, written once after the gather; the budget itself is
+  enforced by the agent runtime).
 
 Isolation: ENABLE + FORCE RLS and composite ``(workspace_id, ...)`` foreign keys (ADR-0009).
 Neither new table is updated by the runtime role (append-only audit); purge and retention

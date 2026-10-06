@@ -27,7 +27,7 @@ from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, Header, Query, Request
 from fastapi.sse import EventSourceResponse, ServerSentEvent
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import text
 
 from marketsignal.api.deps import Factory, Principal, Scope, SettingsDep
@@ -45,7 +45,7 @@ from marketsignal.runs.reaper import (
     reap_run,
     synthesized_done,
 )
-from marketsignal.runs.router import route
+from marketsignal.runs.router import PERSONA_DEFAULT_MODES, route
 
 router = APIRouter(prefix="/api/workspaces/{ws}", tags=["runs"])
 
@@ -53,6 +53,14 @@ router = APIRouter(prefix="/api/workspaces/{ws}", tags=["runs"])
 class ConversationIn(BaseModel):
     title: str = Field(default="", max_length=200)
     persona: str = Field(default="generalist", max_length=40)
+
+    @field_validator("persona")
+    @classmethod
+    def _known_persona(cls, value: str) -> str:
+        # Personas are configuration (ADR-0018): never free text that reaches a prompt.
+        if value not in PERSONA_DEFAULT_MODES:
+            raise ValueError(f"unknown persona; expected one of {sorted(PERSONA_DEFAULT_MODES)}")
+        return value
 
 
 class RunIn(BaseModel):
