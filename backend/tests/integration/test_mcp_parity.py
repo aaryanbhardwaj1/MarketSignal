@@ -1,0 +1,232 @@
+"""MCP Streamable HTTP parity (ADR-0006): the same logical calls through the in-process and the
+HTTP transports give equal results, equal audit rows (except ``transport``) and identical
+isolation, because both run the one ``ToolGovernor``.
+
+The HTTP side is a real loopback uvicorn server running the app ``build_mcp_app`` returns,
+mounted at ``/mcp`` with the session manager entered from the parent lifespan (spike 0001)."""
+
+from __future__ import annotations
+
+import asyncio
+import socket
+import time
+from collections.abc import AsyncIterator, Callable
+from contextlib import asynccontextmanager
+from typing import Any
+
+import httpx
+import pytest
+import uvicorn
+from fastapi import FastAPI
+
+from marketsignal.mcp.client import HttpToolTransport
+from marketsignal.mcp.server import build_mcp_app
+from marketsignal.tools.contracts import ToolCall, ToolResult
+from marketsignal.tools.inprocess import InProcessToolTransport
+from tests.integration.test_ingestion_api import harness  # noqa: F401 - fixture
+from tests.integration.test_tools_governance import World, world  # noqa: F401 - fixture
+
+pytestmark = pytest.mark.integration
+
+
+def _free_port() -> int:
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        port: int = s.getsockname()[1]
+        return port
+
+
+@pytest.fixture
+async def mcp_url(world: World) -> AsyncIterator[str]:  # noqa: F811
+    server, mcp_app = build_mcp_app(world.governor, world.settings)
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        async with server.session_manager.run():
+            yield
+
+    api = FastAPI(lifespan=lifespan)
+    api.mount("/mcp", mcp_app)
+    port = _free_port()
+    uv = uvicorn.Server(
+        uvicorn.Config(api, host="127.0.0.1", port=port, log_level="warning", lifespan="on")
+    )
+    task = asyncio.create_task(uv.serve())
+    for _ in range(250):
+        if uv.started:
+            break
+        await asyncio.sleep(0.02)
+    assert uv.started
+    yield f"http://127.0.0.1:{port}/mcp/"
+    uv.should_exit = True
+    await task
+
+
+Case = tuple[str, str, dict[str, Any], Callable[[World], str]]
+
+
+def _cases(w: World) -> list[Case]:
+    ok = w.token()
+    b = w.token(w.ws_b)
+    now = int(time.time())
+    return [
+        ("search", "search_evidence", {"query": "Gen Z fit frustration", "top_k": 5}, lambda _: ok),
+        ("keyword", "search_evidence_keyword", {"terms": ["RV-00412"]}, lambda _: ok),
+        (
+            "keyword-any",
+            "search_evidence_keyword",
+            {"terms": ["RV-00413", "Quorvex"], "match": "any"},
+            lambda _: ok,
+        ),
+        (
+            "get",
+            "get_evidence",
+            {"handles": ["nope", f"{w.ws_b.workspace_code}/MEMO@v1:B1"]},
+            lambda _: ok,
+        ),
+        ("list", "list_sources", {}, lambda _: ok),
+        ("list-b", "list_sources", {}, lambda _: b),
+        ("keyword-b", "search_evidence_keyword", {"terms": ["Quorvex"]}, lambda _: b),
+        (
+            "smuggled-ws",
+            "search_evidence",
+            {"query": "Quorvex", "workspace_id": str(w.ws_b.workspace_id)},
+            lambda _: ok,
+        ),
+        ("bad-top-k", "search_evidence", {"query": "fit", "top_k": 99}, lambda _: ok),
+        ("blank-term", "search_evidence_keyword", {"terms": ["  "]}, lambda _: ok),
+        ("denied", "get_evidence", {"handles": ["x"]}, lambda ww: ww.token(tools=["list_sources"])),
+        ("missing-token", "list_sources", {}, lambda _: ""),
+        ("expired", "list_sources", {}, lambda ww: ww.raw_token(exp=now - 120, iat=now - 180)),
+        ("wrong-aud", "list_sources", {}, lambda ww: ww.raw_token(aud="sse")),
+        (
+            "wrong-key",
+            "list_sources",
+            {},
+            lambda ww: ww.raw_token(key="test-only-forged-key-00000000000000000"),
+        ),
+        ("malformed", "list_sources", {}, lambda _: "not-a-jwt"),
+    ]
+
+
+def _view(r: ToolResult) -> tuple[Any, ...]:
+    return (
+        r.call_id,
+        r.name,
+        r.ok,
+        None if r.error is None else (r.error.code, r.error.message),
+        r.output,
+        r.observation,
+        r.truncated,
+        r.warnings,
+    )
+
+
+async def _run_all(transport: Any, w: World, base: int) -> list[ToolResult]:
+    out = []
+    for i, (label, name, args, token) in enumerate(_cases(w)):
+        call = ToolCall(label, name, args, step=2, call_index=base + i)
+        out.append(await transport.call(call, credential=token(w)))
+    return out
+
+
+def _strip(rows: list[dict[str, Any]], base: int) -> list[dict[str, Any]]:
+    return [
+        {**{k: v for k, v in r.items() if k != "transport"}, "call_index": r["call_index"] - base}
+        for r in rows
+    ]
+
+
+async def test_inprocess_and_http_are_equivalent(world: World, mcp_url: str) -> None:  # noqa: F811
+    local = await _run_all(InProcessToolTransport(world.governor), world, 0)
+    remote = await _run_all(HttpToolTransport(mcp_url), world, 100)
+
+    assert [_view(r) for r in remote] == [_view(r) for r in local]
+    assert all(r.transport == "http" for r in remote)
+    assert all(r.transport == "inprocess" for r in local)
+    codes = {r.call_id: (r.error.code if r.error else "OK") for r in local}
+    assert codes == {
+        "search": "OK",
+        "keyword": "OK",
+        "keyword-any": "OK",
+        "get": "OK",
+        "list": "OK",
+        "list-b": "OK",
+        "keyword-b": "OK",
+        "smuggled-ws": "VALIDATION_ERROR",
+        "bad-top-k": "VALIDATION_ERROR",
+        "blank-term": "VALIDATION_ERROR",
+        "denied": "POLICY_DENIED",
+        "missing-token": "UNAUTHENTICATED",
+        "expired": "UNAUTHENTICATED",
+        "wrong-aud": "UNAUTHENTICATED",
+        "wrong-key": "UNAUTHENTICATED",
+        "malformed": "UNAUTHENTICATED",
+    }
+    # isolation is identical: A's results never contain B's canary, B's never contain A's data
+    for r in [*local, *remote]:
+        if r.call_id in ("search", "keyword", "keyword-any", "list", "get"):
+            assert "Quorvex" not in r.observation
+    keyword_any = next(r for r in remote if r.call_id == "keyword-any")
+    assert keyword_any.output is not None
+    assert keyword_any.output["matches_by_source"] == {"RETURNS": 1}
+
+    for scope in (world.ws_a, world.ws_b):
+        rows = await world.audit(scope)
+        inproc = [r for r in rows if r["transport"] == "inprocess"]
+        http = [r for r in rows if r["transport"] == "http"]
+        assert inproc
+        assert _strip(http, 100) == _strip(inproc, 0)
+
+
+async def test_http_tool_listing_matches_inprocess_specs(world: World, mcp_url: str) -> None:  # noqa: F811
+    remote = await HttpToolTransport(mcp_url, list_credential=world.token()).list_tools()
+    local = await InProcessToolTransport(world.governor).list_tools()
+    assert remote == local
+
+
+async def test_http_revoked_run_matches_inprocess(world: World, mcp_url: str) -> None:  # noqa: F811
+    run_id = await world.start_run()
+    token = world.token(run_id=run_id)
+    http = HttpToolTransport(mcp_url)
+    assert (await http.call(ToolCall("a", "list_sources", {}), credential=token)).ok
+    await world.set_run_status(run_id, "completed")
+    revoked = await http.call(ToolCall("b", "list_sources", {}), credential=token)
+    local = await InProcessToolTransport(world.governor).call(
+        ToolCall("b", "list_sources", {}), credential=token
+    )
+    assert _view(revoked) == _view(local)
+    assert revoked.error is not None
+    assert revoked.error.code == "UNAUTHENTICATED"
+
+
+async def test_http_transport_failure_is_unavailable(world: World) -> None:  # noqa: F811
+    dead = HttpToolTransport(f"http://127.0.0.1:{_free_port()}/mcp/", timeout_s=2.0)
+    r = await dead.call(ToolCall("c", "list_sources", {}), credential=world.token())
+    assert r.error is not None
+    assert r.error.code == "UNAVAILABLE"
+    assert r.transport == "http"
+
+
+@pytest.mark.parametrize(
+    ("public", "client", "status"),
+    [
+        (False, "10.1.2.3", 403),
+        (False, "127.0.0.1", 401),
+        (True, "10.1.2.3", 401),
+    ],
+)
+async def test_loopback_guard(world: World, public: bool, client: str, status: int) -> None:  # noqa: F811
+    settings = world.settings.model_copy(update={"mcp_public": public})
+    server, app = build_mcp_app(world.governor, settings)
+    body = {"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}
+    headers = {"Accept": "application/json, text/event-stream", "Host": "127.0.0.1"}
+    async with (
+        server.session_manager.run(),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app, client=(client, 5555)),
+            base_url="http://127.0.0.1",
+        ) as http,
+    ):
+        response = await http.post("/", json=body, headers=headers)
+    assert response.status_code == status
