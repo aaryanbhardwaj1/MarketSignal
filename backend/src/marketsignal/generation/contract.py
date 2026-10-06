@@ -266,30 +266,42 @@ _SMALL_NUMBERS: Final[Mapping[str, int]] = MappingProxyType(
 )
 _CARDINAL: Final = "|".join(sorted(_SMALL_NUMBERS, key=len, reverse=True))
 _MAGNITUDE: Final = "hundred|thousand|million|billion|trillion"
+_DIGIT: Final = "|".join(_UNITS[:10])  # decimals after "point" ("one point two billion")
 _WORD_NUMBER_RE: Final = re.compile(
-    rf"\b(?P<words>(?:{_CARDINAL})(?:(?:[ \t]+and)?[ \t-]+(?:{_CARDINAL}|{_MAGNITUDE}))*)"
+    rf"\b(?P<words>(?:{_CARDINAL})"
+    rf"(?:(?:[ \t]+and)?[ \t-]+(?:point(?:[ \t]+(?:{_DIGIT}))+|{_CARDINAL}|{_MAGNITUDE}))*)"
     r"(?:[ \t]+(?P<pct>percent(?!age)|per[ \t]cent))?\b",
     re.IGNORECASE,
 )
 _RANGE_GAP_RE: Final = re.compile(r"(?:[ \t]*(?:to|and|or|[-\u2013\u2014])[ \t]*)?", re.IGNORECASE)
 _UNIT_WORD_RE: Final = re.compile(r"[ \t]*([A-Za-z]+)")
-_LABEL_RE: Final = re.compile(r"([A-Za-z][^:=;|\n]{0,40}?)[ \t]*[:=][ \t]*$")
+_LABEL_RE: Final = re.compile(r"(?<![A-Za-z0-9_])([A-Za-z][^:=;|\n]{0,40}?)[ \t]*[:=][ \t]*$")
 _PERCENT_CUE_RE: Final = re.compile(r"%|percent|pct|share|rate|margin|ratio|proportion", re.I)
-_FUNCTION_WORDS: Final = frozenset(
-    {
-        "a", "an", "and", "are", "as", "at", "by", "for", "from", "in", "is", "of", "on", "or",
-        "per", "than", "the", "to", "versus", "vs", "was", "were", "with",
-    }
-)  # fmt: skip
+# Only a known count/unit noun makes a figure "labelled" (non-percent): dataset rows render as
+# "col: value; ..." and flattened tables run cells together, so an arbitrary neighbouring word
+# or column name says nothing about the unit ("yoy_growth: 12.3", "23.5 24.1 Operating").
+_COUNT_NOUN_RE: Final = re.compile(
+    r"respondents?|people|persons?|users?|customers?|clients?|units?|stores?|employees?|staff"
+    r"|orders?|shoppers?|buyers?|consumers?|participants?|interviewees?|households?|companies"
+    r"|firms?|brands?|products?|items?|visits?|visitors?|sessions?|downloads?|installs?"
+    r"|transactions?|accounts?|members?|subscribers?|patients?|students?|votes?|sites?"
+    r"|locations?|outlets?|countries|markets?|times|years?|months?|weeks?|days?|hours?"
+    r"|x|bps?|pp|pts?",
+    re.IGNORECASE,
+)
+_COUNT_COLUMNS: Final = frozenset(
+    {"n", "count", "counts", "num", "number", "sample", "base", "population", "headcount"}
+    | {"qty", "quantity"}
+)
 
 
 @dataclass(frozen=True, slots=True)
 class NumberMention:
     """One numeric claim. ``mantissa`` is the number as written; ``value`` applies the scale.
 
-    ``labelled`` means the figure carries an explicit non-percent unit: a unit word or suffix
-    after it ("2,960 respondents", "340bps", "5x") or a ``label:`` before it whose label is
-    not percent-like ("Respondents: 2,960").
+    ``labelled`` means the figure carries an explicit non-percent unit: a unit suffix
+    ("340bps", "5x"), a following count noun ("2,960 respondents") or a count-type
+    ``column:`` label before it ("Respondents: 2,960", "n: 410").
     """
 
     text: str
@@ -322,13 +334,22 @@ def _glued(text: str, match: re.Match[str]) -> tuple[bool, bool]:
     return False, False
 
 
+def _count_column(label: str) -> bool:
+    """A count-type column name ("n", "respondents", "sample_size", "Number of stores")."""
+    if _PERCENT_CUE_RE.search(label):
+        return False
+    words = re.split(r"[^a-z0-9]+", label.lower())
+    return any(w in _COUNT_COLUMNS or _COUNT_NOUN_RE.fullmatch(w) for w in words)
+
+
 def _labelled(text: str, start: int, end: int) -> bool:
-    """True if the figure at ``text[start:end]`` carries an explicit non-percent unit."""
+    """True if the figure at ``text[start:end]`` carries an explicit count/unit (non-percent):
+    a following count noun ("2,960 respondents") or a count-type ``col:`` ("n: 410")."""
     after = _UNIT_WORD_RE.match(text, end)
-    if after is not None and after.group(1).lower() not in _FUNCTION_WORDS:
+    if after is not None and _COUNT_NOUN_RE.fullmatch(after.group(1)):
         return True
     label = _LABEL_RE.search(text, max(0, start - 48), start)
-    return label is not None and _PERCENT_CUE_RE.search(label.group(1)) is None
+    return label is not None and _count_column(label.group(1))
 
 
 _Span = tuple[int, int, NumberMention]
@@ -361,8 +382,11 @@ def _digit_mention(text: str, match: re.Match[str]) -> NumberMention | None:
 
 def _spelled_value(words: str) -> tuple[float, float]:
     """``(mantissa, scale)`` of a spelled-out cardinal ("nine hundred million" -> 900, 1e6)."""
+    tokens = re.findall(r"[a-z]+", words.lower())
+    if "point" in tokens:
+        return _spelled_decimal(tokens)
     total, current, last_scale = 0.0, 0.0, 1.0
-    for word in re.findall(r"[a-z]+", words.lower()):
+    for word in tokens:
         if word in _SMALL_NUMBERS:
             current += _SMALL_NUMBERS[word]
         elif word == "hundred":
@@ -373,6 +397,20 @@ def _spelled_value(words: str) -> tuple[float, float]:
     if total and not current:
         return total / last_scale, last_scale
     return total + current, 1.0
+
+
+def _spelled_decimal(tokens: list[str]) -> tuple[float, float]:
+    """Digits after "point", then magnitude words ("one point two billion" -> 1.2, 1e9)."""
+    cut = tokens.index("point")
+    whole, whole_scale = _spelled_value(" ".join(tokens[:cut]))
+    tail = tokens[cut + 1 :]
+    digits = "".join(str(_SMALL_NUMBERS[t]) for t in itertools.takewhile(_is_digit_word, tail))
+    scale = math.prod(100.0 if t == "hundred" else _SCALES.get(t, 1.0) for t in tail)
+    return float(f"{int(whole * whole_scale)}.{digits or 0}"), scale
+
+
+def _is_digit_word(word: str) -> bool:
+    return _SMALL_NUMBERS.get(word, 10) < 10
 
 
 def _spelled_spans(text: str) -> list[_Span]:

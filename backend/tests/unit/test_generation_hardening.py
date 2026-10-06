@@ -84,6 +84,14 @@ def test_only_cited_handles_reach_the_final_content(forged: str) -> None:
         ("USD 40", "$40", True),
         ("14%", "churn of 14 to 21 percent", True),
         ("27", "27%", True),
+        # dataset rows ("col: value; ...") and flattened tables keep units in the column name
+        ("12.3%", "region: EMEA; yoy_growth: 12.3; respondents: 410", True),
+        ("34%", "region: EMEA; agree: 34; n: 410", True),
+        ("24.1%", "Gross margin (%) 2024 2025\nGross margin 23.5 24.1 Operating margin", True),
+        ("410%", "region: EMEA; agree: 34; n: 410", False),
+        ("410%", "region: EMEA; sample_size: 410", False),
+        ("410%", "410 shoppers in EMEA", False),
+        ("1.2 billion", "$1.2 billion", True),
     ],
 )
 def test_faithfulness_requires_agreeing_units(claim: str, evidence: str, ok: bool) -> None:
@@ -118,6 +126,8 @@ def test_wrong_scale_claim_dropped_by_verifier() -> None:
         ("twenty-one percent", [("21", 21.0)]),
         ("two hundred and five thousand", [("205", 205e3)]),
         ("one of the top drivers", []),
+        ("one point two billion dollars", [("1.2", 1.2e9)]),
+        ("three point zero five percent", [("3.05", 3.05)]),
     ],
 )
 def test_glued_units_and_spelled_numbers_extracted(
@@ -225,3 +235,26 @@ def test_answer_digest_excludes_inference_units() -> None:
     }
     assert answer_digest(sections) == "Price led for 27% of buyers."
     assert answer_digest({ANSWER: "Guess [inference]. Fact [[" + H1 + "]]."}) == "Fact."
+
+
+@pytest.mark.parametrize(
+    ("claim", "evidence"),
+    [
+        (
+            "EMEA grew 12.3% year over year [E1].",
+            "region: EMEA; yoy_growth: 12.3; respondents: 410",
+        ),
+        ("34% of EMEA respondents agreed [E1].", "region: EMEA; agree: 34; n: 410"),
+        (
+            "Gross margin was 24.1% in 2025 [E1].",
+            "Gross margin (%) 2024 2025\nGross margin 23.5 24.1 Operating margin 12.0 13.2",
+        ),
+        ("Revenue was one point two billion dollars [E1].", "Revenue was $1.2 billion."),
+    ],
+)
+def test_percent_and_spelled_answers_from_rows_are_kept(claim: str, evidence: str) -> None:
+    pack = EvidencePack(items=(_item(1, H1, evidence),), tokens=20, truncated=False)
+    result = verify_answer(f"### Answer\n{claim}", pack, pack_truncated=False)
+    assert result.ok
+    assert result.report.numeric_violations == []
+    assert len(result.sections[ANSWER]) == 1
