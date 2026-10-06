@@ -11,6 +11,16 @@ field in the outcome (by contract).
 
 Pool order (``AgentOutcome.pool``): best fused rank first, then first step, then first-seen
 order (see ``agent/pool.py``).
+
+Fallback: whenever gathering ends with zero successful evidence calls (and so an empty pool),
+for any reason but cancellation, ``planner_unavailable`` and a ``time_limit`` that leaves no
+time before ``ctx.deadline`` (the whole gather's deadline), the outcome reports
+``no_successful_search`` (flag ``PLANNER_NO_TOOL_FALLBACK``, after the original bound's flag)
+so the executor runs the standard gather with whatever gather time is left.
+
+Per-turn work is bounded: at most the remaining tool budget of a turn's tool_use blocks is
+handled per call (progress events, trace entry); the rest are denied in one aggregated trace
+entry without per-call events. Every progress emit is bounded by the gather deadline.
 """
 
 from __future__ import annotations
@@ -28,6 +38,7 @@ from marketsignal.agent.pool import EvidencePool, PoolItem
 from marketsignal.agent.progress import (
     STATUS_PLANNING,
     STATUS_SEARCHING,
+    printable,
     tool_completed,
     tool_label,
     tool_started,
@@ -57,19 +68,26 @@ from marketsignal.config import Settings
 from marketsignal.db.scope import WorkspaceScope
 from marketsignal.providers.llm.base import AgentLLM, AgentLLMRequest, AgentTurn, ToolUse
 from marketsignal.telemetry.logging import get_logger
-from marketsignal.tools.contracts import ToolTransport
+from marketsignal.tools.contracts import TOOLS_TRANSPORT_FALLBACK, ToolTransport
 
 __all__ = ["AgentContext", "AgentOutcome", "PoolItem", "ResearchAgent"]
 
 log = get_logger(__name__)
 
-CHARS_PER_TOKEN = 4
+CHARS_PER_TOKEN = 4  # observation clipping (characters), as the tool layer clips
+# Context estimate for tool_result text added since the last request: UTF-8 bytes // 3. That is
+# >= 1 token per CJK character (3 bytes) and over-counts ASCII (~4 chars/token) by about a
+# third, so the next request never exceeds ``max_context_tokens`` by more than the estimate's
+# own error on the conservative side (chars // 4 under-counted non-Latin text up to 4x).
+BYTES_PER_TOKEN = 3
 LLM_GRACE_S = 0.5  # lets the provider raise its own timeout before the backstop fires
 EVIDENCE_TOOLS = frozenset({"search_evidence", "search_evidence_keyword", "get_evidence"})
 GONE = frozenset({"NOT_FOUND", "SOURCE_DELETED"})
-# Exits that mean "the model chose to stop": with zero successful searches they become
-# ``no_successful_search`` so the executor runs the deterministic standard gather instead.
-_FALLBACK_EXITS = frozenset({"end_turn", "finish_research", "llm_unavailable"})
+# Tool-result warnings that are reported once as run flags (e.g. the HTTP transport was
+# unreachable and the call was re-run in process, plan §27).
+RUN_FLAG_WARNINGS = (TOOLS_TRANSPORT_FALLBACK,)
+# Stops that never become ``no_successful_search`` (the executor already falls back for them).
+_NO_FALLBACK_REWRITE = frozenset({"planner_unavailable", "no_successful_search"})
 
 Emit = Callable[[str, dict[str, Any]], Awaitable[None]]
 
@@ -85,6 +103,7 @@ class AgentContext:
     credential: str  # capability token; never logged
     deadline: float  # time.monotonic() deadline for gathering
     emit: Emit  # progress sink -> SSE (status / tool_started / tool_completed only)
+    source_classes: tuple[str, ...] = ()  # the run's class filter, stated to the model
 
     def __repr__(self) -> str:  # keep the credential and question out of reprs/logs
         return f"AgentContext(run_id={self.run_id}, workspace={self.scope.workspace_code!r})"
@@ -155,6 +174,7 @@ class _GatherRun:
                 persona=ctx.persona,
                 conversation_summary=ctx.conversation_summary,
                 recent_questions=ctx.recent_questions,
+                source_classes=ctx.source_classes,
             )
         )
         self.steps = 0
@@ -170,6 +190,7 @@ class _GatherRun:
         self.sufficient: bool | None = None
         self.gaps: tuple[str, ...] = ()
         self.searching_announced = False
+        self.warning_flags: set[str] = set()
 
     def remaining(self) -> float:
         return self.deadline - self.clock()
@@ -185,13 +206,21 @@ class _GatherRun:
             remaining_s=self.remaining(),
         )
 
-    def fallback_or(self, reason: StopReason) -> StopReason:
-        if reason in _FALLBACK_EXITS and self.successful_searches == 0:
-            return "no_successful_search"
-        return reason
+    async def emit(self, event_type: str, payload: dict[str, Any]) -> None:
+        """A progress emit bounded by the gather deadline (a slow event write must not stretch
+        gathering); skipped once the deadline has passed. Other failures are the sink's to
+        handle (research_gather's emitter is best-effort); cancellation propagates."""
+        remaining = self.remaining()
+        if remaining <= 0:
+            return
+        try:
+            async with asyncio.timeout(remaining):
+                await self.ctx.emit(event_type, payload)
+        except TimeoutError:
+            log.warning("agent_emit_timeout", run_id=str(self.ctx.run_id), event_type=event_type)
 
     async def run(self) -> AgentOutcome:
-        await self.ctx.emit("status", dict(STATUS_PLANNING))
+        await self.emit("status", dict(STATUS_PLANNING))
         tools = await self.load_tools()
         if tools is None:
             self.sm.stop("planner_unavailable")
@@ -222,9 +251,7 @@ class _GatherRun:
             if self.steps == 1:
                 self.sm.stop("planner_unavailable")
             else:
-                self.sm.stop(
-                    "time_limit" if self.remaining() <= 0 else self.fallback_or("llm_unavailable")
-                )
+                self.sm.stop("time_limit" if self.remaining() <= 0 else "llm_unavailable")
             return
         self.transcript.append_assistant(turn.content)
         self.account(turn)
@@ -232,14 +259,14 @@ class _GatherRun:
             self.sm.stop("token_limit")  # a truncated turn's tool_use input is unreliable
             return
         if not turn.tool_uses:
-            self.sm.stop(self.fallback_or("end_turn"))  # any prose is discarded
+            self.sm.stop("end_turn")  # any prose is discarded
             return
         finish = [u for u in turn.tool_uses if u.name == FINISH_TOOL]
         if finish:
             self.sufficient, self.gaps = parse_finish(finish[0].input)
         uses = [u for u in turn.tool_uses if u.name != FINISH_TOOL]
         if not uses:
-            self.sm.stop(self.fallback_or("finish_research"))
+            self.sm.stop("finish_research")
             return
         planned = self.plan(uses)
         if planned is None:
@@ -250,10 +277,12 @@ class _GatherRun:
         self.sm.advance(AgentState.OBSERVE)
         blocks = self.observe(records)
         if finish:
-            self.sm.stop(self.fallback_or("finish_research"))
+            self.sm.stop("finish_research")
             return
         self.transcript.append_tool_results(blocks)
-        self.context_tokens += sum(len(b.content) for b in blocks) // CHARS_PER_TOKEN
+        self.context_tokens += (
+            sum(len(b.content.encode("utf-8")) for b in blocks) // BYTES_PER_TOKEN
+        )
 
     async def model_step(self, tools: tuple[dict[str, Any], ...]) -> AgentTurn | None:
         self.steps += 1
@@ -290,34 +319,35 @@ class _GatherRun:
 
     def plan(self, uses: list[ToolUse]) -> list[PlannedCall] | None:
         """Budget and repeat policy, decided before anything runs. ``None`` = stop
-        (some call is the 2nd repeat of an identical (tool, canonical args))."""
-        budget = self.bounds.max_tool_calls - self.tool_calls
+        (some call is the 2nd repeat of an identical (tool, canonical args)).
+
+        Only the first ``remaining budget`` blocks are considered (run or repeat-denied); any
+        further blocks are ``deny_budget`` without a repeat check, and get no per-call events."""
+        budget = max(self.bounds.max_tool_calls - self.tool_calls, 0)
+        overflow = [
+            PlannedCall(call=to_call(use, self.steps, index), decision="deny_budget")
+            for index, use in enumerate(uses[budget:], start=budget)
+        ]
         planned: list[PlannedCall] = []
-        for index, use in enumerate(uses):
+        for index, use in enumerate(uses[:budget]):
             key = canonical_call_key(use.name, use.input)
             self.call_counts[key] += 1
             count = self.call_counts[key]
-            decision: Decision
             if count >= self.bounds.repeat_stop_at:
                 return None
-            if count > 1:
-                decision = "deny_repeat"
-            elif budget > 0:
-                decision, budget = "run", budget - 1
-            else:
-                decision = "deny_budget"
+            decision: Decision = "deny_repeat" if count > 1 else "run"
             planned.append(PlannedCall(call=to_call(use, self.steps, index), decision=decision))
-        return planned
+        return planned + overflow
 
     async def run_calls(self, planned: list[PlannedCall]) -> list[CallRecord]:
         if not self.searching_announced:
             self.searching_announced = True
-            await self.ctx.emit("status", dict(STATUS_SEARCHING))
+            await self.emit("status", dict(STATUS_SEARCHING))
         for p in planned:
+            if p.decision == "deny_budget":
+                continue  # aggregated: no per-call events
             c = p.call
-            await self.ctx.emit(
-                "tool_started", tool_started(c.step, c.call_index, c.name, c.arguments)
-            )
+            await self.emit("tool_started", tool_started(c.step, c.call_index, c.name, c.arguments))
         records = await execute(
             self.transport,
             planned,
@@ -325,8 +355,10 @@ class _GatherRun:
             timeout_s=lambda: min(self.bounds.tool_timeout_s, self.remaining()),
         )
         for r in records:
+            if r.decision == "deny_budget":
+                continue
             c = r.call
-            await self.ctx.emit(
+            await self.emit(
                 "tool_completed",
                 tool_completed(
                     c.step,
@@ -346,6 +378,7 @@ class _GatherRun:
         obs_max_chars = self.bounds.obs_max_tokens * CHARS_PER_TOKEN
         for r in records:
             result = r.result
+            self.warning_flags.update(w for w in result.warnings if w in RUN_FLAG_WARNINGS)
             if r.executed:
                 self.tool_calls += 1
                 if result.ok:
@@ -354,7 +387,8 @@ class _GatherRun:
                 else:
                     self.tool_errors += 1
                     self.consecutive_errors += 1
-            self.trace.append(_trace_entry(r))
+            if r.decision != "deny_budget":
+                self.trace.append(_trace_entry(r))
             if result.ok:
                 content = wrap_observation(
                     tool_label(result.name), result.observation[:obs_max_chars]
@@ -364,6 +398,9 @@ class _GatherRun:
                 message = result.error.message if result.error else "Tool call failed."
                 content = error_observation(code, message[:obs_max_chars])
             blocks.append(ToolResultBlock(r.call.call_id, content, is_error=not result.ok))
+        overflow = [r for r in records if r.decision == "deny_budget"]
+        if overflow:
+            self.trace.append(_overflow_entry(overflow))
         return blocks
 
     def merge(self, record: CallRecord) -> None:
@@ -382,7 +419,16 @@ class _GatherRun:
     def outcome(self) -> AgentOutcome:
         reason = self.sm.stop_reason
         assert reason is not None  # the loop only exits through DONE
-        flag = STOP_FLAGS.get(reason)
+        flags = [STOP_FLAGS[reason]] if reason in STOP_FLAGS else []
+        if (
+            reason not in _NO_FALLBACK_REWRITE
+            and self.successful_searches == 0
+            and len(self.pool) == 0
+            and not (reason == "time_limit" and self.ctx.deadline - self.clock() <= 0)
+        ):  # empty-handed for any reason: let the executor run the standard gather
+            reason = "no_successful_search"
+            flags.append(STOP_FLAGS[reason])
+        flags.extend(w for w in RUN_FLAG_WARNINGS if w in self.warning_flags)
         log.info(
             "agent_gather_done",
             run_id=str(self.ctx.run_id),
@@ -395,7 +441,7 @@ class _GatherRun:
         return AgentOutcome(
             pool=self.pool.items(),
             stop_reason=reason,
-            flags=(flag,) if flag else (),
+            flags=tuple(flags),
             steps=self.steps,
             tool_calls=self.tool_calls,
             tool_errors=self.tool_errors,
@@ -434,6 +480,22 @@ def _trace_entry(record: CallRecord) -> dict[str, Any]:
         "args": validated_args(call.name, call.arguments) or {},
         "status": record.status,
         "error_code": result.error.code if result.error else None,
-        "handles": list(result.handles()),
+        "handles": [printable(h) for h in result.handles()],
         "duration_ms": round(result.duration_ms),
+    }
+
+
+def _overflow_entry(records: list[CallRecord]) -> dict[str, Any]:
+    """One trace entry for a turn's tool_use blocks beyond the remaining tool budget."""
+    first = records[0].call
+    return {
+        "step": first.step,
+        "call_index": first.call_index,
+        "tool": "unknown",
+        "args": {},
+        "status": "denied",
+        "error_code": "POLICY_DENIED",
+        "handles": [],
+        "duration_ms": 0,
+        "denied_calls": len(records),
     }

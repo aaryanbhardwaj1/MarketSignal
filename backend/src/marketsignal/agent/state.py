@@ -22,6 +22,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, Literal
 
+from marketsignal.agent.progress import validated_args
 from marketsignal.config import Settings
 
 StopReason = Literal[
@@ -171,6 +172,54 @@ def check_bounds(progress: Progress, bounds: AgentBounds) -> StopReason | None:
     return None
 
 
+# Tool defaults the implementations apply when an argument is omitted (tools/impl/*): filled in
+# so an explicit default and an omitted one produce the same repeat key.
+_TOOL_DEFAULTS: dict[str, dict[str, Any]] = {
+    "search_evidence": {"top_k": 8},
+    "search_evidence_keyword": {"match": "all", "limit": 10},
+}
+_SET_LISTS = ("source_classes", "source_codes", "handles", "terms")
+
+
+def _flat(value: Any) -> str:
+    return " ".join(str(value).split())
+
+
+def canonical_args(name: str, arguments: dict[str, Any]) -> dict[str, Any] | None:
+    """The arguments as the tool will see them, or ``None`` when they do not validate.
+
+    Contract-validated (whitespace stripped, nulls dropped), tool defaults filled, internal
+    whitespace collapsed, set-like lists sorted and de-duplicated (empty lists dropped, which the
+    tools treat as "no filter"). Keyword terms are case-folded because keyword matching is
+    case-insensitive; a ``phrase`` match keeps its term order.
+    """
+    args = validated_args(name, arguments)
+    if args is None:
+        return None
+    out: dict[str, Any] = {**_TOOL_DEFAULTS.get(name, {}), **args}
+    if "query" in out:
+        out["query"] = _flat(out["query"])
+    for key in _SET_LISTS:
+        if key not in out:
+            continue
+        values = [_flat(v) for v in out[key]]
+        if key == "terms":
+            values = [v.casefold() for v in values]
+        if key == "terms" and out.get("match") == "phrase":
+            values = list(dict.fromkeys(values))
+        else:
+            values = sorted(set(values))
+        if values:
+            out[key] = values
+        else:
+            del out[key]
+    return out
+
+
 def canonical_call_key(name: str, arguments: dict[str, Any]) -> str:
-    """(tool, canonical args) for repeated-call detection: sorted keys, no whitespace."""
-    return name + ":" + json.dumps(arguments, sort_keys=True, separators=(",", ":"), default=str)
+    """(tool, canonical args) for repeated-call detection. Built from :func:`canonical_args`, so
+    whitespace, explicit defaults, list order and keyword case do not make a new key; arguments
+    that fail validation fall back to their raw JSON (sorted keys)."""
+    canonical = canonical_args(name, arguments)
+    payload = arguments if canonical is None else canonical
+    return name + ":" + json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)

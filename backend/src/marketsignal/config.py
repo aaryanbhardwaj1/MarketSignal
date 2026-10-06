@@ -199,6 +199,8 @@ class Settings(BaseSettings):
     obs_max_tokens: int = Field(default=1_000, ge=100)  # model-visible observation per call
     tools_transport: str = "inprocess"  # inprocess | http (Streamable HTTP over loopback)
     mcp_public: bool = False  # /mcp accepts loopback clients only unless true
+    # Host header allowlist when mcp_public (exact "host[:port]" or "name:*"); empty = loopback.
+    mcp_allowed_hosts: list[str] = Field(default_factory=list)
     mcp_base_url: str = "http://127.0.0.1:8000/mcp"
     # Dedicated HS256 key for run-scoped capability tokens (aud=mcp). Dev default refused in prod.
     mcp_token_key: SecretStr = SecretStr("dev-only-insecure-mcp-capability-key-00001")

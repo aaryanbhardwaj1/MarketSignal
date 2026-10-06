@@ -323,7 +323,12 @@ class StandardRunExecutor:
             ranked = research.ranked
             if research.fallback:  # plan §19: no plan or no successful search → standard gather
                 ranked = await self._standard_gather(
-                    req, writer, state, max_conf, step=research.outcome.steps + 1
+                    req,
+                    writer,
+                    state,
+                    max_conf,
+                    step=research.outcome.steps + 1,
+                    deadline=research.gather_deadline,  # the time left, not a fresh budget
                 )
         else:
             if req.mode == "research":
@@ -445,9 +450,13 @@ class StandardRunExecutor:
         max_conf: Confidentiality,
         *,
         step: int,
+        deadline: float | None = None,
     ) -> list[ParentCandidate]:
         """The Phase 3 standard gather (production hybrid RRF), unchanged; also the research
-        fallback."""
+        fallback. ``deadline`` (a ``time.monotonic()`` instant) is the research run's single
+        gather deadline: the fallback gets only the time left before it, and when none is left
+        it reports RETRIEVAL_TIMEOUT (tool_failure) without starting a search that cannot
+        finish. ``None``: a fresh ``run_gather_budget_s`` (standard mode)."""
         settings = self._settings
         # 1. Retrieval (the production default: hybrid RRF).
         await writer.emit("status", {"phase": "searching", "message": STATUS["searching"]})
@@ -457,8 +466,11 @@ class StandardRunExecutor:
         )
         t0 = time.monotonic()
         filters = RetrievalFilters.of(req.source_classes, (), max_conf)
+        budget_s = settings.run_gather_budget_s if deadline is None else deadline - time.monotonic()
         try:
-            async with asyncio.timeout(settings.run_gather_budget_s):
+            if budget_s <= 0:
+                raise TimeoutError
+            async with asyncio.timeout(budget_s):
                 result = await self._retrieval.search(
                     self._factory, req.scope, req.question, filters, top_k=settings.pack_candidates
                 )

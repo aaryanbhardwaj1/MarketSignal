@@ -95,9 +95,11 @@ async def test_tool_call_limit_denies_excess_parallel_calls_without_running_them
     assert len(transport.calls) == 3
     assert out.tool_calls == 3
     assert llm.calls == 1
-    assert [t["status"] for t in out.trace] == ["ok", "ok", "ok", "denied", "denied"]
-    assert [t["error_code"] for t in out.trace][3:] == ["POLICY_DENIED", "POLICY_DENIED"]
-    assert [e["status"] for e in sink.named("tool_completed")][3:] == ["denied", "denied"]
+    # excess blocks are denied in one aggregated trace entry, without per-call events (H-10)
+    assert [t["status"] for t in out.trace] == ["ok", "ok", "ok", "denied"]
+    assert out.trace[3]["error_code"] == "POLICY_DENIED"
+    assert out.trace[3]["denied_calls"] == 2
+    assert [e["status"] for e in sink.named("tool_completed")] == ["ok", "ok", "ok"]
 
 
 async def test_tool_limit_denials_are_sent_to_the_model_when_budget_runs_out_mid_run() -> None:
@@ -128,7 +130,9 @@ async def test_max_tokens_stop_reason_stops_without_running_truncated_calls() ->
     llm = FakeAgentLLM([turn(search("a", "q"), stop_reason="max_tokens")])
     agent, transport = make_agent(llm)
     out = await agent.gather(make_ctx())
-    assert out.stop_reason == "token_limit"
+    # nothing was searched, so the executor's standard gather runs (finding H-8)
+    assert out.stop_reason == "no_successful_search"
+    assert out.flags == ("AGENT_TOKEN_BUDGET_EXHAUSTED", "PLANNER_NO_TOOL_FALLBACK")
     assert transport.calls == []
 
 
@@ -195,7 +199,8 @@ async def test_repeat_detection_uses_canonical_argument_order() -> None:
     c = tool_use_block("c", "search_evidence", {"top_k": 3, "query": "fit"})
     agent, transport = make_agent(FakeAgentLLM([turn(a, b, c)]))
     out = await agent.gather(make_ctx())
-    assert out.stop_reason == "repeat_call"
+    assert out.stop_reason == "no_successful_search"  # empty-handed: fallback (H-8)
+    assert out.flags == ("AGENT_REPEAT_CALL_STOPPED", "PLANNER_NO_TOOL_FALLBACK")
     assert transport.calls == []
 
 
@@ -205,8 +210,8 @@ async def test_consecutive_tool_errors_open_the_circuit() -> None:
         llm, FakeTransport(handler=lambda c: err(c)), max_consecutive_tool_errors=3
     )
     out = await agent.gather(make_ctx())
-    assert out.stop_reason == "tool_errors"
-    assert out.flags == ("TOOL_CIRCUIT_OPEN",)
+    assert out.stop_reason == "no_successful_search"  # empty-handed: fallback (H-8)
+    assert out.flags == ("TOOL_CIRCUIT_OPEN", "PLANNER_NO_TOOL_FALLBACK")
     assert llm.calls == 3
     assert out.tool_errors == 3
     assert out.pool == ()
@@ -270,7 +275,8 @@ async def test_not_found_tool_errors_count_toward_the_circuit() -> None:
         llm, FakeTransport(handler=lambda c: err(c, "NOT_FOUND")), max_consecutive_tool_errors=2
     )
     out = await agent.gather(make_ctx())
-    assert out.stop_reason == "tool_errors"
+    assert out.stop_reason == "no_successful_search"
+    assert out.flags[0] == "TOOL_CIRCUIT_OPEN"
 
 
 async def test_first_llm_failure_is_planner_unavailable() -> None:

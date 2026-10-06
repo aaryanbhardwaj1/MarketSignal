@@ -142,6 +142,7 @@ LEFT JOIN LATERAL (
     ORDER BY c.ordinal LIMIT 1
 ) f ON true
 WHERE s.deleted_at IS NULL AND v.status <> 'purged'
+  AND (cardinality(CAST(:classes AS text[])) = 0 OR v.source_class = ANY(CAST(:classes AS text[])))
 """
 
 
@@ -153,11 +154,17 @@ def _uuid_or_none(value: str) -> uuid.UUID | None:
 
 
 async def pool_to_candidates(
-    factory: SessionFactory, scope: WorkspaceScope, pool: Sequence[PoolItem]
+    factory: SessionFactory,
+    scope: WorkspaceScope,
+    pool: Sequence[PoolItem],
+    *,
+    source_classes: Sequence[str] = (),
 ) -> list[ParentCandidate]:
     """Resolve pooled handles to ranked :class:`ParentCandidate` s for ``build_pack``.
 
-    Keeps pool order (ranks 1..n). Drops foreign, unknown, deleted and purged handles. The
+    Keeps pool order (ranks 1..n). Drops foreign, unknown, deleted and purged handles, and,
+    when ``source_classes`` is non-empty (the run's class filter), handles of any other class
+    (enforced here from the database's class, whatever the tools returned). The
     anchor is the tool-reported child if it still belongs to that parent, otherwise the
     parent's first child; spans always come from the database.
     """
@@ -179,6 +186,7 @@ async def pool_to_candidates(
                     "ws": scope.workspace_id,
                     "handles": [i.handle for i in wanted],
                     "children": [_uuid_or_none(i.anchor_child_id) for i in wanted],
+                    "classes": sorted({str(c) for c in source_classes}),
                 },
             )
         ).all()

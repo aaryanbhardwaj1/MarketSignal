@@ -108,7 +108,7 @@ async def execute(
         if p.decision == "run":
             result = tasks[i].result()
         else:
-            message = BUDGET_DENIED if p.decision == "deny_budget" else REPEAT_DENIED
+            message = REPEAT_DENIED if p.decision == "deny_repeat" else BUDGET_DENIED
             result = failed(p.call, "POLICY_DENIED", message)
         records.append(CallRecord(call=p.call, decision=p.decision, result=result))
     return records

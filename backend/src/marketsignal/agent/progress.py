@@ -33,8 +33,28 @@ def tool_label(name: str) -> str:
     return name if name in TOOL_NAMES else "unknown"
 
 
+def printable(text: str) -> str:
+    """``text`` with every non-printable character (controls incl. NUL, format characters such
+    as zero-width spaces, lone surrogates, private-use/unassigned code points) replaced by a
+    space. A NUL or lone surrogate cannot be stored in jsonb (it would fail the event write and
+    echo the text into database logs), so model text passes through here before it reaches a
+    progress event, the agent trace or a log."""
+    return "".join(c if c.isprintable() else " " for c in str(text))
+
+
+def scrub(value: Any) -> Any:
+    """:func:`printable` applied to every string (keys included) in a JSON-like value."""
+    if isinstance(value, str):
+        return printable(value)
+    if isinstance(value, dict):
+        return {printable(str(k)): scrub(v) for k, v in value.items()}
+    if isinstance(value, list | tuple):
+        return [scrub(v) for v in value]
+    return value
+
+
 def quote(text: str) -> str:
-    flat = " ".join(str(text).replace('"', "'").split())
+    flat = " ".join(printable(text).replace('"', "'").split())
     if len(flat) > QUOTE_MAX_CHARS:
         flat = flat[: QUOTE_MAX_CHARS - 1].rstrip() + "…"
     return f'"{flat}"'
@@ -48,14 +68,16 @@ def _classes(values: list[Any] | None) -> str:
 
 
 def validated_args(name: str, arguments: dict[str, Any]) -> dict[str, Any] | None:
-    """The arguments after contract validation (JSON-dumped, nulls dropped), or ``None``."""
+    """The arguments after contract validation (JSON-dumped, nulls dropped, non-printable
+    characters replaced by :func:`scrub`), or ``None``."""
     model = INPUT_MODELS.get(name)
     if model is None:
         return None
     try:
-        return model.model_validate(arguments).model_dump(mode="json", exclude_none=True)
+        dumped = model.model_validate(arguments).model_dump(mode="json", exclude_none=True)
     except ValidationError:
         return None
+    return dict(scrub(dumped))
 
 
 def summarize(name: str, arguments: dict[str, Any]) -> str:

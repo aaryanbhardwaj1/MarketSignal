@@ -35,6 +35,7 @@ from marketsignal.runs.executor import StandardRunExecutor
 from marketsignal.runs.reaper import live_run_ids, orphan_after_s, reap_interrupted_runs
 from marketsignal.telemetry.logging import configure_logging, get_logger
 from marketsignal.tools.contracts import ToolTransport
+from marketsignal.tools.fallback import FallbackToolTransport
 from marketsignal.tools.governance import ToolGovernor
 from marketsignal.tools.inprocess import InProcessToolTransport
 
@@ -115,26 +116,40 @@ def _lazy_llm(settings: Settings) -> Callable[[], LLMProvider]:
 def _agent_llm(app: FastAPI, settings: Settings) -> Callable[[], AgentLLM]:
     """The research agent's tool-use model: the synthesis provider when it supports agent
     steps (Anthropic), else a stand-in whose every step is "unavailable" (research then falls
-    back to the standard gather, PLANNER_UNAVAILABLE_FALLBACK)."""
+    back to the standard gather, PLANNER_UNAVAILABLE_FALLBACK). A provider that cannot be built
+    (e.g. no API key) gets the same stand-in, so research degrades like standard mode instead of
+    failing the run; only the exception type is logged."""
 
     def get() -> AgentLLM:
-        provider = app.state.llm_provider()
-        if callable(getattr(provider, "step", None)):  # e.g. AnthropicProvider
-            return cast(AgentLLM, provider)
         from marketsignal.providers.llm.base import LLMUnavailableError
         from marketsignal.providers.llm.fake import FakeAgentLLM, ScriptedTurn
 
-        down = LLMUnavailableError("no tool-use model configured")
-        return FakeAgentLLM(lambda _request, _index: ScriptedTurn(content=(), error=down))
+        def unavailable(reason: str) -> AgentLLM:
+            down = LLMUnavailableError(reason)
+            return FakeAgentLLM(lambda _request, _index: ScriptedTurn(content=(), error=down))
+
+        try:
+            provider = app.state.llm_provider()
+        except Exception as exc:
+            log.warning("agent_llm_provider_unavailable", error=type(exc).__name__)
+            return unavailable("tool-use model could not be configured")
+        if callable(getattr(provider, "step", None)):  # e.g. AnthropicProvider
+            return cast(AgentLLM, provider)
+        return unavailable("no tool-use model configured")
 
     return get
 
 
 def _tool_transport(app: FastAPI, settings: Settings) -> ToolTransport:
     """In-process by default; Streamable HTTP over loopback when ``tools_transport=http``.
-    Both run the same governed registry (parity is tested)."""
+    Both run the same governed registry (parity is tested). HTTP is wrapped so a call whose
+    transport failed (server never reached) is re-run in process with the same credential and
+    flagged TOOLS_TRANSPORT_FALLBACK (plan §27); governor results are never retried."""
     if settings.tools_transport == "http":
-        return HttpToolTransport(settings.mcp_base_url)
+        return FallbackToolTransport(
+            primary=HttpToolTransport(settings.mcp_base_url),
+            fallback=InProcessToolTransport(app.state.tool_governor),
+        )
     return InProcessToolTransport(app.state.tool_governor)
 
 
@@ -217,7 +232,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             settings=settings,
             retrieval=app.state.retrieval_service,
         )
-        mcp_server, mcp_asgi = build_mcp_app(app.state.tool_governor, settings)
+        mcp_server, mcp_asgi = build_mcp_app(
+            app.state.tool_governor, settings, allowed_hosts=settings.mcp_allowed_hosts or None
+        )
         mcp_task = await _start_mcp(mcp_server, mcp_stop)
         app.state.mcp_asgi = mcp_asgi
         log.info("startup_complete", env=settings.env)

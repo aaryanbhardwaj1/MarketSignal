@@ -200,3 +200,159 @@ async def test_research_agent_failure_mid_run_still_answers_from_the_pool(
     assert "AGENT_LLM_UNAVAILABLE" in done["flags"]
     assert "PLANNER_UNAVAILABLE_FALLBACK" not in done["flags"]
     assert "final" in _types(events)
+
+
+# ------------------------------------------------------------- review hardening (sec-H)
+
+
+def _first_user_message(agent_llm: FakeAgentLLM) -> str:
+    return str(agent_llm.requests[0].messages[0]["content"])
+
+
+async def test_research_honours_the_runs_source_classes(harness: Harness) -> None:
+    """H-0/H-19: a run scoped to ['customer'] never packs or cites another class, even when the
+    agent asks the tools for other classes; the agent is told the scope."""
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    agent_llm = _install_agent(
+        harness,
+        [
+            ScriptedTurn(
+                content=(
+                    tool_use_block("c1", "search_evidence", {"query": "fit inconsistency"}),
+                    tool_use_block(
+                        "c2",
+                        "search_evidence",
+                        {"query": "fit inconsistency buyers", "source_classes": ["market"]},
+                    ),
+                )
+            ),
+            ScriptedTurn(
+                content=(tool_use_block("f", "finish_research", {"sufficient": True, "gaps": []}),)
+            ),
+        ],
+    )
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT, code="MEMO")  # customer (the harness default)
+    await _seed(harness, ws, FACT, OTHER, code="MKT", source_class="market")
+    _, run = await _ask(
+        harness, ws, "fit inconsistency share", mode="research", source_classes=["customer"]
+    )
+    events = await _stream(harness, run["stream_url"])
+    assert "<source_scope>customer</source_scope>" in _first_user_message(agent_llm)
+    stored = (await harness.client.get(f"/api/workspaces/{ws}/runs/{run['run_id']}")).json()
+    assert stored["pack_handles"]
+    assert all(h.startswith(f"{ws}/MEMO@") for h in stored["pack_handles"])
+    assert "MKT" not in str([e["data"] for e in events if e["event"] == "evidence"])
+    final = next(e["data"] for e in events if e["event"] == "final")
+    assert all(c["handle"].startswith(f"{ws}/MEMO@") for c in final["citations"])
+
+
+async def test_research_fallback_gets_only_the_remaining_gather_time(harness: Harness) -> None:
+    """H-7: one gather deadline for the whole run. A planner that hangs past it leaves the
+    standard fallback no time: RETRIEVAL_TIMEOUT, not a fresh budget and a run timeout."""
+    import time
+
+    harness.settings.run_gather_budget_s = 1.0
+    harness.settings.agent_gather_budget_s = 1.0
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    _install_agent(harness, [ScriptedTurn(content=(), delay_s=5.0)])
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT)
+    t0 = time.monotonic()
+    _, run = await _ask(harness, ws, "fit inconsistency share", mode="research")
+    events = await _stream(harness, run["stream_url"])
+    done = events[-1]["data"]
+    assert "PLANNER_UNAVAILABLE_FALLBACK" in done["flags"]
+    assert "RETRIEVAL_TIMEOUT" in done["flags"]
+    assert done["termination_state"] != "timeout"
+    assert time.monotonic() - t0 < 10
+
+
+async def test_research_empty_handed_bound_stop_runs_the_standard_gather(
+    harness: Harness,
+) -> None:
+    """H-8: the agent stops on a bound (repeat) without one successful search; the standard
+    gather still answers, and both flags are reported."""
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    _install_agent(
+        harness,
+        [ScriptedTurn(content=(tool_use_block(f"l{i}", "list_sources", {}),)) for i in range(3)],
+    )
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT)
+    _, run = await _ask(harness, ws, "fit inconsistency share", mode="research")
+    events = await _stream(harness, run["stream_url"])
+    done = events[-1]["data"]
+    assert "AGENT_REPEAT_CALL_STOPPED" in done["flags"]
+    assert "PLANNER_NO_TOOL_FALLBACK" in done["flags"]
+    final = next(e["data"] for e in events if e["event"] == "final")
+    assert final["citations"]
+
+
+async def test_research_with_an_unbuildable_provider_falls_back(harness: Harness) -> None:
+    """H-20: provider construction fails (e.g. no key): research degrades to the standard
+    gather (PLANNER_UNAVAILABLE_FALLBACK) instead of failing the run."""
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    app = harness.client._transport.app  # type: ignore[attr-defined]
+
+    def broken() -> Any:
+        raise ValueError("provider key missing (synthetic)")
+
+    app.state.llm_provider = broken
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT)
+    _, run = await _ask(harness, ws, "fit inconsistency share", mode="research")
+    events = await _stream(harness, run["stream_url"])
+    done = events[-1]["data"]
+    assert "PLANNER_UNAVAILABLE_FALLBACK" in done["flags"]
+    assert done["termination_state"] != "tool_failure"
+    assert "evidence" in _types(events)
+
+
+async def test_agent_record_written_after_a_purge_drops_the_trace(harness: Harness) -> None:
+    """Finding 18 (late write): a purge of a source the agent's tools returned, landing while
+    the agent is still gathering, leaves a stored agent record without the per-call trace."""
+    from marketsignal.providers.llm.base import AgentLLMRequest, AgentTurn
+    from tests.integration.test_runs_purge import _purge
+
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT)
+    inner = FakeAgentLLM(_search_then_finish())
+
+    class PurgeBeforeStep2:
+        model_id = "fake-agent-llm"
+
+        async def step(self, request: AgentLLMRequest) -> AgentTurn:
+            if len(inner.requests) == 1:  # the search ran and returned MEMO handles
+                await _purge(harness, ws, "MEMO")
+            return await inner.step(request)
+
+    app = harness.client._transport.app  # type: ignore[attr-defined]
+    app.state.agent_llm_provider = lambda: PurgeBeforeStep2()
+    _, run = await _ask(harness, ws, "fit inconsistency share", mode="research")
+    await _stream(harness, run["stream_url"])
+    agent = (await harness.client.get(f"/api/workspaces/{ws}/runs/{run['run_id']}")).json()["agent"]
+    assert agent["trace_redacted"] is True
+    assert "trace" not in agent
+    assert agent["tool_calls"] == 2
+    assert agent["stop_reason"] == "finish_research"
+
+
+async def test_unreachable_mcp_endpoint_still_answers(harness: Harness) -> None:
+    """H-21: tools_transport=http with nothing listening must not turn research into a
+    TOOL_CIRCUIT_OPEN abstention: calls are re-run in process, flagged TOOLS_TRANSPORT_FALLBACK
+    once per run."""
+    harness.settings.tools_transport = "http"
+    harness.settings.mcp_base_url = "http://127.0.0.1:9"  # discard port: nothing listens
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    _install_agent(harness, _search_then_finish())
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT)
+    _, run = await _ask(harness, ws, "fit inconsistency share", mode="research")
+    events = await _stream(harness, run["stream_url"])
+    done = events[-1]["data"]
+    assert "TOOL_CIRCUIT_OPEN" not in done["flags"]
+    assert done["flags"].count("TOOLS_TRANSPORT_FALLBACK") == 1
+    final = next(e["data"] for e in events if e["event"] == "final")
+    assert final["citations"]

@@ -109,3 +109,26 @@ async def test_pool_to_candidates_resolves_scoped_and_drops_purged_and_foreign(
     after = await pool_to_candidates(factory, scope, pool)
     assert [c.handle for c in after] == [notes[0]["handle"]]
     assert await pool_to_candidates(factory, scope, ()) == []
+
+
+async def test_pool_to_candidates_enforces_the_runs_source_classes(
+    harness: Harness, owner_engine: AsyncEngine
+) -> None:
+    """H-0/H-19: with a class filter, handles of other classes are dropped (the database's
+    class decides, not what the tool reported)."""
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, "MEMO", "Fit runs small for Gen Z buyers.")
+    body = b"# Market\n\n## Part 0\n\nCompetitor sizing guide is clearer.\n"
+    response = await harness.upload(ws, "mkt.md", body, source_code="MKT", source_class="market")
+    assert response.status_code in (200, 202), response.text
+    await harness.drain()
+    ws_id, parents = await _parents(owner_engine, ws)
+    memo = next(p for p in parents if p["source_code"] == "MEMO")
+    mkt = next(p for p in parents if p["source_code"] == "MKT")
+    factory = create_session_factory(create_engine(harness.settings))
+    scope = WorkspaceScope(workspace_id=ws_id, workspace_code=ws)
+    pool = (_item(mkt["handle"], None, 1), _item(memo["handle"], None, 2))
+    scoped = await pool_to_candidates(factory, scope, pool, source_classes=("customer",))
+    assert [c.handle for c in scoped] == [memo["handle"]]
+    both = await pool_to_candidates(factory, scope, pool, source_classes=())
+    assert [c.handle for c in both] == [mkt["handle"], memo["handle"]]
