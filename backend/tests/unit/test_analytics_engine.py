@@ -455,8 +455,9 @@ def test_filter_rows_order_handles_and_limit() -> None:
     )
     c = engine.filter_rows(plan, ROWS, deadline=None)
     assert [r.group["id"] for r in c.rows] == ["e", "a", "h"]  # 10, 9 (row 1), 9 (row 8)
-    assert c.rows[0].group["@handle"] == "WS/SURV@v1:R5"
-    assert c.rows[0].group["@row"] == 5
+    assert c.rows[0].handle == "WS/SURV@v1:R5"
+    assert c.rows[0].row_number == 5
+    assert set(c.rows[0].group) == {"id", "nps"}
     assert c.rows_matched == 7
 
 

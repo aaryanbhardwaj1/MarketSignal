@@ -84,9 +84,10 @@ def _dataset(d: dict[str, Any]) -> list[str]:
     cols = []
     for c in d.get("columns") or []:
         levels = " | ".join(_one_line(v) for v in c["levels"])
+        scale = f' scale="{_attr(c["scale"])}"' if c.get("scale") else ""
         cols.append(
             f'<column name="{_attr(_one_line(c["name"]))}" type="{_attr(c["type"])}" '
-            f'unit="{_attr(c["unit"])}" non_empty="{_attr(c["non_empty"])}">'
+            f'unit="{_attr(c["unit"])}"{scale} non_empty="{_attr(c["non_empty"])}">'
             f"{_body(('levels: ' + levels) if levels else '')}</column>"
         )
     return [head, *cols]
@@ -98,8 +99,10 @@ def _metric(m: dict[str, Any]) -> str:
         if m.get("numerator") is not None
         else f"n={m['denominator']}"
     )
+    unit = "USD" if m["unit"] == "currency_usd" else m["unit"]
+    scaled = f"{m['scale']} {unit}" if m.get("scale") else unit  # "15.1 billion USD"
     return (
-        f"{_one_line(m['key'])} = {_scalar(m['value'])} {m['unit']} "
+        f"{_one_line(m['key'])} = {_scalar(m['value'])} {scaled} "
         f"(exact {_scalar(m['exact'])}; {ratio})"
     )
 
@@ -107,11 +110,9 @@ def _metric(m: dict[str, Any]) -> str:
 def _row(r: dict[str, Any]) -> str:
     group = r.get("group") or {}
     if not r.get("metrics"):  # filter_rows: one listed table row
-        cells = "; ".join(
-            f"{_one_line(k)}={_scalar(v)}" for k, v in group.items() if k not in ("@row", "@handle")
-        )
+        cells = "; ".join(f"{_one_line(k)}={_scalar(v)}" for k, v in group.items())
         return (
-            f'<row n="{_attr(group.get("@row"))}" handle="{_attr(group.get("@handle"))}">'
+            f'<row n="{_attr(r.get("row_number"))}" handle="{_attr(r.get("handle"))}">'
             f"{_body(cells)}</row>"
         )
     label = ", ".join(f"{_one_line(k)}={_scalar(v)}" for k, v in group.items()) or "all rows"

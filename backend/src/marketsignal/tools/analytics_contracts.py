@@ -40,6 +40,10 @@ FilterOp = Literal[
     "eq", "ne", "in", "not_in", "gt", "gte", "lt", "lte", "between", "is_null", "not_null"
 ]
 Unit = Literal["count", "percent", "currency_usd", "number", "rating", "ratio", "date", "text"]
+# The magnitude a column's values are stated in, inferred from its name's tokens (``_k``/
+# ``thousand(s)``, ``_m``/``mn``/``million(s)``, ``_bn``/``billion(s)``): ``value_usd_bn`` = 15.1
+# means USD 15.1 billion. Percent, rating, ratio, date and text values are never scaled.
+Scale = Literal["", "thousand", "million", "billion"]
 
 # Warnings / result states (also used as ToolResult warnings).
 EMPTY_SELECTION = "EMPTY_SELECTION"  # the filters matched no rows (a valid, empty result)
@@ -66,6 +70,8 @@ class Metric(_In):
     fn: AggFn
     column: Column | None = None
     condition: Filter | None = None  # share only
+    # ``label`` is a caller-side note kept only in the result's ``spec``; it never renames the
+    # metric (``MetricValue.key`` is always derived from fn/column/condition).
     label: Annotated[str, StringConstraints(max_length=40)] | None = None
 
 
@@ -126,6 +132,7 @@ class ColumnInfo(_Out):
     unit: Unit
     levels: list[str] = Field(default_factory=list)  # categorical levels (≤ profile cap)
     non_empty: int
+    scale: Scale = ""  # see :data:`Scale`
 
 
 class DatasetInfo(_Out):
@@ -153,11 +160,21 @@ class MetricValue(_Out):
     unit: Unit
     numerator: int | None = None  # share: rows satisfying the condition
     denominator: int  # rows the metric was computed over (after filters and null exclusion)
+    # The column's scale for sum/mean/median/min/max (and their difference); "" for count,
+    # count_distinct and share, and for unscaled units. ``value``/``exact`` are in this scale.
+    scale: Scale = ""
 
 
 class ResultRow(_Out):
+    """aggregate/group_compare: ``group`` (column -> level) and ``metrics``. filter_rows: one
+    listed table row: ``group`` holds the selected cells (column -> value), ``metrics`` is
+    empty, and ``row_number`` (the stored row number, as in the handle) and ``handle`` (the
+    row's citable evidence handle) identify it."""
+
     group: dict[str, str | int | float | bool | None] = Field(default_factory=dict)
     metrics: list[MetricValue]
+    row_number: int | None = None  # filter_rows only
+    handle: str | None = None  # filter_rows only
 
 
 class AnalyticsResult(_Out):
@@ -175,7 +192,9 @@ class AnalyticsResult(_Out):
     rows_scanned: int  # rows in the dataset version considered
     rows_matched: int  # rows after filters
     rounding: str  # e.g. "half_even; percent 1dp; currency 2dp; mean 2dp; counts exact"
-    difference: MetricValue | None = None  # group_compare: A - B (same unit)
+    # group_compare: A - B (same unit and scale); its ``denominator`` is denA + denB (the rows
+    # behind both sides), its ``numerator`` is null.
+    difference: MetricValue | None = None
     warnings: list[str] = Field(default_factory=list)
 
 

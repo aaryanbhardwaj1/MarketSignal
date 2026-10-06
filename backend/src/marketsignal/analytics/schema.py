@@ -10,13 +10,18 @@ lower-cased tokens (first rule that matches wins):
 
 1. type ``date`` -> ``date``; ``text``/``categorical`` -> ``text``;
 2. numeric with a token ``pct``/``percent``/``percentage`` -> ``percent``;
-3. numeric with a token ``usd`` -> ``currency_usd`` (scale such as ``_m``/``_bn`` stays in the
-   column name: ``value_usd_bn`` = 15.1 means USD 15.1 bn);
+3. numeric with a token ``usd`` -> ``currency_usd`` (the magnitude is the separate ``scale``);
 4. numeric with a token ``rating``/``nps``/``stars``/``score`` -> ``rating``;
 5. numeric with a token ``ratio`` -> ``ratio``;
 6. numeric with a token ``count``/``units``/``orders``/``sessions``/``qty``/``quantity``/
    ``returns``/``respondents`` -> ``count``;
 7. otherwise ``number``.
+
+Scale (:func:`infer_scale`): numeric columns whose unit is ``currency_usd``, ``count`` or
+``number`` take the magnitude named by a token: ``k``/``thousand(s)`` -> ``thousand``,
+``m``/``mn``/``million(s)`` -> ``million``, ``bn``/``billion(s)`` -> ``billion`` (the last such
+token wins). ``value_usd_bn`` -> currency_usd, billion; ``fy25_revenue_usd_m`` -> currency_usd,
+million. Percent, rating and ratio columns are never scaled.
 """
 
 from __future__ import annotations
@@ -30,7 +35,7 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from marketsignal.tools.analytics_contracts import ColumnInfo, DatasetInfo, Unit
+from marketsignal.tools.analytics_contracts import ColumnInfo, DatasetInfo, Scale, Unit
 
 SOURCE_CODE_RE = re.compile(r"^[A-Z0-9]{1,12}(-[A-Z0-9]{1,12}){0,5}$")
 SHEET_RE = re.compile(r"^[1-9][0-9]{0,3}$")
@@ -42,6 +47,19 @@ _COUNT = frozenset(
     {"count", "units", "orders", "sessions", "qty", "quantity", "returns", "respondents"}
 )
 _TOKEN = re.compile(r"[^a-z0-9]+")
+_SCALES: dict[str, Scale] = {
+    "k": "thousand",
+    "thousand": "thousand",
+    "thousands": "thousand",
+    "m": "million",
+    "mn": "million",
+    "million": "million",
+    "millions": "million",
+    "bn": "billion",
+    "billion": "billion",
+    "billions": "billion",
+}
+_SCALABLE = frozenset({"currency_usd", "count", "number"})
 
 
 def infer_unit(name: str, column_type: str) -> Unit:
@@ -63,6 +81,13 @@ def infer_unit(name: str, column_type: str) -> Unit:
     return "number"
 
 
+def infer_scale(name: str, column_type: str) -> Scale:
+    if infer_unit(name, column_type) not in _SCALABLE:
+        return ""
+    found = [_SCALES[t] for t in _TOKEN.split(name.lower()) if t in _SCALES]
+    return found[-1] if found else ""
+
+
 @dataclass(frozen=True, slots=True)
 class ColumnSpec:
     name: str
@@ -72,6 +97,7 @@ class ColumnSpec:
     levels: tuple[str, ...]
     distinct: int
     non_empty: int
+    scale: Scale = ""
 
     @property
     def complete_levels(self) -> bool:
@@ -104,6 +130,7 @@ class DatasetRef:
                     unit=c.unit,
                     levels=list(c.levels),
                     non_empty=c.non_empty,
+                    scale=c.scale,
                 )
                 for c in self.columns
             ]
@@ -145,6 +172,7 @@ def _columns(raw: Any) -> tuple[ColumnSpec, ...]:
                 levels=tuple(str(v) for v in c.get("levels") or ()),
                 distinct=int(c.get("distinct") or 0),
                 non_empty=int(c.get("non_empty") or 0),
+                scale=infer_scale(name, ctype),
             )
         )
     return tuple(out)

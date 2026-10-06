@@ -124,11 +124,16 @@ def test_aggregate_observation_escapes_untrusted_levels() -> None:
 
 
 def test_filter_rows_observation_shows_handles_and_escapes_cells() -> None:
-    row = {"group": {"@row": 3, "@handle": "WS/SURV@v1:R3", "verbatim": EVIL}, "metrics": []}
+    row = {
+        "group": {"verbatim": EVIL},
+        "metrics": [],
+        "row_number": 3,
+        "handle": "WS/SURV@v1:R3",
+    }
     out = render("filter_rows", _result([row], operation="filter_rows"), 2000)
     assert '<row n="3" handle="WS/SURV@v1:R3">' in out
     assert out.count("<result ") == 1
-    assert "@handle" not in out
+    assert "row_number" not in out
 
 
 def test_describe_observation_escapes_titles_and_levels() -> None:

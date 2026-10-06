@@ -1,8 +1,14 @@
 """Deterministic progress events for research mode (plan §21; the Phase 4 SSE contract).
 
 Events are built only from validated tool arguments and tool status, never from model prose
-or thinking. Model-supplied text (queries, terms) appears only as quoted plain text, collapsed
-to one line and truncated to :data:`QUOTE_MAX_CHARS`.
+or thinking. Model-supplied text (queries, terms, filter values, compared levels) appears only
+as quoted plain text, collapsed to one line and truncated to :data:`QUOTE_MAX_CHARS`; column
+names appear unquoted but printable, quote-free and truncated to :data:`NAME_MAX_CHARS`; a
+dataset id appears as is only when it is well-formed (``CODE:N``), otherwise quoted.
+
+Analytics templates (kind ``analytics``): "Describing datasets", "Describing dataset
+SURVEY-2026:1", "Computing mean(nps) by region on SURVEY-2026:1", 'Comparing mean(nps) between
+"Gen Z" and "Millennial" on SURVEY-2026:1', "Listing up to 5 matching rows on SURVEY-2026:1".
 """
 
 from __future__ import annotations
@@ -11,10 +17,12 @@ from typing import Any, Literal
 
 from pydantic import ValidationError
 
+from marketsignal.analytics.schema import parse_dataset_id
 from marketsignal.tools.contracts import INPUT_MODELS, TOOL_NAMES
 
 QUOTE_MAX_CHARS = 80
-ToolKind = Literal["search", "keyword", "lookup", "catalog"]
+NAME_MAX_CHARS = 40  # a model-supplied column name shown unquoted
+ToolKind = Literal["search", "keyword", "lookup", "catalog", "analytics"]
 ToolStatus = Literal["ok", "error", "denied", "timeout"]
 
 KINDS: dict[str, ToolKind] = {
@@ -22,7 +30,13 @@ KINDS: dict[str, ToolKind] = {
     "search_evidence_keyword": "keyword",
     "get_evidence": "lookup",
     "list_sources": "catalog",
+    "describe_dataset": "analytics",
+    "aggregate": "analytics",
+    "group_compare": "analytics",
+    "filter_rows": "analytics",
 }
+_SYMBOLS = {"eq": "=", "ne": "!=", "gt": ">", "gte": ">=", "lt": "<", "lte": "<="}
+_SHOWN_VALUES = 3
 
 STATUS_PLANNING = {"phase": "planning", "message": "Planning the research"}
 STATUS_SEARCHING = {"phase": "searching", "message": "Searching workspace evidence"}
@@ -80,11 +94,60 @@ def validated_args(name: str, arguments: dict[str, Any]) -> dict[str, Any] | Non
     return dict(scrub(dumped))
 
 
+def _name(text: Any) -> str:
+    """A model-supplied column name: one printable line without quotes, bounded."""
+    flat = " ".join(printable(str(text)).replace('"', "'").split())
+    return flat if len(flat) <= NAME_MAX_CHARS else flat[: NAME_MAX_CHARS - 1].rstrip() + "…"
+
+
+def _dataset(value: Any) -> str:
+    """A well-formed dataset id as is (``CODE:N`` has no spaces or quotes); anything else
+    quoted."""
+    text = str(value)
+    return text if parse_dataset_id(text) is not None else quote(text)
+
+
+def _condition(cond: dict[str, Any]) -> str:
+    col, op = _name(cond.get("column", "")), str(cond.get("op", ""))
+    if op in _SYMBOLS:
+        return f"{col} {_SYMBOLS[op]} {quote(str(cond.get('value')))}"
+    if op in ("is_null", "not_null"):
+        return f"{col} {'is null' if op == 'is_null' else 'is not null'}"
+    values = [quote(str(v)) for v in (cond.get("values") or [])]
+    shown = ", ".join(values[:_SHOWN_VALUES]) + (", …" if len(values) > _SHOWN_VALUES else "")
+    return f"{col} {op.replace('_', ' ')} [{shown}]"
+
+
+def _metric(metric: dict[str, Any]) -> str:
+    fn = str(metric.get("fn", ""))
+    if metric.get("condition"):
+        return f"{fn}({_condition(metric['condition'])})"
+    return f"{fn}({_name(metric['column'])})" if metric.get("column") else fn
+
+
+def _analytics(name: str, args: dict[str, Any]) -> str:
+    if name == "describe_dataset":
+        ds = args.get("dataset")
+        return f"Describing dataset {_dataset(ds)}" if ds else "Describing datasets"
+    on = f" on {_dataset(args['dataset'])}"
+    if name == "aggregate":
+        metrics = ", ".join(_metric(m) for m in args["metrics"])
+        groups = ", ".join(_name(g) for g in args.get("group_by") or [])
+        return f"Computing {metrics}{' by ' + groups if groups else ''}{on}"
+    if name == "group_compare":
+        a, b = quote(str(args["group_a"])), quote(str(args["group_b"]))
+        return f"Comparing {_metric(args['metric'])} between {a} and {b}{on}"
+    limit = args.get("limit")
+    return f"Listing up to {limit} matching rows{on}" if limit else f"Listing matching rows{on}"
+
+
 def summarize(name: str, arguments: dict[str, Any]) -> str:
     """A fixed-template, human-readable summary of one call."""
     args = validated_args(name, arguments)
     if args is None:
         return "Running a tool call with invalid arguments"
+    if KINDS.get(name) == "analytics":
+        return _analytics(name, args)
     if name == "search_evidence":
         return (
             f"Searching {_classes(args.get('source_classes'))} evidence for {quote(args['query'])}"

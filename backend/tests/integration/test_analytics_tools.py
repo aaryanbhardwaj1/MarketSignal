@@ -218,7 +218,8 @@ async def test_grouped_top_n_group_compare_and_filter_rows(aw: AW) -> None:
     )
     got = listed["result"]["rows"]
     assert [r["group"]["order_id"] for r in got] == ["O2", "O4", "O6"]
-    handles = [r["group"]["@handle"] for r in got]
+    handles = [r["handle"] for r in got]
+    assert all(isinstance(r["row_number"], int) and "@handle" not in r["group"] for r in got)
     resolved = await aw.ok("get_evidence", {"handles": handles})
     assert all(i["found"] for i in resolved["items"])  # rows are citable evidence
 
@@ -341,7 +342,7 @@ async def test_class_claim_and_confidentiality_hide_datasets(aw: AW) -> None:
     restricted = aw.w.token(max_conf="restricted")
     out = await aw.ok("aggregate", sizing, credential=restricted)
     metric = out["result"]["rows"][0]["metrics"][0]
-    assert (metric["value"], metric["unit"]) == (41.2, "currency_usd")
+    assert (metric["value"], metric["unit"], metric["scale"]) == (41.2, "currency_usd", "billion")
     market = aw.w.token(max_conf="restricted", source_classes=["market"])
     assert await aw.code("aggregate", sizing, credential=market) == "OK"
     assert await aw.code("aggregate", count, credential=market) == "NOT_FOUND"

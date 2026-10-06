@@ -44,14 +44,12 @@ from marketsignal.tools.analytics_contracts import (
     FilterRowsIn,
     GroupCompareIn,
     Metric,
+    Scale,
     Unit,
 )
 from marketsignal.tools.env import ToolInputError
 
 ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}(-\d{2})?$")
-ROW_KEY = "@row"
-HANDLE_KEY = "@handle"
-RESERVED = frozenset({ROW_KEY, HANDLE_KEY})
 _ORDERED = frozenset({"gt", "gte", "lt", "lte", "between"})
 _LEVEL_OPS = frozenset({"eq", "ne", "in", "not_in"})
 _NUMERIC_FNS = frozenset({"sum", "mean", "median"})
@@ -121,6 +119,13 @@ class MetricPlan:
         assert self.column is not None
         unit = self.column.unit
         return "number" if unit == "count" and self.fn in ("mean", "median") else unit
+
+    @property
+    def scale(self) -> Scale:
+        """The column's scale for value metrics; counts and shares are never scaled."""
+        if self.fn in ("count", "count_distinct", "share") or self.column is None:
+            return ""
+        return self.column.scale
 
 
 @dataclass(frozen=True, slots=True)
@@ -344,8 +349,6 @@ def filter_rows_plan(ref: DatasetRef, args: FilterRowsIn, limits: Limits) -> Fil
     names = args.columns or [c.name for c in ref.columns[:8]]
     if len(set(names)) != len(names):
         raise _fail("duplicate columns")
-    if RESERVED & set(names):
-        raise _fail("reserved column name")
     cols = tuple(column(ref, n) for n in names)
     order = column(ref, args.order_by, what="order_by column") if args.order_by else None
     limit = args.limit if args.limit is not None else limits.rows

@@ -111,6 +111,25 @@ class EvidencePool:
             )
         )
 
+    def add_row(self, handle: str, *, rank: int, step: int) -> bool:
+        """Add a filter_rows row handle (a parent handle); anchored at its parent's first child
+        when re-resolved, like a lookup."""
+        if handle in self._items:
+            return True
+        return self._put(
+            PoolItem(
+                handle=handle,
+                source_code=_source_code_of(handle),
+                source_class="",
+                anchor_child_id="",
+                anchor_char_start=0,
+                anchor_char_end=0,
+                first_step=step,
+                best_rank=rank,
+                via_tool="filter_rows",
+            )
+        )
+
     def discard(self, handle: str) -> None:
         """Forget a handle that no longer resolves (NOT_FOUND / SOURCE_DELETED)."""
         self._items.pop(handle, None)

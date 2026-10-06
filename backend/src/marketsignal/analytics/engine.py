@@ -12,7 +12,9 @@
   explicit limit) -> ``GROUPS_TRUNCATED``.
 * Ordering: groups by ``group`` ascending by default; by ``value`` with nulls last; ties are
   always broken by the group values (numbers before strings before nulls). ``filter_rows``
-  breaks ties by row number.
+  breaks ties by row number and reports each row's ``row_number`` and evidence ``handle``.
+* Scale: value metrics (sum/mean/median/min/max and a difference) carry the column's
+  ``scale``; counts and shares never do.
 * ``deadline`` (``time.monotonic``) bounds the scan: past it, ``TimeoutError``.
 """
 
@@ -33,8 +35,6 @@ from marketsignal.analytics.rounding import (
 )
 from marketsignal.analytics.schema import ColumnSpec
 from marketsignal.analytics.validate import (
-    HANDLE_KEY,
-    ROW_KEY,
     AggregatePlan,
     FilterRowsPlan,
     GroupComparePlan,
@@ -174,7 +174,7 @@ def metric_value(plan: MetricPlan, rows: Sequence[Row], warnings: set[str]) -> M
             exact=text,
             unit="date",
             denominator=n,
-        )
+        )  # dates are never scaled
     nums: list[Decimal] = present
     integral = all(v == v.to_integral_value() for v in nums)
     if plan.fn == "min":
@@ -205,6 +205,7 @@ def _mv(
         unit=plan.unit,
         numerator=numerator,
         denominator=denominator,
+        scale=plan.scale,
     )
 
 
@@ -218,6 +219,7 @@ def _null(plan: MetricPlan, denominator: int) -> MetricValue:
         unit=plan.unit,
         numerator=0 if plan.fn == "share" else None,
         denominator=denominator,
+        scale=plan.scale,
     )
 
 
@@ -334,6 +336,7 @@ def _difference(
             exact=None,
             unit=plan.unit,
             denominator=denominator,
+            scale=plan.scale,
         )
     diff = CTX.subtract(Decimal(a.exact), Decimal(b.exact))
     integral = all(isinstance(v.value, int) for v in (a, b)) and diff == diff.to_integral_value()
@@ -346,6 +349,7 @@ def _difference(
         exact=exact_str(diff),
         unit=plan.unit,
         denominator=denominator,
+        scale=plan.scale,
     )
 
 
@@ -361,12 +365,10 @@ def filter_rows(plan: FilterRowsPlan, rows: Sequence[Row], *, deadline: float | 
         ordered = present + nulls
     result = [
         ResultRow(
-            group={
-                ROW_KEY: r.number,
-                HANDLE_KEY: r.handle,
-                **{c.name: _bounded(raw_cell(r, c)) for c in plan.columns},
-            },
+            group={c.name: _bounded(raw_cell(r, c)) for c in plan.columns},
             metrics=[],
+            row_number=r.number,
+            handle=r.handle,
         )
         for r in ordered[: plan.limit]
     ]

@@ -13,6 +13,10 @@ Sources (observable state only, never model prose or thinking):
   progress events and the agent trace already expose);
 * the user's question: the requested dimensions (entities, metrics, periods, comparison terms),
   extracted by fixed vocabularies and regular expressions;
+* the agent's computed results (``AgentOutcome.results``): one entry per result naming what was
+  computed (operation, metric keys, grouping, dataset id, row count), never a value or a
+  category level: the values reach synthesis only as ``<computed_results>`` (aliases ``R#`` are
+  assigned there, after this summary is built);
 * the final evidence pack (:meth:`ResearchSummary.bind_pack`): which pack aliases mention each
   requested dimension (a lexical match, not proof), the dimensions no item mentions (the
   deterministic "unresolved gaps"), and value conflicts from
@@ -29,7 +33,8 @@ Bounds: every list holds at most :data:`MAX_LIST_ITEMS` entries, every entry at 
 :data:`MAX_ENTRY_CHARS` characters (whitespace collapsed, non-printable characters removed, so
 an entry never spans lines), and :meth:`ResearchSummary.render` never exceeds
 :data:`MAX_RENDER_CHARS`. The rendered text is plain; the prompt renderer HTML-escapes it.
-Handles and source codes are never rendered (the synthesis model sees aliases only).
+Handles are never rendered (the synthesis model sees aliases only); source codes appear only as
+part of a computed result's dataset id (``SURVEY-2026:1``), which synthesis also shows.
 """
 
 from __future__ import annotations
@@ -60,6 +65,7 @@ HEADER: Final = (
     "facts and is not evidence."
 )
 _TRUNCATED: Final = "(summary truncated)"
+COMPUTED_LABEL: Final = "Computed results (exact, by code; values in computed_results): "
 UNRESOLVED_LABEL: Final = (
     "Requested terms no evidence item uses (the evidence may word them differently; check the "
     "items before calling a dimension missing): "
@@ -341,6 +347,7 @@ class ResearchSummary:
     pool_handles: tuple[str, ...]  # never rendered; used by bind_pack only
     themes: tuple[str, ...]
     gap_count: int
+    computed: tuple[str, ...] = ()  # what each computed result is (no values)
     # Set by bind_pack (the final pack is built after the agent stops):
     pack_size: int | None = None
     pool_in_pack: int | None = None
@@ -372,6 +379,8 @@ class ResearchSummary:
         lines = [HEADER, self._gathering_line(), self._evidence_line()]
         if self.themes:
             lines.append("Search themes: " + "; ".join(f'"{t}"' for t in self.themes))
+        if self.computed:
+            lines.append(COMPUTED_LABEL + "; ".join(self.computed))
         lines.extend(self._dimension_lines())
         if self.contradictions:
             lines.append("Possible conflicts: " + "; ".join(self.contradictions))
@@ -435,6 +444,23 @@ def _cap(lines: list[str]) -> str:
     return "\n".join(out)
 
 
+def _computed(result: dict[str, object]) -> str:
+    """``"aggregate mean(nps) by region on SURVEY-2026:1 (5 rows)"``: what was computed."""
+    spec = result.get("spec")
+    spec = spec if isinstance(spec, dict) else {}
+    op = str(result.get("operation", ""))
+    raw_metrics = spec.get("metrics") if op == "aggregate" else [spec.get("metric")]
+    keys = [str(m.get("key")) for m in raw_metrics or [] if isinstance(m, dict) and m.get("key")]
+    group = spec.get("group_by") if op == "aggregate" else [spec.get("compare_column")]
+    groups = [str(g) for g in group or [] if g]
+    rows = result.get("rows")
+    n = len(rows) if isinstance(rows, list) else 0
+    text = " ".join(filter(None, [op, ", ".join(keys)]))
+    text += f" by {', '.join(groups)}" if groups and op != "filter_rows" else ""
+    text += f" on {result.get('dataset', '')} ({n} row{'s' if n != 1 else ''})"
+    return _clean(text, 2 * MAX_ENTRY_CHARS)
+
+
 def build_research_summary(question: str, outcome: AgentOutcome) -> ResearchSummary:
     """The summary of one gather (the pack-derived fields are added by ``bind_pack``)."""
     executed = [e for e in outcome.trace if e.get("status") != "denied"]
@@ -465,4 +491,5 @@ def build_research_summary(question: str, outcome: AgentOutcome) -> ResearchSumm
         pool_handles=tuple(item.handle for item in outcome.pool),
         themes=_unique(themes),
         gap_count=len(outcome.gaps),
+        computed=tuple(_computed(r) for r in outcome.results[:MAX_LIST_ITEMS]),
     )

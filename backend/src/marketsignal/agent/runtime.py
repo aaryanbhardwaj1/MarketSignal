@@ -12,11 +12,19 @@ field in the outcome (by contract).
 Pool order (``AgentOutcome.pool``): best fused rank first, then first step, then first-seen
 order (see ``agent/pool.py``).
 
-Fallback: whenever gathering ends with zero successful evidence calls (and so an empty pool),
-for any reason but cancellation, ``planner_unavailable`` and a ``time_limit`` that leaves no
-time before ``ctx.deadline`` (the whole gather's deadline), the outcome reports
-``no_successful_search`` (flag ``PLANNER_NO_TOOL_FALLBACK``, after the original bound's flag)
-so the executor runs the standard gather with whatever gather time is left.
+Computed results (Phase 5): every successful computing analytics call (aggregate,
+group_compare, filter_rows) contributes its full ``AnalyticsResult`` dict to
+``AgentOutcome.results`` (call order, de-duplicated by ``result_id``, at most
+:data:`MAX_RESULTS_FOR_SYNTHESIS`), which synthesis cites as ``[R#]``. The row handles a
+filter_rows call lists are real evidence handles: they join the pool (anchored at their parent,
+``via_tool="filter_rows"``) and the trace entry's ``handles`` (so the purge-safe agent record
+covers them).
+
+Fallback: whenever gathering ends with zero successful evidence calls (and so an empty pool)
+and no computed result, for any reason but cancellation, ``planner_unavailable`` and a
+``time_limit`` that leaves no time before ``ctx.deadline`` (the whole gather's deadline), the
+outcome reports ``no_successful_search`` (flag ``PLANNER_NO_TOOL_FALLBACK``, after the original
+bound's flag) so the executor runs the standard gather with whatever gather time is left.
 
 Per-turn work is bounded: at most the remaining tool budget of a turn's tool_use blocks is
 handled per call (progress events, trace entry); the rest are denied in one aggregated trace
@@ -70,7 +78,7 @@ from marketsignal.providers.llm.base import AgentLLM, AgentLLMRequest, AgentTurn
 from marketsignal.telemetry.logging import get_logger
 from marketsignal.tools.contracts import TOOLS_TRANSPORT_FALLBACK, ToolTransport
 
-__all__ = ["AgentContext", "AgentOutcome", "PoolItem", "ResearchAgent"]
+__all__ = ["MAX_RESULTS_FOR_SYNTHESIS", "AgentContext", "AgentOutcome", "PoolItem", "ResearchAgent"]
 
 log = get_logger(__name__)
 
@@ -82,6 +90,8 @@ CHARS_PER_TOKEN = 4  # observation clipping (characters), as the tool layer clip
 BYTES_PER_TOKEN = 3
 LLM_GRACE_S = 0.5  # lets the provider raise its own timeout before the backstop fires
 EVIDENCE_TOOLS = frozenset({"search_evidence", "search_evidence_keyword", "get_evidence"})
+COMPUTING_TOOLS = frozenset({"aggregate", "group_compare", "filter_rows"})
+MAX_RESULTS_FOR_SYNTHESIS = 8
 GONE = frozenset({"NOT_FOUND", "SOURCE_DELETED"})
 # Tool-result warnings that are reported once as run flags (e.g. the HTTP transport was
 # unreachable and the call was re-run in process, plan §27).
@@ -122,6 +132,9 @@ class AgentOutcome:
     sufficient: bool | None
     gaps: tuple[str, ...]
     states: tuple[AgentState, ...] = ()  # the state history, for tests and the trace
+    # Full AnalyticsResult dicts of successful computing calls (call order, unique result_id,
+    # at most MAX_RESULTS_FOR_SYNTHESIS): the synthesis hand-off for [R#] citations.
+    results: tuple[dict[str, Any], ...] = ()
 
 
 class ResearchAgent:
@@ -191,6 +204,7 @@ class _GatherRun:
         self.gaps: tuple[str, ...] = ()
         self.searching_announced = False
         self.warning_flags: set[str] = set()
+        self.results: list[dict[str, Any]] = []
 
     def remaining(self) -> float:
         return self.deadline - self.clock()
@@ -415,6 +429,18 @@ class _GatherRun:
                 self.pool.add_lookup(item, rank=position, step=step)
             elif item.get("miss_reason") in GONE:
                 self.pool.discard(str(item.get("handle")))
+        if name in COMPUTING_TOOLS:
+            self.collect(output.get("result"), step)
+
+    def collect(self, result: Any, step: int) -> None:
+        """Keep a computed result for synthesis and pool a filter_rows listing's row handles."""
+        if not isinstance(result, dict) or not result.get("result_id"):
+            return
+        for position, handle in enumerate(_row_handles(result), start=1):
+            self.pool.add_row(handle, rank=position, step=step)
+        seen = {r["result_id"] for r in self.results}
+        if result["result_id"] not in seen and len(self.results) < MAX_RESULTS_FOR_SYNTHESIS:
+            self.results.append(result)
 
     def outcome(self) -> AgentOutcome:
         reason = self.sm.stop_reason
@@ -424,6 +450,7 @@ class _GatherRun:
             reason not in _NO_FALLBACK_REWRITE
             and self.successful_searches == 0
             and len(self.pool) == 0
+            and not self.results
             and not (reason == "time_limit" and self.ctx.deadline - self.clock() <= 0)
         ):  # empty-handed for any reason: let the executor run the standard gather
             reason = "no_successful_search"
@@ -459,6 +486,7 @@ class _GatherRun:
             sufficient=self.sufficient,
             gaps=self.gaps,
             states=self.sm.history,
+            results=tuple(self.results),
         )
 
 
@@ -468,7 +496,25 @@ def _result_count(record: CallRecord) -> int:
         return 0
     if "sources" in result.output:
         return len(result.output.get("sources") or [])
+    if "datasets" in result.output:
+        return len(result.output.get("datasets") or [])
+    if isinstance(result.output.get("result"), dict):
+        return len(result.output["result"].get("rows") or [])
     return len(result.handles())
+
+
+def _row_handles(result: dict[str, Any]) -> list[str]:
+    """The evidence handles of a filter_rows listing (empty for other operations)."""
+    if result.get("operation") != "filter_rows":
+        return []
+    return [str(r["handle"]) for r in result.get("rows") or [] if r.get("handle")]
+
+
+def _handles(record: CallRecord) -> list[str]:
+    result = record.result
+    rows = (result.output or {}).get("result") if result.ok else None
+    found = [*result.handles(), *(_row_handles(rows) if isinstance(rows, dict) else [])]
+    return list(dict.fromkeys(found))
 
 
 def _trace_entry(record: CallRecord) -> dict[str, Any]:
@@ -480,7 +526,7 @@ def _trace_entry(record: CallRecord) -> dict[str, Any]:
         "args": validated_args(call.name, call.arguments) or {},
         "status": record.status,
         "error_code": result.error.code if result.error else None,
-        "handles": [printable(h) for h in result.handles()],
+        "handles": [printable(h) for h in _handles(record)],
         "duration_ms": round(result.duration_ms),
     }
 
