@@ -34,9 +34,12 @@ an undecided partial such as ``[E1`` is not an alias and is released verbatim (s
 12).
 
 Removal is exact: the marker is cut and surrounding whitespace is left as-is (``"x [E99]."``
-becomes ``"x ."``). Tidying would require holding whitespace too; the verifier owns
-normalisation of final text. Every removed occurrence is reported, not just the first, so the
-gate and :func:`strip_unknown_aliases` agree on counts.
+becomes ``"x ."``). One exception keeps removal from *creating* a marker: when the kept text
+before a removed marker ends in an alias prefix (``[``, ``[E``, ``[E1``…), a single space is
+inserted, so ``"[E1[E99]]"`` becomes ``"[E1 ]"``, never ``"[E1]"``. The decision depends only on
+text before the marker, so it is split-invariant. Tidying would require holding whitespace
+too; the verifier owns normalisation of final text. Every removed occurrence is reported, not
+just the first, so the gate and :func:`strip_unknown_aliases` agree on counts.
 """
 
 from __future__ import annotations
@@ -60,6 +63,13 @@ MAX_HELD_CHARS = 2 + MAX_ATTEMPT_DIGITS  # "[E1234" — the longest undecided pr
 
 _ASCII_DIGITS = frozenset("0123456789")
 _ALIAS_NAME_RE = re.compile(r"E[0-9]{1,2}")
+_PREFIX_TAIL_RE = re.compile(r"\[(?:E[0-9]*)?\Z")
+_TAIL_CHARS = MAX_HELD_CHARS + 1
+
+
+def _separator(kept_tail: str) -> str:
+    """Space to insert for a removed marker when the kept text ends in an alias prefix."""
+    return " " if _PREFIX_TAIL_RE.search(kept_tail) else ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -188,13 +198,14 @@ class AliasGate:
     citations are re-announced for the new attempt.
     """
 
-    __slots__ = ("_cited", "_closed", "_held", "_valid")
+    __slots__ = ("_cited", "_closed", "_held", "_tail", "_valid")
 
     def __init__(self, valid_aliases: Iterable[str]) -> None:
         self._valid = _validate_aliases(valid_aliases)
         self._held = ""
         self._cited: list[str] = []
         self._closed = False
+        self._tail = ""  # last chars of decided text, for the removal separator
 
     @classmethod
     def from_pack(cls, pack: EvidencePack) -> AliasGate:
@@ -239,21 +250,27 @@ class AliasGate:
                 events.append(GateText("".join(pending_text)))
                 pending_text.clear()
 
+        def keep(text: str) -> None:
+            pending_text.append(text)
+            self._tail = (self._tail + text)[-_TAIL_CHARS:]
+
         for seg in segments:
             if isinstance(seg, str):
-                pending_text.append(seg)
+                keep(seg)
                 continue
             warning = _warning_for(seg, self._valid)
             if warning is not None:
                 emit_text()
                 events.append(warning)
+                if sep := _separator(self._tail):
+                    keep(sep)
                 continue
             alias = seg.text[1:-1]
             if alias not in self._cited:
                 emit_text()
                 self._cited.append(alias)
                 events.append(GateCitation(alias))
-            pending_text.append(seg.text)
+            keep(seg.text)
         emit_text()
         return events
 
@@ -280,4 +297,5 @@ def strip_unknown_aliases(
             kept.append(seg.text)
         else:
             removed.append(warning)
+            kept.append(_separator("".join(kept)[-_TAIL_CHARS:]))
     return "".join(kept), tuple(removed)

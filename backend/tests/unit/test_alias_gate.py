@@ -387,3 +387,22 @@ def test_gate_invariants(case: tuple[str, list[str]], valid: frozenset[str]) -> 
                 assert f"E{m.group(1)}" in announced
     assert all(f"E{m.group(1)}" in valid for m in ALIAS_RE.finditer(text_of(events)))
     assert list(gate.cited) == citations(events)
+
+
+@pytest.mark.parametrize(
+    ("raw", "valid", "shown"),
+    [
+        ("[E1[E1]]", frozenset(), "[E1 ]"),
+        ("[E[E99]1]", frozenset({"E1"}), "[E 1]"),
+        ("[[E99]E1]", frozenset({"E1"}), "[ E1]"),
+        ("x [E99].", frozenset(), "x ."),
+    ],
+)
+def test_removal_never_assembles_a_new_alias(raw: str, valid: frozenset[str], shown: str) -> None:
+    for split in (1, 2, len(raw)):
+        gate = AliasGate(valid)
+        events = [e for i in range(0, len(raw), split) for e in gate.push(raw[i : i + split])]
+        events.extend(gate.flush())
+        assert text_of(events) == shown
+        assert citations(events) == []
+    assert strip_unknown_aliases(raw, valid)[0] == shown
