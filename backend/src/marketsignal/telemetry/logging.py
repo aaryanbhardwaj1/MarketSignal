@@ -47,7 +47,7 @@ _CREDENTIAL_SHAPES = re.compile(
     re.I,
 )
 # Stdlib loggers that bypass structlog and can log request details at DEBUG.
-_HTTP_CLIENT_LOGGERS = ("httpx", "httpcore", "anthropic")
+_HTTP_CLIENT_LOGGERS = ("httpx", "httpcore", "httpx2", "httpcore2", "anthropic")
 
 
 def _scrub_string(value: str) -> str:

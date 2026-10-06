@@ -117,7 +117,10 @@ def test_http_client_loggers_are_pinned_above_debug() -> None:
 
     logging.getLogger().setLevel(logging.DEBUG)
     configure_logging("DEBUG", True)
-    for name in ("httpx", "httpcore", "anthropic"):
+    # The MCP SDK calls basicConfig(level=INFO) when a server is built; the pin must hold.
+    logging.basicConfig(level=logging.INFO)
+    # anthropic 1.x uses httpx2/httpcore2 (live research smoke showed their INFO lines).
+    for name in ("httpx", "httpcore", "httpx2", "httpcore2", "httpcore2.http11", "anthropic"):
         assert logging.getLogger(name).getEffectiveLevel() >= logging.WARNING
     logging.getLogger().setLevel(logging.WARNING)
     configure_logging("INFO", True)
