@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-10-05 · **Scope:** what the code does today, through Phase 3 (standard-mode grounded answering). Anything planned but not built is listed under [Deferred](#9-deferred-to-phase-4-and-later). The approved target design is [`ARCHITECTURE_PLAN.md`](ARCHITECTURE_PLAN.md); where the two differ, the plan's §0.4 deviation register records why.
 
-> **Live validation status.** The Anthropic provider is implemented and unit-tested against a scripted SDK stand-in. The live API spike and the live grounded evaluation have **not run yet**, because no API key is configured. Every latency, token or answer-quality number for the real model is **pending live evaluation**. Nothing in this document is a live measurement.
+> **Live validation status.** The live Anthropic spike and the live grounded evaluation ran on 2026-10-06. All six hard gates passed; end-to-end p50/p95 was 4.8 s / 9.6 s and the 76-item run cost about $1.00. Live results (2026-10-06, `claude-sonnet-5-5`, effort low, no thinking): [`docs/phase-reports/phase-3.md`](phase-reports/phase-3.md), [spike 0002](spikes/0002-anthropic-live.md), and `eval/baselines/phase3/live-v0/`.
 
 Companion documents:
 - [`GROUNDED_ANSWERING.md`](GROUNDED_ANSWERING.md): generation and streaming in depth (pack, prompt, alias gate, verifier, SSE, purge during a run, evaluation).
@@ -206,7 +206,8 @@ Settings are environment variables with the `MS_` prefix (`backend/src/marketsig
 | `llm_model` | `claude-sonnet-5-5` | Synthesis model |
 | `llm_effort` | `low` | Sent as `output_config.effort` |
 | `llm_max_tokens` | 8000 | Output cap; hitting it is `GENERATION_TRUNCATED` |
-| `llm_thinking` | `disabled` | `disabled` or `adaptive` (display omitted; thinking is never streamed) |
+| `llm_thinking` | `disabled` | `disabled` (sent as `{"type": "between_tools"}`: Claude 5.x rejects `"disabled"`) or `adaptive` (display omitted). Thinking is never streamed |
+| `llm_price_*_per_mtok` | 2.0 / 10.0 / 2.5 / 0.2 | List prices (input, output, cache write, cache read) used only for approximate cost in evaluation reports |
 | `llm_timeout_s` | 40 | Per-call budget, further clamped by the run deadline |
 | `pack_max_items` | 12 (max 12) | Aliases `E1..E12` |
 | `pack_max_tokens` | 9000 | Pack budget (token unit: see GROUNDED_ANSWERING §1) |

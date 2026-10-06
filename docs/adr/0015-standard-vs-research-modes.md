@@ -89,4 +89,4 @@ The chosen mode is recorded in `query_runs` and the `run_started` event, and is 
 - **Standard mode only.** `mode=research` returns **422 `MODE_UNAVAILABLE`**; `mode=auto` (the request default) is treated as **standard**, because the router and the agent are Phase 4. Runs are stored with `mode = 'standard'`. Persona default modes are not consulted yet.
 - **Deviation: standard gather is hybrid search only.** It calls the retrieval service directly (production default: hybrid RRF, reranker off) under the 35 s gather budget. The keyword search for quoted or capitalized entities, and routing through the tool registry, are deferred to Phase 4 with the registry.
 - **Shared tail as decided.** Pack, synthesis, alias gate, verification, fallback, persistence and SSE are mode-independent modules (`generation/*`, `runs/*`), ready for research mode to reuse.
-- **Latency targets** (§3.2) are **pending live evaluation**; no live model run has been made.
+- **Latency target met.** Plan §3.2 sets standard end-to-end p50 < 15 s. Live-v0 (2026-10-06, 76 items, concurrency 1) measured p50 4.8 s and p95 9.6 s end to end, with first token at p50 1.3 s and p95 4.6 s.

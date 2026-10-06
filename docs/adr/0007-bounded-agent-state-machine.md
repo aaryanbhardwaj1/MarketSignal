@@ -114,3 +114,9 @@ The agent loop is Phase 4. Phase 3 built the parts of this ADR that standard mod
 - **Termination precedence** implemented as decided, plus `interrupted` from the reaper (ADR-0008). `PRECEDENCE` and `termination_state` live in `runs/flags.py`. Publishing and `done` run once, outside the deadline scope and shielded from further cancels, and are bounded by `run_finalize_timeout_s` (20 s, validated to be less than `run_reap_margin_s`; on expiry a best-effort `done` and row update, and a run with no `final` ends `timeout`/`failed`).
 - **Context management:** rolling summary capped at 1,600 characters (about 400 tokens) from the Answer units of verified answers, `[inference]` units excluded; last 2 questions; up to 20 cited handles (without the one-line labels). Retrieval uses the current question only.
 - **Deviation: spend reservation not built.** No ledger reservation happens before the LLM call (`BUDGET_EXHAUSTED` does not exist yet); see ADR-0014.
+
+### Live spike facts for Phase 4 (2026-10-06)
+
+- Claude 5.x rejects `thinking: {"type": "disabled"}`; "no thinking before responding" is `{"type": "between_tools"}`. With tools, the short updates written between tool calls arrive as **thinking blocks**: they must be kept verbatim in the append-only transcript and never streamed or persisted as answer text.
+- `tool_choice` `{"type": "tool"}` and `{"type": "any"}` return 400 on `claude-sonnet-5-5`. Only `auto` (and `none`) is available, as this ADR already assumed (`finish_research` as the expected exit). `auto` produces **parallel** tool calls by default.
+- `output_config.format` json_schema returns schema-valid JSON, and strict tool schemas are accepted by `count_tokens`. See [spike 0002](../spikes/0002-anthropic-live.md).

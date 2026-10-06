@@ -4,7 +4,7 @@
 
 This document describes how a standard-mode run turns ranked evidence into a verified, cited answer and streams it, as the code does it today. The system-level view (components, tables, termination, configuration) is in [`SYSTEM_DESIGN.md`](SYSTEM_DESIGN.md).
 
-> **Measurement status.** Every guarantee below is enforced by deterministic code and covered by unit or integration tests. The real model has **not been run yet**: the live Anthropic spike and the live grounded evaluation are **pending live evaluation**, because no API key is configured. This document reports no live latency, token or quality figures.
+> **Measurement status.** Every guarantee below is enforced by deterministic code and covered by unit or integration tests, and was re-checked against the live model on 2026-10-06 (`tests/integration/test_live_hardening.py`, opt-in). Live results (2026-10-06, `claude-sonnet-5-5`, effort low, no thinking): [`docs/phase-reports/phase-3.md`](phase-reports/phase-3.md), [spike 0002](spikes/0002-anthropic-live.md), and `eval/baselines/phase3/live-v0/`.
 
 ## The question this document answers
 
@@ -89,11 +89,11 @@ The model answers in Markdown with fixed level-3 headings (no JSON mode). `gener
 
 `providers/llm/anthropic.py` streams one Messages call:
 
-- The system prompt is a single text block with `cache_control: ephemeral`; `output_config.effort` comes from `llm_effort`; thinking is `disabled` or `adaptive` with display omitted. Only `text_delta` events inside text blocks are yielded; thinking content is never surfaced or streamed.
+- The system prompt is a single text block with `cache_control: ephemeral`; `output_config.effort` comes from `llm_effort`; thinking is off (`llm_thinking="disabled"`, sent as `{"type": "between_tools"}` because Claude 5.x rejects `{"type": "disabled"}`; with no tools it returns a single text block) or `adaptive` with display omitted. Only `text_delta` events inside text blocks are yielded; thinking content is never surfaced or streamed.
 - **Retries are ours.** The SDK runs with `max_retries=0`. On 429, 529, other 5xx, an in-stream `overloaded_error`/`api_error`/`rate_limit_error`, or a connection/timeout error, the provider retries **once**, after 0.5–1.5 s of jitter, only if no text has been yielded yet and enough of the call budget remains. Anything else raises `LLMUnavailableError`.
 - **Secrets.** The key is handed to the SDK client and not kept on the provider; `__repr__` omits it; error messages carry only the error class, status and request id, and are raised `from None` so the SDK exception (whose request carries auth headers) is not chained.
 - **Time.** Each call's budget is `min(llm_timeout_s, remaining_deadline − run_finalize_reserve_s)`. A slow provider therefore degrades to evidence-only instead of timing the run out.
-- The six API assumptions listed in the module docstring (effort values, thinking modes, cache token accounting, usage fields, stop reasons, mid-stream overload) are what the live spike must confirm. **Pending live evaluation.**
+- The API behaviour the adapter depends on is confirmed by the live spike ([spike 0002](spikes/0002-anthropic-live.md)): every effort value is accepted, the 658-token system prompt is cached (write then read), usage is parsed from `message_start`/`message_delta`, a 1 ms budget maps to `LLMUnavailableError`, and a refused connection is retried once and then mapped. The one deviation (thinking off) is described above.
 
 Outcomes: `end_turn` → verification; `refusal` → `MODEL_REFUSAL`; `max_tokens` → `GENERATION_TRUNCATED`; `LLMUnavailableError` (or any provider exception, including a missing key) → `LLM_SYNTHESIS_UNAVAILABLE`. The last three go straight to evidence-only without regeneration.
 
@@ -277,12 +277,13 @@ The two citation gates read **"not evaluated" (fail)** if answer-expected items 
 
 **Measured, not gated:** a contract re-check of the *stored* content (Answer sentences cited or `[inference]`, findings cited, no `[E#]`, URLs, links, images or HTML); gold citation coverage and numeric correctness (the ledger value appears in the answer) over model-generated answers, with evidence-only fallbacks reported separately; insufficient-item correctness and over-refusal on answerable items; conflict surfacing; canary leaks; regenerations; termination states; first-token and total latency (p50, p95); token usage per LLM run.
 
-**Results.** The live run is **pending live evaluation**. `eval/reports/grounded-fake/` holds an offline plumbing run with a scripted `FakeLLM` that returns one canned answer for every item: it exercises the pipeline and the gates and says nothing about answer quality. It was produced before the `every_run_done` and `answer_items_have_final` gates were added, so its gate table is incomplete.
+**Results (live-v0, 2026-10-06).** All six hard gates pass on 76 items. Insufficient-evidence questions are handled 9/9, over-refusal is 1/60, canary leaks are none, and an independent re-check finds no generated cited unit whose numbers are missing from its cited evidence. Every verifier intervention (13 numeric drops, 7 regenerations, 1 fallback) was rebuilt and classified: none caught a fabricated number; 8 were verifier false positives and 10 were real per-unit citation lapses handled too bluntly ([`FAILURE_ANALYSIS.md`](../eval/baselines/phase3/live-v0/FAILURE_ANALYSIS.md)). Full metrics are in [`phase-3.md`](phase-reports/phase-3.md).
 
 ## 10. Known limits
 
 - Weak-evidence abstention relies on the model stating insufficiency (§6).
 - Numeric faithfulness checks presence, not meaning; spelled-out numbers without magnitude words, fractions, and percent claims against unlabelled table cells are the documented gaps (§5.4).
+- **Verifier precision (measured live).** Bare years and edition labels are checked as figures; source titles and locators shown to the model are not accepted as evidence; a failing unit is dropped whole (it can take the gold sentence with it or leave a dangling reference); the 20-citation cap is not stated in the prompt or in the regeneration feedback (the cause of the only over-refusal); derived arithmetic is never accepted; insufficiency statements in the Answer are tagged `[inference]`; and the verification reports of failed attempts are not persisted. See `eval/baselines/phase3/live-v0/FAILURE_ANALYSIS.md`.
 - The Conflicting evidence section is not required by the verifier; conflicts are surfaced only if the model writes them.
 - The pack token budget uses a WordPiece proxy (§1).
 - Cancel is process-local and the cross-process live tail polls (§7.4).

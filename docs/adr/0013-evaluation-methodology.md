@@ -162,3 +162,10 @@ The project's claims (hybrid beats dense-only, reranking helps, the agent is wor
 - **Measured:** stored-content contract re-check, gold coverage and numeric correctness (generated answers and evidence-only fallbacks reported separately), insufficient-item correctness, over-refusal, conflict surfacing, canary leaks, regenerations, latency and token usage.
 - **Weak-evidence abstention data:** `eval/baselines/phase3/abstention-signals.json` records top dense and lexical scores for 74 items. The insufficient items' scores lie inside the answerable items' range on both signals, so no score threshold was adopted (analysis in [`docs/GROUNDED_ANSWERING.md`](../GROUNDED_ANSWERING.md) §6).
 - **Status:** only an offline `FakeLLM` plumbing run exists (`eval/reports/grounded-fake/`; not a quality measurement). The **live grounded evaluation is pending**: no API key is configured.
+
+### Live grounded evaluation (2026-10-06)
+
+- `live-v0`: 76 grounded-v0 items through the real API with `claude-sonnet-5-5`. All six hard gates pass. Results, the report and the per-case classification of every verifier intervention are in `eval/baselines/phase3/live-v0/`. The run is preserved unedited.
+- `scripts/phase3_inspect_run.py` rebuilds any run (stored drafts, the identical pack, verifier re-run). `scripts/phase3_numeric_recheck.py` independently re-checks the numbers in stored answers against the resolved cited evidence.
+- **Not tuned on this set.** The verifier precision problems found here are fixed against a new dev split, and `live-v0` stays the Phase 3 baseline, as the Phase 2 rule for the reranker requires.
+- Approximate cost is computed from returned usage and the list prices in `config.py` (`llm_price_*`).
