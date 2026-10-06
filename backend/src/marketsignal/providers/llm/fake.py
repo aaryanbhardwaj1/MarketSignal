@@ -13,11 +13,22 @@ raises :class:`AssertionError` unless ``repeat_last`` is set. Nothing here is ra
 from __future__ import annotations
 
 import asyncio
+import copy
 import json
-from collections.abc import AsyncIterator, Sequence
-from dataclasses import dataclass
+from collections.abc import AsyncIterator, Callable, Sequence
+from dataclasses import dataclass, field
+from typing import Any
 
-from marketsignal.providers.llm.base import LLMChunk, LLMRequest, LLMStop, LLMText, LLMUsage
+from marketsignal.providers.llm.base import (
+    AgentLLMRequest,
+    AgentTurn,
+    LLMChunk,
+    LLMRequest,
+    LLMStop,
+    LLMText,
+    LLMUsage,
+    tool_uses_of,
+)
 
 DEFAULT_CHUNK_SIZE = 16
 _CHARS_PER_TOKEN = 4  # crude, deterministic token estimate for default usage
@@ -141,3 +152,116 @@ class FakeLLM:
             output_tokens=max(len(scripted.full_text) // _CHARS_PER_TOKEN, 1),
         )
         yield LLMStop(stop_reason=scripted.stop_reason, usage=usage, model=self._model)
+
+
+# --- scripted agent steps (Phase 4) -----------------------------------------------------------
+
+
+def tool_use_block(call_id: str, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    return {"type": "tool_use", "id": call_id, "name": name, "input": dict(arguments)}
+
+
+def thinking_block(thinking: str = "", signature: str = "sig-synthetic") -> dict[str, Any]:
+    return {"type": "thinking", "thinking": thinking, "signature": signature}
+
+
+def text_block(text: str) -> dict[str, Any]:
+    return {"type": "text", "text": text}
+
+
+@dataclass(frozen=True, slots=True)
+class ScriptedTurn:
+    """One scripted agent step. ``stop_reason`` defaults to ``tool_use`` when ``content`` has
+    tool_use blocks, else ``end_turn``. ``error`` is raised instead of replying; ``delay_s`` is
+    awaited first (cancellation and timeout tests)."""
+
+    content: tuple[dict[str, Any], ...] = ()
+    stop_reason: str | None = None
+    usage: LLMUsage | None = None
+    error: BaseException | None = None
+    delay_s: float = 0.0
+    model: str = field(default="fake-agent-llm")
+
+    def resolved_stop_reason(self) -> str:
+        if self.stop_reason is not None:
+            return self.stop_reason
+        return "tool_use" if any(b.get("type") == "tool_use" for b in self.content) else "end_turn"
+
+
+def agent_request_json(request: AgentLLMRequest) -> str:
+    """Everything an agent step would send to the model, as one canonical string."""
+    return json.dumps(
+        {
+            "system": request.system,
+            "messages": list(request.messages),
+            "tools": list(request.tools),
+        },
+        sort_keys=True,
+        default=str,
+    )
+
+
+Responder = Callable[[AgentLLMRequest, int], ScriptedTurn]
+
+
+class FakeAgentLLM:
+    """:class:`~marketsignal.providers.llm.base.AgentLLM` replaying scripted turns (or a
+    ``responder(request, index)`` callable). Records each request and a JSON snapshot of it
+    *at call time*, so tests can prove the transcript is append-only and byte-stable."""
+
+    def __init__(
+        self,
+        script: Sequence[ScriptedTurn] | Responder,
+        *,
+        model: str = "fake-agent-llm",
+    ) -> None:
+        self._script = script
+        self._model = model
+        self._requests: list[AgentLLMRequest] = []
+        self._snapshots: list[str] = []
+
+    def __repr__(self) -> str:
+        return f"FakeAgentLLM(model={self._model!r})"
+
+    @property
+    def model_id(self) -> str:
+        return self._model
+
+    @property
+    def requests(self) -> tuple[AgentLLMRequest, ...]:
+        return tuple(self._requests)
+
+    @property
+    def snapshots(self) -> tuple[str, ...]:
+        return tuple(self._snapshots)
+
+    @property
+    def calls(self) -> int:
+        return len(self._requests)
+
+    async def step(self, request: AgentLLMRequest) -> AgentTurn:
+        index = len(self._requests)
+        self._requests.append(request)
+        self._snapshots.append(agent_request_json(request))
+        if callable(self._script):
+            scripted = self._script(request, index)
+        elif index < len(self._script):
+            scripted = self._script[index]
+        else:
+            raise AssertionError(f"FakeAgentLLM script exhausted at call {index + 1}")
+        if scripted.delay_s:
+            await asyncio.sleep(scripted.delay_s)
+        if scripted.error is not None:
+            raise scripted.error
+        content = tuple(copy.deepcopy(b) for b in scripted.content)
+        usage = scripted.usage or LLMUsage(
+            input_tokens=max(len(agent_request_json(request)) // _CHARS_PER_TOKEN, 1),
+            output_tokens=max(len(json.dumps(list(content))) // _CHARS_PER_TOKEN, 1),
+        )
+        return AgentTurn(
+            content=content,
+            tool_uses=tool_uses_of(content),
+            stop_reason=scripted.resolved_stop_reason(),
+            usage=usage,
+            model=self._model,
+        )

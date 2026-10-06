@@ -45,6 +45,7 @@ API behaviour confirmed by the live spike (docs/spikes/0002-anthropic-live.md):
 from __future__ import annotations
 
 import asyncio
+import copy
 import random
 import time
 from collections.abc import AsyncGenerator, AsyncIterator, Awaitable, Callable
@@ -55,12 +56,15 @@ import anthropic
 from pydantic import SecretStr
 
 from marketsignal.providers.llm.base import (
+    AgentLLMRequest,
+    AgentTurn,
     LLMChunk,
     LLMRequest,
     LLMStop,
     LLMText,
     LLMUnavailableError,
     LLMUsage,
+    tool_uses_of,
 )
 from marketsignal.telemetry.logging import get_logger
 
@@ -235,6 +239,95 @@ class AnthropicProvider:
         if stop_reason is None:
             raise _Retryable("stream ended without a stop reason")
         yield LLMStop(stop_reason=stop_reason, usage=usage.freeze(), model=model)
+
+    # --- one non-streamed tool-using agent step (Phase 4) -------------------------------------
+
+    def build_step_params(self, request: AgentLLMRequest, timeout_s: float) -> dict[str, Any]:
+        """Keyword arguments for a non-streamed ``messages.create`` with tools.
+
+        ``tool_choice`` is always ``auto`` (forced choice is a 400 on Claude 5.x); thinking
+        follows the provider config (``disabled`` -> ``between_tools``), whose between-call
+        updates come back as thinking blocks that the caller resends verbatim.
+        """
+        return {
+            "model": self._model,
+            "max_tokens": request.max_tokens,
+            "system": [
+                {"type": "text", "text": request.system, "cache_control": {"type": "ephemeral"}}
+            ],
+            "messages": [dict(m) for m in request.messages],
+            "tools": [dict(t) for t in request.tools],
+            "tool_choice": {"type": "auto"},
+            "output_config": {"effort": request.effort},
+            "thinking": self.thinking_param(),
+            "timeout": timeout_s,
+        }
+
+    async def step(self, request: AgentLLMRequest) -> AgentTurn:
+        """One agent step under the same retry/timeout/secret rules as :meth:`stream`: one
+        jittered retry on 429/529/5xx/connection errors if budget remains, otherwise
+        :class:`LLMUnavailableError`. Content is never logged."""
+        deadline = self._clock() + request.timeout_s
+        attempt = 1
+        while True:
+            try:
+                return await self._step_attempt(request, deadline)
+            except _Retryable as exc:
+                delay = self._rng.uniform(*JITTER_S)
+                remaining = deadline - self._clock() - delay
+                if attempt >= 2 or remaining < self._min_retry_budget_s:
+                    raise LLMUnavailableError(
+                        f"Anthropic unavailable after {attempt} attempt(s) ({exc.reason})"
+                    ) from None
+                log.warning(
+                    "llm_retry", provider="anthropic", reason=exc.reason, delay_s=round(delay, 3)
+                )
+                await self._sleep(delay)
+                attempt += 1
+
+    async def _step_attempt(self, request: AgentLLMRequest, deadline: float) -> AgentTurn:
+        remaining = deadline - self._clock()
+        if remaining <= 0:
+            raise LLMUnavailableError("Anthropic call skipped: no time budget left")
+        messages = cast(_MessagesAPI, self._client.messages)
+        try:
+            message = await asyncio.wait_for(
+                messages.create(**self.build_step_params(request, remaining)), remaining
+            )
+        except Exception as exc:
+            raise _classify(exc) from None
+        return _to_turn(message, self._model)
+
+
+def _block_dict(block: Any) -> dict[str, Any]:
+    """A response content block as the plain dict to resend (signatures kept, nulls dropped)."""
+    if isinstance(block, dict):
+        return copy.deepcopy(block)
+    dump = getattr(block, "model_dump", None)
+    if callable(dump):
+        return cast(dict[str, Any], dump(mode="json", exclude_none=True))
+    raise LLMUnavailableError("Anthropic returned a malformed content block")
+
+
+def _to_turn(message: Any, default_model: str) -> AgentTurn:
+    stop_reason = getattr(message, "stop_reason", None)
+    blocks = getattr(message, "content", None)
+    if not isinstance(stop_reason, str) or not isinstance(blocks, list):
+        raise LLMUnavailableError("Anthropic returned a malformed message")
+    content = tuple(_block_dict(b) for b in blocks)
+    try:
+        tool_uses = tool_uses_of(content)
+    except (KeyError, TypeError, ValueError):
+        raise LLMUnavailableError("Anthropic returned a malformed tool_use block") from None
+    usage = _UsageAccumulator()
+    usage.update(getattr(message, "usage", None))
+    return AgentTurn(
+        content=content,
+        tool_uses=tool_uses,
+        stop_reason=stop_reason,
+        usage=usage.freeze(),
+        model=getattr(message, "model", None) or default_model,
+    )
 
 
 class _UsageAccumulator:

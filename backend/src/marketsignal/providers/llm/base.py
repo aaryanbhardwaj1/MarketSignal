@@ -63,3 +63,61 @@ class LLMProvider(Protocol):
     def model_id(self) -> str: ...
 
     def stream(self, request: LLMRequest) -> AsyncIterator[LLMChunk]: ...
+
+
+# --- one non-streamed agent step with tools (Phase 4, research mode; ADR-0007) ----------------
+
+
+@dataclass(frozen=True, slots=True)
+class AgentLLMRequest:
+    """One agent step. ``messages`` is the append-only transcript (assistant ``content`` resent
+    verbatim, thinking blocks included); ``tools`` are Anthropic tool definitions. Tool choice
+    is always ``auto`` (forced choice is rejected by Claude 5.x)."""
+
+    system: str
+    messages: tuple[dict[str, Any], ...]
+    tools: tuple[dict[str, Any], ...]
+    max_tokens: int
+    effort: str
+    timeout_s: float
+
+
+@dataclass(frozen=True, slots=True)
+class ToolUse:
+    id: str
+    name: str
+    input: dict[str, Any]
+
+
+@dataclass(frozen=True, slots=True)
+class AgentTurn:
+    """The model's reply to one step. ``content`` holds the raw assistant blocks exactly as
+    returned (thinking/redacted_thinking with signatures, text, tool_use) and must be resent
+    unchanged; it is never streamed, logged or persisted. ``tool_uses`` is the parsed view of
+    the tool_use blocks in block order."""
+
+    content: tuple[dict[str, Any], ...]
+    tool_uses: tuple[ToolUse, ...]
+    stop_reason: str
+    usage: LLMUsage
+    model: str
+
+
+class AgentLLM(Protocol):
+    """A provider that can run one tool-using agent step (non-streamed)."""
+
+    @property
+    def model_id(self) -> str: ...
+
+    async def step(self, request: AgentLLMRequest) -> AgentTurn:
+        """Raises :class:`LLMUnavailableError` on failure (after the retry policy)."""
+        ...
+
+
+def tool_uses_of(content: tuple[dict[str, Any], ...]) -> tuple[ToolUse, ...]:
+    """The tool_use blocks of an assistant ``content`` in block order."""
+    return tuple(
+        ToolUse(id=str(b["id"]), name=str(b["name"]), input=dict(b.get("input") or {}))
+        for b in content
+        if b.get("type") == "tool_use"
+    )
