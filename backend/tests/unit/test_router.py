@@ -57,7 +57,8 @@ def test_cue_rules_select_research(question: str, cue: str) -> None:
     d = route(question, requested="auto", persona="generalist")
     assert d.decided == "research"
     assert cue in d.cues
-    assert d.reason == "auto_cues"
+    # Phase 5: quantitative asks are analytics tasks (routed for the analytics tools).
+    assert d.reason in ("auto_cues", "analytics_task")
 
 
 @pytest.mark.parametrize(
@@ -98,6 +99,7 @@ def test_routing_is_deterministic_and_serializable() -> None:
         "decided": "research",
         "reason": "persona_default",
         "cues": list(first.cues),
+        "task_type": first.task_type,
     }
 
 
@@ -115,3 +117,39 @@ def test_unknown_persona_behaves_like_generalist_and_unknown_mode_is_rejected() 
         "marketing_strategy",
     }
     assert isinstance(route("x", requested=None, persona="generalist"), RouteDecision)
+
+
+@pytest.mark.parametrize(
+    ("question", "task"),
+    [
+        ("What complaints do younger customers mention about delivery?", "retrieval"),
+        ("What did the Q3 strategy review decide about personalization?", "retrieval"),
+        (
+            "What percentage of respondents aged 18-21 named delivery speed as their top "
+            "pain point?",
+            "analytics",
+        ),
+        ("How many reviews gave the Pivot Trainer a rating of 2 or lower?", "analytics"),
+        ("What is the average NPS by region?", "analytics"),
+        ("Which three SKUs have the highest return rate?", "analytics"),
+        (
+            "Which segment reports the highest delivery dissatisfaction, and what do those "
+            "customers say is causing it?",
+            "mixed",
+        ),
+        ("What share of reviews mention sizing problems and what do they complain about?", "mixed"),
+    ],
+)
+def test_task_type_is_classified_deterministically(question: str, task: str) -> None:
+    d = route(question, requested="auto", persona="generalist")
+    assert d.task_type == task
+    if task in ("analytics", "mixed"):
+        assert d.decided == "research"  # only the agent has the analytics tools
+        assert task in d.cues
+
+
+def test_explicit_standard_is_honoured_for_an_analytics_question() -> None:
+    d = route("What is the average NPS by region?", requested="standard", persona="generalist")
+    assert d.decided == "standard"
+    assert d.task_type == "analytics"  # recorded, so the trace shows the user overrode it
+    assert d.as_dict()["task_type"] == "analytics"

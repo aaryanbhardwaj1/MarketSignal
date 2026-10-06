@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 Mode = Literal["standard", "research"]
+TaskType = Literal["retrieval", "analytics", "mixed"]
 RequestedMode = Literal["auto", "standard", "research"]
 Reason = Literal[
     "explicit_request",
@@ -29,6 +30,7 @@ Reason = Literal[
     "persona_default",
     "persona_auto_cues",
     "persona_auto_no_cue",
+    "analytics_task",
 ]
 
 # ADR-0018: Customer Insights → standard; Growth, Brand, Marketing → research; Generalist → auto.
@@ -64,6 +66,21 @@ _CLASS_CUES: dict[str, re.Pattern[str]] = {
     "financial": re.compile(r"\b(revenue|margins?|financials?|profit|earnings|budget|spend)\b", _I),
     "internal": re.compile(r"\b(roadmap|pilot|internal|memo|leadership|strategy review)\b", _I),
 }
+# Task type (Phase 5): quantitative asks need the deterministic analytics tools (only the agent
+# has them); qualitative asks need evidence retrieval; both together are mixed.
+_QUANT = re.compile(
+    r"%|\b(how many|how much|(what|which) (percentage|percent|share|proportion|fraction)|"
+    r"percentage of|share of|proportion of|average|mean|median|total|sum of|count of|"
+    r"number of|highest|lowest|top \d+|bottom \d+|top (three|five|ten)|rank(ing)?|"
+    r"by (segment|region|channel|age( group)?|category|month|quarter|product|sku)|"
+    r"break(s)? down|breakdown|distribution)\b",
+    _I,
+)
+_QUAL = re.compile(
+    r"\b(say|says|said|saying|mention(s|ed)?|complain(t|ts|s|ing)?|describe[sd]?|feel|think|"
+    r"why|reasons?|caus(e|es|ed|ing)|themes?|quotes?|verbatims?|opinions?)\b",
+    _I,
+)
 _FOLLOW_UP = re.compile(
     r"^\s*(and|also|what about|how about|why|so)\b|^\W*(\w+\W+){0,3}(it|they|that|those|these|"
     r"this|them)\b",
@@ -78,6 +95,7 @@ class RouteDecision:
     decided: Mode
     reason: Reason
     cues: tuple[str, ...]
+    task_type: TaskType = "retrieval"
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -86,7 +104,16 @@ class RouteDecision:
             "decided": self.decided,
             "reason": self.reason,
             "cues": list(self.cues),
+            "task_type": self.task_type,
         }
+
+
+def task_type(question: str) -> TaskType:
+    """Deterministic task type: quantitative and qualitative cues together → mixed."""
+    quant, qual = bool(_QUANT.search(question)), bool(_QUAL.search(question))
+    if quant and qual:
+        return "mixed"
+    return "analytics" if quant else "retrieval"
 
 
 def cues(question: str, recent_questions: tuple[str, ...] = ()) -> tuple[str, ...]:
@@ -115,14 +142,20 @@ def route(
     if requested not in (None, "auto", "standard", "research"):
         raise ValueError(f"unknown mode {requested!r}")
     persona_default = PERSONA_DEFAULT_MODES.get(persona, "auto")
-    if requested in ("standard", "research"):
-        return RouteDecision(requested, persona_default, requested, "explicit_request", ())
+    task = task_type(question)
+    if requested in ("standard", "research"):  # the user's choice always wins
+        return RouteDecision(requested, persona_default, requested, "explicit_request", (), task)
+    if task != "retrieval":
+        # Exact quantitative work needs the deterministic analytics tools, which only the
+        # bounded agent can call: this overrides a persona's soft default (ADR-0015 note).
+        fired = (*cues(question, recent_questions), task)
+        return RouteDecision(requested, persona_default, "research", "analytics_task", fired, task)
     if requested is None and persona_default in ("standard", "research"):
-        return RouteDecision(None, persona_default, persona_default, "persona_default", ())
+        return RouteDecision(None, persona_default, persona_default, "persona_default", (), task)
     fired = cues(question, recent_questions)
     decided: Mode = "research" if fired else "standard"
     if requested == "auto":
         reason: Reason = "auto_cues" if fired else "auto_no_cue"
     else:
         reason = "persona_auto_cues" if fired else "persona_auto_no_cue"
-    return RouteDecision(requested, persona_default, decided, reason, fired)
+    return RouteDecision(requested, persona_default, decided, reason, fired, task)
