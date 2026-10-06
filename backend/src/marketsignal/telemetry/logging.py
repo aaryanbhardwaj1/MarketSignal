@@ -1,8 +1,9 @@
 """Structured JSON logging with credential redaction.
 
 Logs are correlated by ``request_id`` (and later ``run_id`` / ``workspace_id``) through
-structlog context variables. A redaction processor runs before rendering so that tokens,
-cookies, passwords and DSN credentials never reach log sinks.
+structlog context variables. A redaction processor runs before rendering (after tracebacks are
+formatted) so that tokens, cookies, passwords, provider keys and DSN credentials never reach
+log sinks. The HTTP client loggers are pinned to WARNING so request details are never logged.
 """
 
 from __future__ import annotations
@@ -37,10 +38,20 @@ _REDACTED = "[REDACTED]"
 # user:password@ in DSNs, and token-bearing query parameters in URLs.
 _DSN_CREDENTIALS = re.compile(r"(?P<scheme>[a-z][a-z0-9+.-]*://)[^/@\s:]+:[^/@\s]+@", re.I)
 _TOKEN_QUERY = re.compile(r"(?P<key>[?&](?:st|token|access_token|api_key)=)[^&\s]+", re.I)
+# Credential shapes, matched by pattern so the redactor never needs the secret value itself.
+_CREDENTIAL_SHAPES = re.compile(
+    r"sk-ant-[A-Za-z0-9_-]{8,}"  # Anthropic API keys
+    r"|(?<=Bearer )[^\s,;\"']+"  # bearer values
+    r"|eyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}",  # JWTs (stream tokens)
+    re.I,
+)
+# Stdlib loggers that bypass structlog and can log request details at DEBUG.
+_HTTP_CLIENT_LOGGERS = ("httpx", "httpcore", "anthropic")
 
 
 def _scrub_string(value: str) -> str:
     value = _DSN_CREDENTIALS.sub(r"\g<scheme>[REDACTED]@", value)
+    value = _CREDENTIAL_SHAPES.sub(_REDACTED, value)
     return _TOKEN_QUERY.sub(r"\g<key>[REDACTED]", value)
 
 
@@ -97,14 +108,16 @@ def _install_access_log_scrubber() -> None:
 
 def configure_logging(level: str = "INFO", json: bool = True) -> None:
     _install_access_log_scrubber()
+    for name in _HTTP_CLIENT_LOGGERS:
+        logging.getLogger(name).setLevel(logging.WARNING)
     renderer: Any = structlog.processors.JSONRenderer() if json else structlog.dev.ConsoleRenderer()
     structlog.configure(
         processors=[
             structlog.contextvars.merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.TimeStamper(fmt="iso", utc=True),
-            redact_sensitive,
             structlog.processors.format_exc_info,
+            redact_sensitive,  # after format_exc_info, so rendered tracebacks are scrubbed too
             renderer,
         ],
         wrapper_class=structlog.make_filtering_bound_logger(logging.getLevelNamesMapping()[level]),
