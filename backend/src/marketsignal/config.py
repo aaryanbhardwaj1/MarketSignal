@@ -11,7 +11,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import AliasChoices, Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -135,6 +135,41 @@ class Settings(BaseSettings):
     balance_per_source_max: int = Field(default=3, ge=1)  # final list (§15)
     balance_pool_source_cap: int = Field(default=7, ge=1)  # fused pool, about 1/3 of 20 (§13)
     retrieval_trace_persist: bool = True
+
+    # ── Grounded answering (Phase 3, plan §3, §19-21; ADR-0004/0008/0015) ──
+    # The key is read from MS_ANTHROPIC_API_KEY or ANTHROPIC_API_KEY; it is a SecretStr so it
+    # never appears in reprs, logs or error messages, and it is never stored or traced.
+    anthropic_api_key: SecretStr | None = Field(
+        default=None, validation_alias=AliasChoices("MS_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY")
+    )
+    llm_provider: str = "anthropic"  # anthropic | fake (tests, offline demo)
+    llm_model: str = "claude-sonnet-5-5"  # synthesis model (plan §5)
+    llm_effort: str = "low"  # output_config.effort
+    llm_max_tokens: int = Field(default=8000, ge=256)
+    llm_thinking: str = "disabled"  # disabled | adaptive (display omitted; never streamed)
+    llm_timeout_s: float = Field(default=40.0, gt=0)
+    pack_max_items: int = Field(default=12, ge=1, le=12)  # aliases E1..E12
+    pack_max_tokens: int = Field(default=9000, ge=500)
+    pack_item_max_tokens: int = Field(default=900, ge=100)
+    pack_candidates: int = Field(default=24, ge=1)
+    run_deadline_s: float = Field(default=60.0, gt=0)
+    run_gather_budget_s: float = Field(default=35.0, gt=0)
+    regeneration_min_remaining_s: float = Field(default=15.0, ge=0)
+    # SSE keep-alive: FastAPI's native EventSourceResponse sends ': ping' every 15 s (plan §21).
+    sse_token_coalesce_ms: int = Field(default=100, ge=0)
+    sse_poll_interval_s: float = Field(default=1.0, gt=0)  # cross-process fallback
+    # HS256 key: at least 32 bytes (RFC 7518 §3.2). The dev default is refused in prod.
+    stream_token_secret: SecretStr = SecretStr("dev-only-insecure-stream-token-secret-0001")
+    stream_token_replay_s: int = Field(default=900, ge=0)  # 15-minute replay window
+
+
+def check_production_secrets(settings: Settings) -> None:
+    """Refuse to run in prod with development secrets or a short stream-token key."""
+    secret = settings.stream_token_secret.get_secret_value()
+    if len(secret.encode()) < 32:
+        raise ValueError("MS_STREAM_TOKEN_SECRET must be at least 32 bytes")
+    if settings.env == "prod" and secret.startswith("dev-only"):
+        raise ValueError("MS_STREAM_TOKEN_SECRET must be set in production")
 
 
 @lru_cache(maxsize=1)

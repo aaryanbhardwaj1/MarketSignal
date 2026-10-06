@@ -14,6 +14,7 @@ def _settings(**overrides: object) -> Settings:
         "database_url": SecretStr(UNREACHABLE_DB),
         "redis_url": None,
         "log_json": False,
+        "stream_token_secret": SecretStr("unit-test-stream-token-secret-0123456789"),
     }
     base.update(overrides)
     return Settings(**base)  # type: ignore[arg-type]
@@ -73,3 +74,17 @@ def test_every_error_uses_the_envelope() -> None:
     body = invalid.json()["error"]
     assert body["code"] == "VALIDATION_ERROR"
     assert {f["location"] for f in body["fields"]} >= {"body.code", "body.name"}
+
+
+def test_short_or_dev_stream_secrets_are_refused() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="at least 32 bytes"):
+        create_app(_settings(stream_token_secret=SecretStr("short")))
+    with pytest.raises(ValueError, match="must be set in production"):
+        create_app(
+            _settings(
+                env="prod",
+                stream_token_secret=SecretStr("dev-only-insecure-stream-token-secret-0001"),
+            )
+        )

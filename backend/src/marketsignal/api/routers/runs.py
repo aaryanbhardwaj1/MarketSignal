@@ -1,0 +1,218 @@
+"""Conversations, standard-mode runs and the SSE run stream (plan §21; ADR-0008, D7, D8).
+
+* ``POST /conversations/{cid}/runs`` creates the run (and the user message) and returns
+  ``202 {run_id, stream_url}`` at once; the run executes as a background task that keeps going
+  if the client disconnects (a disconnect is not a cancel).
+* ``GET /runs/{rid}/events?st=…`` streams the run's events: first every persisted event with
+  ``seq > Last-Event-ID`` (header or ``?last_event_id``), then the live tail, ending after
+  ``done``. Replay and live tail read the same ``run_events`` rows, so a reconnect receives
+  exactly the missed events. FastAPI's native ``EventSourceResponse`` sends ``: ping`` every
+  15 s.
+* ``POST /runs/{rid}/cancel`` cancels the run task; the run still ends with ``done``
+  (``termination_state = cancelled``).
+Phase 3 serves ``standard`` mode only: ``auto`` is treated as standard (the router is Phase 4)
+and ``research`` is refused.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import uuid
+from collections.abc import AsyncIterator
+from typing import Annotated, Any, Literal
+
+from fastapi import APIRouter, Depends, Header, Query, Request
+from fastapi.sse import EventSourceResponse, ServerSentEvent
+from pydantic import BaseModel, Field
+from sqlalchemy import text
+
+from marketsignal.api.deps import Factory, Principal, Scope, SettingsDep
+from marketsignal.api.errors import AppError
+from marketsignal.db.session import scoped_session
+from marketsignal.domain.enums import SourceClass
+from marketsignal.generation.prompts import PROMPT_VERSION
+from marketsignal.runs import store, tokens
+from marketsignal.runs.executor import RunRequest
+
+router = APIRouter(prefix="/api/workspaces/{ws}", tags=["runs"])
+
+
+class ConversationIn(BaseModel):
+    title: str = Field(default="", max_length=200)
+    persona: str = Field(default="generalist", max_length=40)
+
+
+class RunIn(BaseModel):
+    question: str = Field(min_length=1, max_length=2000)
+    mode: Literal["auto", "standard", "research"] = "auto"
+    source_classes: list[SourceClass] = Field(default_factory=list, max_length=5)
+
+
+@router.post("/conversations", status_code=201)
+async def create_conversation(
+    scope: Scope, factory: Factory, body: ConversationIn
+) -> dict[str, Any]:
+    conversation_id = await store.create_conversation(
+        factory, scope, persona=body.persona, title=body.title
+    )
+    return {"conversation_id": str(conversation_id)}
+
+
+@router.get("/conversations/{conversation_id}/messages")
+async def list_messages(
+    scope: Scope, factory: Factory, conversation_id: uuid.UUID
+) -> list[dict[str, Any]]:
+    async with scoped_session(factory, scope) as session:
+        exists = (
+            await session.execute(
+                text("SELECT 1 FROM conversations WHERE workspace_id = :ws AND id = :c"),
+                {"ws": scope.workspace_id, "c": conversation_id},
+            )
+        ).first()
+        if exists is None:
+            raise AppError(404, "CONVERSATION_NOT_FOUND", "conversation not found")
+        rows = await session.execute(
+            text(
+                "SELECT id, role, content, citations, sections, status, query_run_id, created_at "
+                "FROM messages WHERE workspace_id = :ws AND conversation_id = :c "
+                "ORDER BY created_at, id"
+            ),
+            {"ws": scope.workspace_id, "c": conversation_id},
+        )
+        return [
+            {
+                "message_id": str(r[0]),
+                "role": r[1],
+                "content": r[2],
+                "citations": r[3],
+                "sections": r[4],
+                "status": r[5],
+                "run_id": str(r[6]) if r[6] else None,
+                "created_at": r[7].isoformat(),
+            }
+            for r in rows.all()
+        ]
+
+
+@router.post("/conversations/{conversation_id}/runs", status_code=202)
+async def start_run(
+    request: Request,
+    scope: Scope,
+    factory: Factory,
+    settings: SettingsDep,
+    principal: Principal,
+    conversation_id: uuid.UUID,
+    body: RunIn,
+) -> dict[str, Any]:
+    if body.mode == "research":
+        raise AppError(
+            422, "MODE_UNAVAILABLE", "research mode arrives in Phase 4; use standard or auto"
+        )
+    state = await store.conversation_state(factory, scope, conversation_id)
+    if state is None:
+        raise AppError(404, "CONVERSATION_NOT_FOUND", "conversation not found")
+    service = request.app.state.retrieval_service
+    run_id = await store.create_run(
+        factory,
+        scope,
+        conversation_id=conversation_id,
+        question=body.question.strip(),
+        mode="standard",
+        persona=state.persona,
+        config_hash=service.config_hash,
+        prompt_version=PROMPT_VERSION,
+    )
+    run_request = RunRequest(
+        run_id=run_id,
+        scope=scope,
+        conversation_id=conversation_id,
+        question=body.question.strip(),
+        persona=state.persona,
+        source_classes=tuple(dict.fromkeys(c.value for c in body.source_classes)),
+    )
+    task = asyncio.create_task(request.app.state.run_executor().execute(run_request))
+    tasks: dict[uuid.UUID, asyncio.Task[None]] = request.app.state.run_tasks
+    tasks[run_id] = task
+    task.add_done_callback(lambda _: tasks.pop(run_id, None))
+    stream_token = tokens.issue(
+        settings.stream_token_secret.get_secret_value(),
+        run_id=run_id,
+        workspace_code=scope.workspace_code,
+        subject=principal,
+        ttl_s=int(settings.run_deadline_s) + settings.stream_token_replay_s,
+    )
+    base = f"/api/workspaces/{scope.workspace_code}/runs/{run_id}"
+    return {"run_id": str(run_id), "stream_url": f"{base}/events?st={stream_token}"}
+
+
+@router.get("/runs/{run_id}")
+async def get_run(scope: Scope, factory: Factory, run_id: uuid.UUID) -> dict[str, Any]:
+    run = await store.get_run(factory, scope, run_id)
+    if run is None:
+        raise AppError(404, "RUN_NOT_FOUND", "run not found")
+    return {k: (str(v) if isinstance(v, uuid.UUID) else v) for k, v in run.items()}
+
+
+@router.post("/runs/{run_id}/cancel", status_code=202)
+async def cancel_run(
+    request: Request, scope: Scope, factory: Factory, run_id: uuid.UUID
+) -> dict[str, Any]:
+    run = await store.get_run(factory, scope, run_id)
+    if run is None:
+        raise AppError(404, "RUN_NOT_FOUND", "run not found")
+    task = request.app.state.run_tasks.get(run_id)
+    cancelled = bool(task and not task.done() and task.cancel())
+    return {"run_id": str(run_id), "cancel_requested": cancelled, "status": run["status"]}
+
+
+async def authorized_stream(
+    scope: Scope,
+    factory: Factory,
+    settings: SettingsDep,
+    run_id: uuid.UUID,
+    st: Annotated[str, Query(min_length=10, max_length=2000)],
+) -> uuid.UUID:
+    """Validated *before* the stream starts (a generator cannot turn errors into a status code):
+    a bad, expired or foreign token and an unknown run all look like ``404``."""
+    try:
+        tokens.verify(
+            settings.stream_token_secret.get_secret_value(),
+            st,
+            run_id=run_id,
+            workspace_code=scope.workspace_code,
+        )
+    except tokens.InvalidStreamTokenError as exc:
+        raise AppError(404, "RUN_NOT_FOUND", "run not found") from exc
+    if await store.get_run(factory, scope, run_id) is None:
+        raise AppError(404, "RUN_NOT_FOUND", "run not found")
+    return run_id
+
+
+@router.get("/runs/{run_id}/events", response_class=EventSourceResponse)
+async def run_events(
+    request: Request,
+    scope: Scope,
+    factory: Factory,
+    settings: SettingsDep,
+    run_id: Annotated[uuid.UUID, Depends(authorized_stream)],
+    last_event_id: Annotated[int | None, Query(ge=0)] = None,
+    last_event_id_header: Annotated[str | None, Header(alias="Last-Event-ID")] = None,
+) -> AsyncIterator[ServerSentEvent]:
+    after = last_event_id or 0
+    if last_event_id_header and last_event_id_header.isdigit():
+        after = max(after, int(last_event_id_header))
+    broker = request.app.state.run_broker
+    while True:
+        events = await store.load_events(factory, scope, run_id, after)
+        for event in events:
+            after = event.seq
+            yield ServerSentEvent(data=event.payload, event=event.type, id=str(event.seq))
+            if event.type == "done":
+                return
+        if await request.is_disconnected():
+            return
+        if not events:
+            run = await store.get_run(factory, scope, run_id)
+            if run is None or run["status"] != "running":
+                return  # finished and nothing newer than Last-Event-ID: the stream is complete
+        await broker.wait(run_id, settings.sse_poll_interval_s)
