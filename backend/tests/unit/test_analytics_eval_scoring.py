@@ -221,3 +221,14 @@ def test_gates_not_evaluated_without_citations_and_foreign_run_results_fail() ->
     assert not gates["results_in_run"]["pass"]
     missing = scored(outcome(item(), None))
     assert summarize([missing])["hard_gates"]["items_have_final"]["missing"] == ["A-1"]
+
+
+def test_marker_named_by_the_question_is_an_echo_not_a_leak() -> None:
+    """A Northstar question naming 'Southpeak' may echo it; only unprompted markers leak."""
+    from marketsignal.evaluation.grounded import SOUTHPEAK_MARKERS
+
+    question = "Pull the marketplace conversion for Southpeak Outdoor from the channel data."
+    answer = "The evidence does not cover Southpeak Outdoor."
+    echoed = [m for m in SOUTHPEAK_MARKERS if m in answer and m not in question]
+    assert echoed == []
+    assert [m for m in SOUTHPEAK_MARKERS if m in "Ridgeline sales" and m not in question]
