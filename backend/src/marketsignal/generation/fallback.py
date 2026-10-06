@@ -7,7 +7,9 @@
   with extractive snippets: evidence, no prose. A fluent but unverified answer is never shown.
   Instruction-like sentences (planted prompt injections, :mod:`.safe_text`) are replaced by a
   neutral marker in the snippet and such items are listed after normal evidence (Phase 5, A2);
-  the citation is kept, so the source viewer still shows the original text.
+  the citation is kept, so the source viewer still shows the original text. Computed
+  analytics results (Phase 5) are listed first, as deterministic value lines (value, unit,
+  denominator, provenance) with their ``[[result:<id>]]`` marker and result citation card.
 Both are rendered in the canonical format (``[[HANDLE]]`` markers) and pass the same rules as
 generated answers (no URLs, HTML or ids).
 """
@@ -25,7 +27,7 @@ from marketsignal.generation.safe_text import (
     instruction_spans,
     is_instruction_like,
 )
-from marketsignal.generation.types import EvidencePack, PackItem
+from marketsignal.generation.types import EvidencePack, PackItem, ResultItem, result_marker
 
 SNIPPET_CHARS = 280
 EVIDENCE_ONLY_ITEMS = 8
@@ -116,6 +118,17 @@ def _safe_label(value: str, default: str) -> str:
     return default if is_instruction_like(value) else _clean(value, default)
 
 
+def result_unit(item: ResultItem) -> str:
+    """One deterministic line per computed result: values, units, denominators, provenance.
+    Labels come from documents, so they are cleaned like snippets."""
+    values = "; ".join(_clean(line) for line in item.fallback_lines) or "no values"
+    provenance = (
+        f"{_safe_label(item.source_code, 'source')} v{item.source_version}, "
+        f"{_safe_label(item.table, 'table')}, {item.operation}"
+    )
+    return f"**Computed result** ({provenance}): {values} {result_marker(item.result_id)}"
+
+
 def evidence_only(
     pack: EvidencePack, reason: str, limit: int = EVIDENCE_ONLY_ITEMS
 ) -> DeterministicAnswer:
@@ -132,6 +145,10 @@ def evidence_only(
     ]
     units = []
     withheld = []
+    for result in pack.results:
+        unit = result_unit(result)
+        units.append(unit)
+        lines.append(f"- {unit}")
     for item in items:
         text, hidden = safe_snippet(item)
         if hidden:
@@ -149,7 +166,7 @@ def evidence_only(
     return DeterministicAnswer(
         content="\n".join(lines).rstrip() + "\n",
         sections=sections,
-        citations=[i.card() for i in items],
+        citations=[*(r.card() for r in pack.results), *(i.card() for i in items)],
     )
 
 

@@ -66,8 +66,11 @@ _HEADING_KEYS: Final[Mapping[str, str]] = MappingProxyType(
 
 # Anything shaped like an alias citation, including malformed ones ([E], [E123], [e3], [ E3 ],
 # [E1, E2]). Only an exact ``[E\d{1,2}]`` naming a pack item survives verification.
-ALIASISH_RE: Final = re.compile(r"\[\s*[Ee]\s*\d*(?:\s*,\s*[Ee]?\s*\d+)*\s*\]")
+# Alias-like markers: evidence ``[E#]`` and (Phase 5) computed-result ``[R#]`` attempts.
+ALIASISH_RE: Final = re.compile(r"\[\s*[EeRr]\s*\d*(?:\s*,\s*[EeRr]?\s*\d+)*\s*\]")
 INFERENCE_RE: Final = re.compile(r"\[\s*inference\s*\]", re.IGNORECASE)
+# Any canonical marker: evidence ``[[HANDLE]]`` and computed-result ``[[result:<uuid>]]`` (Phase 5;
+# number extraction strips both, so a result id's digit runs are never read as figures).
 CANONICAL_MARKER_RE: Final = re.compile(r"\[\[[^\[\]\n]{0,120}\]\]")
 _MARKER: Final = rf"{CANONICAL_MARKER_RE.pattern}|{ALIASISH_RE.pattern}|(?i:{INFERENCE_RE.pattern})"
 _MARKERS_RE: Final = re.compile(_MARKER)

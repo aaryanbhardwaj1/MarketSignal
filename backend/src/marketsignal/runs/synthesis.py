@@ -13,7 +13,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import time
-from collections.abc import AsyncGenerator, Callable
+from collections.abc import AsyncGenerator, Callable, Mapping, Sequence
 from typing import Any
 
 from marketsignal.agent.summary import ResearchSummary
@@ -21,7 +21,8 @@ from marketsignal.config import Settings
 from marketsignal.db.session import SessionFactory
 from marketsignal.generation.aliases import AliasGate, GateCitation, GateText, GateWarning
 from marketsignal.generation.prompts import build_system_prompt, render_user_turn
-from marketsignal.generation.types import EvidencePack, VerificationReport
+from marketsignal.generation.results import with_results
+from marketsignal.generation.types import EvidencePack, ResultItem, VerificationReport
 from marketsignal.generation.verifier import (
     VERIFIER_ERROR,
     VerifiedAnswer,
@@ -65,12 +66,19 @@ async def generate_and_verify(
     *,
     factory: SessionFactory | None = None,
     research_summary: ResearchSummary | None = None,
+    results: Sequence[Mapping[str, Any]] = (),
 ) -> tuple[VerifiedAnswer | None, VerificationReport | None, str]:
-    """Generate, verify, and regenerate at most once. ``factory`` (optional, keyword-only)
-    persists one ``verification_attempts`` row per verified attempt (the executor always passes
-    it; without it nothing is recorded). ``research_summary`` (research runs) is bound to the
-    final pack and rendered into every attempt's user turn as ``<research_summary>``."""
+    """Generate, verify, and regenerate at most once.
+
+    ``factory`` (optional, keyword-only) persists one ``verification_attempts`` row per
+    verified attempt (the executor always passes it; without it nothing is recorded).
+    ``research_summary`` (research runs) is bound to the final pack and rendered into every
+    attempt's user turn as ``<research_summary>``. ``results`` (Phase 5, research runs) are
+    the agent's computed :class:`AnalyticsResult` dicts: they become ``[R#]`` aliases on the
+    pack (``generation/results.py``); when empty, a pack's existing results are kept."""
     audit = factory
+    if results:
+        pack = with_results(pack, results)
     rendered_summary = research_summary.bind_pack(pack).render() if research_summary else None
     if rendered_summary is not None:
         state.timings["research_summary_chars"] = len(rendered_summary)
@@ -218,7 +226,7 @@ async def generate(
         metadata={"run_id": str(req.run_id), "attempt": attempt},
     )
     gate = AliasGate.from_pack(pack)
-    by_alias = pack.by_alias()
+    by_alias: dict[str, Any] = {**pack.by_alias(), **pack.by_result_alias()}
     out = _Attempt()
     t0 = time.monotonic()
     try:
@@ -286,6 +294,21 @@ async def emit_gate(
             await writer.token(attempt, event.text)
         elif isinstance(event, GateCitation):
             item = by_alias[event.alias]
+            if isinstance(item, ResultItem):
+                await writer.emit(
+                    "citation",
+                    {
+                        "attempt": attempt,
+                        "alias": event.alias,
+                        "kind": "result",
+                        "result_id": item.result_id,
+                        "source_code": item.source_code,
+                        "dataset": item.dataset,
+                        "op": item.operation,
+                        "summary": item.summary,
+                    },
+                )
+                continue
             await writer.emit(
                 "citation",
                 {

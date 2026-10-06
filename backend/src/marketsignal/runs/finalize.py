@@ -26,12 +26,13 @@ log = get_logger(__name__)
 
 
 def without_sources(pack: EvidencePack, codes: frozenset[str] | set[str]) -> EvidencePack:
-    """The pack minus every item (every parent) of the given purged sources."""
+    """The pack minus every item (every parent) and computed result of the purged sources."""
     return EvidencePack(
         items=tuple(i for i in pack.items if i.source_code not in codes),
         tokens=pack.tokens,
         truncated=pack.truncated,
         dropped=pack.dropped,
+        results=tuple(r for r in pack.results if r.source_code not in codes),
     )
 
 
@@ -70,7 +71,9 @@ async def finish(
         pack = without_sources(pack, outcome.purged_codes)
         alt = await source_deleted_fallback(factory, req, writer, state, pack)
         content, sections, citations, report = alt.content, alt.sections, alt.citations, None
-    cited = [c["handle"] for c in citations]
+    # Result cards carry their source-version handle only for the store's purge checks; the
+    # run's cited handles (and the conversation's recent handles) are evidence handles.
+    cited = [c["handle"] for c in citations if c.get("kind") != "result"]
     await writer.emit(
         "final",
         {
@@ -102,7 +105,7 @@ async def source_deleted_fallback(
     writer.discard_pending()
     if writer.draft_open:
         await writer.emit("draft_reset", {"attempt": 0, "reason": "evidence_only"})
-    if survivors.empty:
+    if not survivors.has_sources:
         return fallback.abstention(await present_classes(factory, req.scope))
     return fallback.evidence_only(survivors, SOURCE_DELETED_DURING_RUN)
 

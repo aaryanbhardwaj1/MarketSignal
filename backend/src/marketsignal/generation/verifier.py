@@ -55,12 +55,15 @@ from marketsignal.generation.contract import (
     years_in,
 )
 from marketsignal.generation.prompts import DEFAULT_MAX_CITATIONS, visible_metadata
+from marketsignal.generation.results import result_supports
 from marketsignal.generation.types import (
-    ALIAS_RE,
+    ANY_ALIAS_RE,
     INFERENCE_TAG,
     EvidencePack,
     PackItem,
+    ResultItem,
     VerificationReport,
+    result_marker,
 )
 
 MAX_CITATIONS: Final = DEFAULT_MAX_CITATIONS  # default; runs pass settings.verifier_max_citations
@@ -106,7 +109,7 @@ _MAX_FEEDBACK_VIOLATIONS: Final = 8
 _MAX_OVER_CITED: Final = 8
 _TERMINAL_RE: Final = re.compile(r"[.!?][\"'\u201d\u2019)*_]*$")
 _TRAILING_MARKERS_RE: Final = re.compile(
-    r"(?:\s*(?:\[\[[^\[\]]*\]\]|\[E\d{1,2}\]|\[inference\]))+$"
+    r"(?:\s*(?:\[\[[^\[\]]*\]\]|\[[ER]\d{1,2}\]|\[inference\]))+$"
 )
 _SENTENCE_END_RE: Final = re.compile(r"[.!?]+[\"'\u201d\u2019)*_]*\s*$")
 _STRAY_BRACKETS_RE: Final = re.compile(r"\[\[+|\]\]+")
@@ -129,7 +132,7 @@ _STOPWORDS: Final = frozenset(
 # Fiscal/calendar labels are glued identifiers to the number extractor ("FY2025"), but the
 # year they name is still a temporal qualifier that must appear in what the model was shown.
 _FISCAL_RE: Final = re.compile(r"\b(?:FY|CY)['\u2019]?(\d{4}|\d{2})\b")
-_MARKERS_STRIP_RE: Final = re.compile(r"\[\[[^\[\]]*\]\]|\[E\d{1,2}\]")
+_MARKERS_STRIP_RE: Final = re.compile(r"\[\[[^\[\]]*\]\]|\[[ER]\d{1,2}\]")
 
 
 def _fiscal_year(digits: str) -> int:
@@ -169,6 +172,8 @@ class _Run:
     meta_phrases: dict[str, tuple[str, ...]]  # visible metadata phrases with a figure
     item_years: dict[str, frozenset[int]]  # years in each item's text and visible metadata
     years: frozenset[int]  # every year the model was shown (pack, metadata, question)
+    results: dict[str, ResultItem] = field(default_factory=dict)  # Phase 5: R# aliases
+    results_checked: list[str] = field(default_factory=list)
     repairs: list[str] = field(default_factory=list)
     unknown: list[str] = field(default_factory=list)
     numeric: list[str] = field(default_factory=list)
@@ -198,21 +203,30 @@ class _Run:
             self.unknown.append(marker)
 
     def note_checked(self, aliases: Iterable[str]) -> None:
-        self.checked.extend(a for a in aliases if a not in self.checked)
+        for alias in aliases:
+            seen = self.results_checked if alias in self.results else self.checked
+            if alias not in seen:
+                seen.append(alias)
 
     def unsupported(self, text: str, cited: tuple[str, ...]) -> list[NumberMention]:
         """Figures in ``text`` that the relevant evidence does not support.
 
-        A cited unit is checked against its cited items only: quantities against their text,
+        A cited unit is checked against its cited items only: quantities against their text
+        or, for cited ``[R#]`` results, against the result figures (``generation/results.py``
+        rules; a unit may cite both and take each number from either),
         temporal values (A1) against the years in their text or visible metadata. An uncited
         unit is checked against the whole pack, and its temporal values against every year
         the model was shown (pack, metadata, question). A visible metadata phrase ("Slide 7",
         A2) covers only the number inside that phrase; every other figure needs the text.
         """
+        evidence = tuple(alias for alias in cited if alias in self.aliases)
+        results = tuple(self.results[alias] for alias in cited if alias in self.results)
         if cited:
-            values = tuple(v for alias in cited for v in self.item_values[alias])
-            phrases = tuple(p for alias in cited for p in self.meta_phrases[alias])
-            years = frozenset().union(*(self.item_years[alias] for alias in cited))
+            values = tuple(v for alias in evidence for v in self.item_values[alias])
+            phrases = tuple(p for alias in evidence for p in self.meta_phrases[alias])
+            years = frozenset().union(
+                *(self.item_years[alias] for alias in evidence), *(r.years for r in results)
+            )
         else:
             values = self.pack_values
             phrases = tuple(p for ps in self.meta_phrases.values() for p in ps)
@@ -226,7 +240,7 @@ class _Run:
             if mention.temporal:
                 if int(mention.mantissa) not in years:
                     missing.append(mention)
-            elif not is_faithful(mention, values):
+            elif not is_faithful(mention, values) and not result_supports(text, mention, results):
                 missing.append(mention)
         return missing
 
@@ -281,9 +295,9 @@ def _clean_unit(raw: str, key: str, index: int, run: _Run) -> _Unit | None:
 
     def replace(match: re.Match[str]) -> str:
         marker = match.group(0)
-        exact = ALIAS_RE.fullmatch(marker)
-        alias = f"E{exact.group(1)}" if exact else None
-        if alias is None or alias not in run.aliases:
+        exact = ANY_ALIAS_RE.fullmatch(marker)
+        alias = f"{exact.group(1)}{exact.group(2)}" if exact else None
+        if alias is None or (alias not in run.aliases and alias not in run.results):
             run.note_unknown(marker[1:-1])
             return " "
         if alias in cited:
@@ -335,8 +349,8 @@ def _repoint(unit: _Unit, key: str, index: int, run: _Run) -> _Unit | None:
     """Re-point a single citation when exactly one other item states every distinctive figure
     exactly, the cited item does not, and that item also contains every content word before
     the claim's first figure ("Acme revenue was" -> acme, revenue). No semantic guessing."""
-    if len(unit.cited) != 1:
-        return None
+    if len(unit.cited) != 1 or unit.cited[0] not in run.aliases:
+        return None  # computed results are never re-pointed
     quantities = [m for m in extract_numbers(unit.text) if not m.temporal]
     if not quantities or not all(_distinctive(m) for m in quantities):
         return None
@@ -496,7 +510,7 @@ def _gaps_rule(unit: _Unit, key: str, index: int, run: _Run) -> _Unit | None:
     uncited claim, so it keeps (or gets) an ``[inference]`` tag."""
     text = unit.text
     if unit.cited:
-        text = ALIAS_RE.sub(" ", text)
+        text = ANY_ALIAS_RE.sub(" ", text)
         run.repair(key, index, "removed citations")
     text = _tidy(INFERENCE_RE.sub(" ", text))
     if extract_numbers(text):
@@ -550,28 +564,30 @@ def _with_terminal(text: str) -> str:
     return text if _TERMINAL_RE.search(core) else f"{text}."
 
 
-def _canonical(text: str, aliases: dict[str, PackItem], cited: tuple[str, ...]) -> str:
-    """The unit's own checked aliases become ``[[HANDLE]]``; any other ``[E#]`` and every
-    other ``[[``/``]]`` is removed.
+def _canonical(text: str, run: _Run, cited: tuple[str, ...]) -> str:
+    """The unit's own checked aliases become ``[[HANDLE]]`` (``[R#]``: ``[[result:<id>]]``);
+    any other ``[E#]``/``[R#]`` and every other ``[[``/``]]`` is removed.
 
     Defence in depth behind :func:`strip_leaks`: the only canonical markers in the output are
     the ones written here for aliases the verifier actually checked for this unit, so an alias
     that a repair reassembled (``[E(5)2]`` -> ``[E2]``) can never render as a citation.
     """
-    pieces = ALIAS_RE.split(text)  # text, alias digits, text, ...
-    out = []
-    for odd, piece in zip(itertools.cycle((False, True)), pieces, strict=False):
-        if not odd:
-            out.append(_STRAY_BRACKETS_RE.sub("", piece))
-        elif f"E{piece}" in cited:
-            out.append(f"[[{aliases[f'E{piece}'].handle}]]")
+    pieces = ANY_ALIAS_RE.split(text)  # text, letter, digits, text, ...
+    out = [_STRAY_BRACKETS_RE.sub("", pieces[0])]
+    for letter, digits, piece in zip(pieces[1::3], pieces[2::3], pieces[3::3], strict=True):
+        alias = f"{letter}{digits}"
+        if alias in cited and alias in run.aliases:
+            out.append(f"[[{run.aliases[alias].handle}]]")
+        elif alias in cited and alias in run.results:
+            out.append(result_marker(run.results[alias].result_id))
+        out.append(_STRAY_BRACKETS_RE.sub("", piece))
     return _tidy("".join(out))
 
 
-def _render(final: dict[str, list[_Unit]], aliases: dict[str, PackItem]) -> dict[str, list[str]]:
+def _render(final: dict[str, list[_Unit]], run: _Run) -> dict[str, list[str]]:
     rendered: dict[str, list[str]] = {}
     for key, units in final.items():
-        texts = [_canonical(unit.text, aliases, unit.cited) for unit in units]
+        texts = [_canonical(unit.text, run, unit.cited) for unit in units]
         if key not in (FINDINGS, CONFLICTS):
             texts = [_with_terminal(text) for text in texts]
         rendered[key] = texts
@@ -609,7 +625,7 @@ def _structural(
     statements = [unit.text for unit in final.get(ANSWER, [])]
     statements += [unit.text for unit in final.get(GAPS, []) if not unit.inferred]
     insufficient = any(states_insufficient(text) for text in statements)
-    if citation_count == 0 and not pack.empty and not insufficient:
+    if citation_count == 0 and pack.has_sources and not insufficient:
         failures.append(NO_CITATIONS)
     if citation_count > max_citations:
         failures.append(TOO_MANY_CITATIONS)
@@ -631,6 +647,7 @@ def _new_run(pack: EvidencePack, question: str) -> _Run:
             alias: years_in([item.text, *metadata[alias]]) for alias, item in aliases.items()
         },
         years=years_in([*shown, question]),
+        results=pack.by_result_alias(),
     )
 
 
@@ -674,14 +691,17 @@ def verify_answer(
         final,
         max_citations,
         supported=lambda text, cited: not run.unsupported(text, cited),
-        parents={alias: item.handle for alias, item in aliases.items()},
+        parents={
+            **{alias: item.handle for alias, item in aliases.items()},
+            **{alias: f"result:{r.result_id}" for alias, r in run.results.items()},
+        },
     )
     final = budget.sections
     run.repairs.extend(budget.repairs)
     cited_in_order = [alias for units in final.values() for u in units for alias in u.cited]
     cited_aliases = list(dict.fromkeys(cited_in_order))
     failures = _structural(parsed, final, len(cited_in_order), pack, pack_truncated, max_citations)
-    sections = _render(final, aliases)
+    sections = _render(final, run)
     section_keys = list(sections)
     unknowns = [
         text
@@ -704,6 +724,8 @@ def verify_answer(
         rejected=run.rejected,
         evidence_checked=list(run.checked),
         evidence_handles=[aliases[alias].handle for alias in run.checked],
+        results_checked=list(run.results_checked),
+        result_ids=[run.results[alias].result_id for alias in run.results_checked],
         gap_statements=run.gaps,
         conflict_signals=detect_conflicts(pack),
         max_citations=max_citations,
@@ -716,7 +738,10 @@ def verify_answer(
     return VerifiedAnswer(
         content=_content(sections),
         sections=sections,
-        citations=[aliases[alias].card() for alias in cited_aliases],
+        citations=[
+            aliases[alias].card() if alias in aliases else run.results[alias].card()
+            for alias in cited_aliases
+        ],
         report=report,
         ok=not failures,
     )

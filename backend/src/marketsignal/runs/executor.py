@@ -39,6 +39,7 @@ from marketsignal.db.session import SessionFactory, scoped_session
 from marketsignal.domain.enums import Confidentiality
 from marketsignal.generation import fallback
 from marketsignal.generation.pack import PackLimits, build_pack
+from marketsignal.generation.results import with_results
 from marketsignal.generation.types import EvidencePack, VerificationReport
 from marketsignal.generation.verifier import VerifiedAnswer
 from marketsignal.providers.llm.base import LLMProvider
@@ -308,6 +309,7 @@ class StandardRunExecutor:
 
         max_conf = await self._llm_max_confidentiality(req.scope)
         research_summary: ResearchSummary | None = None
+        results: tuple[dict[str, Any], ...] = ()  # Phase 5: computed analytics results ([R#])
         if req.mode == "research" and self._agent_factory is not None:
             # 1. Research gather: the bounded agent over the governed tools (ADR-0007/0015).
             # The agent itself reports the planning/searching phases.
@@ -324,6 +326,7 @@ class StandardRunExecutor:
             )
             ranked = research.ranked
             research_summary = research.summary
+            results = research.results
             if research.fallback:  # plan §19: no plan or no successful search → standard gather
                 ranked = await self._standard_gather(
                     req,
@@ -357,11 +360,16 @@ class StandardRunExecutor:
         # written under a share lock on the pack's sources, so a purge either commits first
         # (and its source is dropped here) or sees this run's pack_handles and cleans up after
         # it (store module docstring; ADR-0016).
+        if results:  # [R#] aliases (attached before the freeze, which registers their sources)
+            pack = with_results(pack, results)
         gone = await store.freeze_pack(
             self._factory,
             req.scope,
             req.run_id,
-            items=[(i.handle, i.source_code) for i in pack.items],
+            # Computed results are frozen by their source version (WS/SRC@vN), so the purge
+            # guards that protect evidence (text-event withholding, pack-run cleanup) cover them.
+            items=[(i.handle, i.source_code) for i in pack.items]
+            + [(r.source_handle, r.source_code) for r in pack.results],
             normalized_query=" ".join(req.question.split()),
             standalone_query=req.question,
             retrieved_handles=[p.handle for p in ranked[: settings.pack_candidates]],
@@ -384,8 +392,9 @@ class StandardRunExecutor:
                 {"code": PACK_BUDGET_TRUNCATED, "message": "Some evidence did not fit the budget."},
             )
 
-        # 3. Empty pack: deterministic abstention, no LLM call.
-        if pack.empty:
+        # 3. Empty pack (no evidence and no computed result): deterministic abstention, no LLM
+        # call. An empty evidence pack with computed results is an analytics-only answer.
+        if not pack.has_sources:
             state.flag(EVIDENCE_EMPTY)
             state.states.add("no_relevant_evidence")
             present = await present_classes(self._factory, req.scope)
@@ -394,7 +403,15 @@ class StandardRunExecutor:
 
         # 4. Synthesis -> 5. verification (at most one regeneration) -> fallback.
         verified, report, reason = await self._generate_and_verify(
-            req, writer, state, pack, summary, recent_q, started, research_summary=research_summary
+            req,
+            writer,
+            state,
+            pack,
+            summary,
+            recent_q,
+            started,
+            research_summary=research_summary,
+            results=results,
         )
         if verified is None:
             state.states.add("generation_unavailable")
@@ -420,6 +437,7 @@ class StandardRunExecutor:
         started: float,
         *,
         research_summary: ResearchSummary | None = None,
+        results: tuple[dict[str, Any], ...] = (),
     ) -> tuple[VerifiedAnswer | None, VerificationReport | None, str]:
         return await generate_and_verify(
             self._settings,
@@ -433,6 +451,7 @@ class StandardRunExecutor:
             started,
             factory=self._factory,
             research_summary=research_summary,
+            results=results,
         )
 
     async def _finish(

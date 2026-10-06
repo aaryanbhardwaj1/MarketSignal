@@ -1,4 +1,7 @@
-"""Streaming hold-back gate for run-local ``[E#]`` alias citations (ADR-0004, plan §10.1, §21).
+"""Streaming hold-back gate for run-local ``[E#]``/``[R#]`` alias citations (ADR-0004, plan §10.1,
+§21). ``[R#]`` (Phase 5) cites a computed analytics result; it follows exactly the same grammar,
+hold-back and removal rules as ``[E#]`` with the letter ``R``; everything below that says
+``[E…]`` applies to ``[R…]`` too.
 
 The model cites evidence with run-local aliases ``[E1]``…``[E12]``. Text deltas arrive in
 arbitrary pieces, so an alias can be split across deltas (``"… growth [E"`` + ``"3] …"``). The
@@ -62,8 +65,9 @@ MAX_ATTEMPT_DIGITS = 4  # [E123] / [E1234] are malformed attempts; longer runs a
 MAX_HELD_CHARS = 2 + MAX_ATTEMPT_DIGITS  # "[E1234" — the longest undecided prefix
 
 _ASCII_DIGITS = frozenset("0123456789")
-_ALIAS_NAME_RE = re.compile(r"E[0-9]{1,2}")
-_PREFIX_TAIL_RE = re.compile(r"\[(?:E[0-9]*)?\Z")
+_ALIAS_LETTERS = frozenset("ER")  # E: evidence item, R: computed result (Phase 5)
+_ALIAS_NAME_RE = re.compile(r"[ER][0-9]{1,2}")
+_PREFIX_TAIL_RE = re.compile(r"\[(?:[ER][0-9]*)?\Z")
 _TAIL_CHARS = MAX_HELD_CHARS + 1
 
 
@@ -133,7 +137,7 @@ def _classify(buf: str, start: int, *, at_end: bool) -> tuple[_Verdict, int]:
     j = start + 1
     if j == n:
         return undecided, j
-    if buf[j] != "E":
+    if buf[j] not in _ALIAS_LETTERS:
         return _Verdict.LITERAL, j
     j += 1
     digits_start = j
@@ -177,7 +181,7 @@ def _validate_aliases(valid: Iterable[str]) -> frozenset[str]:
     aliases = frozenset(valid)
     bad = sorted(a for a in aliases if not _ALIAS_NAME_RE.fullmatch(a))
     if bad:
-        raise ValueError(f"invalid alias names (expected E<1-2 digits>): {bad}")
+        raise ValueError(f"invalid alias names (expected E|R<1-2 digits>): {bad}")
     return aliases
 
 
@@ -209,7 +213,7 @@ class AliasGate:
 
     @classmethod
     def from_pack(cls, pack: EvidencePack) -> AliasGate:
-        return cls(item.alias for item in pack.items)
+        return cls(pack.aliases())
 
     @property
     def valid_aliases(self) -> frozenset[str]:
