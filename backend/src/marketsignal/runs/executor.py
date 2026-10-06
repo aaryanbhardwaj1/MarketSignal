@@ -25,11 +25,8 @@ Termination follows the plan §28 precedence.
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import time
-import uuid
-from collections.abc import AsyncGenerator, Callable, Coroutine
-from dataclasses import dataclass, field
+from collections.abc import Callable, Coroutine
 from typing import Any
 
 from sqlalchemy import text
@@ -39,70 +36,41 @@ from marketsignal.db.scope import WorkspaceScope
 from marketsignal.db.session import SessionFactory, scoped_session
 from marketsignal.domain.enums import Confidentiality
 from marketsignal.generation import fallback
-from marketsignal.generation.aliases import AliasGate, GateCitation, GateText, GateWarning
 from marketsignal.generation.pack import PackLimits, build_pack
-from marketsignal.generation.prompts import SYSTEM_PROMPT, render_user_turn
 from marketsignal.generation.types import EvidencePack, VerificationReport
-from marketsignal.generation.verifier import VerifiedAnswer, regeneration_feedback, verify_answer
-from marketsignal.providers.llm.base import (
-    LLMChunk,
-    LLMProvider,
-    LLMRequest,
-    LLMStop,
-    LLMText,
-    LLMUnavailableError,
-    LLMUsage,
-)
+from marketsignal.generation.verifier import VerifiedAnswer
+from marketsignal.providers.llm.base import LLMProvider
 from marketsignal.retrieval.pipeline import RetrievalService
 from marketsignal.retrieval.traces import persist_trace
 from marketsignal.retrieval.types import RetrievalFilters
 from marketsignal.runs import store
 from marketsignal.runs.broker import RunBroker
-from marketsignal.runs.conversation import next_state
 from marketsignal.runs.events import EventWriter
+from marketsignal.runs.finalize import finish, present_classes, without_sources
+from marketsignal.runs.flags import (
+    CITATION_VERIFICATION_FAILED,
+    EVIDENCE_EMPTY,
+    PACK_BUDGET_TRUNCATED,
+    RETRIEVAL_FLAGS,
+    RETRIEVAL_TIMEOUT,
+    RUN_TIMEOUT,
+    SOURCE_DELETED_DURING_RUN,
+    STATUS,
+    termination_state,
+)
 from marketsignal.runs.reaper import status_for_termination
+from marketsignal.runs.state import RunRequest, _Answer, _Outcome, _RunState, _ToolFailureError
+from marketsignal.runs.synthesis import generate_and_verify
 from marketsignal.telemetry.logging import get_logger
+
+__all__ = ["RunRequest", "StandardRunExecutor", "termination_state"]
 
 log = get_logger(__name__)
 
-# Degradation flags (plan §28).
-EVIDENCE_EMPTY = "EVIDENCE_EMPTY"
-LLM_SYNTHESIS_UNAVAILABLE = "LLM_SYNTHESIS_UNAVAILABLE"
-MODEL_REFUSAL = "MODEL_REFUSAL"
-GENERATION_TRUNCATED = "GENERATION_TRUNCATED"
-CITATION_VERIFICATION_FAILED = "CITATION_VERIFICATION_FAILED"
-PACK_BUDGET_TRUNCATED = "PACK_BUDGET_TRUNCATED"
-SOURCE_DELETED_DURING_RUN = "SOURCE_DELETED_DURING_RUN"
-RUN_TIMEOUT = "RUN_TIMEOUT"
-RETRIEVAL_TIMEOUT = "RETRIEVAL_TIMEOUT"
-RETRIEVAL_FLAGS = frozenset(
-    {"RETRIEVAL_LEXICAL_FALLBACK", "RETRIEVAL_DENSE_UNAVAILABLE", "RERANKER_UNAVAILABLE"}
-)
-PRECEDENCE = (
-    "cancelled",
-    "timeout",
-    "tool_failure",
-    "no_relevant_evidence",
-    "generation_unavailable",
-    "retrieval_degraded",
-    "completed_with_limited_evidence",
-    "completed",
-)
 _RUN_FAILED = (
     "error",
     {"code": "RUN_FAILED", "message": "The run failed unexpectedly.", "retryable": True},
 )
-STATUS = {
-    "searching": "Searching workspace evidence",
-    "analyzing": "Assembling the evidence pack",
-    "synthesizing": "Writing a grounded answer",
-    "verifying": "Verifying citations and numbers",
-}
-
-
-def termination_state(states: set[str]) -> str:
-    """Highest-precedence state among those reached (plan §28)."""
-    return next((s for s in PRECEDENCE if s in states), "completed")
 
 
 async def _uninterruptible(coro: Coroutine[Any, Any, None]) -> None:
@@ -118,91 +86,6 @@ async def _uninterruptible(coro: Coroutine[Any, Any, None]) -> None:
     task.result()  # surfaces the inner task's own failure (or its own cancellation)
     if cancelled:
         raise asyncio.CancelledError
-
-
-class _ToolFailureError(Exception):
-    """A pipeline tool failed in a way the run reports (warning ``code``) rather than crashes."""
-
-    def __init__(self, code: str, message: str) -> None:
-        super().__init__(code)
-        self.code = code
-        self.message = message
-
-
-class _SourceWithheldError(Exception):
-    """The store withheld this run's draft text: a pack source was purged mid-generation."""
-
-
-# A finished run's conversation summary could not be updated (best effort after ``final``).
-CONVERSATION_STATE_NOT_UPDATED = "CONVERSATION_STATE_NOT_UPDATED"
-
-
-def _without_sources(pack: EvidencePack, codes: frozenset[str] | set[str]) -> EvidencePack:
-    """The pack minus every item (every parent) of the given purged sources."""
-    return EvidencePack(
-        items=tuple(i for i in pack.items if i.source_code not in codes),
-        tokens=pack.tokens,
-        truncated=pack.truncated,
-        dropped=pack.dropped,
-    )
-
-
-@dataclass(frozen=True, slots=True)
-class RunRequest:
-    run_id: uuid.UUID
-    scope: WorkspaceScope
-    conversation_id: uuid.UUID
-    question: str
-    persona: str
-    mode: str = "standard"
-    source_classes: tuple[str, ...] = ()
-
-
-@dataclass(frozen=True, slots=True)
-class _Answer:
-    """What the pipeline decided to publish; finalized outside the deadline scope."""
-
-    content: str
-    sections: dict[str, Any]
-    citations: list[dict[str, Any]]
-    report: VerificationReport | None
-    pack: EvidencePack
-
-
-@dataclass(frozen=True, slots=True)
-class _Outcome:
-    status: str = "completed"
-    error: str | None = None
-    notice: tuple[str, dict[str, Any]] | None = None  # warning/error emitted before done
-    cancelled: bool = False
-
-
-@dataclass
-class _Attempt:
-    raw: str = ""
-    stop: LLMStop | None = None
-    first_token_ms: float | None = None
-    duration_ms: float = 0.0
-
-
-@dataclass
-class _RunState:
-    flags: list[str] = field(default_factory=list)
-    states: set[str] = field(default_factory=set)
-    usage: dict[str, int] = field(default_factory=dict)
-    timings: dict[str, float] = field(default_factory=dict)
-    model: str | None = None
-
-    def flag(self, code: str) -> None:
-        if code not in self.flags:
-            self.flags.append(code)
-
-    def count(self, key: str) -> None:
-        self.usage[key] = self.usage.get(key, 0) + 1
-
-    def add_usage(self, usage: LLMUsage) -> None:
-        for key, value in usage.as_dict().items():
-            self.usage[key] = self.usage.get(key, 0) + value
 
 
 class StandardRunExecutor:
@@ -450,7 +333,9 @@ class StandardRunExecutor:
                 "tool": "search_evidence",
                 "status": "ok",
                 "result_count": len(result.parents),
-                "classes_found": sorted({p.source_class for p in result.parents[:24]}),
+                "classes_found": sorted(
+                    {p.source_class for p in result.parents[: settings.pack_candidates]}
+                ),
                 "duration_ms": state.timings["retrieval_ms"],
                 "trace_id": str(trace_id) if trace_id else None,
             },
@@ -487,7 +372,7 @@ class StandardRunExecutor:
             context_tokens=pack.tokens + len(summary) // 4,
         )
         if gone:
-            pack = _without_sources(pack, gone)
+            pack = without_sources(pack, gone)
             state.flag(SOURCE_DELETED_DURING_RUN)
             await writer.emit(
                 "warning",
@@ -506,7 +391,7 @@ class StandardRunExecutor:
         if pack.empty:
             state.flag(EVIDENCE_EMPTY)
             state.states.add("no_relevant_evidence")
-            present = await self._present_classes(req.scope)
+            present = await present_classes(self._factory, req.scope)
             abstained = fallback.abstention(present, req.source_classes)
             return _Answer(abstained.content, abstained.sections, [], None, pack)
 
@@ -537,183 +422,9 @@ class StandardRunExecutor:
         recent_q: tuple[str, ...],
         started: float,
     ) -> tuple[VerifiedAnswer | None, VerificationReport | None, str]:
-        feedback: str | None = None
-        report: VerificationReport | None = None
-        for attempt in (1, 2):
-            if attempt == 2:
-                remaining = self._settings.run_deadline_s - (time.monotonic() - started)
-                if remaining < self._settings.regeneration_min_remaining_s:
-                    return None, report, CITATION_VERIFICATION_FAILED
-                await writer.emit(
-                    "draft_reset", {"attempt": attempt, "reason": "verification_failed"}
-                )
-            await writer.emit(
-                "status", {"phase": "synthesizing", "message": STATUS["synthesizing"]}
-            )
-            try:
-                generated = await self._generate(
-                    req, writer, state, pack, summary, recent_q, attempt, feedback, started
-                )
-            except _SourceWithheldError:
-                state.flag(SOURCE_DELETED_DURING_RUN)
-                return None, report, SOURCE_DELETED_DURING_RUN
-            except LLMUnavailableError as exc:
-                log.warning("llm_unavailable", run_id=str(req.run_id), reason=str(exc)[:200])
-                state.count("llm_failures")
-                state.flag(LLM_SYNTHESIS_UNAVAILABLE)
-                await writer.emit(
-                    "warning",
-                    {
-                        "code": LLM_SYNTHESIS_UNAVAILABLE,
-                        "message": "The language model is unavailable.",
-                    },
-                )
-                return None, report, LLM_SYNTHESIS_UNAVAILABLE
-            stop = generated.stop.stop_reason if generated.stop else "unknown"
-            if stop == "refusal":
-                state.flag(MODEL_REFUSAL)
-                await writer.emit(
-                    "warning", {"code": MODEL_REFUSAL, "message": "The model declined."}
-                )
-                return None, report, MODEL_REFUSAL
-            if stop == "max_tokens":
-                state.flag(GENERATION_TRUNCATED)
-                await writer.emit(
-                    "warning", {"code": GENERATION_TRUNCATED, "message": "The answer was cut off."}
-                )
-                return None, report, GENERATION_TRUNCATED
-            await writer.emit("status", {"phase": "verifying", "message": STATUS["verifying"]})
-            t0 = time.monotonic()
-            verified = verify_answer(generated.raw, pack, pack_truncated=pack.truncated)
-            state.timings[f"verify_ms_{attempt}"] = round((time.monotonic() - t0) * 1000, 2)
-            report = verified.report
-            if verified.ok:
-                state.timings["attempts"] = attempt
-                return verified, report, ""
-            feedback = regeneration_feedback(verified.report)
-            log.info(
-                "verification_failed",
-                run_id=str(req.run_id),
-                attempt=attempt,
-                failures=verified.report.structural_failures,
-            )
-        return None, report, CITATION_VERIFICATION_FAILED
-
-    async def _generate(
-        self,
-        req: RunRequest,
-        writer: EventWriter,
-        state: _RunState,
-        pack: EvidencePack,
-        summary: str,
-        recent_q: tuple[str, ...],
-        attempt: int,
-        feedback: str | None,
-        started: float,
-    ) -> _Attempt:
-        state.count("llm_attempts")  # recorded even when the call fails (evaluation needs it)
-        settings = self._settings
-        remaining = settings.run_deadline_s - (time.monotonic() - started)
-        budget = min(settings.llm_timeout_s, remaining - settings.run_finalize_reserve_s)
-        if budget <= 0:
-            raise LLMUnavailableError("no time left before the run deadline")
-        request = LLMRequest(
-            system=SYSTEM_PROMPT,
-            messages=(
-                {
-                    "role": "user",
-                    "content": render_user_turn(
-                        req.question,
-                        pack,
-                        summary=summary,
-                        recent_questions=recent_q,
-                        feedback=feedback,
-                    ),
-                },
-            ),
-            max_tokens=self._settings.llm_max_tokens,
-            effort=self._settings.llm_effort,
-            timeout_s=budget,
-            metadata={"run_id": str(req.run_id), "attempt": attempt},
+        return await generate_and_verify(
+            self._settings, self._llm, req, writer, state, pack, summary, recent_q, started
         )
-        gate = AliasGate.from_pack(pack)
-        by_alias = pack.by_alias()
-        out = _Attempt()
-        t0 = time.monotonic()
-        try:
-            async with (
-                asyncio.timeout(budget),
-                contextlib.aclosing(self._provider_stream(request)) as chunks,
-            ):
-                async for chunk in chunks:
-                    if isinstance(chunk, LLMText):
-                        out.raw += chunk.text
-                        if out.first_token_ms is None:
-                            out.first_token_ms = round((time.monotonic() - t0) * 1000, 1)
-                            state.timings.setdefault("first_token_ms", out.first_token_ms)
-                        await self._emit_gate(writer, attempt, gate.push(chunk.text), by_alias)
-                        if writer.withheld:  # a pack source was purged: stop quoting it
-                            raise _SourceWithheldError
-                    else:
-                        out.stop = chunk
-                        state.model = chunk.model
-                        state.add_usage(chunk.usage)
-        except TimeoutError as exc:  # this call's budget (the run deadline arrives as a cancel)
-            raise LLMUnavailableError(f"synthesis exceeded its {budget:.1f}s budget") from exc
-        await self._emit_gate(writer, attempt, gate.flush(), by_alias)
-        out.duration_ms = round((time.monotonic() - t0) * 1000, 1)
-        state.timings[f"synthesis_ms_{attempt}"] = out.duration_ms
-        return out
-
-    async def _provider_stream(self, request: LLMRequest) -> AsyncGenerator[LLMChunk]:
-        """The provider's chunks, with every provider-side failure (construction, a missing
-        key, an exhausted fake script, an SDK error) surfaced as ``LLMUnavailableError`` so the
-        run degrades to evidence-only. Only provider calls are wrapped: failures in our own
-        event writing propagate unchanged."""
-        try:
-            iterator = aiter(self._llm().stream(request))
-        except LLMUnavailableError:
-            raise
-        except Exception as exc:
-            raise LLMUnavailableError(f"provider unavailable: {type(exc).__name__}") from exc
-        try:
-            while True:
-                try:
-                    chunk = await anext(iterator)
-                except StopAsyncIteration:
-                    return
-                except LLMUnavailableError:
-                    raise
-                except Exception as exc:
-                    raise LLMUnavailableError(f"provider failed: {type(exc).__name__}") from exc
-                yield chunk
-        finally:
-            closer = getattr(iterator, "aclose", None)
-            if closer is not None:
-                with contextlib.suppress(Exception):
-                    await closer()
-
-    async def _emit_gate(
-        self, writer: EventWriter, attempt: int, events: list[Any], by_alias: dict[str, Any]
-    ) -> None:
-        for event in events:
-            if isinstance(event, GateText):
-                await writer.token(attempt, event.text)
-            elif isinstance(event, GateCitation):
-                item = by_alias[event.alias]
-                await writer.emit(
-                    "citation",
-                    {
-                        "attempt": attempt,
-                        "alias": event.alias,
-                        "handle": item.handle,
-                        "source_title": item.source_title,
-                        "source_class": item.source_class,
-                        "locator_label": item.locator_label,
-                    },
-                )
-            elif isinstance(event, GateWarning):
-                await writer.emit("warning", {"code": event.code, "message": event.message})
 
     async def _finish(
         self,
@@ -726,97 +437,7 @@ class StandardRunExecutor:
         report: VerificationReport | None,
         pack: EvidencePack,
     ) -> None:
-        # Every pack source is share-locked and re-checked, cited or not (an answer can use
-        # uncited pack text). While any has been purged (purge wins, ADR-0016): fall back to
-        # an evidence-only answer from the surviving sources, or abstain when none survive.
-        # Each failed attempt drops at least one source, so this ends (abstention cites none).
-        while True:
-            outcome = await store.persist_answer(
-                self._factory,
-                req.scope,
-                conversation_id=req.conversation_id,
-                run_id=req.run_id,
-                content=content,
-                citations=citations,
-                sections=sections,
-                status="complete",
-                model=state.model,
-                usage=state.usage,
-            )
-            if outcome.message_id is not None:
-                break
-            if not outcome.purged_codes:  # cannot happen; never loop without progress
-                raise RuntimeError("answer not stored and no purged source reported")
-            pack = _without_sources(pack, outcome.purged_codes)
-            alt = await self._source_deleted_fallback(req, writer, state, pack)
-            content, sections, citations, report = alt.content, alt.sections, alt.citations, None
-        cited = [c["handle"] for c in citations]
-        await writer.emit(
-            "final",
-            {
-                "message_id": str(outcome.message_id),
-                "content": content,
-                "citations": citations,
-                "sections": sections,
-                "verification": report.as_dict() if report else None,
-            },
-        )
-        await store.update_run(self._factory, req.scope, req.run_id, cited_handles=cited)
-        await self._advance_conversation(req, state, sections, cited, outcome.message_id)
-
-    async def _source_deleted_fallback(
-        self, req: RunRequest, writer: EventWriter, state: _RunState, survivors: EvidencePack
-    ) -> fallback.DeterministicAnswer:
-        state.flag(SOURCE_DELETED_DURING_RUN)
-        state.states.add("generation_unavailable")
-        if not writer.withheld:  # the store already logged the one withheld-content notice
-            await writer.emit(
-                "warning",
-                {"code": SOURCE_DELETED_DURING_RUN, "message": "A source was deleted."},
-            )
-        writer.discard_pending()
-        if writer.draft_open:
-            await writer.emit("draft_reset", {"attempt": 0, "reason": "evidence_only"})
-        if survivors.empty:
-            return fallback.abstention(await self._present_classes(req.scope))
-        return fallback.evidence_only(survivors, SOURCE_DELETED_DURING_RUN)
-
-    async def _advance_conversation(
-        self,
-        req: RunRequest,
-        state: _RunState,
-        sections: dict[str, Any],
-        cited: list[str],
-        message_id: uuid.UUID | None,
-    ) -> None:
-        """Best effort after ``final``: the answer is stored and delivered, so a failure here is
-        logged and flagged, never turned into a failed run."""
-
-        def advance(convo: store.ConversationState) -> tuple[str, list[str], list[str]]:
-            return next_state(
-                summary=convo.summary,
-                recent_questions=convo.recent_questions,
-                recent_handles=convo.recent_handles,
-                question=req.question,
-                sections=sections,
-                cited_handles=cited,
-            )
-
-        try:
-            updated = await store.advance_conversation_state(
-                self._factory,
-                req.scope,
-                req.conversation_id,
-                run_id=req.run_id,
-                advance=advance,
-                through_message_id=message_id,
-            )
-        except Exception:
-            log.exception("conversation_state_update_failed", run_id=str(req.run_id))
-            state.flag(CONVERSATION_STATE_NOT_UPDATED)
-            return
-        if not updated:  # a pack source was purged after the answer was stored
-            state.flag(SOURCE_DELETED_DURING_RUN)
+        await finish(self._factory, req, writer, state, content, sections, citations, report, pack)
 
     async def _llm_max_confidentiality(self, scope: WorkspaceScope) -> Confidentiality:
         async with scoped_session(self._factory, scope) as session:
@@ -827,15 +448,3 @@ class StandardRunExecutor:
                 )
             ).scalar_one_or_none()
         return Confidentiality(value or Confidentiality.CONFIDENTIAL.value)
-
-    async def _present_classes(self, scope: WorkspaceScope) -> list[str]:
-        async with scoped_session(self._factory, scope) as session:
-            rows = await session.execute(
-                text(
-                    "SELECT DISTINCT v.source_class FROM sources s "
-                    "JOIN source_versions v ON v.id = s.current_version_id "
-                    "WHERE s.workspace_id = :ws AND s.deleted_at IS NULL"
-                ),
-                {"ws": scope.workspace_id},
-            )
-            return sorted(r[0] for r in rows.all())
