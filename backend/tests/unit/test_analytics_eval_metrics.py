@@ -207,6 +207,31 @@ def test_recheck_result_units_flags_unsupported_computed_numbers() -> None:
     assert am.recheck_result_units(f"9.4% [[result:{RID}]]", {}, {}).unsupported_units == 1
 
 
+def test_recheck_accepts_spec_operands_and_row_counts_but_not_other_numbers() -> None:
+    """Live dev finding: "a rating of 1", "6 or lower" and "600 rows scanned" restate the
+    computation itself (filter operands, matched/scanned rows), not an unsupported figure."""
+    result = share_result(
+        spec={
+            "dataset": "SURVEY-2026:1",
+            "filters": [{"column": "nps", "op": "lte", "operands": [6]}],
+            "metrics": [
+                {"fn": "share", "condition": {"column": "rating", "op": "eq", "operands": [1]}}
+            ],
+        },
+        rows_scanned=600,
+        rows_matched=96,
+    )
+    unit = (
+        f"Of 96 matched rows (600 scanned) with NPS 6 or lower and a rating of 1 [[result:{RID}]]."
+    )
+    assert am.recheck_result_units(unit, {RID: result}, {}).unsupported_units == 0
+    other = f"Of 97 rows with NPS 7 [[result:{RID}]]."
+    assert am.recheck_result_units(other, {RID: result}, {}).unsupported[0]["numbers"] == [
+        "97",
+        "7",
+    ]
+
+
 def test_trace_helpers_count_calls() -> None:
     run = {
         "agent": {

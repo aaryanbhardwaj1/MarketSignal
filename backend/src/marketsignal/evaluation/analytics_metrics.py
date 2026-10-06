@@ -444,10 +444,23 @@ def _render(value: Any, unit: str | None, scale: str) -> str:
     return f"{value}{word}"
 
 
+def _spec_operands(spec: Mapping[str, Any]) -> list[str]:
+    """Filter and condition operands and compared groups: the computation's own inputs."""
+    filters = [f for f in spec.get("filters") or [] if isinstance(f, Mapping)]
+    metrics = [*(spec.get("metrics") or []), spec.get("metric")]
+    filters += [m["condition"] for m in metrics if isinstance(m, Mapping) and m.get("condition")]
+    values = [v for f in filters if isinstance(f, Mapping) for v in f.get("operands") or []]
+    values += [spec.get(k) for k in ("group_a", "group_b")]
+    return [str(v) for v in values if v is not None and not isinstance(v, bool)]
+
+
 def support_texts(results: Iterable[Mapping[str, Any]]) -> list[str]:
-    """Each computed number of ``results`` rendered with its unit (support-side mentions)."""
+    """Each computed number of ``results`` rendered with its unit (support-side mentions),
+    plus what restates the computation: its filter operands and matched/scanned row counts."""
     texts: list[str] = []
     for result in results:
+        texts += _spec_operands(result.get("spec") or {})
+        texts += [str(result[k]) for k in ("rows_matched", "rows_scanned") if k in result]
         for c in cells(result):
             for v in (c.value, c.exact):
                 if dec(v) is not None:
