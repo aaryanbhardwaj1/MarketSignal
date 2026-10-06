@@ -1,0 +1,667 @@
+{
+ "dataset_version": "research-dev-p5",
+ "description": "Phase 5 A3 dev set (research synthesis completeness): 7 fresh multi-dimension Northstar questions plus 5 research-v0 dev items that Phase 4 research answered incompletely. Dev only: never a test or holdout set. Built by scripts/build_research_dev_p5.py.",
+ "manifest": {
+  "counts": {
+   "items": 12,
+   "fresh": 7,
+   "copied_dev": 5
+  },
+  "gold_facts": 29,
+  "copied_dev_ids": [
+   "R-IT-05",
+   "R-CI-02",
+   "R-CF-01",
+   "R-CF-05",
+   "R-RF-03"
+  ]
+ },
+ "items": [
+  {
+   "id": "P5-01",
+   "workspace": "NORTHSTAR",
+   "category": "multi_metric_internal",
+   "question": "For Northstar's Gen Z plan, give the FY28 target Gen Z share of revenue, finance's FY26 Gen Z revenue growth estimate, and the FY26 latest-estimate net revenue.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-003",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+      "NORTHSTAR/FY27-MEMO@v1:S1.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "value": 30,
+     "unit": "percent",
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-128",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+     "value": 13.8,
+     "unit": "percent",
+     "source_code": "FIN-SUMMARY-FY26",
+     "source_class": "financial"
+    },
+    {
+     "fact_id": "NS-125",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+     "value": 612.0,
+     "unit": "usd_million",
+     "source_code": "FIN-SUMMARY-FY26",
+     "source_class": "financial"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-dev-p5",
+   "origin_split": null,
+   "router_expectation": "research",
+   "gold_source_classes": [
+    "financial",
+    "internal"
+   ],
+   "leakage": {
+    "max_jaccard_research_v0": 0.344,
+    "nearest": "R-MC-05"
+   },
+   "split": "dev"
+  },
+  {
+   "id": "P5-02",
+   "workspace": "NORTHSTAR",
+   "category": "multi_metric_market",
+   "question": "How large is the 2026 US Gen Z athletic footwear market, what share of Gen Z athletic spend went through marketplaces and social commerce in 2026, and what share of Gen Z footwear purchases do social commerce platforms account for?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-129",
+     "handles": [
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5"
+     ],
+     "anchor_handle": "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5",
+     "value": 18.6,
+     "unit": "usd_billion",
+     "source_code": "CATEGORY-SIZING",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-108",
+     "handles": [
+      "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+     "value": 34,
+     "unit": "percent",
+     "source_code": "CHANNEL-SHIFT",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-035",
+     "handles": [
+      "NORTHSTAR/GENZ-TRENDS@v2:P2.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+     "value": 26,
+     "unit": "percent",
+     "source_code": "GENZ-TRENDS",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-dev-p5",
+   "origin_split": null,
+   "router_expectation": "research",
+   "gold_source_classes": [
+    "market"
+   ],
+   "leakage": {
+    "max_jaccard_research_v0": 0.351,
+    "nearest": "R-FP-03"
+   },
+   "split": "dev"
+  },
+  {
+   "id": "P5-03",
+   "workspace": "NORTHSTAR",
+   "category": "multi_metric_survey",
+   "question": "In the willingness-to-pay study, how many people were surveyed, what share of Gen Z would pay a 15% premium for personalized fit, and what share would accept a 25% premium?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-044",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P1.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+     "value": 2400,
+     "unit": "respondents",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-041",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "value": 38,
+     "unit": "percent",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-042",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "value": 12,
+     "unit": "percent",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-dev-p5",
+   "origin_split": null,
+   "router_expectation": "research",
+   "gold_source_classes": [
+    "market"
+   ],
+   "leakage": {
+    "max_jaccard_research_v0": 0.306,
+    "nearest": "R-FP-04"
+   },
+   "split": "dev"
+  },
+  {
+   "id": "P5-04",
+   "workspace": "NORTHSTAR",
+   "category": "stated_vs_revealed",
+   "question": "Compare stated and revealed demand for personalization: the share of Gen Z willing to pay a 15% premium in the study versus the pilot's premium-tier uptake, plus the click-through lift from custom colorway emails.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-041",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "value": 38,
+     "unit": "percent",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-051",
+     "handles": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B5"
+     ],
+     "anchor_handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+     "value": 9,
+     "unit": "percent",
+     "source_code": "PERSO-PILOT",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-084",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL12"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL12",
+     "value": 2.3,
+     "unit": "ratio",
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-dev-p5",
+   "origin_split": null,
+   "router_expectation": "research",
+   "gold_source_classes": [
+    "internal",
+    "market"
+   ],
+   "leakage": {
+    "max_jaccard_research_v0": 0.178,
+    "nearest": "R-FP-04"
+   },
+   "split": "dev"
+  },
+  {
+   "id": "P5-05",
+   "workspace": "NORTHSTAR",
+   "category": "product_quality",
+   "question": "What is the Knit Runner 2's return rate, and how many knit upper wear support tickets were logged in Q3 2026?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-120",
+     "handles": [
+      "NORTHSTAR/PRODUCT-PERF@v1:SH2.R2"
+     ],
+     "anchor_handle": "NORTHSTAR/PRODUCT-PERF@v1:SH2.R2",
+     "value": 16.8,
+     "unit": "percent",
+     "source_code": "PRODUCT-PERF",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-012",
+     "handles": [
+      "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2"
+     ],
+     "anchor_handle": "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+     "value": 1140,
+     "unit": "tickets",
+     "source_code": "SUPPORT-THEMES",
+     "source_class": "customer"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-dev-p5",
+   "origin_split": null,
+   "router_expectation": "research",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "leakage": {
+    "max_jaccard_research_v0": 0.324,
+    "nearest": "R-IT-01"
+   },
+   "split": "dev"
+  },
+  {
+   "id": "P5-06",
+   "workspace": "NORTHSTAR",
+   "category": "plan_and_growth",
+   "question": "What Gen Z marketing budget does the FY27 memo propose, how fast did Social Shop sales grow quarter over quarter in Q2 FY26, and what was Gen Z NPS in Q2 FY26?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-100",
+     "handles": [
+      "NORTHSTAR/FY27-MEMO@v1:S1.B7"
+     ],
+     "anchor_handle": "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+     "value": 24,
+     "unit": "usd_million",
+     "source_code": "FY27-MEMO",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-085",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL5"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL5",
+     "value": 142,
+     "unit": "percent",
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    },
+    {
+     "fact_id": "NS-086",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL3",
+     "value": 22,
+     "unit": "nps_points",
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-dev-p5",
+   "origin_split": null,
+   "router_expectation": "research",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "leakage": {
+    "max_jaccard_research_v0": 0.388,
+    "nearest": "R-MC-03"
+   },
+   "split": "dev"
+  },
+  {
+   "id": "P5-07",
+   "workspace": "NORTHSTAR",
+   "category": "scale_comparison",
+   "question": "How does Vantage Athletic's FY2025 net revenue compare with Northstar's FY26 latest-estimate net revenue and the size of the 2026 US Gen Z athletic footwear market?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-090",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+      "NORTHSTAR/VANTAGE-DECK@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+     "value": 4.2,
+     "unit": "usd_billion",
+     "source_code": "VANTAGE-DECK",
+     "source_class": "competitor"
+    },
+    {
+     "fact_id": "NS-125",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+      "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+      "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+      "NORTHSTAR/Q3-REVIEW@v1:SL3"
+     ],
+     "anchor_handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+     "value": 612.0,
+     "unit": "usd_million",
+     "source_code": "FIN-SUMMARY-FY26",
+     "source_class": "financial"
+    },
+    {
+     "fact_id": "NS-129",
+     "handles": [
+      "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5"
+     ],
+     "anchor_handle": "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5",
+     "value": 18.6,
+     "unit": "usd_billion",
+     "source_code": "CATEGORY-SIZING",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-dev-p5",
+   "origin_split": null,
+   "router_expectation": "research",
+   "gold_source_classes": [
+    "competitor",
+    "financial",
+    "market"
+   ],
+   "leakage": {
+    "max_jaccard_research_v0": 0.516,
+    "nearest": "R-MC-05"
+   },
+   "split": "dev"
+  },
+  {
+   "id": "R-IT-05",
+   "workspace": "NORTHSTAR",
+   "category": "identifier_then_semantic",
+   "question": "Survey respondent R0388 named a premium they would accept. What was it and what condition did they attach, and how does stated acceptance in the external willingness-to-pay study change at a 25% premium?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-144",
+     "handles": [
+      "NORTHSTAR/SURVEY-2026@v1:R389"
+     ],
+     "anchor_handle": "NORTHSTAR/SURVEY-2026@v1:R389",
+     "value": null,
+     "unit": null,
+     "source_code": "SURVEY-2026",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-042",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "value": 12,
+     "unit": "percent",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Respondent id lookup, then the WTP study (prose or the acceptance-by-premium table).",
+   "gold_source_classes": [
+    "customer",
+    "market"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.206,
+    "nearest_all_tokens": "R0-033 (test)",
+    "max_jaccard_content_tokens": 0.107,
+    "nearest_content_tokens": "R0-057 (test)"
+   },
+   "group": "G-R-CF-01",
+   "split": "dev",
+   "provenance_note": "copied from research-v0 dev"
+  },
+  {
+   "id": "R-CI-02",
+   "workspace": "NORTHSTAR",
+   "category": "customer_internal",
+   "question": "What made a shopper who loved the custom colorway tool give up on ordering, and what did Northstar leadership decide about personalization at the Q3 strategy review?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-066",
+     "handles": [
+      "NORTHSTAR/INTERVIEWS@v1:S14.Q1"
+     ],
+     "anchor_handle": "NORTHSTAR/INTERVIEWS@v1:S14.Q1",
+     "value": "twelve day wait",
+     "unit": "days",
+     "source_code": "INTERVIEWS",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-083",
+     "handles": [
+      "NORTHSTAR/Q3-REVIEW@v1:SL14.N1"
+     ],
+     "anchor_handle": "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+     "value": "pause until October readout",
+     "unit": null,
+     "source_code": "Q3-REVIEW",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Interview quote + leadership decision in deck speaker notes.",
+   "gold_source_classes": [
+    "customer",
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.464,
+    "nearest_all_tokens": "R0-001 (dev)",
+    "max_jaccard_content_tokens": 0.421,
+    "nearest_content_tokens": "R0-001 (dev)"
+   },
+   "group": "G-R-CI-02",
+   "split": "dev",
+   "provenance_note": "copied from research-v0 dev"
+  },
+  {
+   "id": "R-CF-01",
+   "workspace": "NORTHSTAR",
+   "category": "conflict_search",
+   "question": "Northstar is sizing a paid fit-personalization tier at a 15% markup. What uptake should it plan for: the stated acceptance in the external study, or the take-up actually observed when pilot shoppers were offered that tier?",
+   "expect": "conflict",
+   "gold_facts": [
+    {
+     "fact_id": "NS-041",
+     "handles": [
+      "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+      "NORTHSTAR/WTP-STUDY@v1:P3.B3"
+     ],
+     "anchor_handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "value": 38,
+     "unit": "percent",
+     "source_code": "WTP-STUDY",
+     "source_class": "market"
+    },
+    {
+     "fact_id": "NS-051",
+     "handles": [
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+     ],
+     "anchor_handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+     "value": 9,
+     "unit": "percent",
+     "source_code": "PERSO-PILOT",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:ledger-contradiction",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Ledger contradiction C1 (stated 38% vs revealed 9%). A first search on the external study surfaces only the stated side; the pilot side needs a second search.",
+   "gold_source_classes": [
+    "internal",
+    "market"
+   ],
+   "ledger_contradictions": [
+    "C1"
+   ],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.167,
+    "nearest_all_tokens": "R0-057 (test)",
+    "max_jaccard_content_tokens": 0.091,
+    "nearest_content_tokens": "R0-057 (test)"
+   },
+   "group": "G-R-CF-01",
+   "split": "dev",
+   "provenance_note": "copied from research-v0 dev"
+  },
+  {
+   "id": "R-CF-05",
+   "workspace": "NORTHSTAR",
+   "category": "conflict_search",
+   "question": "Should Northstar lead its Gen Z messaging with personalization? Check what framing excited the focus group most, and where personalization landed when participants allocated a fixed budget of points across benefits.",
+   "expect": "conflict",
+   "gold_facts": [
+    {
+     "fact_id": "NS-072",
+     "handles": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+     "value": "status signal",
+     "unit": null,
+     "source_code": "GENZ-FOCUS-GROUP",
+     "source_class": "customer"
+    },
+    {
+     "fact_id": "NS-071",
+     "handles": [
+      "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+      "NORTHSTAR/PERSO-PILOT@v1:S1.B8"
+     ],
+     "anchor_handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+     "value": "fit guarantee > delivery > materials > personalization",
+     "unit": null,
+     "source_code": "GENZ-FOCUS-GROUP",
+     "source_class": "customer"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:ledger-contradiction",
+   "origin_split": null,
+   "router_expectation": "research",
+   "notes": "Ledger contradiction C5 (status-signal excitement vs ranked behind fit guarantee, delivery, materials). Both sides share one parent, so a careful single pass can find both; the conflict still has to be surfaced.",
+   "gold_source_classes": [
+    "customer"
+   ],
+   "ledger_contradictions": [
+    "C5"
+   ],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.243,
+    "nearest_all_tokens": "R0-006 (dev)",
+    "max_jaccard_content_tokens": 0.208,
+    "nearest_content_tokens": "R0-006 (dev)"
+   },
+   "group": "G-R-CC-05",
+   "split": "dev",
+   "provenance_note": "copied from research-v0 dev"
+  },
+  {
+   "id": "R-RF-03",
+   "workspace": "NORTHSTAR",
+   "category": "reformulation",
+   "question": "Which shopper personas does Northstar's Gen Z segmentation define?",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-006",
+     "handles": [
+      "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+      "NORTHSTAR/Q3-REVIEW@v1:SL7"
+     ],
+     "anchor_handle": "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+     "value": "Campus Competitors; Studio Social; Trail Starters; Value Seekers",
+     "unit": null,
+     "source_code": "BRAND-STRATEGY",
+     "source_class": "internal"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "hand_written:research-v0",
+   "origin_split": null,
+   "router_expectation": "standard",
+   "notes": "'Personas' = segments.",
+   "gold_source_classes": [
+    "internal"
+   ],
+   "ledger_contradictions": [],
+   "leakage": {
+    "max_jaccard_all_tokens": 0.2,
+    "nearest_all_tokens": "R0-022 (test)",
+    "max_jaccard_content_tokens": 0.231,
+    "nearest_content_tokens": "R0-010 (test)"
+   },
+   "group": "G-R-RF-03",
+   "split": "dev",
+   "provenance_note": "copied from research-v0 dev"
+  }
+ ]
+}

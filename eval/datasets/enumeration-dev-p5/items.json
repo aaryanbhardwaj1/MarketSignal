@@ -1,0 +1,264 @@
+{
+ "dataset_version": "enumeration-dev-p5",
+ "description": "Phase 5 A1 fresh dev set: list-style questions that tend to over-cite (citation cap). Gold values from seed_data/fact_ledger.json; handles left empty (value completeness + fallback rate are the measured signals). Not a test set; tune freely.",
+ "items": [
+  {
+   "id": "E5-001",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "question": "List every Gen Z shopper statistic in the 2026 edition of the Gen Z trends report, one bullet per statistic.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-035",
+     "handles": [],
+     "value": 26,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-036",
+     "handles": [],
+     "value": 44.8,
+     "unit": "usd_billion"
+    },
+    {
+     "fact_id": "NS-037",
+     "handles": [],
+     "value": 54,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-038",
+     "handles": [],
+     "value": 3.6,
+     "unit": "brands"
+    },
+    {
+     "fact_id": "NS-039",
+     "handles": [],
+     "value": 48,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-040",
+     "handles": [],
+     "value": 57,
+     "unit": "percent"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "phase5-A1-fresh",
+   "origin_split": "dev"
+  },
+  {
+   "id": "E5-002",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "question": "Enumerate all of the Kinetic Lab financial and customer metrics reported in its annual report.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-020",
+     "handles": [],
+     "value": 148,
+     "unit": "usd_million"
+    },
+    {
+     "fact_id": "NS-021",
+     "handles": [],
+     "value": 6,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-022",
+     "handles": [],
+     "value": 38,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-023",
+     "handles": [],
+     "value": 31,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-D09",
+     "handles": [],
+     "value": 90,
+     "unit": "usd_million"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "phase5-A1-fresh",
+   "origin_split": "dev"
+  },
+  {
+   "id": "E5-003",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "question": "List each support-contact theme Northstar tracked in Q3 2026 with its figure.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-010",
+     "handles": [],
+     "value": 31,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-011",
+     "handles": [],
+     "value": 2.4,
+     "unit": "ratio"
+    },
+    {
+     "fact_id": "NS-012",
+     "handles": [],
+     "value": 1140,
+     "unit": "tickets"
+    },
+    {
+     "fact_id": "NS-013",
+     "handles": [],
+     "value": 9.5,
+     "unit": "hours"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "phase5-A1-fresh",
+   "origin_split": "dev"
+  },
+  {
+   "id": "E5-004",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "question": "Give a bullet list of every product performance figure reported for Northstar's footwear and apparel lines (return rates, units, margins, return reasons).",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-120",
+     "handles": [],
+     "value": 16.8,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-D05",
+     "handles": [],
+     "value": 13.1,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-121",
+     "handles": [],
+     "value": 212400,
+     "unit": "units"
+    },
+    {
+     "fact_id": "NS-122",
+     "handles": [],
+     "value": 44.5,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-123",
+     "handles": [],
+     "value": 2960,
+     "unit": "returns"
+    },
+    {
+     "fact_id": "NS-124",
+     "handles": [],
+     "value": 41.0,
+     "unit": "percent"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "phase5-A1-fresh",
+   "origin_split": "dev"
+  },
+  {
+   "id": "E5-005",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "question": "List all the headline figures in Northstar's FY26 finance summary.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-125",
+     "handles": [],
+     "value": 612.0,
+     "unit": "usd_million"
+    },
+    {
+     "fact_id": "NS-D06",
+     "handles": [],
+     "value": 571.0,
+     "unit": "usd_million"
+    },
+    {
+     "fact_id": "NS-126",
+     "handles": [],
+     "value": 47.2,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-127",
+     "handles": [],
+     "value": 19.4,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-128",
+     "handles": [],
+     "value": 13.8,
+     "unit": "percent"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "phase5-A1-fresh",
+   "origin_split": "dev"
+  },
+  {
+   "id": "E5-006",
+   "workspace": "NORTHSTAR",
+   "category": "enumeration",
+   "question": "Enumerate every Gen Z channel KPI from the channel performance data (conversion, order value, return rate), plus the millennial comparison.",
+   "expect": "answer",
+   "gold_facts": [
+    {
+     "fact_id": "NS-140",
+     "handles": [],
+     "value": 3.4,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-D08",
+     "handles": [],
+     "value": 2.1,
+     "unit": "percent"
+    },
+    {
+     "fact_id": "NS-141",
+     "handles": [],
+     "value": 96.0,
+     "unit": "usd"
+    },
+    {
+     "fact_id": "NS-142",
+     "handles": [],
+     "value": 21.3,
+     "unit": "percent"
+    }
+   ],
+   "source_classes": [],
+   "canary": null,
+   "provenance": "phase5-A1-fresh",
+   "origin_split": "dev"
+  }
+ ]
+}
