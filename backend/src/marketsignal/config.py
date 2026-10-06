@@ -148,6 +148,12 @@ class Settings(BaseSettings):
     llm_max_tokens: int = Field(default=8000, ge=256)
     llm_thinking: str = "disabled"  # disabled | adaptive (display omitted; never streamed)
     llm_timeout_s: float = Field(default=40.0, gt=0)
+    # List prices (USD per million tokens) for approximate cost reporting only; claude-sonnet-5-5
+    # as published on platform.claude.com/docs/en/about-claude/pricing (checked 2026-10-06).
+    llm_price_input_per_mtok: float = Field(default=2.0, ge=0)
+    llm_price_output_per_mtok: float = Field(default=10.0, ge=0)
+    llm_price_cache_write_per_mtok: float = Field(default=2.5, ge=0)  # 5-minute cache write
+    llm_price_cache_read_per_mtok: float = Field(default=0.2, ge=0)
     pack_max_items: int = Field(default=12, ge=1, le=12)  # aliases E1..E12
     pack_max_tokens: int = Field(default=9000, ge=500)
     pack_item_max_tokens: int = Field(default=900, ge=100)

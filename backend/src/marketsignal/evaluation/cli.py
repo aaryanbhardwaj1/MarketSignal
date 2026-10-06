@@ -495,6 +495,7 @@ async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
     from marketsignal.api.app import create_app
     from marketsignal.evaluation.grounded import evaluate
     from marketsignal.evaluation.grounded_report import render
+    from marketsignal.evaluation.grounded_stats import Prices
 
     items = json.loads(args.items.read_text(encoding="utf-8"))["items"]
     if args.ids:
@@ -513,7 +514,17 @@ async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
 
         fake = FakeLLM([FAKE_ANSWER], repeat_last=True)
         app.state.llm_provider = lambda: fake
-    result = await evaluate(app, items, concurrency=args.concurrency)
+    prices = (
+        Prices(0.0, 0.0, 0.0, 0.0)
+        if args.fake
+        else Prices(
+            input=settings.llm_price_input_per_mtok,
+            output=settings.llm_price_output_per_mtok,
+            cache_write=settings.llm_price_cache_write_per_mtok,
+            cache_read=settings.llm_price_cache_read_per_mtok,
+        )
+    )
+    result = await evaluate(app, items, concurrency=args.concurrency, prices=prices)
     result["run"] = {
         "git": _git_sha(),
         "at": datetime.now(UTC).isoformat(timespec="seconds"),

@@ -52,6 +52,7 @@ def render(result: dict[str, Any]) -> str:
         f"- Latency: first token p50 {lat['first_token_p50']} / p95 {lat['first_token_p95']} ms; "
         f"total p50 {lat['total_p50']} / p95 {lat['total_p95']} ms",
         f"- Tokens (total): {s['usage_total']}; mean per model run: {s['usage_per_llm_run_mean']}",
+        *_pipeline_lines(result.get("pipeline")),
         "",
         "## Stored-content contract re-check failures",
         "",
@@ -89,3 +90,25 @@ def render(result: dict[str, Any]) -> str:
         lines.append("```")
         lines.append("")
     return "\n".join(lines) + "\n"
+
+
+def _pipeline_lines(pipeline: dict[str, Any] | None) -> list[str]:
+    if not pipeline:
+        return []
+    lines = [
+        "",
+        "## Pipeline",
+        "",
+        "| Stage (ms) | n | p50 | p95 | max |",
+        "|---|---|---|---|---|",
+    ]
+    for stage, d in pipeline["stage_latency_ms"].items():
+        lines.append(f"| {stage} | {d['n']} | {d['p50']} | {d['p95']} | {d['max']} |")
+    v = pipeline["verification"]
+    cost = pipeline["cost_usd"]
+    lines += [
+        "",
+        f"- Verification: {v}",
+        f"- Approximate cost (USD, list prices {pipeline['prices_usd_per_mtok']}): {cost}",
+    ]
+    return lines

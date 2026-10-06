@@ -35,6 +35,7 @@ from typing import Any
 
 from httpx import ASGITransport, AsyncClient
 
+from marketsignal.evaluation.grounded_stats import Prices, pipeline_stats
 from marketsignal.evaluation.stats import percentile, wilson
 from marketsignal.generation import contract
 from marketsignal.generation.types import CANONICAL_RE
@@ -337,7 +338,11 @@ def summarize(outcomes: list[ItemOutcome]) -> dict[str, Any]:
 
 
 async def evaluate(
-    app: Any, items: list[dict[str, Any]], *, concurrency: int = 1
+    app: Any,
+    items: list[dict[str, Any]],
+    *,
+    concurrency: int = 1,
+    prices: Prices | None = None,
 ) -> dict[str, Any]:
     outcomes: list[ItemOutcome] = []
     started = time.monotonic()
@@ -359,5 +364,6 @@ async def evaluate(
     return {
         "elapsed_s": round(time.monotonic() - started, 1),
         "summary": summarize(outcomes),
+        "pipeline": pipeline_stats(outcomes, prices or Prices(0.0, 0.0, 0.0, 0.0)),
         "items": [o.as_dict() for o in outcomes],
     }
