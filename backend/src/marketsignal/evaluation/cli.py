@@ -483,6 +483,55 @@ def _gate(args: argparse.Namespace) -> int:
     return 1 if failures else 0
 
 
+FAKE_ANSWER = (
+    "### Answer\nThe evidence addresses this question [E1].\n\n### Key findings\n- The most "
+    "relevant evidence item is cited here [E1].\n\n### Gaps & unknowns\nThe offline fake "
+    "model does not read the evidence.\n"
+)
+
+
+async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
+    """Grounded-answer evaluation through the real in-process API (live model by default)."""
+    from marketsignal.api.app import create_app
+    from marketsignal.evaluation.grounded import evaluate
+    from marketsignal.evaluation.grounded_report import render
+
+    items = json.loads(args.items.read_text(encoding="utf-8"))["items"]
+    if args.ids:
+        wanted = set(args.ids.split(","))
+        items = [i for i in items if i["id"] in wanted]
+    if args.limit:
+        items = items[: args.limit]
+    if not args.fake and settings.anthropic_api_key is None:
+        print(
+            "ANTHROPIC_API_KEY is not configured (use --fake for an offline run)", file=sys.stderr
+        )
+        return 2
+    app = create_app(settings)
+    if args.fake:
+        from marketsignal.providers.llm.fake import FakeLLM
+
+        fake = FakeLLM([FAKE_ANSWER], repeat_last=True)
+        app.state.llm_provider = lambda: fake
+    result = await evaluate(app, items, concurrency=args.concurrency)
+    result["run"] = {
+        "git": _git_sha(),
+        "at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "model": "fake-llm" if args.fake else settings.llm_model,
+        "effort": settings.llm_effort,
+        "thinking": settings.llm_thinking,
+        "retrieval_config_hash": app.state.retrieval_service.config_hash,
+        "items": len(items),
+    }
+    args.out.mkdir(parents=True, exist_ok=True)
+    (args.out / "results.json").write_text(json.dumps(result, indent=1, default=str) + "\n")
+    (args.out / "report.md").write_text(render(result))
+    gates = result["summary"]["hard_gates"]
+    for name, gate in gates.items():
+        print(f"{'ok  ' if gate['pass'] else 'FAIL'} {name}: {gate['value']}")
+    return 0 if all(g["pass"] for g in gates.values()) else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ms-eval")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -521,6 +570,15 @@ def main(argv: list[str] | None = None) -> int:
     p_cls = sub.add_parser("classify")
     p_cls.add_argument("--dataset", type=Path, default=DATASET_DIR / "frozen.json")
     p_cls.add_argument("--milestone", required=True, help="covers the test split: logged")
+    p_g = sub.add_parser("grounded")
+    p_g.add_argument(
+        "--items", type=Path, default=corpus.EVAL_DIR / "datasets" / "grounded-v0" / "items.json"
+    )
+    p_g.add_argument("--out", type=Path, required=True)
+    p_g.add_argument("--fake", action="store_true", help="offline plumbing run with FakeLLM")
+    p_g.add_argument("--ids")
+    p_g.add_argument("--limit", type=int)
+    p_g.add_argument("--concurrency", type=int, default=1)
     p_cmp = sub.add_parser("compare")
     p_cmp.add_argument("--a", required=True, help="results.json:arm")
     p_cmp.add_argument("--b", required=True, help="results.json:arm")
@@ -539,5 +597,6 @@ def main(argv: list[str] | None = None) -> int:
         "reachability": _reachability,
         "seed": _seed,
         "classify": _classify,
+        "grounded": _grounded,
     }[args.command]
     return asyncio.run(handler(args, settings))
