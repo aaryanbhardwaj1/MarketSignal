@@ -74,10 +74,12 @@ class ResultFigure:
     """One number the model was shown for a result (``generation/results.py`` builds them).
 
     ``kind`` is ``metric`` (a metric value: ``value`` rounded, ``exact`` unrounded, in
-    ``unit``/``scale``), ``difference`` (group_compare A - B, same fields), ``count`` (a
-    numerator, denominator or matched-row count) or ``label`` (a numeric group label, cell or
-    filter value). ``groups`` is ``(group_a, group_b)`` as shown, for a ``difference`` of a
-    group_compare whose spec names both groups (the subject of a direction word)."""
+    ``unit``/``scale``), ``difference`` (group_compare A - B, same fields), ``cell`` (a
+    numeric cell of a filter_rows row, in its column's inferred ``unit``/``scale``), ``count``
+    (a numerator, denominator or matched-row count), ``scanned`` (the rows scanned) or
+    ``label`` (a numeric group label, cell or filter value, stated plainly). ``groups`` is
+    ``(group_a, group_b)`` as shown, for a ``difference`` of a group_compare whose spec names
+    both groups (the subject of a direction word)."""
 
     kind: str
     value: Decimal | None
@@ -85,6 +87,13 @@ class ResultFigure:
     unit: str = "number"
     scale: str = ""
     groups: tuple[str, str] | None = None
+    # Words (3+ letters) of the figure's own column name ("yoy", "growth" for
+    # ``yoy_growth_pct``): naming the metric is never a change word.
+    terms: frozenset[str] = frozenset()
+    # Direction-like column words ("growth") a count blanks only before a count noun.
+    noun_terms: frozenset[str] = frozenset()
+    # ``scanned`` only: the filtered result's subgroup names its clause must not mention.
+    subgroups: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -107,6 +116,10 @@ class ResultItem:
     years: frozenset[int]
     workspace: str = ""
     fallback_lines: tuple[str, ...] = ()  # deterministic value lines for the evidence-only answer
+    # Label texts the model was shown (filter operands, compared groups, group levels and
+    # cells that are not plain numbers, the table title): digits and words inside them are
+    # part of a name, never a figure or a direction word.
+    labels: tuple[str, ...] = ()
 
     @property
     def source_handle(self) -> str:

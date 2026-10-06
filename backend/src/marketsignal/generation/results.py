@@ -35,7 +35,10 @@ only numbers an ``[R#]`` citation can support.
     group that is its subject ("South exceeded North by 3.2" is -3.2 when A = North).
   - *counts and labels*: a numerator, denominator, matched-row count, or a numeric group
     label/cell/filter operand supports exactly that number, stated plainly (no percent,
-    currency or scale).
+    currency or scale); the scanned-row count only next to scanned/total wording. A listed
+    (filter_rows) row's numeric cell also backs its value in the column's inferred unit
+    ("return_rate_pct" 16.8 -> "16.8%"). Digits inside a shown name ("NS-KR2") are part of
+    the name (``result_claims`` "Digits in names").
 * **Years.** A result's years (the temporal qualifiers a cited result supports) come only
   from label text (filter operands, compare groups, group levels/cells that are not plain
   numbers, or any label of a date-like column such as ``year``/``fiscal_year``/``order_date``)
@@ -53,6 +56,7 @@ from typing import Any, Final
 
 from pydantic import ValidationError
 
+from marketsignal.analytics.schema import infer_scale, infer_unit
 from marketsignal.generation import result_claims as claims
 from marketsignal.generation.contract import NumberMention, strip_format_chars, years_in
 from marketsignal.generation.safe_text import is_instruction_like
@@ -187,22 +191,56 @@ def _metric_text(metric: MetricValue) -> str:
     return f"{_label(metric.key)}: " + " ".join(parts)
 
 
+def _terms(column: object) -> frozenset[str]:
+    """Words (3+ letters) of a column name as shown; a withheld name has none."""
+    name = _label(column) if column else ""
+    if name == WITHHELD_LABEL:
+        return frozenset()
+    return frozenset(t for t in re.split(r"[^a-z]+", name.lower()) if len(t) >= 3)
+
+
 def _metric_figures(
     metric: MetricValue, kind: str, groups: tuple[str, str] | None = None
 ) -> list[ResultFigure]:
     value, exact = _dec(metric.value), _dec(metric.exact)
-    figures = [
-        ResultFigure(kind, value, exact, metric.unit, metric.scale, groups),
-        ResultFigure("count", Decimal(metric.denominator)),
+    terms = _terms(metric.column)
+    # A count never takes its metric's direction-like words as a name, except before a count
+    # noun ("15 carry a growth figure"; never "YoY growth was 15").
+    plain = frozenset(t for t in terms if not claims.is_direction_word(t))
+    counts = [metric.denominator, *([] if metric.numerator is None else [metric.numerator])]
+    nouns = terms - plain
+    if metric.fn in ("count", "count_distinct"):  # "count(yoy_growth_pct)" is a count too
+        value_figure = ResultFigure(
+            kind, value, exact, metric.unit, metric.scale, groups, plain, nouns
+        )
+    else:
+        value_figure = ResultFigure(kind, value, exact, metric.unit, metric.scale, groups, terms)
+    return [
+        value_figure,
+        *(ResultFigure("count", Decimal(n), terms=plain, noun_terms=terms - plain) for n in counts),
     ]
-    if metric.numerator is not None:
-        figures.append(ResultFigure("count", Decimal(metric.numerator)))
+
+
+def _cell_figures(row: ResultRow) -> list[ResultFigure]:
+    """A listed (filter_rows) row's numeric cells in their column's unit: a
+    ``return_rate_pct`` cell of 16.8 backs "16.8%" (and, as a label, a plain "16.8"). Only a
+    currency column's name scales a cell ("net_sales_usd_m"; never "length_m")."""
+    if row.handle is None and row.row_number is None:
+        return []
+    figures = []
+    for column, cell in row.group.items():
+        number = _dec(cell)
+        if number is not None:
+            unit = infer_unit(column, "numeric")
+            scale = infer_scale(column, "numeric") if unit == "currency_usd" else ""
+            figures.append(ResultFigure("cell", number, number, unit, scale, None, _terms(column)))
     return figures
 
 
 def _row_line(row: ResultRow) -> tuple[str, list[ResultFigure]]:
     group = " | ".join(f"{_label(k)}={_label(v)}" for k, v in row.group.items())
     figures = [ResultFigure("label", n) for v in row.group.values() if (n := _dec(v)) is not None]
+    figures += _cell_figures(row)
     metrics = []
     for metric in row.metrics:
         metrics.append(_metric_text(metric))
@@ -228,6 +266,32 @@ def _fallback_line(row: ResultRow, metric: MetricValue) -> str:
     return f"{_label(metric.key)}{where}: {value}, denominator {metric.denominator}"
 
 
+def _cells_line(row: ResultRow) -> str:
+    """A listed (filter_rows) row for the evidence-only fallback: its cells, as shown."""
+    cells = ", ".join(f"{_label(k)}={_label(v)}" for k, v in row.group.items())
+    where = f"row {row.row_number}" if row.row_number is not None else "row"
+    return f"{where}: {cells}"
+
+
+def _subgroups(result: AnalyticsResult) -> tuple[str, ...]:
+    """A filtered result's subgroup names (filter operands, group levels), which a scanned-row
+    count never belongs to; none when nothing was filtered out."""
+    if result.rows_matched == result.rows_scanned:
+        return ()
+    names = {_label(result.table), result.dataset, result.source_code}
+    return tuple(n for n in _result_labels(result) if n not in names)
+
+
+def _result_labels(result: AnalyticsResult) -> tuple[str, ...]:
+    """Names the model was shown that may contain digits or direction words (types.ResultItem)."""
+    values: list[object] = [v for _, v in _spec_labels(result.spec)]
+    values += [v for row in result.rows[:MAX_ROWS] for v in row.group.values()]
+    names = {_label(v) for v in values if isinstance(v, str) and _dec(v) is None}
+    names |= {_label(result.table), result.dataset, result.source_code}
+    names.discard(WITHHELD_LABEL)
+    return tuple(sorted(n for n in names if n.strip()))
+
+
 def _summary(result: AnalyticsResult) -> str:
     spec = result.spec
     metrics = sorted(
@@ -249,8 +313,9 @@ def _temporal_label(column: object, value: object) -> bool:
     return _dec(value) is None or _TEMPORAL_COLUMN_RE.search(str(column)) is not None
 
 
-def _years(spec: Mapping[str, Any], rows: Sequence[ResultRow]) -> frozenset[int]:
-    """Years a cited result supports: labels and date values only (module docstring)."""
+def _years(spec: Mapping[str, Any], rows: Sequence[ResultRow], table: str = "") -> frozenset[int]:
+    """Years a cited result supports: labels, the table title and date values only (module
+    docstring)."""
     texts = [_label(v) for column, v in _spec_labels(spec) if _temporal_label(column, v)]
     for row in rows:
         texts += [_label(v) for column, v in row.group.items() if _temporal_label(column, v)]
@@ -261,7 +326,8 @@ def _years(spec: Mapping[str, Any], rows: Sequence[ResultRow]) -> frozenset[int]
             for part in (m.value, m.exact)
             if part is not None
         ]
-    return years_in(texts)
+    title = years_in([_label(table)])  # a single-year title ("Survey 2026"), never a range
+    return years_in(texts) | (title if len(title) == 1 else frozenset())
 
 
 def _compared_groups(spec: Mapping[str, Any]) -> tuple[str, str] | None:
@@ -275,7 +341,10 @@ def build_result_item(alias: str, result: AnalyticsResult) -> ResultItem:
     """One result as the model sees it, plus the figures and lines derived from that view."""
     spec = result.spec
     lines: list[str] = []
-    figures: list[ResultFigure] = [ResultFigure("count", Decimal(result.rows_matched))]
+    figures: list[ResultFigure] = [
+        ResultFigure("count", Decimal(result.rows_matched)),
+        ResultFigure("scanned", Decimal(result.rows_scanned), subgroups=_subgroups(result)),
+    ]
     figures += [
         ResultFigure("label", n) for _, v in _spec_labels(spec) if (n := _dec(v)) is not None
     ]
@@ -289,6 +358,8 @@ def build_result_item(alias: str, result: AnalyticsResult) -> ResultItem:
         lines.append(line)
         figures.extend(row_figures)
         fallback.extend(_fallback_line(row, metric) for metric in row.metrics)
+        if not row.metrics and row.group:
+            fallback.append(_cells_line(row))
     if len(result.rows) > MAX_ROWS:
         lines.append(f"({len(result.rows) - MAX_ROWS} more rows not shown)")
     if result.difference is not None:
@@ -318,9 +389,10 @@ def build_result_item(alias: str, result: AnalyticsResult) -> ResultItem:
         summary=_summary(result),
         rendered=rendered,
         figures=tuple(figures),
-        years=_years(spec, result.rows[:MAX_ROWS]),
+        years=_years(spec, result.rows[:MAX_ROWS], result.table),
         workspace=result.workspace,
         fallback_lines=tuple(fallback[:FALLBACK_LINES]),
+        labels=_result_labels(result),
     )
 
 
@@ -382,20 +454,26 @@ def _claim_kind(text: str, mention: NumberMention, spans: Sequence[claims.Span])
 
 def _direction_ok(
     text: str,
+    words: str,
     spans: Sequence[claims.Span],
     mention: NumberMention,
     figure: ResultFigure,
     value: Decimal,
+    labels: Sequence[str] = (),
 ) -> bool:
+    """``words`` is ``text`` with the result's labels and the figure's column terms blanked
+    (same length): direction and change words are read there, group positions in ``text``."""
+    if figure.kind == "scanned":
+        return claims.scanned_ok(text, words, spans, mention, figure.subgroups)
     if figure.kind == "difference":
-        return claims.difference_ok(text, spans, mention, value, figure.groups)
+        return claims.difference_ok(text, spans, mention, value, figure.groups, words=words)
     if figure.kind == "label":
-        return claims.label_ok(text, spans, mention, value)
-    return claims.level_ok(text, spans, mention, value)
+        return claims.label_ok(words, spans, mention, value)
+    return claims.level_ok(words, spans, mention, value)
 
 
 def _kind_ok(kind: str, figure: ResultFigure) -> bool:
-    if figure.kind in ("count", "label"):
+    if figure.kind in ("count", "label", "scanned"):
         return kind == "plain"
     if figure.kind == "difference" and figure.unit == "percent":
         return kind in _PERCENT_DIFFERENCE_KINDS
@@ -426,14 +504,18 @@ def _value_ok(stated: Decimal, decimals: int, value: Decimal, figure: ResultFigu
         return False  # a non-zero result is never stated as zero ("0%" for 0.4)
     if stated == value.copy_abs():  # copy_abs: no context rounding of long decimals
         return True
-    if figure.kind in ("count", "label") or figure.exact is None:
+    if figure.kind in ("count", "label", "scanned") or figure.exact is None:
         return False
     exact = figure.exact.copy_abs()
     return stated == exact or _rounds_to(exact, decimals, stated)
 
 
-def figure_supports(text: str, mention: NumberMention, figure: ResultFigure) -> bool:
-    """True if ``figure`` backs the claimed ``mention`` in unit ``text`` (module rules)."""
+def figure_supports(
+    text: str, mention: NumberMention, figure: ResultFigure, labels: Sequence[str] = ()
+) -> bool:
+    """True if ``figure`` backs the claimed ``mention`` in unit ``text`` (module rules).
+    Direction and change words are read with ``labels`` (the result's, as shown) and the
+    figure's own column words blanked."""
     value = figure.value
     if value is None:
         return False  # zero denominator: no stated number is supported by a null value
@@ -442,7 +524,8 @@ def figure_supports(text: str, mention: NumberMention, figure: ResultFigure) -> 
         return False  # the claim cannot be placed in its unit: fail closed
     if not _kind_ok(_claim_kind(text, mention, spans), figure):
         return False
-    factor = _SCALE_FACTORS.get(figure.scale if figure.kind in ("metric", "difference") else "")
+    scaled = figure.kind in ("metric", "difference", "cell")
+    factor = _SCALE_FACTORS.get(figure.scale if scaled else "")
     if factor is None or mention.scale != factor:
         return False
     try:
@@ -450,11 +533,27 @@ def figure_supports(text: str, mention: NumberMention, figure: ResultFigure) -> 
     except InvalidOperation:
         return False
     sign_value = value if value != 0 or figure.exact is None else figure.exact
-    if not _direction_ok(text, spans, mention, figure, sign_value):
+    after = min(end for _, end in spans)
+    words = claims.blank(text, labels, figure.terms, figure.noun_terms, after)
+    if not _direction_ok(text, words, spans, mention, figure, sign_value, labels):
         return False
     return _value_ok(stated, _decimals(mention.mantissa_text), value, figure)
 
 
+def _inside_labels(text: str, mention: NumberMention, labels: Sequence[str]) -> bool:
+    """A plain ``mention`` that is only ever part of a name the result shows: the "2" of
+    "NS-KR2", the "3" of "Crew Sock 3 Pack" (``result_claims.inside_labels``)."""
+    if mention.percent or mention.currency is not None or mention.scale != 1.0:
+        return False
+    return claims.inside_labels(text, claims.occurrences(text, mention), labels)
+
+
 def result_supports(text: str, mention: NumberMention, items: Iterable[ResultItem]) -> bool:
-    """True if any figure of the cited results backs ``mention``."""
-    return any(figure_supports(text, mention, f) for item in items for f in item.figures)
+    """True if any figure of the cited results backs ``mention``, or the mention is only ever
+    part of one of their labels."""
+    for item in items:
+        if _inside_labels(text, mention, item.labels):
+            return True
+        if any(figure_supports(text, mention, f, item.labels) for f in item.figures):
+            return True
+    return False
