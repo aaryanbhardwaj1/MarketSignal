@@ -1,0 +1,609 @@
+{
+ "summary": {
+  "answers": 76,
+  "cited_units": 460,
+  "uncited_units": 266,
+  "cited_units_with_unsupported_numbers": 8,
+  "uncited_units_with_numbers_absent_from_pack": 0,
+  "unresolvable_citations": 0
+ },
+ "items": [
+  {
+   "id": "G-R0-001",
+   "cited_units": 9,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-002",
+   "cited_units": 5,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-003",
+   "cited_units": 7,
+   "uncited_units": 0,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-004",
+   "cited_units": 5,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-005",
+   "cited_units": 9,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-006",
+   "cited_units": 8,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-007",
+   "cited_units": 9,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-008",
+   "cited_units": 6,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-011",
+   "cited_units": 5,
+   "uncited_units": 1,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-012",
+   "cited_units": 6,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-013",
+   "cited_units": 5,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-014",
+   "cited_units": 7,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-016",
+   "cited_units": 7,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-018",
+   "cited_units": 7,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-019",
+   "cited_units": 5,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-020",
+   "cited_units": 7,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-022",
+   "cited_units": 5,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-025",
+   "cited_units": 5,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-026",
+   "cited_units": 7,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-027",
+   "cited_units": 7,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-028",
+   "cited_units": 7,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-029",
+   "cited_units": 6,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-030",
+   "cited_units": 6,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-031",
+   "cited_units": 7,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-032",
+   "cited_units": 6,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-033",
+   "cited_units": 5,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-034",
+   "cited_units": 4,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-035",
+   "cited_units": 7,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-036",
+   "cited_units": 5,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-037",
+   "cited_units": 7,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-038",
+   "cited_units": 6,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-039",
+   "cited_units": 6,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-040",
+   "cited_units": 7,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-041",
+   "cited_units": 8,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-042",
+   "cited_units": 5,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-043",
+   "cited_units": 5,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-044",
+   "cited_units": 5,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-045",
+   "cited_units": 5,
+   "uncited_units": 6,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-046",
+   "cited_units": 5,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-047",
+   "cited_units": 10,
+   "uncited_units": 6,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-049",
+   "cited_units": 7,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-051",
+   "cited_units": 6,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-052",
+   "cited_units": 7,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-053",
+   "cited_units": 9,
+   "uncited_units": 6,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-054",
+   "cited_units": 9,
+   "uncited_units": 7,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-055",
+   "cited_units": 8,
+   "uncited_units": 1,
+   "unresolvable_citations": [],
+   "unsupported": [
+    {
+     "section": "unrecognized",
+     "scope": "cited",
+     "numbers": [
+      "437"
+     ],
+     "unit": "**Northstar Customer Survey 2026**, Row 437: \u201c\u20269; top_pain_point: sustainability_transparency; verbatim: I want to know what the shoes are made of and where, not just a green label. Tell me the actual percentage of recycled material instead"
+    },
+    {
+     "section": "unrecognized",
+     "scope": "cited",
+     "numbers": [
+      "207"
+     ],
+     "unit": "**Northstar Customer Survey 2026**, Row 207: \u201c\u2026sustainability_transparency; verbatim: Tell me the actual percentage of recycled material instead of saying eco friendly. I want to know what the shoes are made of and where, not just a green l"
+    },
+    {
+     "section": "unrecognized",
+     "scope": "cited",
+     "numbers": [
+      "105"
+     ],
+     "unit": "**Northstar Customer Survey 2026**, Row 105: \u201c\u20267; top_pain_point: sustainability_transparency; verbatim: Tell me the actual percentage of recycled material instead of saying eco friendly. I want to know what the shoes are made of and where,"
+    },
+    {
+     "section": "unrecognized",
+     "scope": "cited",
+     "numbers": [
+      "478"
+     ],
+     "unit": "**Northstar Customer Survey 2026**, Row 478: \u201c\u2026verbatim: I usually order online and return in store. The recycled claims are vague and I cannot find any details on the product page. I want to know what the shoes are made of and where, not j"
+    },
+    {
+     "section": "unrecognized",
+     "scope": "cited",
+     "numbers": [
+      "77"
+     ],
+     "unit": "**Northstar Customer Survey 2026**, Row 77: \u201c\u2026verbatim: I buy for hiking and weekend runs. The recycled claims are vague and I cannot find any details on the product page. I want to know what the shoes are made of and where, not just a gree"
+    },
+    {
+     "section": "unrecognized",
+     "scope": "cited",
+     "numbers": [
+      "66"
+     ],
+     "unit": "**Northstar Customer Survey 2026**, Row 66: \u201c\u2026verbatim: I play club volleyball and train most days. Tell me the actual percentage of recycled material instead of saying eco friendly. I want to know what the shoes are made of and where, not "
+    },
+    {
+     "section": "unrecognized",
+     "scope": "cited",
+     "numbers": [
+      "25"
+     ],
+     "unit": "**Northstar Customer Survey 2026**, Row 25: \u201c\u2026less; price_sensitivity: 4; nps: 6; top_pain_point: sustainability_transparency; verbatim: I want to know what the shoes are made of and where, not just a green label. Honestly I am close to giv"
+    },
+    {
+     "section": "unrecognized",
+     "scope": "cited",
+     "numbers": [
+      "177"
+     ],
+     "unit": "**Northstar Customer Survey 2026**, Row 177: \u201c\u20263; nps: 9; top_pain_point: sustainability_transparency; verbatim: There is no information about repair or recycling old pairs. I want to know what the shoes are made of and where, not just a gr"
+    }
+   ]
+  },
+  {
+   "id": "G-R0-056",
+   "cited_units": 9,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-057",
+   "cited_units": 8,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-059",
+   "cited_units": 6,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-060",
+   "cited_units": 5,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-061",
+   "cited_units": 5,
+   "uncited_units": 1,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-062",
+   "cited_units": 6,
+   "uncited_units": 1,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-063",
+   "cited_units": 7,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-064",
+   "cited_units": 5,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-R0-065",
+   "cited_units": 8,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-C1",
+   "cited_units": 13,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-C2",
+   "cited_units": 7,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-C4",
+   "cited_units": 10,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-C5",
+   "cited_units": 9,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-C3",
+   "cited_units": 7,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-I1",
+   "cited_units": 4,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-I2",
+   "cited_units": 0,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-I3",
+   "cited_units": 0,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-I4",
+   "cited_units": 2,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-I5",
+   "cited_units": 4,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-I6",
+   "cited_units": 3,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-I7",
+   "cited_units": 3,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-I8",
+   "cited_units": 1,
+   "uncited_units": 2,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-E1",
+   "cited_units": 0,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-E2",
+   "cited_units": 0,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-A1",
+   "cited_units": 0,
+   "uncited_units": 5,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-A2",
+   "cited_units": 3,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-A3",
+   "cited_units": 7,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-A4",
+   "cited_units": 12,
+   "uncited_units": 6,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-A5",
+   "cited_units": 11,
+   "uncited_units": 4,
+   "unresolvable_citations": [],
+   "unsupported": []
+  },
+  {
+   "id": "G-A6",
+   "cited_units": 6,
+   "uncited_units": 3,
+   "unresolvable_citations": [],
+   "unsupported": []
+  }
+ ]
+}
