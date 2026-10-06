@@ -24,6 +24,8 @@ _SENSITIVE_KEYS = frozenset(
         "secret",
         "token",
         "api_key",
+        "anthropic_api_key",
+        "stream_token_secret",
         "x-api-key",
         "st",  # SSE stream token query parameter
         "database_url",

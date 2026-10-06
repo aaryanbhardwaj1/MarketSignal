@@ -17,6 +17,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from marketsignal.db.scope import WorkspaceScope
 from marketsignal.ingestion import repository as repo
 
+REDACTED_ANSWER = (
+    "This answer was removed because a source it cited was deleted from the workspace."
+)
+
 
 @dataclass(frozen=True, slots=True)
 class PurgeResult:
@@ -58,6 +62,27 @@ async def purge_source(
     await session.execute(
         text("UPDATE sources SET deleted_at = now(), updated_at = now() WHERE id = :s"),
         {"s": source_id},
+    )
+    # Answers and token events can quote the purged text (migration 0004): redact assistant
+    # answers that cited this source (their handles stay and resolve to the 410 tombstone) and
+    # delete the event logs of runs whose evidence pack included it.
+    handle_prefix = f"{scope.workspace_code}/{source.source_code}@v%"
+    await session.execute(
+        text(
+            "UPDATE messages SET content = :redacted, sections = '{}'::jsonb, status = 'redacted' "
+            "WHERE workspace_id = :ws AND role = 'assistant' AND EXISTS ("
+            "  SELECT 1 FROM jsonb_array_elements(citations) c "
+            "  WHERE c->>'source_code' = :code)"
+        ),
+        {"ws": scope.workspace_id, "code": source.source_code, "redacted": REDACTED_ANSWER},
+    )
+    await session.execute(
+        text(
+            "DELETE FROM run_events WHERE workspace_id = :ws AND run_id IN ("
+            "  SELECT id FROM query_runs WHERE workspace_id = :ws AND EXISTS ("
+            "    SELECT 1 FROM unnest(pack_handles) h WHERE h LIKE :prefix))"
+        ),
+        {"ws": scope.workspace_id, "prefix": handle_prefix},
     )
     corpus_version = await repo.bump_corpus_version(session, scope.workspace_id)
     await repo.audit(
