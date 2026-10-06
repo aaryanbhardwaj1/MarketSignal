@@ -1,0 +1,2294 @@
+{
+ "delta": "research - standard",
+ "n_pairs": 23,
+ "unpaired": [],
+ "bootstrap_samples": 10000,
+ "metrics": {
+  "behaviour_pass": {
+   "kind": "rate",
+   "n_pairs": 23,
+   "standard_mean": 1.0,
+   "research_mean": 1.0,
+   "delta_mean": 0.0,
+   "ci": {
+    "low": 0.0,
+    "high": 0.0
+   },
+   "mcnemar": {
+    "only_standard": 0,
+    "only_research": 0,
+    "p_value": 1.0
+   }
+  },
+  "answered": {
+   "kind": "rate",
+   "n_pairs": 23,
+   "standard_mean": 0.913,
+   "research_mean": 0.9565,
+   "delta_mean": 0.0435,
+   "ci": {
+    "low": 0.0,
+    "high": 0.1304
+   },
+   "mcnemar": {
+    "only_standard": 0,
+    "only_research": 1,
+    "p_value": 1.0
+   }
+  },
+  "gold_coverage": {
+   "kind": "mean",
+   "n_pairs": 21,
+   "standard_mean": 0.8095,
+   "research_mean": 0.8571,
+   "delta_mean": 0.0476,
+   "ci": {
+    "low": -0.0952,
+    "high": 0.1587
+   }
+  },
+  "answer_completeness": {
+   "kind": "mean",
+   "n_pairs": 21,
+   "standard_mean": 0.7619,
+   "research_mean": 0.8571,
+   "delta_mean": 0.0952,
+   "ci": {
+    "low": 0.0238,
+    "high": 0.1746
+   }
+  },
+  "gold_handle_recall": {
+   "kind": "mean",
+   "n_pairs": 21,
+   "standard_mean": 0.8095,
+   "research_mean": 0.8571,
+   "delta_mean": 0.0476,
+   "ci": {
+    "low": -0.0952,
+    "high": 0.1587
+   }
+  },
+  "unsupported_claim_rate": {
+   "kind": "mean",
+   "n_pairs": 21,
+   "standard_mean": 0.0,
+   "research_mean": 0.0139,
+   "delta_mean": 0.0139,
+   "ci": {
+    "low": 0.0,
+    "high": 0.0372
+   }
+  },
+  "first_token_ms": {
+   "kind": "mean",
+   "n_pairs": 23,
+   "standard_mean": 2285.7783,
+   "research_mean": 1725.5913,
+   "delta_mean": -560.187,
+   "ci": {
+    "low": -1292.5547,
+    "high": 155.114
+   }
+  },
+  "total_ms": {
+   "kind": "mean",
+   "n_pairs": 23,
+   "standard_mean": 6960.2043,
+   "research_mean": 16563.0913,
+   "delta_mean": 9602.887,
+   "ci": {
+    "low": 7103.546,
+    "high": 12495.8767
+   }
+  },
+  "model_calls": {
+   "kind": "mean",
+   "n_pairs": 23,
+   "standard_mean": 1.0,
+   "research_mean": 4.2609,
+   "delta_mean": 3.2609,
+   "ci": {
+    "low": 2.913,
+    "high": 3.6087
+   }
+  },
+  "tool_calls": {
+   "kind": "mean",
+   "n_pairs": 23,
+   "standard_mean": 0.0,
+   "research_mean": 4.0435,
+   "delta_mean": 4.0435,
+   "ci": {
+    "low": 3.3913,
+    "high": 4.7826
+   }
+  },
+  "retrieval_calls": {
+   "kind": "mean",
+   "n_pairs": 23,
+   "standard_mean": 1.0,
+   "research_mean": 2.8696,
+   "delta_mean": 1.8696,
+   "ci": {
+    "low": 1.3478,
+    "high": 2.4348
+   }
+  },
+  "tokens_total": {
+   "kind": "mean",
+   "n_pairs": 23,
+   "standard_mean": 5908.7826,
+   "research_mean": 22642.6957,
+   "delta_mean": 16733.913,
+   "ci": {
+    "low": 14141.8283,
+    "high": 19358.6967
+   }
+  },
+  "cost_usd": {
+   "kind": "mean",
+   "n_pairs": 23,
+   "standard_mean": 0.0154,
+   "research_mean": 0.0417,
+   "delta_mean": 0.0264,
+   "ci": {
+    "low": 0.0216,
+    "high": 0.0314
+   }
+  }
+ },
+ "categories": {
+  "conflict_search": {
+   "n": 3,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 3,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 3,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.7222,
+     "research_mean": 0.8333,
+     "delta_mean": 0.1111
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.5556,
+     "research_mean": 0.6667,
+     "delta_mean": 0.1111
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.7222,
+     "research_mean": 0.8333,
+     "delta_mean": 0.1111
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.0,
+     "research_mean": 0.0,
+     "delta_mean": 0.0
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 3241.3667,
+     "research_mean": 1503.8667,
+     "delta_mean": -1737.5
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 9001.2333,
+     "research_mean": 18422.9,
+     "delta_mean": 9421.6667
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 1.0,
+     "research_mean": 4.3333,
+     "delta_mean": 3.3333
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.0,
+     "research_mean": 5.0,
+     "delta_mean": 5.0
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 1.0,
+     "research_mean": 3.3333,
+     "delta_mean": 2.3333
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 6530.3333,
+     "research_mean": 27637.3333,
+     "delta_mean": 21107.0
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.0182,
+     "research_mean": 0.0555,
+     "delta_mean": 0.0373
+    }
+   }
+  },
+  "customer_competitor": {
+   "n": 2,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.75,
+     "research_mean": 1.0,
+     "delta_mean": 0.25
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 0.0,
+     "delta_mean": 0.0
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1608.8,
+     "research_mean": 1218.75,
+     "delta_mean": -390.05
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 6445.15,
+     "research_mean": 12932.2,
+     "delta_mean": 6487.05
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 3.5,
+     "delta_mean": 2.5
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 4.0,
+     "delta_mean": 4.0
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 2.5,
+     "delta_mean": 1.5
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 5638.5,
+     "research_mean": 19352.5,
+     "delta_mean": 13714.0
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0151,
+     "research_mean": 0.0371,
+     "delta_mean": 0.0219
+    }
+   }
+  },
+  "customer_internal": {
+   "n": 2,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.75,
+     "research_mean": 1.0,
+     "delta_mean": 0.25
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.5,
+     "research_mean": 0.75,
+     "delta_mean": 0.25
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.75,
+     "research_mean": 1.0,
+     "delta_mean": 0.25
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 0.0455,
+     "delta_mean": 0.0455
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1653.4,
+     "research_mean": 2926.05,
+     "delta_mean": 1272.65
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 5591.25,
+     "research_mean": 13059.85,
+     "delta_mean": 7468.6
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 3.0,
+     "delta_mean": 2.0
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 2.0,
+     "delta_mean": 2.0
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 2.0,
+     "delta_mean": 1.0
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 6516.0,
+     "research_mean": 13655.0,
+     "delta_mean": 7139.0
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0163,
+     "research_mean": 0.0264,
+     "delta_mean": 0.0101
+    }
+   }
+  },
+  "first_pass_insufficient": {
+   "n": 2,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 0.0,
+     "delta_mean": 0.0
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 2742.5,
+     "research_mean": 1005.3,
+     "delta_mean": -1737.2
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 7335.1,
+     "research_mean": 14734.95,
+     "delta_mean": 7399.85
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 4.5,
+     "delta_mean": 3.5
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 4.0,
+     "delta_mean": 4.0
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 2.5,
+     "delta_mean": 1.5
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 6534.5,
+     "research_mean": 23758.0,
+     "delta_mean": 17223.5
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0172,
+     "research_mean": 0.0423,
+     "delta_mean": 0.0251
+    }
+   }
+  },
+  "identifier_then_semantic": {
+   "n": 2,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.5,
+     "research_mean": 0.75,
+     "delta_mean": 0.25
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.75,
+     "research_mean": 0.75,
+     "delta_mean": 0.0
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.5,
+     "research_mean": 0.75,
+     "delta_mean": 0.25
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 0.0,
+     "delta_mean": 0.0
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1387.35,
+     "research_mean": 1684.45,
+     "delta_mean": 297.1
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 5678.3,
+     "research_mean": 16405.65,
+     "delta_mean": 10727.35
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 4.5,
+     "delta_mean": 3.5
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 5.5,
+     "delta_mean": 5.5
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 3.5,
+     "delta_mean": 2.5
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 5877.5,
+     "research_mean": 23297.5,
+     "delta_mean": 17420.0
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0151,
+     "research_mean": 0.0432,
+     "delta_mean": 0.028
+    }
+   }
+  },
+  "insufficient_stop": {
+   "n": 2,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 0.5,
+     "delta_mean": 0.5
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 0,
+     "standard_mean": null,
+     "research_mean": null,
+     "delta_mean": null
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 0,
+     "standard_mean": null,
+     "research_mean": null,
+     "delta_mean": null
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 0,
+     "standard_mean": null,
+     "research_mean": null,
+     "delta_mean": null
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 0,
+     "standard_mean": null,
+     "research_mean": null,
+     "delta_mean": null
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1766.75,
+     "research_mean": 1485.0,
+     "delta_mean": -281.75
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 4226.4,
+     "research_mean": 13251.55,
+     "delta_mean": 9025.15
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 4.0,
+     "delta_mean": 3.0
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 3.0,
+     "delta_mean": 3.0
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 2.5,
+     "delta_mean": 1.5
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 5225.0,
+     "research_mean": 18299.5,
+     "delta_mean": 13074.5
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0107,
+     "research_mean": 0.0292,
+     "delta_mean": 0.0185
+    }
+   }
+  },
+  "multi_class": {
+   "n": 3,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 3,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 3,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.7778,
+     "research_mean": 1.0,
+     "delta_mean": 0.2222
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.7778,
+     "research_mean": 1.0,
+     "delta_mean": 0.2222
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.7778,
+     "research_mean": 1.0,
+     "delta_mean": 0.2222
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.0,
+     "research_mean": 0.0,
+     "delta_mean": 0.0
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 1604.4333,
+     "research_mean": 957.6333,
+     "delta_mean": -646.8
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 7686.3,
+     "research_mean": 26399.8667,
+     "delta_mean": 18713.5667
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 1.0,
+     "research_mean": 5.0,
+     "delta_mean": 4.0
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.0,
+     "research_mean": 5.6667,
+     "delta_mean": 5.6667
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 1.0,
+     "research_mean": 4.3333,
+     "delta_mean": 3.3333
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 6137.3333,
+     "research_mean": 32069.0,
+     "delta_mean": 25931.6667
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 3,
+     "standard_mean": 0.0186,
+     "research_mean": 0.0623,
+     "delta_mean": 0.0437
+    }
+   }
+  },
+  "reformulation": {
+   "n": 2,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.5,
+     "research_mean": 0.5,
+     "delta_mean": 0.0
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 0.0,
+     "delta_mean": 0.0
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1294.95,
+     "research_mean": 1925.25,
+     "delta_mean": 630.3
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 3810.75,
+     "research_mean": 15704.45,
+     "delta_mean": 11893.7
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 4.0,
+     "delta_mean": 3.0
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0,
+     "research_mean": 3.5,
+     "delta_mean": 3.5
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 1.0,
+     "research_mean": 2.5,
+     "delta_mean": 1.5
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 6282.0,
+     "research_mean": 20508.5,
+     "delta_mean": 14226.5
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 2,
+     "standard_mean": 0.0143,
+     "research_mean": 0.0378,
+     "delta_mean": 0.0235
+    }
+   }
+  },
+  "simple_control": {
+   "n": 5,
+   "metrics": {
+    "behaviour_pass": {
+     "kind": "rate",
+     "n_pairs": 5,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "answered": {
+     "kind": "rate",
+     "n_pairs": 5,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_coverage": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 0.8,
+     "research_mean": 0.6,
+     "delta_mean": -0.2
+    },
+    "answer_completeness": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 1.0,
+     "research_mean": 1.0,
+     "delta_mean": 0.0
+    },
+    "gold_handle_recall": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 0.8,
+     "research_mean": 0.6,
+     "delta_mean": -0.2
+    },
+    "unsupported_claim_rate": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 0.0,
+     "research_mean": 0.04,
+     "delta_mean": 0.04
+    },
+    "first_token_ms": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 3425.6,
+     "research_mean": 2362.9,
+     "delta_mean": -1062.7
+    },
+    "total_ms": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 8769.64,
+     "research_mean": 14861.1,
+     "delta_mean": 6091.46
+    },
+    "model_calls": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 1.0,
+     "research_mean": 4.6,
+     "delta_mean": 3.6
+    },
+    "tool_calls": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 0.0,
+     "research_mean": 3.4,
+     "delta_mean": 3.4
+    },
+    "retrieval_calls": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 1.0,
+     "research_mean": 2.4,
+     "delta_mean": 1.4
+    },
+    "tokens_total": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 5150.4,
+     "research_mean": 20784.2,
+     "delta_mean": 15633.8
+    },
+    "cost_usd": {
+     "kind": "mean",
+     "n_pairs": 5,
+     "standard_mean": 0.0132,
+     "research_mean": 0.035,
+     "delta_mean": 0.0218
+    }
+   }
+  }
+ },
+ "items": [
+  {
+   "id": "R-MC-01",
+   "category": "multi_class",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.6666666666666666,
+    "answer_completeness": 0.6666666666666666,
+    "gold_handle_recall": 0.6666666666666666,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1605.0,
+    "total_ms": 7516.1,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6051,
+    "cost_usd": 0.019603,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1169.3,
+    "total_ms": 23994.4,
+    "model_calls": 5,
+    "tool_calls": 6,
+    "retrieval_calls": 5,
+    "tokens_total": 32416,
+    "cost_usd": 0.067711,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.3333,
+    "answer_completeness": 0.3333,
+    "gold_handle_recall": 0.3333,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -435.7,
+    "total_ms": 16478.3,
+    "model_calls": 4.0,
+    "tool_calls": 6.0,
+    "retrieval_calls": 4.0,
+    "tokens_total": 26365.0,
+    "cost_usd": 0.0481
+   }
+  },
+  {
+   "id": "R-MC-03",
+   "category": "multi_class",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.6666666666666666,
+    "answer_completeness": 0.6666666666666666,
+    "gold_handle_recall": 0.6666666666666666,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 913.4,
+    "total_ms": 6916.9,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6738,
+    "cost_usd": 0.01881,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 855.7,
+    "total_ms": 38908.1,
+    "model_calls": 5,
+    "tool_calls": 6,
+    "retrieval_calls": 5,
+    "tokens_total": 32621,
+    "cost_usd": 0.061435,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.3333,
+    "answer_completeness": 0.3333,
+    "gold_handle_recall": 0.3333,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -57.7,
+    "total_ms": 31991.2,
+    "model_calls": 4.0,
+    "tool_calls": 6.0,
+    "retrieval_calls": 4.0,
+    "tokens_total": 25883.0,
+    "cost_usd": 0.0426
+   }
+  },
+  {
+   "id": "R-MC-05",
+   "category": "multi_class",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 2294.9,
+    "total_ms": 8625.9,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 5623,
+    "cost_usd": 0.017372,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 847.9,
+    "total_ms": 16297.1,
+    "model_calls": 5,
+    "tool_calls": 5,
+    "retrieval_calls": 3,
+    "tokens_total": 31170,
+    "cost_usd": 0.057717,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -1447.0,
+    "total_ms": 7671.2,
+    "model_calls": 4.0,
+    "tool_calls": 5.0,
+    "retrieval_calls": 2.0,
+    "tokens_total": 25547.0,
+    "cost_usd": 0.0403
+   }
+  },
+  {
+   "id": "R-IT-05",
+   "category": "identifier_then_semantic",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.5,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.5,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1897.9,
+    "total_ms": 4891.9,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 5348,
+    "cost_usd": 0.012614,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 812.1,
+    "total_ms": 12913.8,
+    "model_calls": 4,
+    "tool_calls": 3,
+    "retrieval_calls": 2,
+    "tokens_total": 17421,
+    "cost_usd": 0.031352,
+    "termination_state": "completed",
+    "stop_reason": "end_turn",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.5,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.5,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -1085.8,
+    "total_ms": 8021.9,
+    "model_calls": 3.0,
+    "tool_calls": 3.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 12073.0,
+    "cost_usd": 0.0187
+   }
+  },
+  {
+   "id": "R-IT-06",
+   "category": "identifier_then_semantic",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.5,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 0.5,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 876.8,
+    "total_ms": 6464.7,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6407,
+    "cost_usd": 0.017668,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.5,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 0.5,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 2556.8,
+    "total_ms": 19897.5,
+    "model_calls": 5,
+    "tool_calls": 8,
+    "retrieval_calls": 5,
+    "tokens_total": 29174,
+    "cost_usd": 0.054957,
+    "termination_state": "completed",
+    "stop_reason": "step_limit",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1680.0,
+    "total_ms": 13432.8,
+    "model_calls": 4.0,
+    "tool_calls": 8.0,
+    "retrieval_calls": 4.0,
+    "tokens_total": 22767.0,
+    "cost_usd": 0.0373
+   }
+  },
+  {
+   "id": "R-CC-03",
+   "category": "customer_competitor",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 800.5,
+    "total_ms": 5705.1,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 5225,
+    "cost_usd": 0.014448,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 694.3,
+    "total_ms": 11205.3,
+    "model_calls": 3,
+    "tool_calls": 3,
+    "retrieval_calls": 2,
+    "tokens_total": 13748,
+    "cost_usd": 0.027203,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -106.2,
+    "total_ms": 5500.2,
+    "model_calls": 2.0,
+    "tool_calls": 3.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 8523.0,
+    "cost_usd": 0.0128
+   }
+  },
+  {
+   "id": "R-CC-05",
+   "category": "customer_competitor",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 2417.1,
+    "total_ms": 7185.2,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6052,
+    "cost_usd": 0.015782,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1743.2,
+    "total_ms": 14659.1,
+    "model_calls": 4,
+    "tool_calls": 5,
+    "retrieval_calls": 3,
+    "tokens_total": 24957,
+    "cost_usd": 0.046904,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -673.9,
+    "total_ms": 7473.9,
+    "model_calls": 3.0,
+    "tool_calls": 5.0,
+    "retrieval_calls": 2.0,
+    "tokens_total": 18905.0,
+    "cost_usd": 0.0311
+   }
+  },
+  {
+   "id": "R-CI-02",
+   "category": "customer_internal",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 2378.6,
+    "total_ms": 6371.2,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6699,
+    "cost_usd": 0.016548,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.09090909090909091,
+    "first_token_ms": 3149.6,
+    "total_ms": 13889.0,
+    "model_calls": 3,
+    "tool_calls": 2,
+    "retrieval_calls": 2,
+    "tokens_total": 14061,
+    "cost_usd": 0.027293,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0909,
+    "first_token_ms": 771.0,
+    "total_ms": 7517.8,
+    "model_calls": 2.0,
+    "tool_calls": 2.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 7362.0,
+    "cost_usd": 0.0107
+   }
+  },
+  {
+   "id": "R-CI-05",
+   "category": "customer_internal",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.5,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.5,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 928.2,
+    "total_ms": 4811.3,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6333,
+    "cost_usd": 0.016128,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 2702.5,
+    "total_ms": 12230.7,
+    "model_calls": 3,
+    "tool_calls": 2,
+    "retrieval_calls": 2,
+    "tokens_total": 13249,
+    "cost_usd": 0.025509,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.5,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.5,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1774.3,
+    "total_ms": 7419.4,
+    "model_calls": 2.0,
+    "tool_calls": 2.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 6916.0,
+    "cost_usd": 0.0094
+   }
+  },
+  {
+   "id": "R-CF-01",
+   "category": "conflict_search",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.5,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.5,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1944.2,
+    "total_ms": 7069.0,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6650,
+    "cost_usd": 0.01821,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.5,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.5,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1542.5,
+    "total_ms": 19749.7,
+    "model_calls": 4,
+    "tool_calls": 3,
+    "retrieval_calls": 1,
+    "tokens_total": 23211,
+    "cost_usd": 0.050068,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -401.7,
+    "total_ms": 12680.7,
+    "model_calls": 3.0,
+    "tool_calls": 3.0,
+    "retrieval_calls": 0.0,
+    "tokens_total": 16561.0,
+    "cost_usd": 0.0319
+   }
+  },
+  {
+   "id": "R-CF-03",
+   "category": "conflict_search",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.6666666666666666,
+    "answer_completeness": 0.6666666666666666,
+    "gold_handle_recall": 0.6666666666666666,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 3263.9,
+    "total_ms": 9086.6,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6472,
+    "cost_usd": 0.017566,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1976.0,
+    "total_ms": 18547.5,
+    "model_calls": 5,
+    "tool_calls": 8,
+    "retrieval_calls": 6,
+    "tokens_total": 36374,
+    "cost_usd": 0.070669,
+    "termination_state": "completed",
+    "stop_reason": "step_limit",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.3333,
+    "answer_completeness": 0.3333,
+    "gold_handle_recall": 0.3333,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -1287.9,
+    "total_ms": 9460.9,
+    "model_calls": 4.0,
+    "tool_calls": 8.0,
+    "retrieval_calls": 5.0,
+    "tokens_total": 29902.0,
+    "cost_usd": 0.0531
+   }
+  },
+  {
+   "id": "R-CF-05",
+   "category": "conflict_search",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 4516.0,
+    "total_ms": 10848.1,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6469,
+    "cost_usd": 0.018696,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 993.1,
+    "total_ms": 16971.5,
+    "model_calls": 4,
+    "tool_calls": 4,
+    "retrieval_calls": 3,
+    "tokens_total": 23327,
+    "cost_usd": 0.045652,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -3522.9,
+    "total_ms": 6123.4,
+    "model_calls": 3.0,
+    "tool_calls": 4.0,
+    "retrieval_calls": 2.0,
+    "tokens_total": 16858.0,
+    "cost_usd": 0.027
+   }
+  },
+  {
+   "id": "R-FP-04",
+   "category": "first_pass_insufficient",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 3934.6,
+    "total_ms": 7026.4,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 5514,
+    "cost_usd": 0.013282,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1379.5,
+    "total_ms": 13144.8,
+    "model_calls": 5,
+    "tool_calls": 3,
+    "retrieval_calls": 2,
+    "tokens_total": 21893,
+    "cost_usd": 0.033691,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -2555.1,
+    "total_ms": 6118.4,
+    "model_calls": 4.0,
+    "tool_calls": 3.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 16379.0,
+    "cost_usd": 0.0204
+   }
+  },
+  {
+   "id": "R-FP-05",
+   "category": "first_pass_insufficient",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1550.4,
+    "total_ms": 7643.8,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 7555,
+    "cost_usd": 0.021044,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 631.1,
+    "total_ms": 16325.1,
+    "model_calls": 4,
+    "tool_calls": 5,
+    "retrieval_calls": 3,
+    "tokens_total": 25623,
+    "cost_usd": 0.050892,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -919.3,
+    "total_ms": 8681.3,
+    "model_calls": 3.0,
+    "tool_calls": 5.0,
+    "retrieval_calls": 2.0,
+    "tokens_total": 18068.0,
+    "cost_usd": 0.0298
+   }
+  },
+  {
+   "id": "R-RF-01",
+   "category": "reformulation",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1398.3,
+    "total_ms": 4079.1,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6044,
+    "cost_usd": 0.013702,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 848.1,
+    "total_ms": 15281.1,
+    "model_calls": 4,
+    "tool_calls": 3,
+    "retrieval_calls": 2,
+    "tokens_total": 16685,
+    "cost_usd": 0.02948,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -550.2,
+    "total_ms": 11202.0,
+    "model_calls": 3.0,
+    "tool_calls": 3.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 10641.0,
+    "cost_usd": 0.0158
+   }
+  },
+  {
+   "id": "R-RF-03",
+   "category": "reformulation",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1191.6,
+    "total_ms": 3542.4,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6520,
+    "cost_usd": 0.014846,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 3002.4,
+    "total_ms": 16127.8,
+    "model_calls": 4,
+    "tool_calls": 4,
+    "retrieval_calls": 3,
+    "tokens_total": 24332,
+    "cost_usd": 0.046094,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1810.8,
+    "total_ms": 12585.4,
+    "model_calls": 3.0,
+    "tool_calls": 4.0,
+    "retrieval_calls": 2.0,
+    "tokens_total": 17812.0,
+    "cost_usd": 0.0312
+   }
+  },
+  {
+   "id": "R-IS-01",
+   "category": "insufficient_stop",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": false,
+    "gold_coverage": null,
+    "answer_completeness": null,
+    "gold_handle_recall": null,
+    "unsupported_claim_rate": null,
+    "first_token_ms": 1978.3,
+    "total_ms": 4700.8,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 3897,
+    "cost_usd": 0.008072,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": false,
+    "gold_coverage": null,
+    "answer_completeness": null,
+    "gold_handle_recall": null,
+    "unsupported_claim_rate": null,
+    "first_token_ms": 1563.6,
+    "total_ms": 10676.8,
+    "model_calls": 4,
+    "tool_calls": 3,
+    "retrieval_calls": 3,
+    "tokens_total": 15051,
+    "cost_usd": 0.022596,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": null,
+    "answer_completeness": null,
+    "gold_handle_recall": null,
+    "unsupported_claim_rate": null,
+    "first_token_ms": -414.7,
+    "total_ms": 5976.0,
+    "model_calls": 3.0,
+    "tool_calls": 3.0,
+    "retrieval_calls": 2.0,
+    "tokens_total": 11154.0,
+    "cost_usd": 0.0145
+   }
+  },
+  {
+   "id": "R-IS-06",
+   "category": "insufficient_stop",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": false,
+    "gold_coverage": null,
+    "answer_completeness": null,
+    "gold_handle_recall": null,
+    "unsupported_claim_rate": null,
+    "first_token_ms": 1555.2,
+    "total_ms": 3752.0,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 6553,
+    "cost_usd": 0.013408,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": null,
+    "answer_completeness": null,
+    "gold_handle_recall": null,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1406.4,
+    "total_ms": 15826.3,
+    "model_calls": 4,
+    "tool_calls": 3,
+    "retrieval_calls": 2,
+    "tokens_total": 21548,
+    "cost_usd": 0.03583,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": null,
+    "answer_completeness": null,
+    "gold_handle_recall": null,
+    "unsupported_claim_rate": null,
+    "first_token_ms": -148.8,
+    "total_ms": 12074.3,
+    "model_calls": 3.0,
+    "tool_calls": 3.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 14995.0,
+    "cost_usd": 0.0224
+   }
+  },
+  {
+   "id": "R-SC-01",
+   "category": "simple_control",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 583.0,
+    "total_ms": 3715.4,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 4842,
+    "cost_usd": 0.011146,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1781.4,
+    "total_ms": 17948.9,
+    "model_calls": 6,
+    "tool_calls": 4,
+    "retrieval_calls": 2,
+    "tokens_total": 23603,
+    "cost_usd": 0.041141,
+    "termination_state": "completed",
+    "stop_reason": "step_limit",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": -1.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": -1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1198.4,
+    "total_ms": 14233.5,
+    "model_calls": 5.0,
+    "tool_calls": 4.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 18761.0,
+    "cost_usd": 0.03
+   }
+  },
+  {
+   "id": "R-SC-03",
+   "category": "simple_control",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 4323.3,
+    "total_ms": 7743.5,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 5188,
+    "cost_usd": 0.012758,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1319.4,
+    "total_ms": 11418.4,
+    "model_calls": 4,
+    "tool_calls": 3,
+    "retrieval_calls": 1,
+    "tokens_total": 17597,
+    "cost_usd": 0.028056,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -3003.9,
+    "total_ms": 3674.9,
+    "model_calls": 3.0,
+    "tool_calls": 3.0,
+    "retrieval_calls": 0.0,
+    "tokens_total": 12409.0,
+    "cost_usd": 0.0153
+   }
+  },
+  {
+   "id": "R-SC-05",
+   "category": "simple_control",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1876.6,
+    "total_ms": 7426.9,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 5781,
+    "cost_usd": 0.016,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 0.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.2,
+    "first_token_ms": 4235.4,
+    "total_ms": 20043.8,
+    "model_calls": 5,
+    "tool_calls": 4,
+    "retrieval_calls": 4,
+    "tokens_total": 24146,
+    "cost_usd": 0.040909,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.2,
+    "first_token_ms": 2358.8,
+    "total_ms": 12616.9,
+    "model_calls": 4.0,
+    "tool_calls": 4.0,
+    "retrieval_calls": 3.0,
+    "tokens_total": 18365.0,
+    "cost_usd": 0.0249
+   }
+  },
+  {
+   "id": "R-SC-08",
+   "category": "simple_control",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 8440.2,
+    "total_ms": 21017.7,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 5224,
+    "cost_usd": 0.015526,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 3432.1,
+    "total_ms": 15944.4,
+    "model_calls": 5,
+    "tool_calls": 4,
+    "retrieval_calls": 3,
+    "tokens_total": 25242,
+    "cost_usd": 0.042573,
+    "termination_state": "completed",
+    "stop_reason": "step_limit",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -5008.1,
+    "total_ms": -5073.3,
+    "model_calls": 4.0,
+    "tool_calls": 4.0,
+    "retrieval_calls": 2.0,
+    "tokens_total": 20018.0,
+    "cost_usd": 0.027
+   }
+  },
+  {
+   "id": "R-SC-10",
+   "category": "simple_control",
+   "standard": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1904.9,
+    "total_ms": 3944.7,
+    "model_calls": 1,
+    "tool_calls": 0,
+    "retrieval_calls": 1,
+    "tokens_total": 4717,
+    "cost_usd": 0.010336,
+    "termination_state": "completed",
+    "stop_reason": null,
+    "route_decided": "standard",
+    "research_fallback": false
+   },
+   "research": {
+    "behaviour_pass": true,
+    "answered": true,
+    "gold_coverage": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": 1046.2,
+    "total_ms": 8950.0,
+    "model_calls": 3,
+    "tool_calls": 2,
+    "retrieval_calls": 2,
+    "tokens_total": 13333,
+    "cost_usd": 0.022237,
+    "termination_state": "completed",
+    "stop_reason": "finish_research",
+    "route_decided": "research",
+    "research_fallback": false
+   },
+   "delta": {
+    "gold_coverage": 0.0,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 0.0,
+    "unsupported_claim_rate": 0.0,
+    "first_token_ms": -858.7,
+    "total_ms": 5005.3,
+    "model_calls": 2.0,
+    "tool_calls": 2.0,
+    "retrieval_calls": 1.0,
+    "tokens_total": 8616.0,
+    "cost_usd": 0.0119
+   }
+  }
+ ]
+}

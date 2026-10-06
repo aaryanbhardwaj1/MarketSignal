@@ -1,0 +1,4464 @@
+{
+ "elapsed_s": 162.5,
+ "summary": {
+  "n": 23,
+  "hard_gates": {
+   "citation_resolvability": {
+    "value": 1.0,
+    "pass": true
+   },
+   "citation_in_pack": {
+    "value": 1.0,
+    "pass": true
+   },
+   "every_run_done": {
+    "value": 0,
+    "pass": true,
+    "missing": []
+   },
+   "answer_items_have_final": {
+    "value": 0,
+    "pass": true,
+    "missing": []
+   },
+   "cross_workspace_leaks": {
+    "value": 0,
+    "pass": true
+   },
+   "empty_pack_never_calls_llm": {
+    "value": "not applicable",
+    "pass": true
+   }
+  },
+  "contract_recheck_failures": [
+   {
+    "id": "R-MC-01",
+    "problems": [
+     "uncited answer sentence: The evidence does not state what share of Pace & Co.'s activ"
+    ]
+   },
+   {
+    "id": "R-CF-05",
+    "problems": [
+     "uncited answer sentence: No, the evidence does not support leading Gen Z messaging wi"
+    ]
+   },
+   {
+    "id": "R-IS-01",
+    "problems": [
+     "uncited answer sentence: The evidence does not state how many patents Kinetic Lab hol",
+     "uncited answer sentence: None of the provided items mention patents, patent filings o"
+    ]
+   },
+   {
+    "id": "R-IS-06",
+    "problems": [
+     "uncited answer sentence: The evidence does not say how Northstar's share price reacte",
+     "uncited answer sentence: None of the provided items contains share price, stock marke"
+    ]
+   }
+  ],
+  "over_refusal": {
+   "k": 0,
+   "n": 18
+  },
+  "insufficient_correct": {
+   "k": 2,
+   "n": 2
+  },
+  "canary_leaks": [],
+  "categories": {
+   "conflict_search": {
+    "n": 3,
+    "behaviour_pass": "3/3",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.4385029682449546,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 0.722,
+    "numeric_correct_mean": 0.583,
+    "answered": 3,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   },
+   "customer_competitor": {
+    "n": 2,
+    "behaviour_pass": "2/2",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.34238022750665303,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 1.0,
+    "numeric_correct_mean": null,
+    "answered": 2,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   },
+   "customer_internal": {
+    "n": 2,
+    "behaviour_pass": "2/2",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.34238022750665303,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 0.75,
+    "numeric_correct_mean": 1.0,
+    "answered": 2,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   },
+   "first_pass_insufficient": {
+    "n": 2,
+    "behaviour_pass": "2/2",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.34238022750665303,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 1.0,
+    "numeric_correct_mean": 1.0,
+    "answered": 2,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   },
+   "identifier_then_semantic": {
+    "n": 2,
+    "behaviour_pass": "2/2",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.34238022750665303,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 0.5,
+    "numeric_correct_mean": 1.0,
+    "answered": 2,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   },
+   "insufficient_stop": {
+    "n": 2,
+    "behaviour_pass": "2/2",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.34238022750665303,
+     "high": 1.0
+    },
+    "gold_coverage_mean": null,
+    "numeric_correct_mean": null,
+    "answered": 0,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   },
+   "multi_class": {
+    "n": 3,
+    "behaviour_pass": "3/3",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.4385029682449546,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 0.778,
+    "numeric_correct_mean": 0.778,
+    "answered": 3,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   },
+   "reformulation": {
+    "n": 2,
+    "behaviour_pass": "2/2",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.34238022750665303,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 1.0,
+    "numeric_correct_mean": 1.0,
+    "answered": 2,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   },
+   "simple_control": {
+    "n": 5,
+    "behaviour_pass": "5/5",
+    "behaviour_ci": {
+     "estimate": 1.0,
+     "low": 0.5655175352168251,
+     "high": 1.0
+    },
+    "gold_coverage_mean": 0.8,
+    "numeric_correct_mean": 1.0,
+    "answered": 5,
+    "fallback_gold_coverage_mean": null,
+    "fallback_numeric_correct_mean": null,
+    "evidence_only": 0
+   }
+  },
+  "latency_ms": {
+   "first_token_p50": 1897.9,
+   "first_token_p95": 4496.73,
+   "total_p50": 6916.9,
+   "total_p95": 10671.949999999997
+  },
+  "usage_total": {
+   "input_tokens": 104459,
+   "llm_attempts": 23,
+   "output_tokens": 13940,
+   "cache_read_input_tokens": 16742,
+   "cache_creation_input_tokens": 761
+  },
+  "usage_per_llm_run_mean": {
+   "input_tokens": 4541.7,
+   "llm_attempts": 1.0,
+   "output_tokens": 606.1,
+   "cache_read_input_tokens": 727.9,
+   "cache_creation_input_tokens": 33.1
+  },
+  "regenerations": 0,
+  "termination_states": {
+   "completed": 23
+  }
+ },
+ "runs": {
+  "mode": "standard",
+  "n": 23,
+  "model_calls": {
+   "total": 23,
+   "mean": 1.0
+  },
+  "tool_calls": {
+   "total": 0,
+   "mean": 0.0
+  },
+  "tool_failures": {
+   "total": 0,
+   "mean": 0.0
+  },
+  "retrieval_calls": {
+   "total": 23,
+   "mean": 1.0
+  },
+  "steps": {
+   "total": 0,
+   "mean": 0.0
+  },
+  "tokens_total": {
+   "input": 104459,
+   "output": 13940,
+   "cache_read": 16742,
+   "cache_write": 761
+  },
+  "cost_usd": {
+   "total": 0.353565,
+   "per_run": 0.015372
+  },
+  "latency_ms": {
+   "first_token_p50": 1897.9,
+   "first_token_p95": 4496.73,
+   "total_p50": 6916.9,
+   "total_p95": 10671.949999999997
+  },
+  "routes_decided": {
+   "standard": 23
+  },
+  "stop_reasons": {},
+  "termination_states": {
+   "completed": 23
+  },
+  "research_fallbacks": 0,
+  "regenerations": 0,
+  "evidence_only": 0,
+  "behaviour_pass": {
+   "k": 23,
+   "n": 23,
+   "ci": {
+    "estimate": 1.0,
+    "low": 0.8568833815495731,
+    "high": 1.0
+   }
+  },
+  "gold_coverage_mean": 0.8095,
+  "answer_completeness_mean": 0.7619,
+  "gold_handle_recall_mean": 0.8095,
+  "conflict_coverage": {
+   "k": 1,
+   "n": 3,
+   "ci": {
+    "estimate": 0.3333333333333333,
+    "low": 0.06149194472039621,
+    "high": 0.7923403991979522
+   }
+  },
+  "abstention_correct": {
+   "k": 2,
+   "n": 2,
+   "ci": {
+    "estimate": 1.0,
+    "low": 0.34238022750665303,
+    "high": 1.0
+   }
+  },
+  "unsupported_claim_rate": {
+   "unsupported_units": 0,
+   "cited_units": 169,
+   "rate": 0.0
+  },
+  "router_agreement": null,
+  "categories": {
+   "conflict_search": {
+    "n": 3,
+    "behaviour_pass": {
+     "k": 3,
+     "n": 3,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.4385029682449546,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 0.7222,
+    "answer_completeness_mean": 0.5556,
+    "gold_handle_recall_mean": 0.7222,
+    "conflict_coverage": {
+     "k": 1,
+     "n": 3,
+     "ci": {
+      "estimate": 0.3333333333333333,
+      "low": 0.06149194472039621,
+      "high": 0.7923403991979522
+     }
+    },
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 34,
+     "rate": 0.0
+    },
+    "total_ms_p50": 9086.6,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.054472
+   },
+   "customer_competitor": {
+    "n": 2,
+    "behaviour_pass": {
+     "k": 2,
+     "n": 2,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.34238022750665303,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 1.0,
+    "answer_completeness_mean": 0.75,
+    "gold_handle_recall_mean": 1.0,
+    "conflict_coverage": null,
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 16,
+     "rate": 0.0
+    },
+    "total_ms_p50": 6445.15,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.03023
+   },
+   "customer_internal": {
+    "n": 2,
+    "behaviour_pass": {
+     "k": 2,
+     "n": 2,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.34238022750665303,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 0.75,
+    "answer_completeness_mean": 0.5,
+    "gold_handle_recall_mean": 0.75,
+    "conflict_coverage": null,
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 16,
+     "rate": 0.0
+    },
+    "total_ms_p50": 5591.25,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.032676
+   },
+   "first_pass_insufficient": {
+    "n": 2,
+    "behaviour_pass": {
+     "k": 2,
+     "n": 2,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.34238022750665303,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 1.0,
+    "answer_completeness_mean": 1.0,
+    "gold_handle_recall_mean": 1.0,
+    "conflict_coverage": null,
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 18,
+     "rate": 0.0
+    },
+    "total_ms_p50": 7335.1,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.034326
+   },
+   "identifier_then_semantic": {
+    "n": 2,
+    "behaviour_pass": {
+     "k": 2,
+     "n": 2,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.34238022750665303,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 0.5,
+    "answer_completeness_mean": 0.75,
+    "gold_handle_recall_mean": 0.5,
+    "conflict_coverage": null,
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 11,
+     "rate": 0.0
+    },
+    "total_ms_p50": 5678.299999999999,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.030282
+   },
+   "insufficient_stop": {
+    "n": 2,
+    "behaviour_pass": {
+     "k": 2,
+     "n": 2,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.34238022750665303,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": null,
+    "answer_completeness_mean": null,
+    "gold_handle_recall_mean": null,
+    "conflict_coverage": null,
+    "abstention_correct": {
+     "k": 2,
+     "n": 2,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.34238022750665303,
+      "high": 1.0
+     }
+    },
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 0,
+     "rate": null
+    },
+    "total_ms_p50": 4226.4,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.02148
+   },
+   "multi_class": {
+    "n": 3,
+    "behaviour_pass": {
+     "k": 3,
+     "n": 3,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.4385029682449546,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 0.7778,
+    "answer_completeness_mean": 0.7778,
+    "gold_handle_recall_mean": 0.7778,
+    "conflict_coverage": null,
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 30,
+     "rate": 0.0
+    },
+    "total_ms_p50": 7516.1,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.055785
+   },
+   "reformulation": {
+    "n": 2,
+    "behaviour_pass": {
+     "k": 2,
+     "n": 2,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.34238022750665303,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 1.0,
+    "answer_completeness_mean": 0.5,
+    "gold_handle_recall_mean": 1.0,
+    "conflict_coverage": null,
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 14,
+     "rate": 0.0
+    },
+    "total_ms_p50": 3810.75,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.028548
+   },
+   "simple_control": {
+    "n": 5,
+    "behaviour_pass": {
+     "k": 5,
+     "n": 5,
+     "ci": {
+      "estimate": 1.0,
+      "low": 0.5655175352168251,
+      "high": 1.0
+     }
+    },
+    "gold_coverage_mean": 0.8,
+    "answer_completeness_mean": 1.0,
+    "gold_handle_recall_mean": 0.8,
+    "conflict_coverage": null,
+    "abstention_correct": null,
+    "unsupported_claim_rate": {
+     "unsupported_units": 0,
+     "cited_units": 30,
+     "rate": 0.0
+    },
+    "total_ms_p50": 7426.9,
+    "model_calls_mean": 1.0,
+    "tool_calls_mean": 0.0,
+    "cost_usd": 0.065766
+   }
+  }
+ },
+ "pipeline": {
+  "stage_latency_ms": {
+   "agent": {
+    "n": 0,
+    "p50": null,
+    "p95": null,
+    "max": null
+   },
+   "retrieval": {
+    "n": 23,
+    "p50": 117.9,
+    "p95": 184.9,
+    "max": 530.9
+   },
+   "pack": {
+    "n": 23,
+    "p50": 2.3,
+    "p95": 3.1,
+    "max": 3.3
+   },
+   "model": {
+    "n": 23,
+    "p50": 6698.7,
+    "p95": 10392.9,
+    "max": 20759.4
+   },
+   "verification": {
+    "n": 23,
+    "p50": 19.6,
+    "p95": 31.0,
+    "max": 31.1
+   },
+   "end_to_end": {
+    "n": 23,
+    "p50": 6916.9,
+    "p95": 10671.9,
+    "max": 21017.7
+   }
+  },
+  "verification": {
+   "verified_answers": 23,
+   "runs_with_repairs": 21,
+   "repairs_total": 48,
+   "unknown_aliases_removed": 0,
+   "numeric_units_dropped": 4,
+   "leaks_removed": 0,
+   "first_attempt_failed": 0,
+   "regenerated": 0,
+   "fallback_after_verification": 0,
+   "evidence_only_total": 0
+  },
+  "cost_usd": {
+   "input": 0.2089,
+   "output": 0.1394,
+   "cache_write": 0.0019,
+   "cache_read": 0.0033,
+   "total": 0.3536,
+   "per_model_run": 0.01537
+  },
+  "prices_usd_per_mtok": {
+   "input": 2.0,
+   "output": 10.0,
+   "cache_write": 2.5,
+   "cache_read": 0.2
+  }
+ },
+ "items": [
+  {
+   "id": "R-MC-01",
+   "category": "multi_class",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "How far behind its rivals is Northstar with Gen Z? Give Northstar's aided awareness among Gen Z, Vantage Athletic's FY2025 revenue scale, and the share of Pace & Co.'s active customers who are Gen Z.",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nNorthstar's aided awareness among Gen Z is 46%, against 71% for Vantage Athletic [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]][[NORTHSTAR/VANTAGE-DECK@v1:SL10]]. Vantage's FY2025 net revenue is about $4.2 billion [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]]. The evidence does not state what share of Pace & Co.'s active customers are Gen Z.\n\n### Key findings\n\n- Northstar's aided brand awareness among Gen Z consumers stands at 46%, well behind the 71% recorded for Vantage Athletic [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Vantage itself states that its aided awareness among Gen Z stands at 71% [[NORTHSTAR/VANTAGE-DECK@v1:SL10]].\n- Vantage Athletic had FY2025 net revenue of about $4.2 billion, with footwear making up 63% of sales [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n- Northstar's net revenue is on track to grow from $571.0 million in FY25 to a latest estimate of $612.0 million in FY26 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z shoppers generated 21% of Northstar net revenue in FY25, up from 17% two years earlier, with a board target of 30% by the end of FY28 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z NPS for Northstar is 22, against 49 among customers aged 28 and older [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B2]].\n- Pace & Co. is described as winning on price and cadence, and Value Seekers (26% of Northstar's Gen Z base) trade freely between Northstar and Pace & Co. [[NORTHSTAR/Q3-REVIEW@v1:SL13.N1]][[NORTHSTAR/BRAND-STRATEGY@v1:P3.B5]].\n\n### Conflicting evidence\n\n- The Q3 review states that aided awareness trails Vantage Athletic by 25 points [[NORTHSTAR/Q3-REVIEW@v1:SL6]]. The brand strategy gives 46% against 71% [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], and the stated gap is consistent with those two figures. However, E2 notes that figures were restated or superseded, so the current value should be confirmed.\n- Gen Z survey sample size differs: the strategy document cites 600 respondents in total [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], while the Q3 review and NPS breakdown cite 400 Gen Z respondents [[NORTHSTAR/Q3-REVIEW@v1:SL6]][[NORTHSTAR/BRAND-STRATEGY@v1:P4.B3]]. These may be different subsets (all respondents versus Gen Z only), but this is not stated explicitly.\n\n### Interpretation\n\nNorthstar is substantially smaller than Vantage in both revenue and awareness, so the Gen Z gap is a reach problem more than a reputation problem, consistent with the document's own diagnosis [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B2]] [inference].\n\n### Gaps & unknowns\n\nThe evidence contains no figure for the share of Pace & Co.'s active customers who are Gen Z, and no Pace & Co. revenue or awareness data [inference]. A Pace & Co. investor or public disclosure, or a third-party customer panel covering that brand, would close this gap. The evidence also does not clarify which Gen Z definition underlies the awareness figures, since teams use differing definitions [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 17,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E9",
+     "E11",
+     "E3",
+     "E6",
+     "E10",
+     "E7",
+     "E8"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [
+     "Answer #3"
+    ],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E2 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E9",
+     "E11",
+     "E3",
+     "E6",
+     "E10",
+     "E7",
+     "E8"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "NORTHSTAR/VANTAGE-DECK@v1:SL10",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+     "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5",
+     "NORTHSTAR/Q3-REVIEW@v1:SL6",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/VANTAGE-DECK@v1:SL10",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5",
+    "NORTHSTAR/Q3-REVIEW@v1:SL6",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL6",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+    "NORTHSTAR/VANTAGE-DECK@v1:SL10",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B4"
+   ],
+   "usage": {
+    "input_tokens": 4400,
+    "llm_attempts": 1,
+    "output_tokens": 890,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 761
+   },
+   "timings": {
+    "pack_ms": 2.2,
+    "attempts": 1,
+    "total_ms": 7516.1,
+    "verify_ms_1": 31.12,
+    "retrieval_ms": 530.9,
+    "first_token_ms": 1605.0,
+    "synthesis_ms_1": 6812.5
+   },
+   "checks": {
+    "citations": 8,
+    "resolvable": 8,
+    "in_pack": 8,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [
+     "uncited answer sentence: The evidence does not state what share of Pace & Co.'s activ"
+    ],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.6666666666666666,
+    "numeric_correct": 0.6666666666666666,
+    "answer_completeness": 0.6666666666666666,
+    "gold_handle_recall": 0.6666666666666666,
+    "cited_units": 12,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1605.0,
+    "total_ms": 7516.1
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4400,
+     "output": 890,
+     "cache_read": 0,
+     "cache_write": 761
+    },
+    "cost_usd": 0.019603,
+    "first_token_ms": 1605.0,
+    "total_ms": 7516.1,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-MC-03",
+   "category": "multi_class",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "Size up the social-commerce opportunity: what share of Gen Z athletic footwear purchases now happen on social platforms according to the latest trend panel, how fast did Northstar's Social Shop grow quarter over quarter in Q2 FY26, and how big is the FY27 Gen Z marketing budget the strategy team proposes?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe latest trend panel puts social platforms at 26% of Gen Z athletic footwear purchases [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]], and Northstar's Social Shop sales grew 142% quarter over quarter in Q2 FY26 [[NORTHSTAR/Q3-REVIEW@v1:SL5]]. The evidence does not state the size of the proposed FY27 Gen Z marketing budget; it only says a budget shift is planned [inference].\n\n### Key findings\n\n- Social commerce platforms account for 26% of Gen Z athletic footwear purchases in the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]]; the FY27 planning memo restates this as \"just over a quarter\" [[NORTHSTAR/FY27-MEMO@v1:S1.B5]].\n- Social Shop sales grew 142% quarter over quarter, the fastest of any channel [[NORTHSTAR/Q3-REVIEW@v1:SL5]].\n- Social Shop is described as Northstar's fastest growing route to market, and the strategy plans to shift \"a meaningful part\" of the marketing budget toward creators, clubs and Social Shop, with no amount given [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B4]].\n- Marketing is due to bring a creator and community plan with a proposed budget shift to the July leadership review [[NORTHSTAR/BRAND-STRATEGY@v1:P7.B2]].\n- A separate note shows marketplaces and social commerce combined at 34% of Gen Z athletic spend, versus 22% for brand owned sites [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n\n### Conflicting evidence\n\n- The 26% panel figure may be understated: the analyst expects the panel's social commerce measurement to be restated upward in the next edition because earlier panels undercounted young shoppers [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]]. The current published figure remains 26% [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]].\n- The 26% covers social platforms alone, while 34% combines marketplace and social, on spend rather than purchases, so the two are not directly comparable [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]][[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n\n### Interpretation\n\nThe 26% share is probably a floor rather than a ceiling, given the expected upward restatement [inference]. The 142% quarter-over-quarter growth likely comes off a small base, so it should not be extrapolated [inference]. Social orders carry higher return rates and fulfilment and service strain, which could erode the apparent conversion advantage [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]] [inference].\n\n### Gaps & unknowns\n\nThe proposed FY27 Gen Z marketing budget is not stated anywhere in the evidence. The July leadership review materials or the marketing team's budget proposal would close this. The size of the Social Shop base, in revenue or share of Gen Z orders, is not given, so the growth rate cannot be put in absolute terms. The restated panel figure is not yet published; the next edition of the trends report should settle it [inference]. Social Shop margin and return economics for Northstar are not quantified [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #2: tagged uncited sentence as [inference]",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #4: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 13,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E2",
+     "E10",
+     "E1",
+     "E11",
+     "E5",
+     "E12",
+     "E4"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E4 says some figures were restated or superseded",
+     "E5 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E2",
+     "E10",
+     "E1",
+     "E11",
+     "E5",
+     "E12",
+     "E4"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+     "NORTHSTAR/Q3-REVIEW@v1:SL5",
+     "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+     "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+     "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL5",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+    "NORTHSTAR/Q3-REVIEW@v1:SL5",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2"
+   ],
+   "usage": {
+    "input_tokens": 5139,
+    "llm_attempts": 1,
+    "output_tokens": 838,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 3.1,
+    "attempts": 1,
+    "total_ms": 6916.9,
+    "verify_ms_1": 17.5,
+    "retrieval_ms": 129.9,
+    "first_token_ms": 913.4,
+    "synthesis_ms_1": 6698.7
+   },
+   "checks": {
+    "citations": 7,
+    "resolvable": 7,
+    "in_pack": 7,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.6666666666666666,
+    "numeric_correct": 0.6666666666666666,
+    "answer_completeness": 0.6666666666666666,
+    "gold_handle_recall": 0.6666666666666666,
+    "cited_units": 9,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 913.4,
+    "total_ms": 6916.9
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5139,
+     "output": 838,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.01881,
+    "first_token_ms": 913.4,
+    "total_ms": 6916.9,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-MC-05",
+   "category": "multi_class",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "Put Northstar's numbers in market context: its FY26 latest-estimate net revenue, the growth expected from Gen Z revenue in FY26, and the size of the 2026 US Gen Z athletic footwear market.",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nNorthstar's FY26 latest-estimate net revenue is $612.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], and Gen Z revenue is projected to grow 13.8% in FY26, ahead of the company overall [[NORTHSTAR/Q3-REVIEW@v1:SL3]]. The 2026 US Gen Z athletic footwear market is estimated at $18.6 billion [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]] [inference]. Northstar's total revenue is small relative to that footwear segment, and its Gen Z growth is roughly double the company rate, though the market comparison is not like-for-like [inference].\n\n### Key findings\n\n- FY26 net revenue is a latest estimate of $612.0 million, up from $571.0 million in FY25, with gross margin of 47.2% [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z revenue under the finance definition (ages 18 to 27) is projected to grow from $110.8 million in FY25 to $126.1 million in FY26, an increase of 13.8%, roughly double the company's growth rate [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The US Gen Z athletic footwear market is estimated at $18.6 billion in 2026, with yoy growth of 6.9% [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]]; the 2025 figure was $17.4 billion, with yoy growth of 7.4% [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R4]].\n- Gen Z accounted for 21% of Northstar net revenue in FY25 per brand materials [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], and a little above 20% in FY26 on the strict finance definition [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The market estimates are modeled figures from Cobalt Insight Partners [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]].\n\n### Conflicting evidence\n\n- Gen Z share of FY25 revenue is 21% in the brand strategy summary [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], but a little under 20% on the finance definition [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]]. The difference stems from age bands: 16 to 29 for the loyalty program versus 18 to 27 for finance.\n- Another market source restates the 2025 US Gen Z athletic apparel market at $44.8 billion, a change in estimate rather than growth [[NORTHSTAR/GENZ-TRENDS@v2:P2.B3]]. That is an apparel figure and is not directly comparable with the footwear estimate.\n\n### Interpretation\n\nNorthstar's Gen Z growth of 13.8% is about double the 6.9% growth estimated for the Gen Z footwear market, which suggests share gains, but this cannot be confirmed because Northstar's Gen Z revenue is not split by footwear [inference]. Northstar's total revenue includes apparel and non-US sales, so comparing it with the footwear market alone would overstate or misstate its share [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give Northstar's Gen Z footwear revenue or its US-only revenue, so market share cannot be calculated on a consistent basis. FY26 company figures are estimates because the year is not closed [inference]. The market figures are modeled estimates, and the apparel and footwear market sizes come from different sources [inference]. A category-level revenue breakdown from finance would close the gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #3: tagged uncited sentence as [inference]",
+     "Conflicting evidence #1: collapsed duplicate citation E4",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 13,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E2",
+     "E8",
+     "E4",
+     "E11",
+     "E6"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E8 and E11 state different values for 'year'",
+     "E9 and E11 state different values for 'year'",
+     "E5 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E2",
+     "E8",
+     "E4",
+     "E11",
+     "E6"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "NORTHSTAR/Q3-REVIEW@v1:SL3",
+     "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+     "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R4",
+     "NORTHSTAR/GENZ-TRENDS@v2:P2.B3"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R4",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B3"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R4",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5"
+   ],
+   "usage": {
+    "input_tokens": 3925,
+    "llm_attempts": 1,
+    "output_tokens": 937,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.1,
+    "attempts": 1,
+    "total_ms": 8625.9,
+    "verify_ms_1": 25.83,
+    "retrieval_ms": 114.8,
+    "first_token_ms": 2294.9,
+    "synthesis_ms_1": 8366.5
+   },
+   "checks": {
+    "citations": 6,
+    "resolvable": 6,
+    "in_pack": 6,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 9,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 2294.9,
+    "total_ms": 8625.9
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 3925,
+     "output": 937,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.017372,
+    "first_token_ms": 2294.9,
+    "total_ms": 8625.9,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-IT-05",
+   "category": "identifier_then_semantic",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "Survey respondent R0388 named a premium they would accept. What was it and what condition did they attach, and how does stated acceptance in the external willingness-to-pay study change at a 25% premium?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe evidence provided does not contain a record for survey respondent R0388, so the premium they named and any condition they attached cannot be reported [inference]. The only customer survey row supplied is R0174, which is a different respondent [inference]. For the second part, the external study found that stated acceptance falls to 12% of Gen Z respondents at a 25% premium, down from 38% at a 15% premium [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n\n### Key findings\n\n- At a 25% premium, only 12% of Gen Z respondents accepted, and acceptance falls steeply above a 15% premium [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- At a 15% premium for fit personalization, 38% of Gen Z respondents said they would pay [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- The study's price range ran from the base level up to a 25% premium, so 25% is the top tested level [[NORTHSTAR/WTP-STUDY@v1:P2.B1]].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #1: tagged uncited sentence as [inference]",
+     "Answer #2: tagged uncited sentence as [inference]",
+     "Gaps & unknowns #1: dropped unit containing numbers",
+     "Gaps & unknowns #2: dropped unit containing numbers"
+    ],
+    "sections": [
+     "answer",
+     "findings"
+    ],
+    "citations": 4,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E3",
+     "E9"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [],
+    "evidence_checked": [
+     "E3",
+     "E7",
+     "E9"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+     "NORTHSTAR/WTP-STUDY@v1:P2.B1"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps",
+     "numbers_not_in_cited_evidence"
+    ],
+    "numeric_violations": [
+     "Key findings #3: 25% not found in cited evidence E7"
+    ],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B1"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P1.B1",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+    "NORTHSTAR/WTP-STUDY@v1:P3.B4",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+    "NORTHSTAR/SURVEY-2026@v1:R175",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B3",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B3"
+   ],
+   "usage": {
+    "input_tokens": 4176,
+    "llm_attempts": 1,
+    "output_tokens": 411,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.4,
+    "attempts": 1,
+    "total_ms": 4891.9,
+    "verify_ms_1": 19.56,
+    "retrieval_ms": 119.7,
+    "first_token_ms": 1897.9,
+    "synthesis_ms_1": 4628.1
+   },
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.5,
+    "numeric_correct": 1.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.5,
+    "cited_units": 4,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1897.9,
+    "total_ms": 4891.9
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4176,
+     "output": 411,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.012614,
+    "first_token_ms": 1897.9,
+    "total_ms": 4891.9,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-IT-06",
+   "category": "identifier_then_semantic",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "SKU NS-KR2: what is its FY26 return rate, and what were customers contacting support about for that shoe in Q3, and in what volume?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe Knit Runner 2 return rate is stated as 16.8%, against 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]]. In Q3, customers contacted support about knit upper wear, specifically fraying near the toe flex point within 90 days, and these complaints rose to 1,140 tickets [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n\n### Key findings\n\n- Return rate on the Knit Runner 2 is 16.8%, versus 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]].\n- Complaints about knit upper wear on the Knit Runner 2 rose to 1,140 tickets in Q3, most citing fraying near the toe flex point within 90 days [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- Ticket volume understates the problem, because returns data show a larger number of durability returns that never generated a contact [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- Before September, frontline guidance classified early fraying as normal wear unless a manufacturing defect could be shown, which led to repeat contacts. Guidance changed in late September to treat early toe fraying as a product issue eligible for replacement or refund [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- The Returns table lists NS-KR2 and a \"Durability - upper wear\" reason category, but the table description gives no values [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n\n### Interpretation\n\nThe 16.8% figure is likely the Knit Runner 2 rate the strategy deck reports, but its period (FY26 year-to-date versus another window) is not stated [inference]. The 1,140 tickets are probably a floor on customer-reported durability issues, given the unticketed returns noted in the support report [inference].\n\n### Gaps & unknowns\n\nThe SKU performance and returns tables are described only by schema here, with no row values, so a SKU-level FY26 return rate for NS-KR2 cannot be verified from them. The underlying spreadsheet rows would close this. The number of durability returns that never generated a contact is not quantified. Returns-table row data by reason would show it [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: dropped unit containing numbers",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #4: dropped unit containing numbers"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 7,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E12",
+     "E2",
+     "E5"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E7 and E11 state different values for 'nps'",
+     "E9 says some figures were restated or superseded",
+     "E12 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E12",
+     "E2",
+     "E5"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/Q3-REVIEW@v1:SL8",
+     "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+     "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps",
+     "numbers_not_in_cited_evidence"
+    ],
+    "numeric_violations": [
+     "Answer #3: 16.8% not found in cited evidence E5"
+    ],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL8",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/SURVEY-2026@v1:R478",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B4",
+    "NORTHSTAR/SURVEY-2026@v1:R356",
+    "NORTHSTAR/Q3-REVIEW@v1:SL8"
+   ],
+   "usage": {
+    "input_tokens": 4868,
+    "llm_attempts": 1,
+    "output_tokens": 778,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 1.9,
+    "attempts": 1,
+    "total_ms": 6464.7,
+    "verify_ms_1": 29.9,
+    "retrieval_ms": 84.1,
+    "first_token_ms": 876.8,
+    "synthesis_ms_1": 6231.2
+   },
+   "checks": {
+    "citations": 3,
+    "resolvable": 3,
+    "in_pack": 3,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.5,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 0.5,
+    "cited_units": 7,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 876.8,
+    "total_ms": 6464.7
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4868,
+     "output": 778,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.017668,
+    "first_token_ms": 876.8,
+    "total_ms": 6464.7,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-CC-03",
+   "category": "customer_competitor",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "One interviewee says their last three pairs came from a run club group chat rather than ads. How does Vantage Athletic's stated mission and homepage emphasis compare with that discovery route?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nVantage's stated mission centers on engineered speed, with a homepage that leads with race results rather than lifestyle imagery [[NORTHSTAR/VANTAGE-WEB@v1:S1.B3]]. The interviewee's discovery route is peer word of mouth in a run club group chat, which they say works better than ads [[NORTHSTAR/INTERVIEWS@v1:S13.Q1]]. The two are not in direct conflict, since Vantage's materials describe its own messaging and do not mention group chats [inference]. Vantage's club and campus activity does touch the same community routes [[NORTHSTAR/VANTAGE-DECK@v1:SL10]][[NORTHSTAR/VANTAGE-WEB@v1:S1.B13]].\n\n### Key findings\n\n- Vantage frames performance as \"the thing we measure, publish and defend,\" and leads with race results [[NORTHSTAR/VANTAGE-WEB@v1:S1.B3]].\n- The interviewee found their last three pairs \"through my run club group chat, not from ads,\" and pays attention when a friend says a shoe worked on their long run [[NORTHSTAR/INTERVIEWS@v1:S13.Q1]].\n- Market research lists run clubs, campus teams, studio classes and group chats among the most trusted discovery routes [[NORTHSTAR/GENZ-TRENDS@v2:P4.B4]].\n- Vantage's Gen Z strategy includes campus and club programmes that introduce the brand at the start of a running habit [[NORTHSTAR/VANTAGE-DECK@v1:SL10]].\n- Vantage offers team pricing to collegiate and club programmes [[NORTHSTAR/VANTAGE-WEB@v1:S1.B13]].\n- Vantage creator content focuses on training logs and race prep rather than lifestyle [[NORTHSTAR/VANTAGE-DECK@v1:SL10]].\n\n### Interpretation\n\nVantage's race-results emphasis could fit peer recommendations like \"worked on my long run,\" because performance claims are what a friend would vouch for [inference]. Vantage's club and campus programmes suggest it reaches community discovery through institutional channels (teams, coaches, team pricing), not through informal friend-to-friend group chats [inference]. The evidence does not show Vantage actively seeding or tracking messaging-app discovery [inference].\n\n### Gaps & unknowns\n\nThe evidence is a single interview, so it cannot show how typical this discovery route is among Gen Z runners [inference]. Nothing shows whether Vantage's homepage or club programmes influence what gets recommended in group chats, or whether the interviewee's pairs came from Vantage at all [inference]. Brand-tracking data or surveys on discovery sources by brand would close this gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #3: tagged uncited sentence as [inference]",
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 10,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E2",
+     "E4",
+     "E11",
+     "E3"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [],
+    "evidence_checked": [
+     "E1",
+     "E2",
+     "E4",
+     "E11",
+     "E3"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/VANTAGE-WEB@v1:S1.B3",
+     "NORTHSTAR/INTERVIEWS@v1:S13.Q1",
+     "NORTHSTAR/VANTAGE-DECK@v1:SL10",
+     "NORTHSTAR/VANTAGE-WEB@v1:S1.B13",
+     "NORTHSTAR/GENZ-TRENDS@v2:P4.B4"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/VANTAGE-WEB@v1:S1.B3",
+    "NORTHSTAR/INTERVIEWS@v1:S13.Q1",
+    "NORTHSTAR/VANTAGE-DECK@v1:SL10",
+    "NORTHSTAR/VANTAGE-WEB@v1:S1.B13",
+    "NORTHSTAR/GENZ-TRENDS@v2:P4.B4"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/VANTAGE-WEB@v1:S1.B3",
+    "NORTHSTAR/INTERVIEWS@v1:S13.Q1",
+    "NORTHSTAR/GENZ-TRENDS@v2:P4.B4",
+    "NORTHSTAR/VANTAGE-DECK@v1:SL10",
+    "NORTHSTAR/VANTAGE-WEB@v1:S1.B8",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+    "NORTHSTAR/VANTAGE-WEB@v1:S1.B9",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+    "NORTHSTAR/VANTAGE-WEB@v1:S1.B13",
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2"
+   ],
+   "usage": {
+    "input_tokens": 3793,
+    "llm_attempts": 1,
+    "output_tokens": 671,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.3,
+    "attempts": 1,
+    "total_ms": 5705.1,
+    "verify_ms_1": 13.5,
+    "retrieval_ms": 156.0,
+    "first_token_ms": 800.5,
+    "synthesis_ms_1": 5404.6
+   },
+   "checks": {
+    "citations": 5,
+    "resolvable": 5,
+    "in_pack": 5,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "cited_units": 9,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 800.5,
+    "total_ms": 5705.1
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 3793,
+     "output": 671,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.014448,
+    "first_token_ms": 800.5,
+    "total_ms": 5705.1,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-CC-05",
+   "category": "customer_competitor",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "What kind of personalization got the Gen Z focus-group participants most excited, and how does Vantage Athletic's personalization offer compare with that?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nFocus-group participants reacted most strongly to personalization framed as a status signal that friends would notice, such as initials on a heel tab, a team colorway, a stitched name, or a limited release few friends would own [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]]. Vantage Athletic's personalization is limited to a choice of 12 preset colorways on its flagship racer [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]]. The evidence therefore shows partial overlap (colorway choice), but Vantage's offer does not include the name or initials examples that excited participants [inference].\n\n### Key findings\n\n- Personalization drew the strongest reaction when framed as a status signal friends would notice, e.g. initials on a heel tab or a team colorway [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Participants also lit up at a stitched name, a club colorway, or a limited release that only a few friends would own [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Several participants said they would post a picture of a personalized pair before a standard one [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Vantage's personalization is limited to a choice of 12 preset colorways on its flagship racer [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n- Despite the excitement, participants ranked fit guarantee, faster delivery and honest materials information ahead of personalization in the points allocation exercise [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n\n### Interpretation\n\nVantage's preset colorways partly match the \"team colorway\" example from the group, but a fixed menu of 12 is not the same as a club-specific colorway or a limited release [inference]. Name or initials personalization, which excited participants, appears to be something Vantage does not offer, based only on the description of its limited offer [inference].\n\n### Gaps & unknowns\n\nThe focus group involved only ten participants and did not compare Vantage's offer directly, so the match between their preferences and Vantage's offering is my inference rather than something participants assessed [inference]. The evidence does not say whether Vantage has other personalization options beyond its flagship racer, or how Vantage's customers respond to its colorway program. Vantage product pages or customer research on its offer would close this gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #3: tagged uncited sentence as [inference]",
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 7,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E2",
+     "E11"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [],
+    "evidence_checked": [
+     "E2",
+     "E11"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S1.B1",
+    "NORTHSTAR/VANTAGE-DECK@v1:SL10",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL6",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2"
+   ],
+   "usage": {
+    "input_tokens": 4660,
+    "llm_attempts": 1,
+    "output_tokens": 631,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.1,
+    "attempts": 1,
+    "total_ms": 7185.2,
+    "verify_ms_1": 19.62,
+    "retrieval_ms": 102.1,
+    "first_token_ms": 2417.1,
+    "synthesis_ms_1": 6941.7
+   },
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 7,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 2417.1,
+    "total_ms": 7185.2
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4660,
+     "output": 631,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.015782,
+    "first_token_ms": 2417.1,
+    "total_ms": 7185.2,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-CI-02",
+   "category": "customer_internal",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "What made a shopper who loved the custom colorway tool give up on ordering, and what did Northstar leadership decide about personalization at the Q3 strategy review?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe shopper (Sam K.) loved the custom colorway tool but gave up because of the twelve day wait [[NORTHSTAR/INTERVIEWS@v1:S14.Q1]]. At the Q3 strategy review, leadership agreed to pause any national rollout of personalization until the full pilot readout in October [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n\n### Key findings\n\n- Sam K. tried the custom colorway tool, loved it, and said \"the twelve day wait killed it for me\"; with delivery in a few days, he would have bought two pairs [[NORTHSTAR/INTERVIEWS@v1:S14.Q1]].\n- Leadership's reasoning for the pause was that the early signal came from a tiny sample and that the operational constraints are significant [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n- Made to order pairs took an average of 12 days to arrive, and customers could not see production milestones in the tracker [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B3]].\n- The pilot's lead time of about 12 days was the most common reason customers gave for not ordering again [[NORTHSTAR/FY27-MEMO@v1:S1.B3]].\n\n### Conflicting evidence\n\n- The Q3 review slide set the final decision point as the full pilot readout in October [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]]. The final readout document is dated September 30 [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]] and recommends keeping personalization as a limited test rather than a national program [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]]. This may reflect a different date or a different readout, which the evidence does not clarify.\n- An early read circulated in July suggested a more favorable picture, but it was based on week six data and a very small sample and is treated as superseded [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n\n### Interpretation\n\nSam K.'s experience fits the wider pilot pattern, where wait time rather than the tool itself drove customers away [inference].\n\n### Gaps & unknowns\n\nThe evidence does not show whether leadership took any further decision on personalization after the pause, or how the October readout timing relates to the September readout date. Minutes of the review meeting or a follow-up decision memo would close this gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 10,
+    "disposition": "accepted",
+    "cited_aliases": [
+     "E2",
+     "E10",
+     "E6",
+     "E8",
+     "E3",
+     "E5"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E5 says some figures were restated or superseded",
+     "E7 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E2",
+     "E10",
+     "E6",
+     "E8",
+     "E3",
+     "E5"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/INTERVIEWS@v1:S14.Q1",
+     "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+     "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+     "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B2"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/INTERVIEWS@v1:S14.Q1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B2"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+    "NORTHSTAR/INTERVIEWS@v1:S14.Q1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL10"
+   ],
+   "usage": {
+    "input_tokens": 5373,
+    "llm_attempts": 1,
+    "output_tokens": 565,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 3.3,
+    "attempts": 1,
+    "total_ms": 6371.2,
+    "verify_ms_1": 23.09,
+    "retrieval_ms": 188.1,
+    "first_token_ms": 2378.6,
+    "synthesis_ms_1": 5986.6
+   },
+   "checks": {
+    "citations": 6,
+    "resolvable": 6,
+    "in_pack": 6,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "cited_units": 8,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 2378.6,
+    "total_ms": 6371.2
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5373,
+     "output": 565,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.016548,
+    "first_token_ms": 2378.6,
+    "total_ms": 6371.2,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-CI-05",
+   "category": "customer_internal",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "Customers say they discover shoes through run clubs and group chats rather than ads. How large is the proposed FY27 Gen Z marketing budget, and how much of it would move toward creator and community programmes?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe proposed FY27 Gen Z marketing budget is $24 million, of which 40% would shift to creator and community programs [[NORTHSTAR/FY27-MEMO@v1:S1.B7]]. The allocation sets creator and community programs at $9.6 million [[NORTHSTAR/FY27-MEMO@v1:S1.B7]]. The shift is funded mainly by reducing broad reach advertising and trimming spend on promotions that discount core styles [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n\n### Key findings\n\n- Proposed FY27 Gen Z marketing budget: $24 million, with 40% shifting to creator and community programs [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- Creator and community programs: $9.6 million; Social Shop and performance channels: $5.4 million [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- Other lines: Fit Promise launch and fit education content at $4.5 million, brand and awareness building at $3.0 million, and measurement and test reserve at $1.5 million [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- The brand strategy supports the direction, citing discovery through run clubs, studio instructors and creator videos, and trust in peer content over advertising [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B4]].\n- Focus group participants likewise said the group chat was often the first place they heard about a new product [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7]].\n\n### Interpretation\n\nThe budget shift matches the customer discovery pattern described in the strategy document and focus groups, which is the rationale the question points to [inference]. The memo's recommendation to measure repeat purchase, not only reach, suggests the shift is meant to be judged on outcomes rather than exposure [E10 supports the recommendation itself, but not this reading of intent] [inference].\n\n### Gaps & unknowns\n\nIt also does not show whether the proposal has been approved, since the memo is a recommendation to leadership [inference]. A finance-approved budget document or the leadership review outcome would close these gaps.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: dropped unit containing numbers",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 8,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E2",
+     "E11"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E3 says some figures were restated or superseded",
+     "E4 says some figures were restated or superseded",
+     "E10 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E2",
+     "E11"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+     "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps"
+    ],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7",
+    "NORTHSTAR/Q3-REVIEW@v1:SL5.N1"
+   ],
+   "usage": {
+    "input_tokens": 4968,
+    "llm_attempts": 1,
+    "output_tokens": 604,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 1.6,
+    "attempts": 1,
+    "total_ms": 4811.3,
+    "verify_ms_1": 19.26,
+    "retrieval_ms": 108.6,
+    "first_token_ms": 928.2,
+    "synthesis_ms_1": 4556.9
+   },
+   "checks": {
+    "citations": 3,
+    "resolvable": 3,
+    "in_pack": 3,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.5,
+    "numeric_correct": 1.0,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.5,
+    "cited_units": 8,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 928.2,
+    "total_ms": 4811.3
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4968,
+     "output": 604,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.016128,
+    "first_token_ms": 928.2,
+    "total_ms": 4811.3,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-CF-01",
+   "category": "conflict_search",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "conflict",
+   "question": "Northstar is sizing a paid fit-personalization tier at a 15% markup. What uptake should it plan for: the stated acceptance in the external study, or the take-up actually observed when pilot shoppers were offered that tier?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nNorthstar should plan on the observed pilot take-up of 9% rather than the stated acceptance from the external study [[NORTHSTAR/PERSO-PILOT@v1:S1.B5]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]]. The study's own authors say its percentages should be treated as a ceiling and a way to rank options, not as a sales forecast [[NORTHSTAR/WTP-STUDY@v1:P4.B1]]. Northstar's pilot readout likewise recommends using revealed behaviour for any revenue assumption and treating stated willingness to pay only as a ceiling [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n\n### Key findings\n\n- Stated: roughly two in five Gen Z respondents said they would pay about 15% more for a fit-based premium [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- Observed: when offered a 15% premium tier for personalized fit, only 9% of pilot shoppers selected it, and most chose the free monogram [[NORTHSTAR/PERSO-PILOT@v1:S1.B5]].\n- Uptake of the paid tier was less than a quarter of the stated share, a larger gap than is typical even allowing for survey overstatement [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- The pilot tested exactly the price zone where the study found its strongest results [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- The study reports that acceptance falls quickly beyond 15%, and that most of the revenue opportunity lies at or below that level [[NORTHSTAR/WTP-STUDY@v1:P4.B2]].\n- Pilot customers said they would pay a bit more only if delivery were as fast as standard; average lead time was 12 days [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n- An external analyst said results showing low uptake of a paid tier would be consistent with other clients he has seen [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Conflicting evidence\n\n- An early read circulated in July suggested a more favorable picture, but it was based on week six data and a very small sample and is superseded by the final results [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n- The Q3 strategy review slide describes early repeat signals as encouraging but from a very small sample, with the final window still running at that time [[NORTHSTAR/Q3-REVIEW@v1:SL10]]. The final 90 day repeat figure is 18% against 24% for the control group [[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n\n### Interpretation\n\nUsing the 9% figure as the base case is the prudent choice, with the stated share serving only as an upper bound [inference]. If lead time could be cut materially, uptake might rise above 9%, but the evidence does not quantify by how much [inference].\n\n### Gaps & unknowns\n\nThe pilot ran in three stores plus online, so it may not represent a national program [inference]. It does not show how uptake would change with a lower premium, faster delivery, or a tiered structure; the study did not test tiering directly [inference]. A repeat pilot with shorter lead time, or price-variation tests, would close these gaps.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 15,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E2",
+     "E9",
+     "E4",
+     "E1",
+     "E11",
+     "E10",
+     "E5",
+     "E6"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E5 says some figures were restated or superseded",
+     "E9 says some figures were restated or superseded",
+     "E10 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E2",
+     "E9",
+     "E4",
+     "E1",
+     "E11",
+     "E10",
+     "E5",
+     "E6"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+     "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+     "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+     "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+     "NORTHSTAR/Q3-REVIEW@v1:SL10"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL10"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL10",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B12",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1"
+   ],
+   "usage": {
+    "input_tokens": 5104,
+    "llm_attempts": 1,
+    "output_tokens": 785,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.1,
+    "attempts": 1,
+    "total_ms": 7069.0,
+    "verify_ms_1": 31.07,
+    "retrieval_ms": 152.7,
+    "first_token_ms": 1944.2,
+    "synthesis_ms_1": 6740.6
+   },
+   "checks": {
+    "citations": 8,
+    "resolvable": 8,
+    "in_pack": 8,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.5,
+    "numeric_correct": 0.5,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 0.5,
+    "cited_units": 12,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "conflict_covered": false,
+    "pass_behaviour": true,
+    "first_token_ms": 1944.2,
+    "total_ms": 7069.0
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5104,
+     "output": 785,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.01821,
+    "first_token_ms": 1944.2,
+    "total_ms": 7069.0,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-CF-03",
+   "category": "conflict_search",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "conflict",
+   "question": "The board tracks Gen Z share of revenue against a 30% FY28 target. What is the FY25 starting point, and do the brand team and finance agree on it?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe brand-materials figure for Gen Z's share of FY25 net revenue is 21%, up from 17% two years earlier [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. Finance, using a narrower age definition, puts the FY25 share a little under 20% [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]]. So the two teams do not quote the same starting point, though both treat their definitions as legitimate and plan to publish a reconciliation [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n\n### Key findings\n\n- The Brand Strategy executive summary states that Gen Z shoppers generated 21% of Northstar net revenue in FY25, against a board target of 30% by the end of FY28 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Finance defines Gen Z as customers aged 18 to 27; on that basis the share is \"a little under 20%\" in FY25 and \"a little above 20%\" in FY26 [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- Finance's Gen Z revenue was $110.8 million in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The brand team's loyalty program definition covers ages 16 through 29, which is why the share in brand materials is higher [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- Both views are described as legitimate for their purpose, and the two teams will publish a reconciliation bridge so the board target is measured on a single, stated basis [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The planning memo asks leadership to agree one Gen Z definition for target tracking, and the strategy team lists differing definitions as a risk to tracking progress [[NORTHSTAR/FY27-MEMO@v1:S1.B9]][[NORTHSTAR/BRAND-STRATEGY@v1:P7.B1]].\n\n### Conflicting evidence\n\n- Brand materials: 21% of FY25 net revenue [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Finance definition (ages 18 to 27): a little under 20% in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n\n### Interpretation\n\nThe gap of roughly one point or a bit more is probably explained by the wider 16-to-29 age band, but the evidence does not quantify the effect of each definition [inference]. Until one definition is adopted, progress toward the 30% target will look different depending on which team's baseline is used [inference].\n\n### Gaps & unknowns\n\nIt does not show which definition the board target was originally set against, or whether the reconciliation bridge or a single agreed definition has yet been published [inference]. The insights team's reconciled Gen Z definition for board use, or finance's reported FY25 share to one decimal place, would close this gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: dropped unit containing numbers",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 12,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E1 says some figures were restated or superseded",
+     "E11 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E2",
+     "E4",
+     "E5",
+     "E6"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+     "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps"
+    ],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL7",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL5.N1"
+   ],
+   "usage": {
+    "input_tokens": 4962,
+    "llm_attempts": 1,
+    "output_tokens": 749,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.3,
+    "attempts": 1,
+    "total_ms": 9086.6,
+    "verify_ms_1": 12.27,
+    "retrieval_ms": 122.8,
+    "first_token_ms": 3263.9,
+    "synthesis_ms_1": 8835.7
+   },
+   "checks": {
+    "citations": 4,
+    "resolvable": 4,
+    "in_pack": 4,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.6666666666666666,
+    "numeric_correct": 0.6666666666666666,
+    "answer_completeness": 0.6666666666666666,
+    "gold_handle_recall": 0.6666666666666666,
+    "cited_units": 11,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "conflict_covered": false,
+    "pass_behaviour": true,
+    "first_token_ms": 3263.9,
+    "total_ms": 9086.6
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4962,
+     "output": 749,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.017566,
+    "first_token_ms": 3263.9,
+    "total_ms": 9086.6,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-CF-05",
+   "category": "conflict_search",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "conflict",
+   "question": "Should Northstar lead its Gen Z messaging with personalization? Check what framing excited the focus group most, and where personalization landed when participants allocated a fixed budget of points across benefits.",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nNo, the evidence does not support leading Gen Z messaging with personalization. It drew the strongest reaction in the focus group when framed as a status signal friends would notice [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]], but in the points allocation exercise participants ranked fit guarantee, faster delivery and honest materials information ahead of it. The focus group summary itself recommends positioning personalization as a gifting, team and status feature rather than the lead reason to buy [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1]].\n\n### Key findings\n\n- The framing that excited the group most was personalization as a status signal, such as initials on a heel tab or a team colorway; several participants said they would post a personalized pair before a standard one [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- In the hypothetical 100-point allocation, personalization did not lead; fit guarantee, faster delivery and honest materials information ranked ahead [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Participants described a well-fitting, quickly delivered shoe as something they need and a personalized shoe as something they would enjoy [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- The focus group implications recommend testing personalization in small steps instead of leading with it [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1]].\n- The pilot readout states that the hypothesis that young customers will pay a premium for made-for-them products is not supported in the form tested, and that long delivery waits were the main reason people did not return [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n- The May survey found personalization was named by a small share of respondents as their top frustration, while fit inconsistency led [[NORTHSTAR/FY27-MEMO@v1:S1.B4]].\n- The planning memo recommends keeping personalization a limited test in FY27 [[NORTHSTAR/FY27-MEMO@v1:S1.B6]], and the Q3 review asks to hold it at a limited test [[NORTHSTAR/Q3-REVIEW@v1:SL14]].\n\n### Conflicting evidence\n\n- An early July read of the pilot suggested a more favorable picture, but it was based on week six data and a very small sample and is described as superseded by the final results [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n- Stated willingness to pay was real in the March study (roughly two in five would pay about 15% more) [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]], but revealed uptake of the paid tier was less than a quarter of the stated share; the pilot readout advises using revealed behavior for revenue assumptions.\n\n### Interpretation\n\nPersonalization is better suited to a secondary role in messaging, such as gifting, team and status content, than to the headline benefit [inference]. Leading with it would promise something customers rank below fit and delivery speed, and the pilot's slow lead time could undercut the promise [inference].\n\n### Gaps & unknowns\n\nThe focus group had only ten participants and its allocation exercise was hypothetical, so the ranking is directional, not statistical [inference]. The evidence does not include message testing of personalization-led versus fit-led copy with a larger Gen Z sample, and it does not show how personalization-led messaging would affect acquisition. A/B message tests or a quantitative survey with a larger sample would close these gaps.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Answer #2: collapsed duplicate citation E1",
+     "Conflicting evidence #2: collapsed duplicate citation E7",
+     "Conflicting evidence #2: collapsed duplicate citation E7",
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 12,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E3",
+     "E6",
+     "E9",
+     "E8",
+     "E11",
+     "E7"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [
+     "Answer #1"
+    ],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E6 says some figures were restated or superseded",
+     "E8 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E3",
+     "E6",
+     "E9",
+     "E8",
+     "E11",
+     "E7"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+     "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1",
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+     "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+     "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+     "NORTHSTAR/Q3-REVIEW@v1:SL14",
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B9"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+    "NORTHSTAR/Q3-REVIEW@v1:SL14",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B9"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+    "NORTHSTAR/Q3-REVIEW@v1:SL14",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B2"
+   ],
+   "usage": {
+    "input_tokens": 4817,
+    "llm_attempts": 1,
+    "output_tokens": 891,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.5,
+    "attempts": 1,
+    "total_ms": 10848.1,
+    "verify_ms_1": 26.82,
+    "retrieval_ms": 123.5,
+    "first_token_ms": 4516.0,
+    "synthesis_ms_1": 10565.9
+   },
+   "checks": {
+    "citations": 7,
+    "resolvable": 7,
+    "in_pack": 7,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [
+     "uncited answer sentence: No, the evidence does not support leading Gen Z messaging wi"
+    ],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "answer_completeness": 0.5,
+    "gold_handle_recall": 1.0,
+    "cited_units": 11,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "conflict_covered": true,
+    "pass_behaviour": true,
+    "first_token_ms": 4516.0,
+    "total_ms": 10848.1
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4817,
+     "output": 891,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.018696,
+    "first_token_ms": 4516.0,
+    "total_ms": 10848.1,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-FP-04",
+   "category": "first_pass_insufficient",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "How many people did the external willingness-to-pay study survey, and how did the older millennial respondents compare on paying a 15% premium for fit-personalized shoes?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe external study surveyed 2,400 US consumers aged 16 to 40 in March 2026, including 1,350 Gen Z respondents [[NORTHSTAR/WTP-STUDY@v1:P1.B3]]. The evidence does not break out \"older millennials\" as a separate group; it reports millennials overall, of whom 29% would accept a 15% premium for fit-personalized footwear, versus 38% of Gen Z [[NORTHSTAR/WTP-STUDY@v1:P3.B3]][[NORTHSTAR/WTP-STUDY@v1:P2.B3]].\n\n### Key findings\n\n- The sample was 2,400 US consumers aged 16 to 40, with roughly 780 classified as millennials [[NORTHSTAR/WTP-STUDY@v1:P1.B3]].\n- 29% of millennials said they would pay a 15% premium for footwear personalized to their fit [[NORTHSTAR/WTP-STUDY@v1:P2.B3]].\n- 38% of Gen Z respondents accepted the same 15% premium [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- The study's acceptance table shows 38% for Gen Z and 29% for millennials at a 15% premium [[NORTHSTAR/WTP-STUDY@v1:P3.B3]].\n- Margins of error for the Gen Z and millennial groups are roughly plus or minus three points [[NORTHSTAR/WTP-STUDY@v1:P1.B3]].\n\n### Interpretation\n\nMillennials accepted the 15% fit premium at a lower rate than Gen Z, a gap larger than the stated margin of error for each group [inference].\n\n### Gaps & unknowns\n\nThe evidence does not separate older millennials from the broader millennial cohort, so a comparison specific to older millennials cannot be made [inference]. A sub-cohort cut by birth year from the study's underlying data would close this gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 8,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E6",
+     "E8",
+     "E2",
+     "E4"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [],
+    "evidence_checked": [
+     "E6",
+     "E8",
+     "E2",
+     "E4"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+     "NORTHSTAR/WTP-STUDY@v1:P3.B3",
+     "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+     "NORTHSTAR/WTP-STUDY@v1:P2.B2"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+    "NORTHSTAR/WTP-STUDY@v1:P3.B3",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B2"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P1.B1",
+    "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+    "NORTHSTAR/WTP-STUDY@v1:P3.B3",
+    "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+    "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+    "NORTHSTAR/WTP-STUDY@v1:P4.B1",
+    "NORTHSTAR/SURVEY-2026@v1:R389"
+   ],
+   "usage": {
+    "input_tokens": 4300,
+    "llm_attempts": 1,
+    "output_tokens": 453,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.7,
+    "attempts": 1,
+    "total_ms": 7026.4,
+    "verify_ms_1": 17.42,
+    "retrieval_ms": 147.6,
+    "first_token_ms": 3934.6,
+    "synthesis_ms_1": 6748.4
+   },
+   "checks": {
+    "citations": 4,
+    "resolvable": 4,
+    "in_pack": 4,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 7,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 3934.6,
+    "total_ms": 7026.4
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4300,
+     "output": 453,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.013282,
+    "first_token_ms": 3934.6,
+    "total_ms": 7026.4,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-FP-05",
+   "category": "first_pass_insufficient",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "How much of Gen Z athletic spending now flows through third-party platforms instead of brand-owned sites, and how far do young shoppers trust fellow customers over advertising?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nMarketplace and social commerce together took 34% of Gen Z athletic spend in 2026, compared with 22% for brand owned sites [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]]. On trust, 57% of Gen Z respondents said they trust peer reviews and creator try on videos more than brand advertising [[NORTHSTAR/GENZ-TRENDS@v2:P4.B1]]. Social commerce alone accounts for 26% of Gen Z athletic footwear purchases, a figure the panel's own analyst expects to be restated upward [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]][[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Key findings\n\n- Marketplace and social commerce together took 34% of Gen Z athletic spend in 2026, versus 22% for brand owned sites [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n- Brand owned sites remain important for loyal customers but are losing share of first purchases [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n- Social commerce platforms account for 26% of Gen Z athletic footwear purchases, according to the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]].\n- 57% of Gen Z respondents trust peer reviews and creator try on videos more than brand advertising; advertising was seen as a prompt to look, not a reason to buy [[NORTHSTAR/GENZ-TRENDS@v2:P4.B1]].\n- Northstar's internal documents echo this: customers trust peer content over advertising, and Social Shop is its fastest growing route to market [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B4]].\n- The 2026 trends report recommends using 2026 values wherever the two editions overlap and treating earlier values as superseded [[NORTHSTAR/GENZ-TRENDS@v2:P1.B2]].\n\n### Conflicting evidence\n\n- The 26% social commerce share is a footwear-specific figure from the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]], while the 34% figure covers marketplace plus social commerce across Gen Z athletic spend [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]]. These are different metrics, not direct contradictions.\n- The 2026 edition states that several published figures moved versus 2025, partly from real behavior change and partly from better panel reach [[NORTHSTAR/GENZ-TRENDS@v2:P1.B2]].\n\n### Interpretation\n\nThird-party platforms (marketplaces plus social) appear to capture more Gen Z athletic spend than brand owned sites, with the 34% versus 22% gap pointing in a consistent direction across sources [inference]. Trust in peer evidence over advertising appears to be a majority view, though 57% leaves a substantial minority who do not hold it [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give the split between marketplace and social commerce within the combined spend share, nor the trust figure by segment, region or category. A restated edition of the trends report, or a panel cut by channel and category, would close these gaps.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #2: dropped unit containing numbers",
+     "Gaps & unknowns #4: dropped unit containing numbers"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 13,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E2",
+     "E5",
+     "E3",
+     "E7",
+     "E4",
+     "E11"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E7 says some figures were restated or superseded",
+     "E11 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E2",
+     "E5",
+     "E3",
+     "E7",
+     "E4",
+     "E11"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+     "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+     "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+     "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+     "NORTHSTAR/GENZ-TRENDS@v2:P1.B2"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps",
+     "numbers_not_in_cited_evidence"
+    ],
+    "numeric_violations": [
+     "Conflicting evidence #2: 26% not found in cited evidence E7"
+    ],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+    "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+    "NORTHSTAR/GENZ-TRENDS@v2:P1.B2"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+    "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+    "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P6.B4",
+    "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1"
+   ],
+   "usage": {
+    "input_tokens": 5881,
+    "llm_attempts": 1,
+    "output_tokens": 913,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.5,
+    "attempts": 1,
+    "total_ms": 7643.8,
+    "verify_ms_1": 17.4,
+    "retrieval_ms": 135.6,
+    "first_token_ms": 1550.4,
+    "synthesis_ms_1": 7379.2
+   },
+   "checks": {
+    "citations": 6,
+    "resolvable": 6,
+    "in_pack": 6,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 11,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1550.4,
+    "total_ms": 7643.8
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "research",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5881,
+     "output": 913,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.021044,
+    "first_token_ms": 1550.4,
+    "total_ms": 7643.8,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-RF-01",
+   "category": "reformulation",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "What CTR uplift did bespoke-colour email creative achieve against business-as-usual sends?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nCustom colorway emails drove a 2.3x click-through rate versus standard creative [[NORTHSTAR/Q3-REVIEW@v1:SL12]]. This is the only quantified email uplift in the evidence, and it comes from an early test with short windows [[NORTHSTAR/Q3-REVIEW@v1:SL12]].\n\n### Key findings\n\n- Custom colorway emails drove a 2.3x click through rate versus standard creative [[NORTHSTAR/Q3-REVIEW@v1:SL12]].\n- The results are described as early and based on short test windows [[NORTHSTAR/Q3-REVIEW@v1:SL12]].\n- Internal notes say email clicks are a cheap, fast signal, but clicks are not purchases, and interest does not automatically convert into willingness to pay a premium or to wait [[NORTHSTAR/Q3-REVIEW@v1:SL12.N1]].\n\n### Interpretation\n\n\"Standard creative\" in [[NORTHSTAR/Q3-REVIEW@v1:SL12]] is most plausibly the same as the business-as-usual sends in the question, though the evidence does not define it explicitly [inference]. The 2.3x figure indicates top-of-funnel interest only, not a sales or revenue uplift [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give absolute click-through rates, send volumes, test duration, audience segment or statistical significance. It also does not show downstream conversion for these emails [inference]. The underlying test report or email platform data would close these gaps.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 6,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E2"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E11 and E12 state different values for 'nps'",
+     "E10 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E2"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/Q3-REVIEW@v1:SL12",
+     "NORTHSTAR/Q3-REVIEW@v1:SL12.N1"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL12",
+    "NORTHSTAR/Q3-REVIEW@v1:SL12.N1"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL12",
+    "NORTHSTAR/Q3-REVIEW@v1:SL12.N1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+    "NORTHSTAR/KINETIC-AR@v1:P1.B2",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+    "NORTHSTAR/REVIEWS@v1:R103",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+    "NORTHSTAR/SURVEY-2026@v1:R542",
+    "NORTHSTAR/SURVEY-2026@v1:R570"
+   ],
+   "usage": {
+    "input_tokens": 4910,
+    "llm_attempts": 1,
+    "output_tokens": 373,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.4,
+    "attempts": 1,
+    "total_ms": 4079.1,
+    "verify_ms_1": 27.05,
+    "retrieval_ms": 83.9,
+    "first_token_ms": 1398.3,
+    "synthesis_ms_1": 3811.2
+   },
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 6,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1398.3,
+    "total_ms": 4079.1
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4910,
+     "output": 373,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.013702,
+    "first_token_ms": 1398.3,
+    "total_ms": 4079.1,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-RF-03",
+   "category": "reformulation",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "Which shopper personas does Northstar's Gen Z segmentation define?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nNorthstar's brand team divides its Gen Z customer base into four segments: Campus Competitors, Studio Social, Trail Starters and Value Seekers [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]]. The segmentation was rebuilt this year from survey responses and order history [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n\n### Key findings\n\n- Campus Competitors make up 24% of Gen Z and are college and club athletes aged 18 to 22 [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Studio Social makes up 31% and covers class-based fitness and athleisure shoppers [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Trail Starters make up 19% and are new runners and hikers going light trail [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Value Seekers make up 26% and are price-led shoppers who switch with Pace & Co. [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Studio Social is the largest Gen Z segment and carries the highest average order value of $94 [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B2]].\n- Customer interviews were recruited to cover all four Gen Z segments [[NORTHSTAR/INTERVIEWS@v1:S2.B1]].\n\n### Gaps & unknowns\n\nThe evidence does not describe Campus Competitors, Trail Starters or Value Seekers beyond a one-line definition each, so their average order values, buying behavior and needs are not established. A fuller segmentation methodology document or the underlying survey cut would close this gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [],
+    "sections": [
+     "answer",
+     "findings",
+     "gaps"
+    ],
+    "citations": 8,
+    "disposition": "accepted",
+    "cited_aliases": [
+     "E1",
+     "E9",
+     "E8"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E6 says some figures were restated or superseded",
+     "E12 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E9",
+     "E8"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+     "NORTHSTAR/INTERVIEWS@v1:S2.B1"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+    "NORTHSTAR/INTERVIEWS@v1:S2.B1"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+    "NORTHSTAR/INTERVIEWS@v1:S2.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+   ],
+   "usage": {
+    "input_tokens": 5362,
+    "llm_attempts": 1,
+    "output_tokens": 397,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.4,
+    "attempts": 1,
+    "total_ms": 3542.4,
+    "verify_ms_1": 27.39,
+    "retrieval_ms": 115.6,
+    "first_token_ms": 1191.6,
+    "synthesis_ms_1": 3257.7
+   },
+   "checks": {
+    "citations": 3,
+    "resolvable": 3,
+    "in_pack": 3,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "answer_completeness": 0.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 8,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1191.6,
+    "total_ms": 3542.4
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5362,
+     "output": 397,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.014846,
+    "first_token_ms": 1191.6,
+    "total_ms": 3542.4,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-IS-01",
+   "category": "insufficient_stop",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "insufficient",
+   "question": "How many patents does Kinetic Lab hold on its phone foot-scanning technology?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe evidence does not state how many patents Kinetic Lab holds on its phone foot-scanning technology. None of the provided items mention patents, patent filings or intellectual property holdings.\n\n### Gaps & unknowns\n\nThe evidence describes the scan process, the fit system and the micro factory, but never addresses patent ownership or counts [inference]. A patent registry search (for example national or international patent office databases, filtered by assignee), or an IP or risk-factors section of a company filing, would close this gap. The annual report excerpts provided are partial, so a full annual report or investor materials might disclose intellectual property holdings [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "gaps"
+    ],
+    "citations": 0,
+    "disposition": "repaired",
+    "cited_aliases": [],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [
+     "Answer #1",
+     "Answer #2"
+    ],
+    "unknown_aliases": [],
+    "conflict_signals": [],
+    "evidence_checked": [],
+    "evidence_handles": [],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [],
+   "pack_handles": [
+    "NORTHSTAR/KINETIC-AR@v1:P1.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+    "NORTHSTAR/KINETIC-WEB@v1:S1.B5",
+    "NORTHSTAR/KINETIC-WEB@v1:S1.B3",
+    "NORTHSTAR/KINETIC-WEB@v1:S1.B9",
+    "NORTHSTAR/KINETIC-WEB@v1:S1.B8",
+    "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+    "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+    "NORTHSTAR/Q3-REVIEW@v1:SL13",
+    "NORTHSTAR/KINETIC-WEB@v1:S1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+    "NORTHSTAR/KINETIC-WEB@v1:S1.B4"
+   ],
+   "usage": {
+    "input_tokens": 2930,
+    "llm_attempts": 1,
+    "output_tokens": 206,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 1.9,
+    "attempts": 1,
+    "total_ms": 4700.8,
+    "verify_ms_1": 6.02,
+    "retrieval_ms": 69.9,
+    "first_token_ms": 1978.3,
+    "synthesis_ms_1": 4507.7
+   },
+   "checks": {
+    "citations": 0,
+    "resolvable": 0,
+    "in_pack": 0,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [
+     "uncited answer sentence: The evidence does not state how many patents Kinetic Lab hol",
+     "uncited answer sentence: None of the provided items mention patents, patent filings o"
+    ],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": false,
+    "llm_called": true,
+    "cited_units": 0,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": null,
+    "pass_behaviour": true,
+    "abstention_correct": true,
+    "first_token_ms": 1978.3,
+    "total_ms": 4700.8
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 2930,
+     "output": 206,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.008072,
+    "first_token_ms": 1978.3,
+    "total_ms": 4700.8,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-IS-06",
+   "category": "insufficient_stop",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "insufficient",
+   "question": "How did Northstar's share price react after the Q3 strategy review?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe evidence does not say how Northstar's share price reacted after the Q3 strategy review. None of the provided items contains share price, stock market or investor reaction data.\n\n### Gaps & unknowns\n\nNo item reports any share price, trading volume or market reaction following the review. The review is only described through a title slide and a next-steps slide, and neither covers external market response [inference]. A market data source (exchange price history around the review date), analyst or investor commentary, or an investor relations release would close this gap. It is also unclear from the evidence whether Northstar is publicly listed, which would need to be confirmed from a corporate filing or company profile.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "gaps"
+    ],
+    "citations": 0,
+    "disposition": "repaired",
+    "cited_aliases": [],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [
+     "Answer #1",
+     "Answer #2"
+    ],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E5 says some figures were restated or superseded",
+     "E8 says some figures were restated or superseded",
+     "E12 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [],
+    "evidence_handles": [],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [],
+   "pack_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL15",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+   ],
+   "usage": {
+    "input_tokens": 5583,
+    "llm_attempts": 1,
+    "output_tokens": 209,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.3,
+    "attempts": 1,
+    "total_ms": 3752.0,
+    "verify_ms_1": 16.03,
+    "retrieval_ms": 80.3,
+    "first_token_ms": 1555.2,
+    "synthesis_ms_1": 3536.2
+   },
+   "checks": {
+    "citations": 0,
+    "resolvable": 0,
+    "in_pack": 0,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [
+     "uncited answer sentence: The evidence does not say how Northstar's share price reacte",
+     "uncited answer sentence: None of the provided items contains share price, stock marke"
+    ],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": false,
+    "llm_called": true,
+    "cited_units": 0,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": null,
+    "pass_behaviour": true,
+    "abstention_correct": true,
+    "first_token_ms": 1555.2,
+    "total_ms": 3752.0
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 5583,
+     "output": 209,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.013408,
+    "first_token_ms": 1555.2,
+    "total_ms": 3752.0,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-SC-01",
+   "category": "simple_control",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "How much revenue did Northstar actually book for the FY25 year, per the financial summary?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe brand strategy document states the same figure as $571.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]].\n\n### Key findings\n\n- The Segment_Revenue sheet's Total row gives fy25_revenue_usd_m of 571 for \"All identified customers\" [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6]].\n- The brand strategy document reports FY25 net revenue closing at $571.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]][[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- The segment rows are consistent with this total: Gen Z (18-27) at 110.8, Millennial (28-43) at 251.2, Gen X (44-59) at 158.2 and Boomer and older (60+) at 50.8, all in USD millions [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R5]].\n\n### Gaps & unknowns\n\nThe P&L summary sheet is described only by its structure, with no actual values shown, so the figure could not be confirmed on that sheet [inference]. The FY25 figure is labelled as an actual in that sheet's column description, but no audited or externally reported statement is provided to verify it [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "gaps"
+    ],
+    "citations": 8,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E11",
+     "E2",
+     "E8",
+     "E7",
+     "E6",
+     "E9"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E6 and E7 state different values for 'definition'",
+     "E6 and E8 state different values for 'definition'",
+     "E6 and E9 state different values for 'definition'",
+     "E7 and E8 state different values for 'definition'",
+     "E7 and E9 state different values for 'definition'",
+     "E8 and E9 state different values for 'definition'",
+     "E12 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E11",
+     "E1",
+     "E2",
+     "E8",
+     "E7",
+     "E6",
+     "E9"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4",
+     "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R5"
+    ],
+    "failure_categories": [
+     "numbers_not_in_cited_evidence"
+    ],
+    "numeric_violations": [
+     "Answer #1: FY25 not found in cited evidence E11"
+    ],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R5"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.T1",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R5",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B12"
+   ],
+   "usage": {
+    "input_tokens": 3727,
+    "llm_attempts": 1,
+    "output_tokens": 354,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.2,
+    "attempts": 1,
+    "total_ms": 3715.4,
+    "verify_ms_1": 23.36,
+    "retrieval_ms": 113.1,
+    "first_token_ms": 583.0,
+    "synthesis_ms_1": 3431.6
+   },
+   "checks": {
+    "citations": 7,
+    "resolvable": 7,
+    "in_pack": 7,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 4,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 583.0,
+    "total_ms": 3715.4
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 3727,
+     "output": 354,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.011146,
+    "first_token_ms": 583.0,
+    "total_ms": 3715.4,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-SC-03",
+   "category": "simple_control",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "What value does the category sizing workbook put on the 2026 US athletic footwear market for millennials?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe category sizing workbook puts the 2026 US millennial athletic footwear market at 23.9 (value_usd_bn), with year-over-year growth of 3 percent [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]]. The figure is labelled an Estimate in the Cobalt Insight Partners model, September 2026 update [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]].\n\n### Key findings\n\n- Athletic footwear, US, Millennial, 2026: value_usd_bn 23.9, yoy_growth_pct 3, basis Estimate [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]].\n- For context, the adjacent year 2025 is recorded at value_usd_bn 23.2 (Estimate) [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R22]], and the 2027 forecast at value_usd_bn 24.6 [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R24]].\n- The related personalized athletic footwear segment for 2026 is recorded at value_usd_bn 0.9, which is a separate category line, not part of the answer to this question [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R35]].\n\n### Interpretation\n\nThe evidence notes flag many \"conflicts\", but these only reflect different years for different records; there is no competing value for the 2026 athletic footwear figure [inference].\n\n### Gaps & unknowns\n\nThe evidence does not state whether the personalized footwear line is included in the broader athletic footwear total. An independent source, such as retail sales data or a methodology note from the model provider, would help validate the estimate [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: dropped unit containing numbers",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 6,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E6",
+     "E10",
+     "E2"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E1 and E3 state different values for 'year'",
+     "E1 and E4 state different values for 'year'",
+     "E1 and E5 state different values for 'year'",
+     "E1 and E6 state different values for 'year'",
+     "E1 and E7 state different values for 'year'",
+     "E1 and E8 state different values for 'year'",
+     "E1 and E9 state different values for 'year'",
+     "E1 and E10 state different values for 'year'",
+     "E1 and E11 state different values for 'year'",
+     "E1 and E12 state different values for 'year'",
+     "E2 and E3 state different values for 'year'",
+     "E2 and E4 state different values for 'year'",
+     "E2 and E5 state different values for 'year'",
+     "E2 and E6 state different values for 'year'",
+     "E2 and E7 state different values for 'year'",
+     "E2 and E8 state different values for 'year'",
+     "E2 and E9 state different values for 'year'",
+     "E2 and E10 state different values for 'year'",
+     "E2 and E11 state different values for 'year'",
+     "E2 and E12 state different values for 'year'",
+     "E3 and E5 state different values for 'year'",
+     "E3 and E6 state different values for 'year'",
+     "E3 and E7 state different values for 'year'",
+     "E3 and E8 state different values for 'year'",
+     "E3 and E9 state different values for 'year'",
+     "E3 and E10 state different values for 'year'",
+     "E3 and E11 state different values for 'year'",
+     "E3 and E12 state different values for 'year'",
+     "E4 and E5 state different values for 'year'",
+     "E4 and E6 state different values for 'year'",
+     "E4 and E7 state different values for 'year'",
+     "E4 and E8 state different values for 'year'",
+     "E4 and E9 state different values for 'year'",
+     "E4 and E10 state different values for 'year'",
+     "E4 and E11 state different values for 'year'",
+     "E4 and E12 state different values for 'year'",
+     "E5 and E6 state different values for 'year'",
+     "E5 and E7 state different values for 'year'",
+     "E5 and E9 state different values for 'year'",
+     "E5 and E10 state different values for 'year'",
+     "E5 and E11 state different values for 'year'",
+     "E5 and E12 state different values for 'year'",
+     "E6 and E8 state different values for 'year'",
+     "E6 and E9 state different values for 'year'",
+     "E6 and E10 state different values for 'year'",
+     "E6 and E11 state different values for 'year'",
+     "E6 and E12 state different values for 'year'",
+     "E7 and E8 state different values for 'year'",
+     "E7 and E9 state different values for 'year'",
+     "E7 and E10 state different values for 'year'",
+     "E7 and E11 state different values for 'year'",
+     "E7 and E12 state different values for 'year'",
+     "E8 and E9 state different values for 'year'",
+     "E8 and E10 state different values for 'year'",
+     "E8 and E11 state different values for 'year'",
+     "E8 and E12 state different values for 'year'",
+     "E9 and E10 state different values for 'year'",
+     "E9 and E11 state different values for 'year'",
+     "E10 and E12 state different values for 'year'",
+     "E11 and E12 state different values for 'year'"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E6",
+     "E10",
+     "E2"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23",
+     "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R22",
+     "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R24",
+     "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R35"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps"
+    ],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R22",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R24",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R35"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R35",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R20",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R32",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R21",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R22",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R34",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R33",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R25",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R24",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R36",
+    "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R37"
+   ],
+   "usage": {
+    "input_tokens": 3958,
+    "llm_attempts": 1,
+    "output_tokens": 469,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.2,
+    "attempts": 1,
+    "total_ms": 7743.5,
+    "verify_ms_1": 8.4,
+    "retrieval_ms": 105.9,
+    "first_token_ms": 4323.3,
+    "synthesis_ms_1": 7538.5
+   },
+   "checks": {
+    "citations": 4,
+    "resolvable": 4,
+    "in_pack": 4,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 5,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 4323.3,
+    "total_ms": 7743.5
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 3958,
+     "output": 469,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.012758,
+    "first_token_ms": 4323.3,
+    "total_ms": 7743.5,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-SC-05",
+   "category": "simple_control",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "What is the FY26 return rate of the original Knit Runner, SKU NS-KR1?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nThe evidence reports a return rate of 13.1% for the original Knit Runner, but it does not tie that figure to SKU NS-KR1 or to FY26 specifically [[NORTHSTAR/Q3-REVIEW@v1:SL8]][[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]]. The SKU-level tables that would give the FY26 figure for NS-KR1 are described only by their column structure, with no values shown [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]][[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n\n### Key findings\n\n- The Knit Runner 2 has a 16.8% return rate, against 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]].\n- The brand strategy document repeats the same comparison: 16.8% against 13.1%, with the newest running shoe returned at a higher rate than its predecessor [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]].\n- The SKU_Performance table has a return_rate_pct column and lists \"Knit Runner\" as a product, but the evidence provided shows no row values [[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n- The Returns table includes NS-KR1 as a SKU for \"Knit Runner\" with a total_sku_returns column, but no values are shown [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n\n### Conflicting evidence\n\n- E1, E4 and E9 are flagged as possibly restating or superseding figures. The evidence does not show which figures, and E1 and E9 give identical values (16.8% and 13.1%), so no conflicting value for the original Knit Runner is visible [[NORTHSTAR/Q3-REVIEW@v1:SL8]][[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]].\n\n### Interpretation\n\n13.1% is probably the current return rate of the original Knit Runner as used in internal strategy documents, but the evidence does not state the period it covers [inference]. The 13.1% figure may correspond to the return_rate_pct value for NS-KR1 in the SKU_Performance table, but the evidence does not confirm this [inference].\n\n### Gaps & unknowns\n\nThe actual row values for NS-KR1 in the SKU_Performance and Returns tables are not shown. Pulling the NS-KR1 row from the SKU_Performance sheet, with its return_rate_pct and units for FY26 year to date, would settle the question [inference]. It is unclear which figures the restatement flags refer to; a version history or change note for the strategy review would clarify this.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: dropped unit containing numbers",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 10,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E9",
+     "E2",
+     "E3"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E5 and E8 state different values for 'date'",
+     "E5 and E12 state different values for 'date'",
+     "E8 and E12 state different values for 'date'",
+     "E1 says some figures were restated or superseded",
+     "E4 says some figures were restated or superseded",
+     "E9 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E1",
+     "E9",
+     "E2",
+     "E3"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/Q3-REVIEW@v1:SL8",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+     "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+     "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1"
+    ],
+    "failure_categories": [
+     "numbers_in_gaps"
+    ],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL8",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL8",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+    "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+    "NORTHSTAR/REVIEWS@v1:R360",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+    "NORTHSTAR/REVIEWS@v1:R172",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B3",
+    "NORTHSTAR/SURVEY-2026@v1:R522",
+    "NORTHSTAR/REVIEWS@v1:R70"
+   ],
+   "usage": {
+    "input_tokens": 4294,
+    "llm_attempts": 1,
+    "output_tokens": 726,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.6,
+    "attempts": 1,
+    "total_ms": 7426.9,
+    "verify_ms_1": 24.51,
+    "retrieval_ms": 119.8,
+    "first_token_ms": 1876.6,
+    "synthesis_ms_1": 7107.2
+   },
+   "checks": {
+    "citations": 4,
+    "resolvable": 4,
+    "in_pack": 4,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 0.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 0.0,
+    "cited_units": 7,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1876.6,
+    "total_ms": 7426.9
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 4294,
+     "output": 726,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.016,
+    "first_token_ms": 1876.6,
+    "total_ms": 7426.9,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-SC-08",
+   "category": "simple_control",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "What brand position does Northstar's 2026 brand strategy want to own with active Gen Z consumers?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nNorthstar's 2026 brand strategy wants to own the position of the \"dependable fit brand\" for active Gen Z consumers, rather than competing on elite performance claims [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. It explicitly chooses not to out-engineer the premium incumbent or out-discount value players [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. The target customer is someone tired of ordering two sizes and returning one, who wants durable trainers and a brand that talks to her the way her run club does [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n\n### Key findings\n\n- The stated positioning is \"the dependable fit brand for active Gen Z consumers rather than competing on elite performance claims\" [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- The strategy says the main obstacle is trust in the basics: unpredictable size fit, doubt that price is justified by durability, and impatience with brands that cannot explain what products are made of [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z shoppers generated 21% of Northstar net revenue in FY25, and the board target is a 30% Gen Z share by the end of FY28 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Aided awareness among Gen Z is 46% for Northstar versus 71% for Vantage Athletic [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z customers gave a net promoter score of 22 versus 49 among customers aged 28 and older [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B2]].\n- Value Seekers, 26% of the Gen Z base, will stay only if the premium is justified by something tangible such as a trusted fit, durability or an easy exchange [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B5]].\n\n### Conflicting evidence\n\n- The brand-materials figure of 21% Gen Z revenue share in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]] differs from the finance definition (ages 18 to 27), which puts the FY25 share \"a little under 20%\" [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]]. The difference stems from the brand team's wider 16 to 29 age band.\n\n### Interpretation\n\nThe positioning appears designed to address the trust gaps and low advocacy among Gen Z by making fit reliability and durability the proof points of the brand [inference]. Value Seekers act as the test of whether the \"dependable\" promise is real, since they leave when the premium feels arbitrary [inference].\n\n### Gaps & unknowns\n\nThe evidence does not show the full wording of the positioning statement beyond the executive summary, nor the specific growth bets and KPIs that operationalise it. The interviews, focus group and FY27 memo provided only title-page content, so they do not show whether customers or later planning endorse this position [inference]. The competitive section is also cut off, so how the position contrasts with each named competitor is not established [inference].",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Conflicting evidence #1: collapsed duplicate citation E3",
+     "Gaps & unknowns #2: tagged a gaps unit that names no missing evidence as [inference]",
+     "Gaps & unknowns #3: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "conflicts",
+     "interpretation",
+     "gaps"
+    ],
+    "citations": 11,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E1",
+     "E7",
+     "E6",
+     "E3"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [],
+    "evidence_checked": [
+     "E1",
+     "E7",
+     "E6",
+     "E3"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+    "NORTHSTAR/INTERVIEWS@v1:S1.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S1.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B1"
+   ],
+   "usage": {
+    "input_tokens": 3657,
+    "llm_attempts": 1,
+    "output_tokens": 806,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.7,
+    "attempts": 1,
+    "total_ms": 21017.7,
+    "verify_ms_1": 13.39,
+    "retrieval_ms": 117.9,
+    "first_token_ms": 8440.2,
+    "synthesis_ms_1": 20759.4
+   },
+   "checks": {
+    "citations": 4,
+    "resolvable": 4,
+    "in_pack": 4,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 10,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 8440.2,
+    "total_ms": 21017.7
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 3657,
+     "output": 806,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.015526,
+    "first_token_ms": 8440.2,
+    "total_ms": 21017.7,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  },
+  {
+   "id": "R-SC-10",
+   "category": "simple_control",
+   "workspace": "NORTHSTAR",
+   "split": "dev",
+   "expect": "answer",
+   "question": "What net revenue did Vantage Athletic report for FY2025?",
+   "requested_mode": "standard",
+   "mode": "standard",
+   "route": {
+    "cues": [],
+    "reason": "explicit_request",
+    "decided": "standard",
+    "requested": "standard",
+    "persona_default": "auto"
+   },
+   "agent": {},
+   "termination_state": "completed",
+   "flags": [],
+   "content": "### Answer\n\nVantage Athletic reported FY2025 net revenue of $4.2 billion, with footwear accounting for 63% of sales [[NORTHSTAR/VANTAGE-DECK@v1:SL3]]. Northstar's internal brand strategy document cites the same figure, described as \"about $4.2 billion\" [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n\n### Key findings\n\n- Vantage's own Investor Day deck states net revenue of $4.2 billion in FY2025, with footwear at 63% of sales [[NORTHSTAR/VANTAGE-DECK@v1:SL3]].\n- Northstar's brand strategy restates this as \"about $4.2 billion\" with footwear at 63% of sales, consistent with the company's own figure [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n\n### Gaps & unknowns\n\nThe evidence gives only a rounded headline figure and does not provide a more precise number, a segment breakdown beyond the footwear share, or the underlying audited financial statements [inference]. A Vantage annual report or regulatory filing would close that gap.",
+   "verification": {
+    "passed": true,
+    "attempt": 1,
+    "repairs": [
+     "Gaps & unknowns #1: tagged a gaps unit that names no missing evidence as [inference]"
+    ],
+    "sections": [
+     "answer",
+     "findings",
+     "gaps"
+    ],
+    "citations": 4,
+    "disposition": "repaired",
+    "cited_aliases": [
+     "E2",
+     "E1"
+    ],
+    "leaks_removed": [],
+    "max_citations": 20,
+    "gap_statements": [],
+    "unknown_aliases": [],
+    "conflict_signals": [
+     "E3 says some figures were restated or superseded"
+    ],
+    "evidence_checked": [
+     "E2",
+     "E1"
+    ],
+    "evidence_handles": [
+     "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+     "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+    ],
+    "failure_categories": [],
+    "numeric_violations": [],
+    "structural_failures": [],
+    "regeneration_requested": false
+   },
+   "cited_handles": [
+    "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2"
+   ],
+   "pack_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+    "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL13",
+    "NORTHSTAR/KINETIC-AR@v1:P2.B3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+    "NORTHSTAR/VANTAGE-DECK@v1:SL1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/VANTAGE-WEB@v1:S1.B1"
+   ],
+   "usage": {
+    "input_tokens": 3672,
+    "llm_attempts": 1,
+    "output_tokens": 284,
+    "cache_read_input_tokens": 761,
+    "cache_creation_input_tokens": 0
+   },
+   "timings": {
+    "pack_ms": 2.7,
+    "attempts": 1,
+    "total_ms": 3944.7,
+    "verify_ms_1": 17.36,
+    "retrieval_ms": 90.6,
+    "first_token_ms": 1904.9,
+    "synthesis_ms_1": 3681.2
+   },
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "foreign_citations": [],
+    "southpeak_marker_leak": false,
+    "contract_problems": [],
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "answer_completeness": 1.0,
+    "gold_handle_recall": 1.0,
+    "cited_units": 4,
+    "unsupported_units": 0,
+    "unsupported_numbers": [],
+    "unsupported_claim_rate": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1904.9,
+    "total_ms": 3944.7
+   },
+   "metrics": {
+    "mode": "standard",
+    "requested_mode": "standard",
+    "route_decided": "standard",
+    "route_reason": "explicit_request",
+    "route_cues": [],
+    "router_expectation": "standard",
+    "router_agree": null,
+    "model_calls": 1,
+    "agent_model_calls": 0,
+    "synthesis_model_calls": 1,
+    "tool_calls": 0,
+    "tool_failures": 0,
+    "retrieval_calls": 1,
+    "steps": 0,
+    "stop_reason": null,
+    "agent_flags": [],
+    "research_fallback": false,
+    "termination_state": "completed",
+    "tokens": {
+     "input": 3672,
+     "output": 284,
+     "cache_read": 761,
+     "cache_write": 0
+    },
+    "cost_usd": 0.010336,
+    "first_token_ms": 1904.9,
+    "total_ms": 3944.7,
+    "agent_ms": null,
+    "regenerated": false,
+    "evidence_only": false
+   },
+   "warnings": []
+  }
+ ],
+ "run": {
+  "git": "bcc4621",
+  "at": "2026-10-06T19:39:43+00:00",
+  "model": "claude-sonnet-5-5",
+  "effort": "low",
+  "thinking": "disabled",
+  "retrieval_config_hash": "35fc5c5a734a67e9",
+  "dataset": "../eval/datasets/research-v0/items.json",
+  "split": "dev",
+  "items": 23,
+  "mode": "standard"
+ }
+}
