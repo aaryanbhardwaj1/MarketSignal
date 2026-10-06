@@ -474,3 +474,105 @@ async def test_purge_deletes_verification_reports_of_runs_that_used_the_source(
     await _purge(harness, ws, "MEMO")
     assert await reports(used["run_id"]) == 0
     assert await reports(other["run_id"]) == 1
+
+
+async def test_verification_attempt_written_after_purge_is_refused(
+    harness: Harness, app_engine: AsyncEngine
+) -> None:
+    """Review finding 17: a report insert takes the run-row lock and checks the pack's purge
+    state in the same transaction, like every other text-bearing write."""
+    from marketsignal.generation.types import VerificationReport
+    from marketsignal.runs.verification_log import record_attempt
+
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    ws = await harness.create_workspace()
+    await _seed_sections(harness, ws, "MEMO", ("Fit", FACT))
+    _, run = await _ask(harness, ws, QUESTION)
+    await _stream(harness, run["stream_url"])
+    await _purge(harness, ws, "MEMO")
+    app = harness.client._transport.app  # type: ignore[attr-defined]
+    async with app_engine.begin() as conn:
+        await _scoped(conn, ws)
+        ws_id = (await conn.execute(text("SELECT app.current_workspace()"))).scalar_one()
+    scope = WorkspaceScope(uuid.UUID(str(ws_id)), ws)
+    report = VerificationReport(passed=False, attempt=1, disposition="rejected")
+    stored = await record_attempt(
+        app.state.session_factory, scope, uuid.UUID(run["run_id"]), report
+    )
+    assert stored is False
+    async with app_engine.begin() as conn:
+        await _scoped(conn, ws)
+        count = (
+            await conn.execute(
+                text(
+                    "SELECT count(*) FROM verification_attempts "
+                    "WHERE query_run_id = CAST(:r AS uuid)"
+                ),
+                {"r": run["run_id"]},
+            )
+        ).scalar_one()
+    assert count == 0
+
+
+async def test_purge_redacts_agent_tool_args_and_trace_of_runs_that_saw_the_source(
+    harness: Harness, app_engine: AsyncEngine
+) -> None:
+    """Review finding 18: a research agent's later tool arguments can quote what it read.
+    Purge redacts tool_runs.args and the agent trace (keeping the audit rows and counts) and
+    deletes the event log of every run whose agent saw one of the source's handles."""
+    from marketsignal.providers.llm.fake import FakeAgentLLM, ScriptedTurn, tool_use_block
+
+    quoted = "Returns for fit reasons rose to 31 percent"
+    _install(harness, FakeLLM([GOOD], repeat_last=True))
+    agent_llm = FakeAgentLLM(
+        [
+            ScriptedTurn(content=(tool_use_block("c1", "search_evidence", {"query": "returns"}),)),
+            ScriptedTurn(content=(tool_use_block("c2", "search_evidence", {"query": quoted}),)),
+            ScriptedTurn(
+                content=(tool_use_block("c3", "finish_research", {"sufficient": True, "gaps": []}),)
+            ),
+        ]
+    )
+    app = harness.client._transport.app  # type: ignore[attr-defined]
+    app.state.agent_llm_provider = lambda: agent_llm
+    ws = await harness.create_workspace()
+    await _seed_sections(harness, ws, "MEMO", ("Returns", RETURNS))
+    _, run = await _ask(harness, ws, "What drives fit returns?", mode="research")
+    await _stream(harness, run["stream_url"])
+
+    async def state() -> tuple[list[str], dict[str, Any], int]:
+        async with app_engine.begin() as conn:
+            await _scoped(conn, ws)
+            args = [
+                json.dumps(r[0])
+                for r in await conn.execute(
+                    text("SELECT args FROM tool_runs WHERE query_run_id = CAST(:r AS uuid)"),
+                    {"r": run["run_id"]},
+                )
+            ]
+            agent = (
+                await conn.execute(
+                    text("SELECT agent FROM query_runs WHERE id = CAST(:r AS uuid)"),
+                    {"r": run["run_id"]},
+                )
+            ).scalar_one()
+            events = (
+                await conn.execute(
+                    text("SELECT count(*) FROM run_events WHERE run_id = CAST(:r AS uuid)"),
+                    {"r": run["run_id"]},
+                )
+            ).scalar_one()
+        return args, dict(agent), int(events)
+
+    args, agent, events = await state()
+    assert any(quoted in a for a in args)
+    assert "trace" in agent
+    assert events > 0
+    await _purge(harness, ws, "MEMO")
+    args, agent, events = await state()
+    assert len(args) == 2  # audit rows kept
+    assert all(json.loads(a) == {"redacted": True} for a in args)
+    assert "trace" not in agent
+    assert agent["trace_redacted"] is True
+    assert agent["tool_calls"] == 2  # counts kept
+    assert events == 0

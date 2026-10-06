@@ -27,6 +27,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from marketsignal.db.scope import WorkspaceScope
 from marketsignal.db.session import SessionFactory, scoped_session
 from marketsignal.generation.types import VerificationReport
+from marketsignal.runs import store
 from marketsignal.telemetry.logging import get_logger
 
 log = get_logger(__name__)
@@ -69,6 +70,10 @@ async def record_attempt(
     }
     try:
         async with scoped_session(factory, scope) as session:
+            # Reports quote model spans that can quote evidence: same purge guard as events.
+            if await store.run_pack_purged(session, scope, run_id):
+                log.info("verification_attempt_withheld", run_id=str(run_id))
+                return False
             await session.execute(_INSERT, params)
             await session.commit()
     except SQLAlchemyError as exc:

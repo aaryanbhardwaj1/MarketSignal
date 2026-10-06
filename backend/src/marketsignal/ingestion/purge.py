@@ -84,8 +84,30 @@ _PACK_RUNS = (
     "SELECT id FROM query_runs WHERE workspace_id = :ws AND EXISTS ("
     "  SELECT 1 FROM unnest(pack_handles) h WHERE h LIKE :prefix)"
 )
-_DELETE_ATTEMPTS = (
-    f"DELETE FROM verification_attempts WHERE workspace_id = :ws AND query_run_id IN ({_PACK_RUNS})"  # noqa: S608 - constant SQL
+# Runs that saw the source without packing it: a research agent's tool call returned one of
+# its handles, so the model's later tool arguments (and the agent trace) can quote it.
+_SEEN_RUNS = (
+    "SELECT query_run_id FROM tool_runs WHERE workspace_id = :ws AND query_run_id IS NOT NULL "
+    "AND EXISTS (SELECT 1 FROM unnest(result_handles) h WHERE h LIKE :prefix)"
+)
+_AFFECTED_RUNS = f"{_PACK_RUNS} UNION {_SEEN_RUNS}"
+
+
+def _for_affected_runs(statement: str, column: str) -> str:
+    """``statement`` restricted to the affected runs (constant SQL only, never user input)."""
+    return f"{statement} AND {column} IN ({_AFFECTED_RUNS})"
+
+
+_DELETE_ATTEMPTS = _for_affected_runs(
+    "DELETE FROM verification_attempts WHERE workspace_id = :ws", "query_run_id"
+)
+_REDACT_TOOL_ARGS = _for_affected_runs(
+    "UPDATE tool_runs SET args = '{\"redacted\": true}' WHERE workspace_id = :ws", "query_run_id"
+)
+_REDACT_AGENT_TRACE = _for_affected_runs(
+    "UPDATE query_runs SET agent = (agent - 'trace') || '{\"trace_redacted\": true}' "
+    "WHERE workspace_id = :ws AND agent ? 'trace'",
+    "id",
 )
 
 
@@ -100,7 +122,10 @@ async def _purge_run_artifacts(
     * Assistant answers whose run's pack included the source (an answer can use pack text it
       does not cite) or that cite it are redacted; citation cards of the source become
       tombstones ``{handle, source_code, purged}`` (the handle resolves to the 410 tombstone).
-    * The event logs of runs whose pack included it are deleted (tokens, citations, final).
+    * The event logs of runs whose pack included it, or whose research agent saw one of its
+      handles in a tool result, are deleted (tokens, citations, final, tool summaries); their
+      verification reports are deleted; their tool-call arguments and agent trace (which can
+      quote what the agent read) are redacted, keeping the audit rows and counts.
     """
     params = {
         "ws": scope.workspace_id,
@@ -111,7 +136,13 @@ async def _purge_run_artifacts(
     # holds FOR KEY SHARE on its own row while it re-checks the pack's purge state, so it either
     # commits before this lock (and the statements below remove what it wrote) or waits for this
     # transaction and then sees the purged version (runs.store module docstring).
-    await session.execute(text(f"{_PACK_RUNS} ORDER BY id FOR UPDATE"), params)
+    await session.execute(
+        text(
+            "SELECT id FROM query_runs WHERE workspace_id = :ws "  # noqa: S608 - constant SQL
+            f"AND id IN ({_AFFECTED_RUNS}) ORDER BY id FOR UPDATE"
+        ),
+        params,
+    )
     await session.execute(
         text(
             "UPDATE conversations c SET rolling_summary = '', recent_questions = '{}', "  # noqa: S608 - constant SQL
@@ -143,7 +174,7 @@ async def _purge_run_artifacts(
         {**params, "redacted": REDACTED_ANSWER},
     )
     await session.execute(
-        text(f"DELETE FROM run_events WHERE workspace_id = :ws AND run_id IN ({_PACK_RUNS})"),  # noqa: S608 - constant SQL
+        text(f"DELETE FROM run_events WHERE workspace_id = :ws AND run_id IN ({_AFFECTED_RUNS})"),  # noqa: S608 - constant SQL
         params,
     )
     # Verification reports quote rejected model spans, which can quote the purged evidence.
@@ -151,3 +182,6 @@ async def _purge_run_artifacts(
         text(_DELETE_ATTEMPTS),
         params,
     )
+    # Model-written tool arguments and the agent trace can quote what the agent saw.
+    await session.execute(text(_REDACT_TOOL_ARGS), params)
+    await session.execute(text(_REDACT_AGENT_TRACE), params)

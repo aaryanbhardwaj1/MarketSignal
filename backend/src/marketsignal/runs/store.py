@@ -153,6 +153,14 @@ async def _run_pack_purged(session: AsyncSession, scope: WorkspaceScope, run_id:
     return bool(await _purged_pack_codes(session, scope, handles))
 
 
+async def run_pack_purged(session: AsyncSession, scope: WorkspaceScope, run_id: uuid.UUID) -> bool:
+    """Public form of the run-side purge guard for other text-bearing writers (verification
+    reports): ``FOR KEY SHARE`` on the run row, then the pack's version purge state, in the
+    caller's transaction (module docstring: either purge sees the write or the write sees the
+    purge)."""
+    return await _run_pack_purged(session, scope, run_id)
+
+
 def _run_assignments(fields: dict[str, Any]) -> tuple[list[str], dict[str, Any]]:
     assignments: list[str] = []
     params: dict[str, Any] = {}
