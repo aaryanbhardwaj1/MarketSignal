@@ -36,9 +36,22 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_vali
 
 from marketsignal.domain.enums import SourceClass, SourceType
 
-ToolName = Literal["search_evidence", "search_evidence_keyword", "get_evidence", "list_sources"]
-TOOL_NAMES: tuple[ToolName, ...] = (
+ToolName = Literal[
+    "search_evidence",
+    "search_evidence_keyword",
     "get_evidence",
+    "list_sources",
+    "aggregate",
+    "describe_dataset",
+    "filter_rows",
+    "group_compare",
+]
+TOOL_NAMES: tuple[ToolName, ...] = (
+    "aggregate",
+    "describe_dataset",
+    "filter_rows",
+    "get_evidence",
+    "group_compare",
     "list_sources",
     "search_evidence",
     "search_evidence_keyword",
@@ -201,17 +214,26 @@ class ListSourcesOut(_Out):
     warnings: list[str] = Field(default_factory=list)
 
 
+# Phase 5 analytics tools (frozen contract in ``analytics_contracts``, which builds on ``_In`` /
+# ``_Out`` above; ``marketsignal.tools.__init__`` imports this module first so the cycle resolves).
+from marketsignal.tools.analytics_contracts import (  # noqa: E402
+    ANALYTICS_INPUT_MODELS,
+    ANALYTICS_OUTPUT_MODELS,
+)
+
 INPUT_MODELS: dict[str, type[_In]] = {
     "search_evidence": SearchEvidenceIn,
     "search_evidence_keyword": KeywordSearchIn,
     "get_evidence": GetEvidenceIn,
     "list_sources": ListSourcesIn,
+    **ANALYTICS_INPUT_MODELS,
 }
 OUTPUT_MODELS: dict[str, type[_Out]] = {
     "search_evidence": SearchEvidenceOut,
     "search_evidence_keyword": KeywordSearchOut,
     "get_evidence": GetEvidenceOut,
     "list_sources": ListSourcesOut,
+    **ANALYTICS_OUTPUT_MODELS,
 }
 
 

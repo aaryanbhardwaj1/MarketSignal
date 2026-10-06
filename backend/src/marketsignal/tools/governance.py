@@ -61,7 +61,7 @@ from marketsignal.tools.contracts import (
     Transport,
     has_control_chars,
 )
-from marketsignal.tools.env import ToolEnv, ToolInputError, scope_from
+from marketsignal.tools.env import ToolEnv, ToolInputError, ToolNotFoundError, scope_from
 from marketsignal.tools.observation import error_observation, render
 from marketsignal.tools.registry import OUTPUT_MAX_CHARS, ToolEntry, ToolRegistry, default_registry
 
@@ -175,9 +175,13 @@ def sanitize_args(args: BaseModel) -> dict[str, Any]:
 
 
 def cap_output(entry: ToolEntry, output: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-    """Return a new output capped to ``entry.max_items`` items and ``OUTPUT_MAX_CHARS``."""
-    items = list(output.get(entry.items_key) or [])
+    """Return a new output capped to ``entry.max_items`` items and ``OUTPUT_MAX_CHARS``.
+    Outputs whose ``items_key`` is not a list (analytics: one persisted ``result``) are bounded
+    by their implementation before persistence and are returned unchanged."""
     truncated = TRUNCATED in (output.get("warnings") or [])
+    if entry.items_key in output and not isinstance(output[entry.items_key], list):
+        return output, truncated
+    items = list(output.get(entry.items_key) or [])
     if len(items) > entry.max_items:
         items, truncated = items[: entry.max_items], True
     capped = {**output, entry.items_key: items}
@@ -330,6 +334,8 @@ class ToolGovernor:
             dumped = entry.output_model.model_validate(out.model_dump()).model_dump(mode="json")
         except TimeoutError:
             raise _CallFailedError("TIMEOUT") from None
+        except ToolNotFoundError as exc:
+            raise _CallFailedError("NOT_FOUND", f"not found: {str(exc)[:200]}") from None
         except (ToolInputError, InvalidFiltersError) as exc:
             message = f"invalid arguments: {str(exc)[:200]}"
             raise _CallFailedError("VALIDATION_ERROR", message) from None

@@ -53,3 +53,9 @@ def scope_from(ctx: ToolContext) -> WorkspaceScope:
 
 class ToolInputError(ValueError):
     """Arguments that pass the schema but not a semantic check (reported as VALIDATION_ERROR)."""
+
+
+class ToolNotFoundError(LookupError):
+    """A named object the call needs (e.g. an analytics dataset) is not visible to the token:
+    absent, in another workspace, above ``max_conf``, outside the class claim, purged or
+    superseded - indistinguishably (reported as ``NOT_FOUND``)."""

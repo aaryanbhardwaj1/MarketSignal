@@ -8,8 +8,10 @@ mounted at ``/mcp`` with the session manager entered from the parent lifespan (s
 from __future__ import annotations
 
 import asyncio
+import re
 import socket
 import time
+import uuid
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from typing import Any
@@ -18,7 +20,9 @@ import httpx
 import pytest
 import uvicorn
 from fastapi import FastAPI
+from sqlalchemy import text
 
+from marketsignal.db.session import scoped_session
 from marketsignal.mcp.client import HttpToolTransport
 from marketsignal.mcp.server import build_mcp_app
 from marketsignal.tools.contracts import (
@@ -135,7 +139,58 @@ def _cases(w: World) -> list[Case]:
             lambda ww: ww.raw_token(key="test-only-forged-key-00000000000000000"),
         ),
         ("malformed", "list_sources", {}, lambda _: "not-a-jwt"),
+        # Phase 5 analytics tools (RETURNS is a 3-row CSV in workspace A)
+        ("an-describe", "describe_dataset", {}, lambda _: ok),
+        ("an-describe-one", "describe_dataset", {"dataset": "RETURNS:1"}, lambda _: ok),
+        ("an-class", "describe_dataset", {}, lambda _: fin),
+        ("an-aggregate", "aggregate", _AN_AGG, lambda _: ok),
+        ("an-compare", "group_compare", _AN_CMP, lambda _: ok),
+        ("an-rows", "filter_rows", _AN_ROWS, lambda _: ok),
+        ("an-foreign", "aggregate", {**_AN_AGG, "dataset": "RETURNS:1"}, lambda _: b),
+        ("an-sqli", "aggregate", {**_AN_AGG, "dataset": _SQLI}, lambda _: ok),
+        (
+            "an-badcol",
+            "aggregate",
+            {"dataset": "RETURNS:1", "metrics": [{"fn": "sum", "column": _SQLI}]},
+            lambda _: ok,
+        ),
+        (
+            "an-nul",
+            "filter_rows",
+            {
+                "dataset": "RETURNS:1",
+                "filters": [{"column": "segment", "op": "eq", "value": "a\x00"}],
+            },
+            lambda _: ok,
+        ),
     ]
+
+
+_SQLI = "x'; DROP TABLE dataset_rows;--"
+_GEN_Z = {"column": "segment", "op": "eq", "value": "Gen Z"}
+_AN_AGG: dict[str, Any] = {
+    "dataset": "RETURNS:1",
+    "metrics": [{"fn": "count"}, {"fn": "share", "condition": _GEN_Z}],
+    "group_by": ["segment"],
+}
+_AN_CMP: dict[str, Any] = {
+    "dataset": "RETURNS:1",
+    "metric": {"fn": "count"},
+    "compare_column": "segment",
+    "group_a": "Gen Z",
+    "group_b": "Millennial",
+}
+_AN_ROWS: dict[str, Any] = {"dataset": "RETURNS:1", "filters": [_GEN_Z], "columns": ["return_id"]}
+_RESULT_ID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
+
+def _masked(value: Any) -> Any:
+    """result_id differs per call (each call persists its own result): mask it."""
+    if isinstance(value, dict):
+        return {k: "<rid>" if k == "result_id" else _masked(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_masked(v) for v in value]
+    return _RESULT_ID.sub("<rid>", value) if isinstance(value, str) else value
 
 
 def _view(r: ToolResult) -> tuple[Any, ...]:
@@ -144,8 +199,8 @@ def _view(r: ToolResult) -> tuple[Any, ...]:
         r.name,
         r.ok,
         None if r.error is None else (r.error.code, r.error.message),
-        r.output,
-        r.observation,
+        _masked(r.output),
+        _masked(r.observation),
         r.truncated,
         r.warnings,
     )
@@ -157,6 +212,15 @@ async def _run_all(transport: Any, w: World, base: int) -> list[ToolResult]:
         call = ToolCall(label, name, args, step=2, call_index=base + i)
         out.append(await transport.call(call, credential=token(w)))
     return out
+
+
+async def _stored_results(w: World, ids: list[str]) -> dict[str, Any]:
+    async with scoped_session(w.factory, w.ws_a) as session:
+        rows = await session.execute(
+            text("SELECT id, result FROM analytics_results WHERE id = ANY(:ids)"),
+            {"ids": [uuid.UUID(i) for i in ids]},
+        )
+        return {str(r[0]): r[1] for r in rows}
 
 
 def _strip(rows: list[dict[str, Any]], base: int) -> list[dict[str, Any]]:
@@ -198,7 +262,36 @@ async def test_inprocess_and_http_are_equivalent(world: World, mcp_url: str) -> 
         "wrong-aud": "UNAUTHENTICATED",
         "wrong-key": "UNAUTHENTICATED",
         "malformed": "UNAUTHENTICATED",
+        "an-describe": "OK",
+        "an-describe-one": "OK",
+        "an-class": "OK",
+        "an-aggregate": "OK",
+        "an-compare": "OK",
+        "an-rows": "OK",
+        "an-foreign": "NOT_FOUND",
+        "an-sqli": "NOT_FOUND",
+        "an-badcol": "VALIDATION_ERROR",
+        "an-nul": "VALIDATION_ERROR",
     }
+    # analytics: identical computed results; each transport persisted its own equal row
+    for label in ("an-aggregate", "an-compare", "an-rows"):
+        lr = next(r for r in local if r.call_id == label)
+        hr = next(r for r in remote if r.call_id == label)
+        assert lr.output is not None
+        assert hr.output is not None
+        lid, hid = lr.output["result"]["result_id"], hr.output["result"]["result_id"]
+        assert lid != hid
+        assert lid in lr.observation
+        stored = await _stored_results(world, [lid, hid])
+        assert stored[lid] == lr.output["result"]
+        assert stored[hid] == hr.output["result"]
+        assert _masked(stored[lid]) == _masked(stored[hid])
+    described = next(r for r in remote if r.call_id == "an-describe")
+    assert described.output is not None
+    assert [d["dataset"] for d in described.output["datasets"]] == ["RETURNS:1"]
+    an_class = next(r for r in remote if r.call_id == "an-class")
+    assert an_class.output is not None
+    assert an_class.output["datasets"] == []
     # isolation is identical: A's results never contain B's canary, B's never contain A's data
     for r in [*local, *remote]:
         if r.call_id in ("search", "keyword", "keyword-any", "list", "get"):

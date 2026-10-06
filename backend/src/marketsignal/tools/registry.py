@@ -20,6 +20,13 @@ from marketsignal.tools.contracts import (
     ToolSpec,
 )
 from marketsignal.tools.env import ToolEnv
+from marketsignal.tools.impl.analytics import (
+    MAX_DATASETS,
+    aggregate,
+    describe_dataset,
+    filter_rows,
+    group_compare,
+)
 from marketsignal.tools.impl.evidence import get_evidence
 from marketsignal.tools.impl.keyword import search_evidence_keyword
 from marketsignal.tools.impl.search import search_evidence
@@ -53,8 +60,94 @@ class ToolEntry:
 
 _CLASSES = "Restrict to these source classes (null = all classes)."
 _CODES = "Restrict to these source codes from list_sources (null = all sources)."
+_DATASET = 'Dataset id exactly as listed by describe_dataset ("<SOURCE_CODE>:<sheet>").'
+_FILTERS = (
+    "Row filters (all must hold): column, op, and value (eq/ne/gt/gte/lt/lte) or values "
+    "(in/not_in; between = [low, high]); is_null/not_null take neither."
+)
+_METRIC = (
+    "fn over column; count needs no column; share needs a condition (a filter) and gives the "
+    "percentage of rows (non-null in the condition column) that satisfy it."
+)
+_ANALYTICS_NOTE = (
+    " Values are computed deterministically from the stored table and persisted with a "
+    "result id; cite computed numbers from the result, never re-derive them."
+)
 
 DEFAULT_ENTRIES: tuple[ToolEntry, ...] = (
+    ToolEntry(
+        name="aggregate",
+        description=(
+            "Exact metrics (count, count_distinct, sum, mean, median, min, max, share) over the "
+            "filtered rows of one dataset, optionally grouped by up to 2 columns, ordered and "
+            "limited (top/bottom-N). Use for quantitative questions." + _ANALYTICS_NOTE
+        ),
+        input_model=INPUT_MODELS["aggregate"],
+        output_model=OUTPUT_MODELS["aggregate"],
+        impl=aggregate,
+        items_key="result",
+        max_items=1,
+        field_descriptions={
+            "dataset": _DATASET,
+            "metrics": "1-4 metrics. " + _METRIC,
+            "filters": _FILTERS,
+            "group_by": "Up to 2 column names to group by (null = one overall row).",
+            "order": "Order groups by a metric's value (metric_index) or by the group values.",
+            "limit": "Keep the first N groups after ordering (1-50; null = all, capped at 50).",
+        },
+    ),
+    ToolEntry(
+        name="describe_dataset",
+        description=(
+            "List the workspace's analysable tables (dataset ids, row counts), or with a dataset "
+            "id the columns, types, units and categorical levels. Call before computing."
+        ),
+        input_model=INPUT_MODELS["describe_dataset"],
+        output_model=OUTPUT_MODELS["describe_dataset"],
+        impl=describe_dataset,
+        items_key="datasets",
+        max_items=MAX_DATASETS,
+        field_descriptions={"dataset": "Null to list datasets, or one dataset id to describe."},
+    ),
+    ToolEntry(
+        name="filter_rows",
+        description=(
+            "List up to 20 matching rows of one dataset (selected columns, ordered), each with "
+            "its evidence handle so individual rows can be cited." + _ANALYTICS_NOTE
+        ),
+        input_model=INPUT_MODELS["filter_rows"],
+        output_model=OUTPUT_MODELS["filter_rows"],
+        impl=filter_rows,
+        items_key="result",
+        max_items=1,
+        field_descriptions={
+            "dataset": _DATASET,
+            "filters": _FILTERS,
+            "columns": "Up to 8 column names to show (null = the first 8 columns).",
+            "order_by": "Column to order by (null = table order).",
+            "limit": "Rows to return (1-20; null = 20).",
+        },
+    ),
+    ToolEntry(
+        name="group_compare",
+        description=(
+            "One metric for two levels of one column (group A vs group B) with both values, "
+            "denominators and the difference A - B." + _ANALYTICS_NOTE
+        ),
+        input_model=INPUT_MODELS["group_compare"],
+        output_model=OUTPUT_MODELS["group_compare"],
+        impl=group_compare,
+        items_key="result",
+        max_items=1,
+        field_descriptions={
+            "dataset": _DATASET,
+            "metric": _METRIC,
+            "compare_column": "The column whose two levels are compared.",
+            "group_a": "Level A (exactly as listed by describe_dataset).",
+            "group_b": "Level B (exactly as listed by describe_dataset).",
+            "filters": _FILTERS,
+        },
+    ),
     ToolEntry(
         name="get_evidence",
         description=(
