@@ -70,11 +70,17 @@ _CLASS_CUES: dict[str, re.Pattern[str]] = {
 # has them); qualitative asks need evidence retrieval; both together are mixed.
 _QUANT = re.compile(
     r"%|\b(how many|how much|(what|which) (percentage|percent|share|proportion|fraction)|"
-    r"percentage of|share of|proportion of|averag(e|ed|es|ing)|mean|median|total|sum of|"
+    r"percentage of|share of|proportion of|averag(e|ed|es|ing)|median|sum of|"
     r"count of|calculate|compute|correlat(e|ion)|"
-    r"number of|highest|lowest|top \d+|bottom \d+|top (three|five|ten)|rank(ing)?|"
+    r"number of|top \d+|bottom \d+|top (three|five|ten)|rank(ing)?|"
     r"by (segment|region|channel|age( group)?|category|month|quarter|product|sku)|"
     r"break(s)? down|breakdown|distribution)\b"
+    # ambiguous words count only near a metric noun ("highest return rate", "mean NPS"), so
+    # "what does premium mean" or "highest priority" stay document questions (review finding)
+    r"|\b(mean|total|highest|lowest)\b(\W+\w+){0,3}?\W+(rate|share|nps|rating|score|revenue|"
+    r"sales|count|number|percent|value|margin|conversion|returns?|price|units|orders|"
+    r"sessions|aov|growth|spend|satisfaction|dissatisfaction)\b"
+    r"|\bgr(ow|ows|ew|owing|owth)\b\W+(the\W+)?(fastest|slowest)\b|\b(fastest|slowest)[- ]growing\b"
     # a figure looked up in a data table ("what did the channel table show for conversion")
     r"|\b(table|data|dataset|spreadsheet)\b.{0,60}\b(figure|conversion|rate|margin|aov|"
     r"sessions|orders|units|share|value)\b"

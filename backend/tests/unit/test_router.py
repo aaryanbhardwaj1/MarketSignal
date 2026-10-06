@@ -172,3 +172,14 @@ def test_explicit_standard_is_honoured_for_an_analytics_question() -> None:
 )
 def test_phase5_task_cues(question: str, task: str) -> None:
     assert route(question, requested="auto", persona="generalist").task_type == task
+
+
+@pytest.mark.parametrize(
+    "question",
+    ["What does 'premium' mean for Gen Z?", "Which project has the highest priority in the memo?"],
+)
+def test_ambiguous_quant_words_without_metric_context_stay_retrieval(question: str) -> None:
+    """Security review finding 23: no agent run (or persona override) for a document question."""
+    d = route(question, requested=None, persona="customer_insights")
+    assert d.task_type == "retrieval"
+    assert d.decided == "standard"
