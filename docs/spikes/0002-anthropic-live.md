@@ -45,3 +45,18 @@ Phase 3 depends on six assumptions about the Anthropic API, listed in the module
 - Use `tool_choice=auto` only, and expect parallel tool calls unless the prompt or harness limits them.
 - With tools and `between_tools`, short updates between calls arrive as **thinking blocks**. The adapter must keep dropping every thinking delta and never stream or persist it.
 - `output_config.format` json_schema works for planner and state outputs.
+
+## Addendum (Phase 5): strict-mode grammar limits for the whole tool array
+
+The first live analytics-v0 dev run failed on **every** research run: each agent step returned 400 and the run fell back to standard mode. The limits apply to the strict tool array **as a whole**, not to each tool:
+
+| Limit | Live error (paraphrased) | Phase 5 strict array |
+|---|---|---|
+| ≤ 16 parameters with union types | *"Schemas contains too many parameters with union types (36 …, limit 16)"* | 36 (the analytics `Scalar` / optional fields) |
+| ≤ 24 optional parameters | *"too many optional parameters (38 …, limit 24)"* (after making the unions non-nullable) | 38 |
+
+Every per-tool schema test passed, because each tool alone is within both limits.
+
+**Change.** The four analytics tools (`describe_dataset`, `aggregate`, `group_compare`, `filter_rows`) are offered with `strict: false` (`ToolEntry.strict`). The MCP HTTP client keeps the registry's flag. Retrieval tools and `finish_research` stay strict. The boundary does not move: every call still goes through server-side strict Pydantic validation in the governance pipeline (ADR-0006), so a malformed argument becomes `VALIDATION_ERROR` before the engine runs. Verified live: the model then called `describe_dataset` with a well-formed argument.
+
+**Guard.** `test_strict_tool_array_stays_within_the_live_api_grammar_limits` counts union and optional parameters across every strict spec plus `finish_research`, and fails before the live API would.

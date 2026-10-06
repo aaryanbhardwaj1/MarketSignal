@@ -25,7 +25,9 @@ def test_tool_names_sorted_and_registered() -> None:
         assert entry is not None
         assert entry.input_model is INPUT_MODELS[name]
         assert entry.output_model is OUTPUT_MODELS[name]
-        assert entry.spec().strict
+        # Offered non-strict (live strict-array grammar limits, spike 0002); the server-side
+        # strict Pydantic validation stays the boundary.
+        assert not entry.spec().strict
     assert RESULT_MAX_CHARS < OUTPUT_MAX_CHARS
 
 
