@@ -110,7 +110,9 @@ async def test_trace_records_every_stage(harness: Harness, app_engine: AsyncEngi
     _install(harness)
     ws = await harness.create_workspace()
     await _seed(harness, ws, CANARY_A)
-    body = await _search(harness, ws, "Zephyrine lattice stitching")
+    body = await _search(harness, ws, "Zephyrine lattice stitching", mode="rerank")
+    default = await _search(harness, ws, "Zephyrine lattice stitching")
+    assert all(i["scores"]["rerank"] is None for i in default["items"])  # reranker off by default
     async with app_engine.begin() as conn:
         await conn.execute(
             text(
@@ -230,7 +232,7 @@ async def test_reranker_outage_degrades_to_fused_order(harness: Harness) -> None
     await _seed(harness, ws, CANARY_A)
     hybrid = await _search(harness, ws, "leggings delivery stores", mode="hybrid", k=20)
     _install(harness, reranker=FailingReranker())
-    degraded = await _search(harness, ws, "leggings delivery stores", mode="full", k=20)
+    degraded = await _search(harness, ws, "leggings delivery stores", mode="rerank", k=20)
     assert RERANKER_UNAVAILABLE in degraded["flags"]
     assert [i["handle"] for i in degraded["items"]] == [i["handle"] for i in hybrid["items"]]
 

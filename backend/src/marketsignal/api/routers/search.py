@@ -26,7 +26,8 @@ from marketsignal.retrieval.types import InvalidFiltersError, ParentCandidate, R
 router = APIRouter(prefix="/api/workspaces/{ws}/search", tags=["search"])
 SNIPPET_CONTEXT = 120
 MODES: dict[str, dict[str, bool]] = {
-    "full": {},
+    "full": {},  # the configured default pipeline (Phase 3: hybrid RRF, no reranker)
+    "rerank": {"rerank": True},  # experimental: hybrid + cross-encoder (ADR-0005)
     "hybrid": {"rerank": False},
     "dense": {"use_lexical": False, "rerank": False},
     "lexical": {"use_dense": False, "rerank": False},
@@ -72,7 +73,7 @@ async def search(
     settings: SettingsDep,
     q: Annotated[str, Query(min_length=1, max_length=400)],
     k: Annotated[int, Query(ge=1, le=50)] = 10,
-    mode: Literal["full", "hybrid", "dense", "lexical"] = "full",
+    mode: Literal["full", "hybrid", "dense", "lexical", "rerank"] = "full",
     source_class: Annotated[list[SourceClass] | None, Query()] = None,
     source: Annotated[list[str] | None, Query(max_length=20)] = None,
     max_confidentiality: Confidentiality = Confidentiality.RESTRICTED,

@@ -129,7 +129,7 @@ jobs:
         with:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
-      - name: Cache local ONNX models (embedder + reranker)
+      - name: Cache local ONNX models (embedder; reranker for experiments)
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .cache/models
@@ -160,15 +160,15 @@ jobs:
         run: uv run python -m marketsignal.evaluation seed
       - name: Gold integrity (handles resolve, anchors present, hashes, pins, no leakage)
         run: uv run python -m marketsignal.evaluation integrity
-      - name: Evaluate the frozen Phase 2 configuration on the dev split
+      - name: Evaluate the production default (hybrid RRF) on the dev split
         run: >-
-          uv run python -m marketsignal.evaluation run --split dev --arms hybrid-rerank
+          uv run python -m marketsignal.evaluation run --split dev --arms hybrid
           --out ../eval/reports/ci-dev --title "CI retrieval gate (dev)"
-      - name: Gate (floors sit just below the recorded dev result, eval/baselines/phase2/06)
+      - name: Gate over retrieval-eligible dev items (floors just below eval/baselines/phase2/06)
         run: >-
           uv run python -m marketsignal.evaluation gate
-          --results ../eval/reports/ci-dev/results.json --arm hybrid-rerank
-          --min hit@10=0.84 --min recall@10=0.78 --min mrr=0.72 --min hit@1=0.65
+          --results ../eval/reports/ci-dev/results.json --arm hybrid --task-type retrieval
+          --min hit@10=0.89 --min recall@10=0.88 --min mrr=0.70 --min hit@1=0.57
       - name: Upload the evaluation report
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

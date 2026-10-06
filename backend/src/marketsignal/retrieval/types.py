@@ -78,7 +78,7 @@ class RetrievalConfig:
     embed_timeout_s: float = 5.0
     lexical_df_prune: float = 0.9
     lexical_phrase_bonus: float = 1.0
-    rerank: bool = True
+    rerank: bool = False  # Phase 2 decision: experimental, off by default (ADR-0005)
     rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"
     rerank_max_pairs: int = 40
     rerank_parent_max_tokens: int = 350

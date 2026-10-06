@@ -12,7 +12,7 @@ export type VersionStatus =
   | (typeof NON_TERMINAL_STATUSES)[number]
   | (typeof TERMINAL_STATUSES)[number];
 
-export const SEARCH_MODES = ["full", "hybrid", "dense", "lexical"] as const;
+export const SEARCH_MODES = ["full", "hybrid", "dense", "lexical", "rerank"] as const;
 export type SearchMode = (typeof SEARCH_MODES)[number];
 
 export interface Workspace {

@@ -120,7 +120,9 @@ class Settings(BaseSettings):
     lexical_df_prune: float = Field(default=0.9, gt=0, le=1)  # drop near-universal terms
     lexical_phrase_bonus: float = Field(default=1.0, ge=0)
     lexical_idf_cache_size: int = Field(default=32, ge=1)  # (workspace, corpus_version) entries
-    rerank_enabled: bool = True
+    # Phase 2 decision: off by default. Dev gains did not hold on the held-out split (hit@10
+    # 76.2 -> 57.1); kept for experiments that use new dev items and a new frozen holdout.
+    rerank_enabled: bool = False
     rerank_model_name: str = "Xenova/ms-marco-MiniLM-L-6-v2"
     rerank_max_pairs: int = Field(default=40, ge=1)
     rerank_parent_max_tokens: int = Field(default=350, ge=1)  # larger parents: anchor pairs

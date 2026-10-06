@@ -11,10 +11,11 @@ export const DEFAULT_SEARCH_MODE: SearchMode = "full";
 export const DEFAULT_SEARCH_K = 10;
 
 export const SEARCH_MODE_LABELS: Record<SearchMode, string> = {
-  full: "Full (hybrid + rerank)",
+  full: "Default (hybrid RRF)",
   hybrid: "Hybrid (RRF, no rerank)",
   dense: "Dense only",
   lexical: "Keyword only",
+  rerank: "Hybrid + rerank (experimental)",
 };
 
 /** Unknown, missing or repeated-garbage values fall back to the default mode. */
