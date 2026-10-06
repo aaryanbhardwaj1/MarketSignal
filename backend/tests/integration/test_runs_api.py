@@ -25,6 +25,7 @@ from marketsignal.providers.rerankers import KeywordReranker
 from marketsignal.retrieval.pipeline import RetrievalService
 from marketsignal.retrieval.rerank import RerankExecutor
 from marketsignal.retrieval.types import RetrievalConfig
+from marketsignal.runs import store
 from tests.integration.test_ingestion_api import Harness, harness  # noqa: F401 - fixture
 
 pytestmark = pytest.mark.integration
@@ -871,3 +872,28 @@ async def test_finalize_is_bounded_and_still_ends_with_one_done(harness: Harness
     assert "RUN_TIMEOUT" in events[-1]["data"]["flags"]
     stored = (await harness.client.get(f"/api/workspaces/{ws}/runs/{run['run_id']}")).json()
     assert stored["status"] == "failed"
+
+
+async def test_done_and_final_run_state_commit_together(
+    harness: Harness, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A reader who sees ``done`` must also see the finished run row (status, usage): the two
+    are committed in one transaction, never ``done`` first and the row later."""
+    original = store.update_run
+
+    async def slow_update_run(*args: Any, **kwargs: Any) -> None:
+        await asyncio.sleep(1.0)
+        await original(*args, **kwargs)
+
+    monkeypatch.setattr(store, "update_run", slow_update_run)
+    _install(harness, FakeLLM([ScriptedResponse(text=GOOD)]))
+    ws = await harness.create_workspace()
+    await _seed(harness, ws, FACT)
+    _, run = await _ask(harness, ws, "fit inconsistency share")
+    events = await _stream(harness, run["stream_url"])
+    assert events[-1]["event"] == "done"
+    stored = (await harness.client.get(f"/api/workspaces/{ws}/runs/{run['run_id']}")).json()
+    assert stored["status"] == "completed"
+    assert stored["termination_state"] == events[-1]["data"]["termination_state"]
+    assert stored["usage"]["llm_attempts"] == 1
+    assert stored["finished_at"] is not None

@@ -24,7 +24,15 @@ class _Store:
         self.purged = False
 
     async def append(
-        self, _f: Any, _s: Any, _r: Any, seq: int, event_type: str, _p: dict[str, Any]
+        self,
+        _f: Any,
+        _s: Any,
+        _r: Any,
+        seq: int,
+        event_type: str,
+        _p: dict[str, Any],
+        *,
+        run_fields: dict[str, Any] | None = None,
     ) -> str | None:
         if any(t == "done" for _, t in self.rows):
             return None

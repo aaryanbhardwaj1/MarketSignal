@@ -230,6 +230,17 @@ A four-reviewer adversarial review of the Phase 3 path, with skeptic verificatio
 | Evaluation | Hard gates passed vacuously when no run produced a final; insufficiency was credited from any Gaps line | New completeness gates; citation gates fail when nothing was evaluated; insufficiency judged on the Answer section only |
 | Logs | SSE stream tokens in uvicorn access logs; bound parameters (evidence text) in DB error strings | Access-log scrub filter; `hide_parameters=True` |
 
+## CI failure after the live-validation push (kept for the record)
+
+CI on `84efaf3` failed 3 integration tests that passed locally:
+- `test_cancel_ends_with_done_cancelled`: status `running`, expected `cancelled`;
+- `test_purge_fallback_drops_every_parent_of_the_purged_source`: status `running`, expected `completed`;
+- `test_unusable_provider_falls_back_to_evidence_only[construction]`: `KeyError: 'llm_attempts'`.
+
+They share one real race: `_terminate` committed the `done` event, then finished the `query_runs` row in a second transaction. A client reading the run right after `done` could see `running` with no final usage, and the slower CI runner exposed it.
+
+**Fix.** The run row is now finished in the same transaction as the `done` row (`store.append_event(..., run_fields=...)`). A new test slows `update_run` by 1 s to make the old race deterministic. It failed before the fix and passes after.
+
 ## Remaining known limitations
 
 - **Verifier precision** (above). The proposed fixes are in the Phase 4 plan, and are evaluated on a new dev split, never re-scored on `live-v0`.

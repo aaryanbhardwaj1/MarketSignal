@@ -257,10 +257,15 @@ async def append_event(
     seq: int,
     event_type: str,
     payload: dict[str, Any],
+    *,
+    run_fields: dict[str, Any] | None = None,
 ) -> str | None:
     """Append one event; returns the type actually stored, or ``None`` when nothing was stored
     because the run's log already ends with ``done`` (nothing, not even a second ``done``, may
     follow it).
+
+    ``run_fields`` (``done`` only) finishes the ``query_runs`` row in the same transaction as
+    the ``done`` row, so a reader who sees ``done`` also sees the final status and usage.
 
     A text-bearing event of a run whose pack lost a version to a purge is stored as a
     ``SOURCE_DELETED_DURING_RUN`` ``warning`` instead (same ``seq``): the purge already deleted
@@ -286,6 +291,16 @@ async def append_event(
                 },
             )
         ).scalar_one_or_none()
+        if stored == "done" and run_fields:
+            assignments, params = _run_assignments(run_fields)
+            params.update({"ws": scope.workspace_id, "id": run_id})
+            await session.execute(
+                text(
+                    f"UPDATE query_runs SET {', '.join(assignments)} "  # noqa: S608 - allowlisted
+                    "WHERE workspace_id = :ws AND id = :id"
+                ),
+                params,
+            )
         await session.commit()
     return None if stored is None else str(stored)
 

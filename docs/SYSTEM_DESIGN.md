@@ -133,7 +133,7 @@ Steps in prose (orchestration in `runs/executor.py`; generation in `runs/synthes
 4. **Freeze.** `store.freeze_pack` writes `pack_handles` (and the query fields) *before* any event or model call can quote the pack. It share-locks the pack's `sources` rows once and checks `source_versions.status = 'purged'` for the exact `@vN` of each handle; sources purged since packing are dropped (`SOURCE_DELETED_DURING_RUN`).
 5. **Abstain or synthesize.** An empty pack ends in a deterministic abstention with no LLM call (`EVIDENCE_EMPTY`, `no_relevant_evidence`). Otherwise the model streams an answer through the alias gate; the verifier repairs and checks it; one regeneration is allowed; failing that, an evidence-only answer is published.
 6. **Persist, then publish.** `persist_answer` stores the assistant message only if no version in the run's pack (or among its citations) has been purged; `final` is emitted after the row is committed; `cited_handles` and the conversation state are updated after `final` (best effort).
-7. **Terminate.** Exactly one `done` is emitted, always last, then the `query_runs` row is finalized. Steps 6 and 7 together are bounded by `run_finalize_timeout_s` (§7).
+7. **Terminate.** Exactly one `done` is emitted, always last. The `query_runs` row (status, termination state, flags, usage, timings) is finished **in the same transaction** as the `done` row, so a reader who sees `done` also sees the finished run. Steps 6 and 7 together are bounded by `run_finalize_timeout_s` (§7).
 
 ## 4. Workspace isolation
 

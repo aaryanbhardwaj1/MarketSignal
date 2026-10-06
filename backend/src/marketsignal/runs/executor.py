@@ -220,12 +220,17 @@ class StandardRunExecutor:
         )
 
     async def _safe_emit(
-        self, writer: EventWriter, event_type: str, payload: dict[str, Any]
+        self,
+        writer: EventWriter,
+        event_type: str,
+        payload: dict[str, Any],
+        *,
+        run_fields: dict[str, Any] | None = None,
     ) -> None:
         if writer.done:
             return
         try:
-            await writer.emit(event_type, payload)
+            await writer.emit(event_type, payload, run_fields=run_fields)
         except Exception:
             log.exception("event_write_failed", run_id=str(writer.run_id), event_type=event_type)
 
@@ -254,24 +259,25 @@ class StandardRunExecutor:
             "cache_status": "disabled",
             "timings": state.timings,
         }
+        run_fields: dict[str, Any] = {
+            "status": status,
+            "termination_state": termination,
+            "degradation_flags": state.flags,
+            "usage": state.usage,
+            "timings": state.timings,
+            "models": {"synthesis": state.model} if state.model else {},
+            "error_class": error,
+            "finished_at": True,
+        }
         for _ in range(2):  # one retry: a failed write re-syncs seq before trying again
-            await self._safe_emit(writer, "done", done)
+            # done and the finished run row commit together: whoever sees done sees the row.
+            await self._safe_emit(writer, "done", done, run_fields=run_fields)
             if writer.done:
                 break
-        try:
-            await store.update_run(
-                self._factory,
-                req.scope,
-                req.run_id,
-                status=status,
-                termination_state=termination,
-                degradation_flags=state.flags,
-                usage=state.usage,
-                timings=state.timings,
-                models={"synthesis": state.model} if state.model else {},
-                error_class=error,
-                finished_at=True,
-            )
+        if writer.run_finished:
+            return
+        try:  # done was not ours to write (or failed): still finish the row
+            await store.update_run(self._factory, req.scope, req.run_id, **run_fields)
         except Exception:
             log.exception("run_finalize_failed", run_id=str(req.run_id))
 

@@ -26,7 +26,15 @@ class _FakeLog:
         self.commit_then_fail = False
 
     async def append(
-        self, _f: Any, _s: Any, _r: Any, seq: int, event_type: str, payload: dict[str, Any]
+        self,
+        _f: Any,
+        _s: Any,
+        _r: Any,
+        seq: int,
+        event_type: str,
+        payload: dict[str, Any],
+        *,
+        run_fields: dict[str, Any] | None = None,
     ) -> str | None:
         if seq in self.rows:
             raise RuntimeError(f"duplicate seq {seq}")

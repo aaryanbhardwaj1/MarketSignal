@@ -68,6 +68,7 @@ class EventWriter:
         self._coalesce_s = coalesce_ms / 1000
         self.seq = 0
         self.done = False
+        self.run_finished = False  # the run row was finished in the done transaction
         self.final_emitted = False
         self.draft_open = False  # token text may be visible with no draft_reset since
         self._pending: dict[int, str] = {}  # attempt -> buffered token text
@@ -91,7 +92,12 @@ class EventWriter:
             ).scalar_one()
         return int(value)
 
-    async def _write(self, event_type: str, payload: dict[str, Any]) -> None:
+    async def _write(
+        self,
+        event_type: str,
+        payload: dict[str, Any],
+        run_fields: dict[str, Any] | None = None,
+    ) -> None:
         if self.done:
             raise EventAfterDoneError(event_type)
         if event_type not in EVENT_TYPES:
@@ -110,7 +116,13 @@ class EventWriter:
         }
         try:
             stored = await store.append_event(
-                self._factory, self._scope, self.run_id, seq, event_type, body
+                self._factory,
+                self._scope,
+                self.run_id,
+                seq,
+                event_type,
+                body,
+                run_fields=run_fields,
             )
         except BaseException:
             self._uncertain = True
@@ -125,6 +137,7 @@ class EventWriter:
             self.withheld = True
         elif event_type == "done":
             self.done = True
+            self.run_finished = bool(run_fields)
         elif event_type == "final":
             self.final_emitted = True
         elif event_type == "draft_reset":
@@ -151,6 +164,14 @@ class EventWriter:
         if time.monotonic() - self._last_flush >= self._coalesce_s:
             await self.flush_tokens()
 
-    async def emit(self, event_type: str, payload: dict[str, Any] | None = None) -> None:
+    async def emit(
+        self,
+        event_type: str,
+        payload: dict[str, Any] | None = None,
+        *,
+        run_fields: dict[str, Any] | None = None,
+    ) -> None:
+        """Flush pending tokens, then append. ``run_fields`` (``done`` only) finishes the run
+        row in the same transaction as the ``done`` row (``store.append_event``)."""
         await self.flush_tokens()
-        await self._write(event_type, payload or {})
+        await self._write(event_type, payload or {}, run_fields)
