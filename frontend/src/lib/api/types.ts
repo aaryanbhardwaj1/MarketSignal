@@ -234,3 +234,65 @@ export interface SearchParams {
   sources?: readonly string[];
   maxConfidentiality?: Confidentiality;
 }
+
+/* ---------------------------------------------------------------------------------------------
+ * Phase 3: conversations, grounded-answer runs and the SSE run stream.
+ * ------------------------------------------------------------------------------------------- */
+
+/** Citation card stored with a final answer; `handle` is canonical (never a run-local alias). */
+export interface CitationCard {
+  handle: string;
+  source_code: string;
+  source_title: string;
+  source_class: string;
+  source_type: string;
+  locator_label: string;
+  anchor_child_id: string | null;
+  char_start: number | null;
+  char_end: number | null;
+  parent_content_hash: string | null;
+}
+
+export type MessageRole = "user" | "assistant";
+export type MessageStatus = "complete" | "incomplete" | "failed" | "redacted";
+
+export interface ChatMessage {
+  message_id: string;
+  role: MessageRole;
+  content: string;
+  citations: CitationCard[] | null;
+  /** Raw section payload; parse with lib/answer-sections.ts (shape varies by outcome). */
+  sections: unknown;
+  status: MessageStatus;
+  run_id: string | null;
+  created_at: string;
+}
+
+export interface CreateConversationInput {
+  title?: string;
+  persona?: string;
+}
+
+export interface CreateConversationResult {
+  conversation_id: string;
+}
+
+/** Phase 3 serves standard mode; `auto` is routed to standard. `research` is refused (422). */
+export type RunMode = "auto" | "standard";
+
+export interface StartRunInput {
+  question: string;
+  mode?: RunMode;
+}
+
+export interface StartRunResult {
+  run_id: string;
+  /** Path (with a short-lived `st` token) to open with EventSource against API_BASE_URL. */
+  stream_url: string;
+}
+
+export interface CancelRunResult {
+  run_id: string;
+  cancel_requested: boolean;
+  status: string;
+}

@@ -1,0 +1,303 @@
+/**
+ * Pure fold of a run's SSE events into UI state (plan §21, ADR-0008).
+ *
+ * The server persists every event with a per-run `seq` and replays `seq > Last-Event-ID` when the
+ * native EventSource reconnects, so the reducer must be idempotent: any event whose `seq` is not
+ * greater than the last applied one is dropped. `done` is terminal; nothing after it is applied.
+ * `final` is the source of truth and replaces the streamed draft entirely.
+ */
+import type { CitationCard } from "./api/types";
+
+export const RUN_EVENT_TYPES = [
+  "run_started",
+  "status",
+  "tool_started",
+  "tool_completed",
+  "evidence",
+  "token",
+  "citation",
+  "warning",
+  "draft_reset",
+  "final",
+  "error",
+  "done",
+] as const;
+export type RunEventType = (typeof RUN_EVENT_TYPES)[number];
+
+export const RUN_PHASES = ["searching", "analyzing", "synthesizing", "verifying"] as const;
+export type RunPhase = (typeof RUN_PHASES)[number];
+
+/** Alias binding received in a `citation` event (draft-only; final uses canonical cards). */
+export interface AliasCitation {
+  alias: string;
+  handle: string;
+  source_title: string;
+  source_class: string;
+  locator_label: string;
+}
+
+export interface RunWarning {
+  code: string;
+  message: string;
+}
+
+export interface EvidenceSummary {
+  itemCount: number;
+  classes: string[];
+  truncated: boolean;
+}
+
+export interface FinalAnswer {
+  message_id: string;
+  content: string;
+  citations: CitationCard[];
+  sections: unknown;
+  verification: unknown;
+}
+
+export interface RunError {
+  code: string;
+  message: string;
+  retryable: boolean;
+}
+
+export interface RunDone {
+  terminationState: string;
+  flags: string[];
+  cacheStatus: string | null;
+  timings: Record<string, number>;
+}
+
+/** A parsed SSE event: `type` is the SSE event name, `data` the decoded JSON payload. */
+export interface RunEvent {
+  type: string;
+  seq: number;
+  data: Record<string, unknown>;
+}
+
+export interface RunStreamState {
+  lastSeq: number;
+  conversationId: string | null;
+  phase: RunPhase | null;
+  /** Deterministic, server-authored status text (never model reasoning). */
+  statusMessage: string | null;
+  /** Generation attempt the draft belongs to; tokens from older attempts are ignored. */
+  attempt: number;
+  draft: string;
+  citationsByAlias: Readonly<Record<string, AliasCitation>>;
+  warnings: readonly RunWarning[];
+  evidence: EvidenceSummary | null;
+  /** Reason of the latest `draft_reset`, if any (e.g. `verification_failed`, `evidence_only`). */
+  draftResetReason: string | null;
+  final: FinalAnswer | null;
+  error: RunError | null;
+  done: RunDone | null;
+  terminationState: string | null;
+}
+
+export const initialRunStreamState: RunStreamState = Object.freeze({
+  lastSeq: 0,
+  conversationId: null,
+  phase: null,
+  statusMessage: null,
+  attempt: 0,
+  draft: "",
+  citationsByAlias: Object.freeze({}),
+  warnings: Object.freeze([]),
+  evidence: null,
+  draftResetReason: null,
+  final: null,
+  error: null,
+  done: null,
+  terminationState: null,
+}) as RunStreamState;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+const str = (value: unknown, fallback = ""): string => (typeof value === "string" ? value : fallback);
+const num = (value: unknown, fallback = 0): number =>
+  typeof value === "number" && Number.isFinite(value) ? value : fallback;
+const strList = (value: unknown): string[] =>
+  Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+
+function isCard(value: unknown): value is CitationCard {
+  return isRecord(value) && typeof value.handle === "string" && value.handle.length > 0;
+}
+
+/** Validates the citation array of a `final` event or a stored message (drops malformed cards). */
+export function parseCards(value: unknown): CitationCard[] {
+  return Array.isArray(value) ? value.filter(isCard) : [];
+}
+
+/**
+ * Decodes one SSE message. Returns null for undecodable JSON or a payload without a positive
+ * integer `seq` (falling back to the SSE `id`), so the reducer only ever sees well-formed events.
+ */
+export function parseRunEvent(type: string, rawData: string, lastEventId?: string): RunEvent | null {
+  let data: unknown;
+  try {
+    data = JSON.parse(rawData);
+  } catch {
+    return null;
+  }
+  if (!isRecord(data)) return null;
+  const seq = typeof data.seq === "number" ? data.seq : Number(lastEventId);
+  if (!Number.isInteger(seq) || seq < 1) return null;
+  return { type, seq, data };
+}
+
+function applyToken(state: RunStreamState, data: Record<string, unknown>): RunStreamState {
+  const attempt = num(data.attempt, state.attempt);
+  const text = str(data.text);
+  if (attempt < state.attempt || !text) return state;
+  if (attempt > state.attempt) {
+    return { ...state, attempt, draft: text, citationsByAlias: {} };
+  }
+  return { ...state, draft: state.draft + text };
+}
+
+function applyCitation(state: RunStreamState, data: Record<string, unknown>): RunStreamState {
+  const attempt = num(data.attempt, state.attempt);
+  const alias = str(data.alias);
+  const handle = str(data.handle);
+  if (attempt < state.attempt || !alias || !handle) return state;
+  const citation: AliasCitation = {
+    alias,
+    handle,
+    source_title: str(data.source_title, handle),
+    source_class: str(data.source_class),
+    locator_label: str(data.locator_label),
+  };
+  const fresh = attempt > state.attempt;
+  return {
+    ...state,
+    attempt,
+    draft: fresh ? "" : state.draft,
+    citationsByAlias: { ...(fresh ? {} : state.citationsByAlias), [alias]: citation },
+  };
+}
+
+/**
+ * `draft_reset` discards the current draft and its alias bindings. Its `attempt` names the next
+ * attempt for a regeneration (e.g. 2) or 0 for the evidence-only fallback, so the accepted
+ * attempt moves past the discarded one either way and late tokens from it stay ignored.
+ */
+function applyDraftReset(state: RunStreamState, data: Record<string, unknown>): RunStreamState {
+  const attempt = Math.max(num(data.attempt, 0), state.attempt + 1);
+  return {
+    ...state,
+    attempt,
+    draft: "",
+    citationsByAlias: {},
+    draftResetReason: str(data.reason) || null,
+  };
+}
+
+function applyFinal(state: RunStreamState, data: Record<string, unknown>): RunStreamState {
+  const final: FinalAnswer = {
+    message_id: str(data.message_id),
+    content: str(data.content),
+    citations: parseCards(data.citations),
+    sections: data.sections ?? null,
+    verification: data.verification ?? null,
+  };
+  return { ...state, final, draft: "", citationsByAlias: {} };
+}
+
+function applyDone(state: RunStreamState, data: Record<string, unknown>): RunStreamState {
+  const timings: Record<string, number> = {};
+  if (isRecord(data.timings)) {
+    for (const [key, value] of Object.entries(data.timings)) {
+      if (typeof value === "number" && Number.isFinite(value)) timings[key] = value;
+    }
+  }
+  const terminationState = str(data.termination_state, "completed");
+  const done: RunDone = {
+    terminationState,
+    flags: strList(data.flags),
+    cacheStatus: typeof data.cache_status === "string" ? data.cache_status : null,
+    timings,
+  };
+  return { ...state, done, terminationState, phase: null, statusMessage: null };
+}
+
+function applyEvent(state: RunStreamState, event: RunEvent): RunStreamState {
+  const { data } = event;
+  switch (event.type as RunEventType) {
+    case "run_started":
+      return { ...state, conversationId: str(data.conversation_id) || state.conversationId };
+    case "status": {
+      const phase = str(data.phase);
+      return {
+        ...state,
+        phase: (RUN_PHASES as readonly string[]).includes(phase) ? (phase as RunPhase) : state.phase,
+        statusMessage: str(data.message) || state.statusMessage,
+      };
+    }
+    case "evidence":
+      return {
+        ...state,
+        evidence: {
+          itemCount: num(data.item_count),
+          classes: strList(data.classes),
+          truncated: data.truncated === true,
+        },
+      };
+    case "token":
+      return applyToken(state, data);
+    case "citation":
+      return applyCitation(state, data);
+    case "warning": {
+      const code = str(data.code, "WARNING");
+      return { ...state, warnings: [...state.warnings, { code, message: str(data.message) }] };
+    }
+    case "draft_reset":
+      return applyDraftReset(state, data);
+    case "final":
+      return applyFinal(state, data);
+    case "error":
+      return {
+        ...state,
+        error: {
+          code: str(data.code, "RUN_ERROR"),
+          message: str(data.message, "The run failed."),
+          retryable: data.retryable === true,
+        },
+      };
+    case "done":
+      return applyDone(state, data);
+    case "tool_started":
+    case "tool_completed":
+      return state; // progress detail is not rendered; `status` carries the user-facing phase
+    default:
+      return state; // unknown event types are ignored (forward compatible)
+  }
+}
+
+/** Folds one event into the state. Duplicate / replayed `seq`s and anything after `done` are no-ops. */
+export function reduceRunEvent(state: RunStreamState, event: RunEvent): RunStreamState {
+  if (state.done || event.seq <= state.lastSeq) return state;
+  return { ...applyEvent(state, event), lastSeq: event.seq };
+}
+
+export function foldRunEvents(events: readonly RunEvent[], state = initialRunStreamState): RunStreamState {
+  return events.reduce(reduceRunEvent, state);
+}
+
+export const TERMINATION_LABELS: Readonly<Record<string, string>> = {
+  completed: "Completed",
+  completed_with_limited_evidence: "Completed with limited evidence",
+  retrieval_degraded: "Retrieval degraded",
+  generation_unavailable: "Answer generation unavailable",
+  no_relevant_evidence: "No relevant evidence",
+  tool_failure: "A retrieval step failed",
+  timeout: "Timed out",
+  cancelled: "Cancelled",
+  interrupted: "Interrupted",
+};
+
+export function terminationLabel(state: string): string {
+  return TERMINATION_LABELS[state] ?? state.replace(/_/g, " ");
+}

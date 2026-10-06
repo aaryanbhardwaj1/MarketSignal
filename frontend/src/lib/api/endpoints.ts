@@ -1,7 +1,12 @@
 import { evidenceApiPath } from "../handles";
 import { buildSearchQuery } from "../search";
+import { API_BASE_URL } from "./config";
 import { apiGet, apiRequest } from "./client";
 import type {
+  CancelRunResult,
+  ChatMessage,
+  CreateConversationInput,
+  CreateConversationResult,
   CreateWorkspaceInput,
   DeleteSourceResult,
   Evidence,
@@ -9,6 +14,8 @@ import type {
   SearchResponse,
   SourceDetail,
   SourceSummary,
+  StartRunInput,
+  StartRunResult,
   UploadSourceInput,
   UploadSourceResult,
   Workspace,
@@ -70,3 +77,51 @@ export const getEvidence = (
 
 export const searchWorkspace = (code: string, params: SearchParams, signal?: AbortSignal) =>
   apiGet<SearchResponse>(`${ws(code)}/search?${buildSearchQuery(params)}`, { signal });
+
+export async function createConversation(
+  code: string,
+  input: CreateConversationInput = {},
+): Promise<CreateConversationResult> {
+  const res = await apiRequest<CreateConversationResult>(`${ws(code)}/conversations`, {
+    method: "POST",
+    json: input,
+  });
+  return res.data;
+}
+
+export const listMessages = (code: string, conversationId: string, signal?: AbortSignal) =>
+  apiGet<ChatMessage[]>(
+    `${ws(code)}/conversations/${encodeURIComponent(conversationId)}/messages`,
+    { signal },
+  );
+
+export async function startRun(
+  code: string,
+  conversationId: string,
+  input: StartRunInput,
+): Promise<StartRunResult> {
+  const res = await apiRequest<StartRunResult>(
+    `${ws(code)}/conversations/${encodeURIComponent(conversationId)}/runs`,
+    { method: "POST", json: input },
+  );
+  return res.data;
+}
+
+export async function cancelRun(code: string, runId: string): Promise<CancelRunResult> {
+  const res = await apiRequest<CancelRunResult>(
+    `${ws(code)}/runs/${encodeURIComponent(runId)}/cancel`,
+    { method: "POST" },
+  );
+  return res.data;
+}
+
+/**
+ * Absolute EventSource URL for a run's `stream_url`. Only same-API paths are accepted
+ * (`/api/...`, no scheme, no protocol-relative `//host`), so a malformed response can never
+ * point the stream at another origin. Returns null when the path is rejected.
+ */
+export function runStreamUrl(streamPath: string, base: string = API_BASE_URL): string | null {
+  if (typeof streamPath !== "string" || !streamPath.startsWith("/api/")) return null;
+  if (/[\\\s]/.test(streamPath)) return null;
+  return `${base}${streamPath}`;
+}

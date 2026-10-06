@@ -8,6 +8,7 @@ const SECTIONS = [
   { slug: "sources", label: "Sources" },
   { slug: "evidence", label: "Evidence" },
   { slug: "search", label: "Search" },
+  { slug: "chat", label: "Chat" },
 ] as const;
 
 export function WorkspaceSubnav({ ws }: { ws: string }) {
