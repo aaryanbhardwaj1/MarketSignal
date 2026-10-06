@@ -576,6 +576,58 @@ async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
     return 0 if ok else 1
 
 
+async def _analytics(args: argparse.Namespace, settings: Settings) -> int:
+    """Structured-analytics evaluation (analytics-v0) through the real in-process API."""
+    from marketsignal.api.app import create_app
+    from marketsignal.evaluation.analytics_eval import evaluate
+    from marketsignal.evaluation.analytics_report import render
+    from marketsignal.evaluation.grounded import select_items
+    from marketsignal.evaluation.grounded_stats import Prices
+
+    dataset = json.loads(args.items.read_text(encoding="utf-8"))["items"]
+    items = select_items(dataset, split=args.split, ids=args.ids, limit=args.limit)
+    if not args.fake and settings.anthropic_api_key is None:
+        print(
+            "ANTHROPIC_API_KEY is not configured (use --fake for an offline run)", file=sys.stderr
+        )
+        return 2
+    app = create_app(settings)
+    if args.fake:
+        from marketsignal.providers.llm.fake import FakeLLM
+
+        fake = FakeLLM([FAKE_ANSWER], repeat_last=True)
+        app.state.llm_provider = lambda: fake
+    prices = (
+        Prices(0.0, 0.0, 0.0, 0.0)
+        if args.fake
+        else Prices(
+            input=settings.llm_price_input_per_mtok,
+            output=settings.llm_price_output_per_mtok,
+            cache_write=settings.llm_price_cache_write_per_mtok,
+            cache_read=settings.llm_price_cache_read_per_mtok,
+        )
+    )
+    result = await evaluate(app, items, mode=args.mode, concurrency=args.concurrency, prices=prices)
+    result["run"] = {
+        "git": _git_sha(),
+        "at": datetime.now(UTC).isoformat(timespec="seconds"),
+        "model": "fake-llm" if args.fake else settings.llm_model,
+        "effort": settings.llm_effort,
+        "dataset": _repo_relative(args.items),
+        "split": args.split,
+        "mode": args.mode,
+        "items": len(items),
+    }
+    args.out.mkdir(parents=True, exist_ok=True)
+    (args.out / "results.json").write_text(json.dumps(result, indent=1, default=str) + "\n")
+    (args.out / "report.md").write_text(render(result))
+    ok = True
+    for name, gate in result["summary"]["hard_gates"].items():
+        ok = ok and gate["pass"]
+        print(f"{'ok  ' if gate['pass'] else 'FAIL'} {name}: {gate['value']}")
+    return 0 if ok else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="ms-eval")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -629,6 +681,22 @@ def main(argv: list[str] | None = None) -> int:
     p_g.add_argument("--ids")
     p_g.add_argument("--limit", type=int)
     p_g.add_argument("--concurrency", type=int, default=1)
+    p_an = sub.add_parser("analytics", help="structured-analytics evaluation (analytics-v0)")
+    p_an.add_argument(
+        "--items", type=Path, default=corpus.EVAL_DIR / "datasets" / "analytics-v0" / "items.json"
+    )
+    p_an.add_argument("--out", type=Path, required=True)
+    p_an.add_argument("--split", choices=("dev", "holdout", "all"), default="dev")
+    p_an.add_argument(
+        "--mode",
+        choices=("auto", "standard", "research"),
+        default="auto",
+        help="request mode (auto: the router decides)",
+    )
+    p_an.add_argument("--fake", action="store_true", help="offline plumbing run with FakeLLM")
+    p_an.add_argument("--ids")
+    p_an.add_argument("--limit", type=int)
+    p_an.add_argument("--concurrency", type=int, default=1)
     p_cmp = sub.add_parser("compare")
     p_cmp.add_argument("--a", required=True, help="results.json:arm")
     p_cmp.add_argument("--b", required=True, help="results.json:arm")
@@ -648,5 +716,6 @@ def main(argv: list[str] | None = None) -> int:
         "seed": _seed,
         "classify": _classify,
         "grounded": _grounded,
+        "analytics": _analytics,
     }[args.command]
     return asyncio.run(handler(args, settings))
