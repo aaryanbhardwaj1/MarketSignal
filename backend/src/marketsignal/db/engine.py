@@ -18,6 +18,8 @@ def create_engine(settings: Settings) -> AsyncEngine:
         settings.database_url.get_secret_value(),
         pool_size=settings.db_pool_size,
         pool_pre_ping=True,
+        # DBAPIError strings otherwise embed bound params (answer/evidence text) in logs.
+        hide_parameters=True,
         connect_args={
             # Server-side guard: no single statement may run away with the pool.
             "options": f"-c statement_timeout={settings.db_statement_timeout_ms}",

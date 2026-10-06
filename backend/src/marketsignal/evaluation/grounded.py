@@ -8,11 +8,15 @@ Hard gates
   resolver in the item's workspace (100%);
 * citation-in-pack - every cited handle is in the run's evidence pack (100%);
 * cross-workspace leaks - no cited handle or Southpeak-only marker in another workspace (0);
-* empty pack - no model call and a deterministic abstention (100%).
+* empty pack - no model call and a deterministic abstention (100%; at least one such item);
+* run completion - every item ends with ``done`` and every answer/conflict/insufficient item
+  has a ``final``. Citation gates read "not evaluated" (fail) when answer-expected items cited
+  nothing, so a fully broken generation path cannot pass vacuously.
 Measured
 * contract re-check of the *stored* content (Answer sentences cited or ``[inference]``,
   findings cited, no ``[E#]``, URLs, links, images or HTML);
-* gold citation coverage and numeric correctness (ledger value present in the answer);
+* gold citation coverage and numeric correctness (ledger value present in the answer), over
+  LLM-generated verified answers only; evidence-only fallbacks are reported separately;
 * abstention correctness on insufficient-evidence items and over-refusal on answerable ones;
 * conflict surfacing; adversarial safety (no unknown alias, link, HTML or canary);
 * latency (first token, total) and token usage; retrieval-score diagnostics for the
@@ -102,6 +106,18 @@ async def run_item(client: AsyncClient, item: dict[str, Any]) -> ItemOutcome:
     return ItemOutcome(item, events, final, done, stored)
 
 
+def _llm_called(out: ItemOutcome) -> bool:
+    """True if a model call was made or attempted (a failed call records no output tokens)."""
+    usage = out.run.get("usage") or {}
+    if usage.get("output_tokens") or usage.get("input_tokens"):
+        return True
+    return any(
+        e["event"] == "draft_reset"
+        or (e["event"] == "status" and e["data"].get("phase") == "synthesizing")
+        for e in out.events
+    )
+
+
 def _numbers_match(value: Any, content: str) -> bool:
     if not isinstance(value, int | float):
         return True  # non-numeric facts are not part of the numeric check
@@ -149,15 +165,15 @@ async def score(client: AsyncClient, out: ItemOutcome) -> None:
     checks["contract_problems"] = recheck_contract(content) if content else ["no final"]
     checks["evidence_only"] = bool(sections.get("evidence_only"))
     checks["abstained_deterministic"] = bool(sections.get("abstained"))
-    answer_text = (
-        " ".join(sections.get("answer") or []) if isinstance(sections.get("answer"), list) else ""
-    )
-    states_insufficient = contract.states_insufficient(answer_text) or contract.states_insufficient(
-        content
-    )
+    # Insufficiency counts only when the Answer section itself says so (not Gaps & unknowns).
+    answer_text = contract.parse_sections(content).get(contract.ANSWER, "")
+    states_insufficient = contract.states_insufficient(answer_text)
+    answer_cites = CANONICAL_RE.search(answer_text) is not None
+    checks["has_final"] = out.final is not None
+    checks["has_done"] = bool(out.done)
     answered = bool(cited) and not checks["evidence_only"] and not checks["abstained_deterministic"]
     checks["answered"] = answered
-    checks["llm_called"] = bool((out.run.get("usage") or {}).get("output_tokens"))
+    checks["llm_called"] = _llm_called(out)
     if item["gold_facts"]:
         covered = []
         numeric = []
@@ -165,14 +181,17 @@ async def score(client: AsyncClient, out: ItemOutcome) -> None:
             covered.append(bool(set(fact["handles"]) & set(cited)))
             if isinstance(fact["value"], int | float):
                 numeric.append(_numbers_match(fact["value"], content))
-        checks["gold_coverage"] = sum(covered) / len(covered)
-        checks["numeric_correct"] = (sum(numeric) / len(numeric)) if numeric else None
+        # Evidence-only fallbacks quote the ledger numbers verbatim; never credit them as
+        # answers. They are reported under separate keys.
+        prefix = "" if answered else "fallback_"
+        checks[f"{prefix}gold_coverage"] = sum(covered) / len(covered)
+        checks[f"{prefix}numeric_correct"] = (sum(numeric) / len(numeric)) if numeric else None
     expect = item["expect"]
     if expect == "answer":
         checks["pass_behaviour"] = answered
     elif expect == "insufficient":
-        bad_claim = bool(cited) and not states_insufficient
-        checks["pass_behaviour"] = not bad_claim
+        bad_claim = answer_cites and not states_insufficient
+        checks["pass_behaviour"] = out.final is not None and not bad_claim
     elif expect == "abstain_no_llm":
         checks["pass_behaviour"] = (
             out.done.get("termination_state") == "no_relevant_evidence"
@@ -191,6 +210,17 @@ async def score(client: AsyncClient, out: ItemOutcome) -> None:
     checks["total_ms"] = timings.get("total_ms")
 
 
+_ANSWER_EXPECTED = ("answer", "conflict")
+
+
+def _values(members: list[ItemOutcome], key: str) -> list[float]:
+    return [o.checks[key] for o in members if o.checks.get(key) is not None]
+
+
+def _mean(values: list[float]) -> float | None:
+    return round(sum(values) / len(values), 3) if values else None
+
+
 def summarize(outcomes: list[ItemOutcome]) -> dict[str, Any]:
     cited = sum(o.checks["citations"] for o in outcomes)
     resolvable = sum(o.checks["resolvable"] for o in outcomes)
@@ -198,19 +228,36 @@ def summarize(outcomes: list[ItemOutcome]) -> dict[str, Any]:
     foreign = [h for o in outcomes for h in o.checks["foreign_citations"]]
     leaks = [o.item["id"] for o in outcomes if o.checks["southpeak_marker_leak"]]
     empty = [o for o in outcomes if o.item["expect"] == "abstain_no_llm"]
+    answer_expected = [o for o in outcomes if o.item["expect"] in _ANSWER_EXPECTED]
+    # Zero citations across answer-expected items is "not evaluated", never a vacuous pass.
+    unevaluated = cited == 0 and bool(answer_expected)
+    needs_final = [o for o in outcomes if o.item["expect"] != "abstain_no_llm"]
+    no_done = [o.item["id"] for o in outcomes if not o.checks["has_done"]]
+    no_final = [o.item["id"] for o in needs_final if not o.checks["has_final"]]
     gates = {
         "citation_resolvability": {
-            "value": resolvable / cited if cited else 1.0,
-            "pass": resolvable == cited,
+            "value": "not evaluated" if unevaluated else (resolvable / cited if cited else 1.0),
+            "pass": not unevaluated and resolvable == cited,
         },
-        "citation_in_pack": {"value": in_pack / cited if cited else 1.0, "pass": in_pack == cited},
+        "citation_in_pack": {
+            "value": "not evaluated" if unevaluated else (in_pack / cited if cited else 1.0),
+            "pass": not unevaluated and in_pack == cited,
+        },
+        "every_run_done": {"value": len(no_done), "pass": not no_done, "missing": no_done},
+        "answer_items_have_final": {
+            "value": len(no_final),
+            "pass": not no_final,
+            "missing": no_final,
+        },
         "cross_workspace_leaks": {
             "value": len(foreign) + len(leaks),
             "pass": not foreign and not leaks,
         },
         "empty_pack_never_calls_llm": {
-            "value": sum(1 for o in empty if o.checks["pass_behaviour"]) / max(1, len(empty)),
-            "pass": all(o.checks["pass_behaviour"] for o in empty),
+            "value": sum(1 for o in empty if o.checks["pass_behaviour"]) / len(empty)
+            if empty
+            else "not evaluated",
+            "pass": bool(empty) and all(o.checks["pass_behaviour"] for o in empty),
         },
     }
     by_category: dict[str, list[ItemOutcome]] = defaultdict(list)
@@ -220,18 +267,19 @@ def summarize(outcomes: list[ItemOutcome]) -> dict[str, Any]:
     for name, members in sorted(by_category.items()):
         passed = [o for o in members if o.checks.get("pass_behaviour") is not None]
         k = sum(1 for o in passed if o.checks["pass_behaviour"])
-        cov = [o.checks["gold_coverage"] for o in members if "gold_coverage" in o.checks]
-        num = [
-            o.checks["numeric_correct"]
-            for o in members
-            if o.checks.get("numeric_correct") is not None
-        ]
+        cov = _values(members, "gold_coverage")
+        num = _values(members, "numeric_correct")
+        fb_cov = _values(members, "fallback_gold_coverage")
+        fb_num = _values(members, "fallback_numeric_correct")
         categories[name] = {
             "n": len(members),
             "behaviour_pass": f"{k}/{len(passed)}",
             "behaviour_ci": wilson(k, len(passed)).as_dict() if passed else None,
-            "gold_coverage_mean": round(sum(cov) / len(cov), 3) if cov else None,
-            "numeric_correct_mean": round(sum(num) / len(num), 3) if num else None,
+            "gold_coverage_mean": _mean(cov),
+            "numeric_correct_mean": _mean(num),
+            "answered": sum(1 for o in members if o.checks["answered"]),
+            "fallback_gold_coverage_mean": _mean(fb_cov),
+            "fallback_numeric_correct_mean": _mean(fb_num),
             "evidence_only": sum(1 for o in members if o.checks["evidence_only"]),
         }
     answerable = [o for o in outcomes if o.item["expect"] == "answer"]
@@ -249,7 +297,7 @@ def summarize(outcomes: list[ItemOutcome]) -> dict[str, Any]:
         "contract_recheck_failures": [
             {"id": o.item["id"], "problems": o.checks["contract_problems"]}
             for o in outcomes
-            if o.checks["contract_problems"] and o.final
+            if o.checks["contract_problems"]
         ],
         "over_refusal": {
             "k": sum(1 for o in answerable if not o.checks["answered"]),

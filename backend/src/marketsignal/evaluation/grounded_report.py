@@ -20,18 +20,26 @@ def render(result: dict[str, Any]) -> str:
         "|---|---|---|",
     ]
     for name, gate in s["hard_gates"].items():
-        lines.append(f"| {name} | {gate['value']} | {'yes' if gate['pass'] else '**no**'} |")
+        missing = f" (items: {', '.join(gate['missing'])})" if gate.get("missing") else ""
+        verdict = "yes" if gate["pass"] else "**no**"
+        lines.append(f"| {name} | {gate['value']}{missing} | {verdict} |")
     lines += [
         "",
         "## Behaviour by category",
         "",
-        "| Category | n | behaviour pass | gold coverage | numeric correct | evidence-only |",
-        "|---|---|---|---|---|---|",
+        "Gold coverage and numeric correctness count LLM-generated answers only; evidence-only "
+        "fallbacks are shown separately.",
+        "",
+        "| Category | n | answered | behaviour pass | gold coverage | numeric correct "
+        "| fallback gold coverage | fallback numeric | evidence-only |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     for name, c in s["categories"].items():
         lines.append(
-            f"| {name} | {c['n']} | {c['behaviour_pass']} | {c['gold_coverage_mean']} | "
-            f"{c['numeric_correct_mean']} | {c['evidence_only']} |"
+            f"| {name} | {c['n']} | {c['answered']} | {c['behaviour_pass']} | "
+            f"{c['gold_coverage_mean']} | {c['numeric_correct_mean']} | "
+            f"{c['fallback_gold_coverage_mean']} | {c['fallback_numeric_correct_mean']} | "
+            f"{c['evidence_only']} |"
         )
     lat = s["latency_ms"]
     lines += [
@@ -66,7 +74,10 @@ def render(result: dict[str, Any]) -> str:
         lines.append(
             f"checks: behaviour={c.get('pass_behaviour')} citations={c['citations']} "
             f"resolvable={c['resolvable']} in_pack={c['in_pack']} "
-            f"coverage={c.get('gold_coverage')} numeric={c.get('numeric_correct')}"
+            f"answered={c.get('answered')} llm_called={c.get('llm_called')} "
+            f"coverage={c.get('gold_coverage')} numeric={c.get('numeric_correct')} "
+            f"fallback_coverage={c.get('fallback_gold_coverage')} "
+            f"fallback_numeric={c.get('fallback_numeric_correct')}"
         )
         repairs = (item.get("verification") or {}).get("repairs") or []
         violations = (item.get("verification") or {}).get("numeric_violations") or []

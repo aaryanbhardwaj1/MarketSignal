@@ -69,7 +69,34 @@ def redact_sensitive(
     return event_dict
 
 
+class UvicornAccessScrubFilter(logging.Filter):
+    """Scrub token query parameters (e.g. the SSE ``?st=``) from uvicorn access records.
+
+    uvicorn.access is a stdlib logger with its own handler, so the structlog redaction
+    processor never sees it. uvicorn passes the request path (with query string) as a
+    ``record.args`` element, so scrub both the format string and every string argument.
+    """
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if isinstance(record.msg, str):
+            record.msg = _scrub_string(record.msg)
+        if isinstance(record.args, tuple):
+            record.args = tuple(_scrub_string(a) if isinstance(a, str) else a for a in record.args)
+        elif isinstance(record.args, dict):
+            record.args = {
+                k: _scrub_string(v) if isinstance(v, str) else v for k, v in record.args.items()
+            }
+        return True
+
+
+def _install_access_log_scrubber() -> None:
+    logger = logging.getLogger("uvicorn.access")
+    if not any(isinstance(f, UvicornAccessScrubFilter) for f in logger.filters):
+        logger.addFilter(UvicornAccessScrubFilter())
+
+
 def configure_logging(level: str = "INFO", json: bool = True) -> None:
+    _install_access_log_scrubber()
     renderer: Any = structlog.processors.JSONRenderer() if json else structlog.dev.ConsoleRenderer()
     structlog.configure(
         processors=[
