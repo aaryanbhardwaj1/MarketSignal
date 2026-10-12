@@ -1,5 +1,6 @@
-import { PagePlaceholder } from "@/components/shell/page-placeholder";
+import { OpportunitiesList } from "@/components/opportunities/opportunities-list";
 
-export default function OpportunitiesPage() {
-  return <PagePlaceholder title="Growth Opportunities" />;
+export default async function Page({ params }: PageProps<"/w/[ws]/opportunities">) {
+  const { ws } = await params;
+  return <OpportunitiesList ws={ws} />;
 }

@@ -1,5 +1,6 @@
-import { PagePlaceholder } from "@/components/shell/page-placeholder";
+import { OverviewPage } from "@/components/overview/overview-page";
 
-export default function OverviewPage() {
-  return <PagePlaceholder title="Overview" />;
+export default async function Page({ params }: PageProps<"/w/[ws]/overview">) {
+  const { ws } = await params;
+  return <OverviewPage ws={ws} />;
 }
