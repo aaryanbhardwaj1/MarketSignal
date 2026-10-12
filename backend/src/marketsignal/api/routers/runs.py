@@ -17,9 +17,11 @@
   ``featured`` list; harness runs hidden unless ``include_test_runs``), and
   ``GET /runs/{rid}/verification`` summarizes the verification attempts without rejected spans
   (final productization phase).
-* ``POST …/runs`` and ``POST …/conversations`` refuse with ``503 PROVIDER_UNAVAILABLE`` *before*
-  creating any row when live generation is unavailable (``providers.llm.availability``); no
-  provider text is returned.
+* ``POST …/runs`` refuses with ``503 PROVIDER_UNAVAILABLE`` *before* creating any row when live
+  generation is unavailable (``providers.llm.availability``); no provider text is returned.
+  ``POST …/conversations`` refuses the same way only when generation is switched off
+  (``MS_LLM_ENABLED=false``, the offline demo), so the demo never gains empty conversations;
+  a missing key or a latched provider rejection still lets a conversation be created.
 * Modes (ADR-0015): the deterministic router (``runs.router``) decides ``standard`` or
   ``research`` from the request mode, the conversation's persona default and the cue rules; the
   decision is stored in ``query_runs.route`` and sent in ``run_started``.
@@ -86,11 +88,16 @@ class RunIn(BaseModel):
     source_classes: list[SourceClass] = Field(default_factory=list, max_length=5)
 
 
-def require_generation(request: Request) -> None:
-    """``503 PROVIDER_UNAVAILABLE`` when live generation is unavailable; called before any row
-    is written, so a refused request leaves nothing behind."""
+def require_generation(request: Request, *, only_when_disabled: bool = False) -> None:
+    """``503 PROVIDER_UNAVAILABLE`` when live generation is unavailable (or, with
+    ``only_when_disabled``, only when it is switched off); called before any row is written,
+    so a refused request leaves nothing behind."""
     availability = current_generation_status(request)
-    if not availability.available:
+    if only_when_disabled:
+        refused = availability.reason == "DISABLED"
+    else:
+        refused = not availability.available
+    if refused:
         raise AppError(
             503,
             "PROVIDER_UNAVAILABLE",
@@ -104,9 +111,9 @@ def require_generation(request: Request) -> None:
 async def create_conversation(
     request: Request, scope: Scope, factory: Factory, body: ConversationIn
 ) -> dict[str, Any]:
-    # A conversation exists only to hold runs: refuse it up front when no run could start, so
-    # the offline demo never gains empty conversations (and the API never writes there).
-    require_generation(request)
+    # A conversation exists only to hold runs: with generation switched off (the offline demo)
+    # no run could ever start, so refuse up front and never leave an empty conversation.
+    require_generation(request, only_when_disabled=True)
     conversation_id = await store.create_conversation(
         factory, scope, persona=body.persona, title=body.title
     )

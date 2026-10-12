@@ -249,3 +249,12 @@ async def test_capabilities_exposes_only_generation(harness: Harness) -> None:
     body = await _capabilities(harness)
     assert set(body) == {"generation"}
     assert set(body["generation"]) == {"available", "reason"}
+
+
+async def test_missing_key_still_allows_a_conversation(harness: Harness) -> None:
+    """Only an explicit switch-off refuses conversations; without a key (e.g. CI) a
+    conversation is created and its runs are refused instead."""
+    ws = await harness.create_workspace()
+    _configure(harness, llm_provider="anthropic", anthropic_api_key=None)
+    conversation = await _conversation(harness, ws)
+    _assert_refused(await _post_run(harness, ws, conversation), "NOT_CONFIGURED")
