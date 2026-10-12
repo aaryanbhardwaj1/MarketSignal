@@ -1,0 +1,1942 @@
+{
+ "run_id": "p4-research-dev",
+ "items": [
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-MC-01",
+    "question": "How far behind its rivals is Northstar with Gen Z? Give Northstar's aided awareness among Gen Z, Vantage Athletic's FY2025 revenue scale, and the share of Pace & Co.'s active customers who are Gen Z.",
+    "delta": {
+     "gold_coverage": 0.3333,
+     "answer_completeness": 0.3333,
+     "gold_handle_recall": 0.3333,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -435.7,
+     "total_ms": 16478.3,
+     "model_calls": 4.0,
+     "tool_calls": 6.0,
+     "retrieval_calls": 4.0,
+     "tokens_total": 26365.0,
+     "cost_usd": 0.0481
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nNorthstar's aided awareness among Gen Z is 46%, against 71% for Vantage Athletic [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]][[NORTHSTAR/VANTAGE-DECK@v1:SL10]]. Vantage's FY2025 net revenue is about $4.2 billion [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]]. The evidence does not state what share of Pace & Co.'s active customers are Gen Z.\n\n### Key findings\n\n- Northstar's aided brand awareness among Gen Z consumers stands at 46%, well behind the 71% recorded for Vantage Athletic [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Vantage itself states that its aided awareness among Gen Z stands at 71% [[NORTHSTAR/VANTAGE-DECK@v1:SL10]].\n- Vantage Athletic had FY2025 net revenue of about $4.2 billion, with footwear making up 63% of sales [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n- Northstar's net revenue is on track to grow from $571.0 million in FY25 to a latest estimate of $612.0 million in FY26 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z shoppers generated 21% of Northstar net revenue in FY25, up from 17% two years earlier, with a board target of 30% by the end of FY28 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z NPS for Northstar is 22, against 49 among customers aged 28 and older [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B2]].\n- Pace & Co. is described as winning on price and cadence, and Value Seekers (26% of Northstar's Gen Z base) trade freely between Northstar and Pace & Co. [[NORTHSTAR/Q3-REVIEW@v1:SL13.N1]][[NORTHSTAR/BRAND-STRATEGY@v1:P3.B5]].\n\n### Conflicting evidence\n\n- The Q3 review states that aided awareness trails Vantage Athletic by 25 points [[NORTHSTAR/Q3-REVIEW@v1:SL6]]. The brand strategy gives 46% against 71% [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], and the stated gap is consistent with those two figures. However, E2 notes that figures were restated or superseded, so the current value should be confirmed.\n- Gen Z survey sample size differs: the strategy document cites 600 respondents in total [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], while the Q3 review and NPS breakdown cite 400 Gen Z respondents [[NORTHSTAR/Q3-REVIEW@v1:SL6]][[NORTHSTAR/BRAND-STRATEGY@v1:P4.B3]]. These may be different subsets (all respondents versus Gen Z only), but this is not stated explicitly.\n\n### Interpretation\n\nNorthstar is substantially smaller than Vantage in both revenue and awareness, so the Gen Z gap is a reach problem more than a reputation problem, consistent with the document's own diagnosis [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B2]] [inference].\n\n### Gaps & unknowns\n\nThe evidence contains no figure for the share of Pace & Co.'s active customers who are Gen Z, and no Pace & Co. revenue or awareness data [inference]. A Pace & Co. investor or public disclosure, or a third-party customer panel covering that brand, would close this gap. The evidence also does not clarify which Gen Z definition underlies the awareness figures, since teams use differing definitions [inference].",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.6666666666666666,
+      "answer_completeness": 0.6666666666666666,
+      "gold_handle_recall": 0.6666666666666666,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1605.0,
+      "total_ms": 7516.1,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6051,
+      "cost_usd": 0.019603,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nNorthstar's aided awareness among Gen Z is 46%, against 71% for Vantage Athletic, a gap the Q3 review puts at 25 points [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]][[NORTHSTAR/Q3-REVIEW@v1:SL6]]. Vantage Athletic is far larger, with FY2025 net revenue of about $4.2 billion [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]][[NORTHSTAR/VANTAGE-DECK@v1:SL3]]. Gen Z customers account for 44% of Pace & Co.'s active customer file [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B4]].\n\n### Key findings\n\n- Northstar's aided brand awareness among Gen Z consumers stands at 46%, versus 71% for Vantage Athletic [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]; Vantage's own investor deck also cites 71% [[NORTHSTAR/VANTAGE-DECK@v1:SL10]].\n- Vantage Athletic's FY2025 net revenue was $4.2 billion, with footwear at 63% of sales [[NORTHSTAR/VANTAGE-DECK@v1:SL3]]. The Northstar strategy document says \"about $4.2 billion\" [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n- Northstar's net revenue is on track to grow from $571.0 million in FY25 to a latest estimate of $612.0 million in FY26 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z customers account for 44% of Pace & Co.'s active customer file; Pace has expanded store-in-store doors from 640 to 1,100 [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B4]].\n- Northstar's Gen Z share of net revenue was 21% in FY25, with a board target of 30% by the end of FY28 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n\n### Conflicting evidence\n\n- E3 sets an interim goal of closing \"at least ten points of the gap to Vantage Athletic\" by the end of FY27, while E9 states the gap as 25 points [[NORTHSTAR/BRAND-STRATEGY@v1:P7.B2]][[NORTHSTAR/Q3-REVIEW@v1:SL6]]. These are consistent with each other (a goal versus the current gap). I found no conflicting values for the three requested metrics.\n- E3 also indicates that a reconciled Gen Z definition will be published for board use, which suggests Gen Z-related figures may be restated [[NORTHSTAR/BRAND-STRATEGY@v1:P7.B2]]. E10 likewise notes that Gen Z definitions differ between teams [[NORTHSTAR/BRAND-STRATEGY@v1:P7.B1]].\n\n### Interpretation\n\nNorthstar trails Vantage on awareness by a wide margin and is a fraction of its revenue scale, but Pace & Co. is a different kind of rival, with a customer base heavily weighted toward Gen Z [inference]. Comparing Pace's 44% Gen Z customer-file share with Northstar's 21% revenue share is not like-for-like, since the two metrics measure different things [inference].\n\n### Gaps & unknowns\n\nThe evidence gives no Gen Z awareness figure for Pace & Co., and no Gen Z share of Vantage Athletic's revenue or customers [inference]. Northstar's Gen Z share of its active customer file is not stated on the same basis as Pace's metric. Pace & Co.'s total revenue is also not given. Competitor disclosures or a brand-tracker cut covering all three brands on a common Gen Z definition would close these gaps.",
+     "stop_reason": "finish_research",
+     "tool_calls": 6,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1169.3,
+      "total_ms": 23994.4,
+      "model_calls": 5,
+      "tool_calls": 6,
+      "retrieval_calls": 5,
+      "tokens_total": 32416,
+      "cost_usd": 0.067711,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-MC-03",
+    "question": "Size up the social-commerce opportunity: what share of Gen Z athletic footwear purchases now happen on social platforms according to the latest trend panel, how fast did Northstar's Social Shop grow quarter over quarter in Q2 FY26, and how big is the FY27 Gen Z marketing budget the strategy team proposes?",
+    "delta": {
+     "gold_coverage": 0.3333,
+     "answer_completeness": 0.3333,
+     "gold_handle_recall": 0.3333,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -57.7,
+     "total_ms": 31991.2,
+     "model_calls": 4.0,
+     "tool_calls": 6.0,
+     "retrieval_calls": 4.0,
+     "tokens_total": 25883.0,
+     "cost_usd": 0.0426
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe latest trend panel puts social platforms at 26% of Gen Z athletic footwear purchases [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]], and Northstar's Social Shop sales grew 142% quarter over quarter in Q2 FY26 [[NORTHSTAR/Q3-REVIEW@v1:SL5]]. The evidence does not state the size of the proposed FY27 Gen Z marketing budget; it only says a budget shift is planned [inference].\n\n### Key findings\n\n- Social commerce platforms account for 26% of Gen Z athletic footwear purchases in the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]]; the FY27 planning memo restates this as \"just over a quarter\" [[NORTHSTAR/FY27-MEMO@v1:S1.B5]].\n- Social Shop sales grew 142% quarter over quarter, the fastest of any channel [[NORTHSTAR/Q3-REVIEW@v1:SL5]].\n- Social Shop is described as Northstar's fastest growing route to market, and the strategy plans to shift \"a meaningful part\" of the marketing budget toward creators, clubs and Social Shop, with no amount given [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B4]].\n- Marketing is due to bring a creator and community plan with a proposed budget shift to the July leadership review [[NORTHSTAR/BRAND-STRATEGY@v1:P7.B2]].\n- A separate note shows marketplaces and social commerce combined at 34% of Gen Z athletic spend, versus 22% for brand owned sites [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n\n### Conflicting evidence\n\n- The 26% panel figure may be understated: the analyst expects the panel's social commerce measurement to be restated upward in the next edition because earlier panels undercounted young shoppers [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]]. The current published figure remains 26% [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]].\n- The 26% covers social platforms alone, while 34% combines marketplace and social, on spend rather than purchases, so the two are not directly comparable [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]][[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n\n### Interpretation\n\nThe 26% share is probably a floor rather than a ceiling, given the expected upward restatement [inference]. The 142% quarter-over-quarter growth likely comes off a small base, so it should not be extrapolated [inference]. Social orders carry higher return rates and fulfilment and service strain, which could erode the apparent conversion advantage [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]] [inference].\n\n### Gaps & unknowns\n\nThe proposed FY27 Gen Z marketing budget is not stated anywhere in the evidence. The July leadership review materials or the marketing team's budget proposal would close this. The size of the Social Shop base, in revenue or share of Gen Z orders, is not given, so the growth rate cannot be put in absolute terms. The restated panel figure is not yet published; the next edition of the trends report should settle it [inference]. Social Shop margin and return economics for Northstar are not quantified [inference].",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.6666666666666666,
+      "answer_completeness": 0.6666666666666666,
+      "gold_handle_recall": 0.6666666666666666,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 913.4,
+      "total_ms": 6916.9,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6738,
+      "cost_usd": 0.01881,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nAccording to the 2026 trends panel, social commerce platforms account for 26% of Gen Z athletic footwear purchases [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]]. Northstar's Social Shop sales grew 142% quarter over quarter in Q2 FY26, the fastest of any channel [[NORTHSTAR/Q3-REVIEW@v1:SL5]]. The strategy team proposes a FY27 Gen Z marketing budget of $24 million [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n\n### Key findings\n\n- Social commerce platforms account for 26% of Gen Z athletic footwear purchases in the 2026 panel, with gains in every region and age band [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]].\n- Social Shop sales grew 142% quarter over quarter, the fastest of any channel [[NORTHSTAR/Q3-REVIEW@v1:SL5]].\n- The proposed FY27 Gen Z marketing budget is $24 million, of which 40% would shift to creator and community programs [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- The allocation includes $9.6 million for creator and community programs and $5.4 million for Social Shop and performance channels [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- Social checkout converts better than brand sites for impulse categories, but return rates on social orders are also higher [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Conflicting evidence\n\n- The 26% figure is from the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]]. The panel analyst said the panel's social measurement will be restated upward in the next edition, because earlier panels undercounted young shoppers [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]]. The 26% may therefore be understated.\n\n### Interpretation\n\nSocial is already a sizeable and fast-growing route to market, but the 142% growth rate should not be read as a measure of scale given the small starting base [inference]. The proposed budget shift toward creators and Social Shop is consistent with the channel's momentum, though higher return rates and service constraints could erode the economics [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give Social Shop's absolute revenue or its share of Northstar's Gen Z sales, so the real size of the opportunity is unclear. The restated panel figure is not yet available. Return-rate and service-cost data for Social Shop orders would be needed to assess profitability [inference]. A published channel-level P&L would close these gaps.",
+     "stop_reason": "finish_research",
+     "tool_calls": 6,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 855.7,
+      "total_ms": 38908.1,
+      "model_calls": 5,
+      "tool_calls": 6,
+      "retrieval_calls": 5,
+      "tokens_total": 32621,
+      "cost_usd": 0.061435,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-MC-05",
+    "question": "Put Northstar's numbers in market context: its FY26 latest-estimate net revenue, the growth expected from Gen Z revenue in FY26, and the size of the 2026 US Gen Z athletic footwear market.",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -1447.0,
+     "total_ms": 7671.2,
+     "model_calls": 4.0,
+     "tool_calls": 5.0,
+     "retrieval_calls": 2.0,
+     "tokens_total": 25547.0,
+     "cost_usd": 0.0403
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nNorthstar's FY26 latest-estimate net revenue is $612.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], and Gen Z revenue is projected to grow 13.8% in FY26, ahead of the company overall [[NORTHSTAR/Q3-REVIEW@v1:SL3]]. The 2026 US Gen Z athletic footwear market is estimated at $18.6 billion [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]] [inference]. Northstar's total revenue is small relative to that footwear segment, and its Gen Z growth is roughly double the company rate, though the market comparison is not like-for-like [inference].\n\n### Key findings\n\n- FY26 net revenue is a latest estimate of $612.0 million, up from $571.0 million in FY25, with gross margin of 47.2% [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z revenue under the finance definition (ages 18 to 27) is projected to grow from $110.8 million in FY25 to $126.1 million in FY26, an increase of 13.8%, roughly double the company's growth rate [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The US Gen Z athletic footwear market is estimated at $18.6 billion in 2026, with yoy growth of 6.9% [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]]; the 2025 figure was $17.4 billion, with yoy growth of 7.4% [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R4]].\n- Gen Z accounted for 21% of Northstar net revenue in FY25 per brand materials [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], and a little above 20% in FY26 on the strict finance definition [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The market estimates are modeled figures from Cobalt Insight Partners [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]].\n\n### Conflicting evidence\n\n- Gen Z share of FY25 revenue is 21% in the brand strategy summary [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]], but a little under 20% on the finance definition [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]]. The difference stems from age bands: 16 to 29 for the loyalty program versus 18 to 27 for finance.\n- Another market source restates the 2025 US Gen Z athletic apparel market at $44.8 billion, a change in estimate rather than growth [[NORTHSTAR/GENZ-TRENDS@v2:P2.B3]]. That is an apparel figure and is not directly comparable with the footwear estimate.\n\n### Interpretation\n\nNorthstar's Gen Z growth of 13.8% is about double the 6.9% growth estimated for the Gen Z footwear market, which suggests share gains, but this cannot be confirmed because Northstar's Gen Z revenue is not split by footwear [inference]. Northstar's total revenue includes apparel and non-US sales, so comparing it with the footwear market alone would overstate or misstate its share [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give Northstar's Gen Z footwear revenue or its US-only revenue, so market share cannot be calculated on a consistent basis. FY26 company figures are estimates because the year is not closed [inference]. The market figures are modeled estimates, and the apparel and footwear market sizes come from different sources [inference]. A category-level revenue breakdown from finance would close the gap.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 2294.9,
+      "total_ms": 8625.9,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 5623,
+      "cost_usd": 0.017372,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nNorthstar's FY26 latest-estimate net revenue is $612.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]][[NORTHSTAR/Q3-REVIEW@v1:SL3]]. Gen Z revenue is projected to grow 13.8% in FY26, about double the company's overall growth [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]]. The 2026 US Gen Z athletic footwear market is estimated at 18.6 $bn, growing 6.9% year over year [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]]. Gen Z revenue is therefore projected to grow faster than that market [inference].\n\n### Key findings\n\n- FY26 latest-estimate net revenue is $612.0 million, up from $571.0 million in FY25, growth of roughly 7% [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]].\n- Gen Z (18-27) revenue is projected at 126.1 $m in FY26, up from 110.8 $m in FY25, with yoy growth of 13.8% [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]][[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The 2026 US Gen Z athletic footwear market is 18.6 $bn (estimate), with yoy_growth_pct of 6.9 [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]]. The 2025 figure was 17.4 $bn with 7.4% growth [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R4]].\n- The adjacent personalized athletic footwear niche is 1.1 $bn in 2026, with yoy_growth_pct of 22.2 [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17]].\n\n### Conflicting evidence\n\n- Gen Z share of revenue: the finance definition (ages 18 to 27) gives 19.4% for FY25 [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]], while the executive summary cites 21% for FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. The difference stems from the brand team's wider 16-29 age band [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The evidence notes flag differing \"year\" values across market sizing rows [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17]][[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]][[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R16]][[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R4]]. These are rows for different years (2025 and 2026), not contradictory values for the same metric.\n\n### Interpretation\n\nBecause the 13.8% Gen Z revenue growth exceeds the 6.9% market growth, Northstar appears to be gaining share within the Gen Z footwear market, though the revenue figure covers all categories, not footwear alone [inference]. The two figures are not like-for-like, so the comparison is directional only [inference].\n\n### Gaps & unknowns\n\nThe evidence does not break out Northstar's Gen Z footwear revenue, so its actual share of the Gen Z footwear market cannot be established. Finance reporting by category within the Gen Z segment would close this. FY26 figures are latest estimates because the year is not closed, and the market figures are modeled estimates from a third party [inference]. The market and finance Gen Z definitions may differ in age range, which limits comparability. A documented definition from the market-sizing source would help [inference].",
+     "stop_reason": "finish_research",
+     "tool_calls": 5,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "get_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 847.9,
+      "total_ms": 16297.1,
+      "model_calls": 5,
+      "tool_calls": 5,
+      "retrieval_calls": 3,
+      "tokens_total": 31170,
+      "cost_usd": 0.057717,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-IT-05",
+    "question": "Survey respondent R0388 named a premium they would accept. What was it and what condition did they attach, and how does stated acceptance in the external willingness-to-pay study change at a 25% premium?",
+    "delta": {
+     "gold_coverage": 0.5,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.5,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -1085.8,
+     "total_ms": 8021.9,
+     "model_calls": 3.0,
+     "tool_calls": 3.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 12073.0,
+     "cost_usd": 0.0187
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe evidence provided does not contain a record for survey respondent R0388, so the premium they named and any condition they attached cannot be reported [inference]. The only customer survey row supplied is R0174, which is a different respondent [inference]. For the second part, the external study found that stated acceptance falls to 12% of Gen Z respondents at a 25% premium, down from 38% at a 15% premium [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n\n### Key findings\n\n- At a 25% premium, only 12% of Gen Z respondents accepted, and acceptance falls steeply above a 15% premium [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- At a 15% premium for fit personalization, 38% of Gen Z respondents said they would pay [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- The study's price range ran from the base level up to a 25% premium, so 25% is the top tested level [[NORTHSTAR/WTP-STUDY@v1:P2.B1]].",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.5,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 0.5,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1897.9,
+      "total_ms": 4891.9,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 5348,
+      "cost_usd": 0.012614,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nRespondent R0388 said they would pay about 15% more for shoes made to their foot, but only if the shoes arrive as fast as normal ones [[NORTHSTAR/SURVEY-2026@v1:R389]]. In the external study, stated acceptance among Gen Z falls steeply at a 25% premium: only 12% accepted it, versus 38% at a 15% fit premium [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n\n### Key findings\n\n- R0388's verbatim: \"maybe 15% more, but only if they arrive as fast as normal ones\" [[NORTHSTAR/SURVEY-2026@v1:R389]].\n- 38% of Gen Z respondents would pay a 15% premium for fit-personalized footwear [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- Only 12% of Gen Z respondents accepted a 25% premium [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- The study describes the drop as steep above 15%, with offers beyond that point treated as a luxury [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- The study's price range ran up to a 25% premium in five steps [[NORTHSTAR/WTP-STUDY@v1:P2.B1]].\n- The study stresses its percentages are stated measures and should be treated as a ceiling, not a sales forecast [[NORTHSTAR/WTP-STUDY@v1:P4.B1]].\n\n### Gaps & unknowns\n\nIt does not establish how many other Northstar respondents attach the same delivery condition [inference]. Pilot or order data with real prices would show whether stated acceptance converts to purchases [inference].",
+     "stop_reason": "end_turn",
+     "tool_calls": 3,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 812.1,
+      "total_ms": 12913.8,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "retrieval_calls": 2,
+      "tokens_total": 17421,
+      "cost_usd": 0.031352,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-IT-06",
+    "question": "SKU NS-KR2: what is its FY26 return rate, and what were customers contacting support about for that shoe in Q3, and in what volume?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": 1680.0,
+     "total_ms": 13432.8,
+     "model_calls": 4.0,
+     "tool_calls": 8.0,
+     "retrieval_calls": 4.0,
+     "tokens_total": 22767.0,
+     "cost_usd": 0.0373
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe Knit Runner 2 return rate is stated as 16.8%, against 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]]. In Q3, customers contacted support about knit upper wear, specifically fraying near the toe flex point within 90 days, and these complaints rose to 1,140 tickets [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n\n### Key findings\n\n- Return rate on the Knit Runner 2 is 16.8%, versus 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]].\n- Complaints about knit upper wear on the Knit Runner 2 rose to 1,140 tickets in Q3, most citing fraying near the toe flex point within 90 days [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- Ticket volume understates the problem, because returns data show a larger number of durability returns that never generated a contact [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- Before September, frontline guidance classified early fraying as normal wear unless a manufacturing defect could be shown, which led to repeat contacts. Guidance changed in late September to treat early toe fraying as a product issue eligible for replacement or refund [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- The Returns table lists NS-KR2 and a \"Durability - upper wear\" reason category, but the table description gives no values [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n\n### Interpretation\n\nThe 16.8% figure is likely the Knit Runner 2 rate the strategy deck reports, but its period (FY26 year-to-date versus another window) is not stated [inference]. The 1,140 tickets are probably a floor on customer-reported durability issues, given the unticketed returns noted in the support report [inference].\n\n### Gaps & unknowns\n\nThe SKU performance and returns tables are described only by schema here, with no row values, so a SKU-level FY26 return rate for NS-KR2 cannot be verified from them. The underlying spreadsheet rows would close this. The number of durability returns that never generated a contact is not quantified. Returns-table row data by reason would show it [inference].",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.5,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 0.5,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 876.8,
+      "total_ms": 6464.7,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6407,
+      "cost_usd": 0.017668,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe Knit Runner 2 has a stated return rate of 16.8%, compared with 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]]. In Q3, customers contacted support mainly about knit upper wear, specifically fraying near the toe flex point, which rose to 1,140 tickets [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]]. The evidence gives the return rate without an explicit FY26 label, and it does not map the product name to the SKU code NS-KR2 in any retrievable row [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]][[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n\n### Key findings\n\n- Return rate on the Knit Runner 2 is 16.8%, against 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]]. The brand strategy document repeats the same two figures [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]].\n- Complaints about knit upper wear on the Knit Runner 2 rose to 1,140 tickets in Q3, most citing fraying near the toe flex point within 90 days [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- Ticket volume understates the problem, because returns data show a larger number of durability returns that never generated a contact [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- Before September, frontline guidance classified early fraying as normal wear unless a manufacturing defect could be shown; guidance changed in late September to treat early toe fraying as a product issue eligible for replacement or refund [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- A representative customer note describes toe fraying in under three months, an agent calling it normal wear, and the customer switching brands [[NORTHSTAR/SUPPORT-THEMES@v1:P3.B4]].\n\n### Interpretation\n\nThe pre-September guidance may have inflated repeat contacts, so the ticket count may partly reflect handling rather than only new defects [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]] [inference].\n\n### Gaps & unknowns\n\nThe number of durability returns without contacts is not quantified; the Returns sheet rows for this SKU would provide it [inference].",
+     "stop_reason": "step_limit",
+     "tool_calls": 8,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "list_sources",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 4,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 4,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.5,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 0.5,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 2556.8,
+      "total_ms": 19897.5,
+      "model_calls": 5,
+      "tool_calls": 8,
+      "retrieval_calls": 5,
+      "tokens_total": 29174,
+      "cost_usd": 0.054957,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-CC-03",
+    "question": "One interviewee says their last three pairs came from a run club group chat rather than ads. How does Vantage Athletic's stated mission and homepage emphasis compare with that discovery route?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.5,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -106.2,
+     "total_ms": 5500.2,
+     "model_calls": 2.0,
+     "tool_calls": 3.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 8523.0,
+     "cost_usd": 0.0128
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nVantage's stated mission centers on engineered speed, with a homepage that leads with race results rather than lifestyle imagery [[NORTHSTAR/VANTAGE-WEB@v1:S1.B3]]. The interviewee's discovery route is peer word of mouth in a run club group chat, which they say works better than ads [[NORTHSTAR/INTERVIEWS@v1:S13.Q1]]. The two are not in direct conflict, since Vantage's materials describe its own messaging and do not mention group chats [inference]. Vantage's club and campus activity does touch the same community routes [[NORTHSTAR/VANTAGE-DECK@v1:SL10]][[NORTHSTAR/VANTAGE-WEB@v1:S1.B13]].\n\n### Key findings\n\n- Vantage frames performance as \"the thing we measure, publish and defend,\" and leads with race results [[NORTHSTAR/VANTAGE-WEB@v1:S1.B3]].\n- The interviewee found their last three pairs \"through my run club group chat, not from ads,\" and pays attention when a friend says a shoe worked on their long run [[NORTHSTAR/INTERVIEWS@v1:S13.Q1]].\n- Market research lists run clubs, campus teams, studio classes and group chats among the most trusted discovery routes [[NORTHSTAR/GENZ-TRENDS@v2:P4.B4]].\n- Vantage's Gen Z strategy includes campus and club programmes that introduce the brand at the start of a running habit [[NORTHSTAR/VANTAGE-DECK@v1:SL10]].\n- Vantage offers team pricing to collegiate and club programmes [[NORTHSTAR/VANTAGE-WEB@v1:S1.B13]].\n- Vantage creator content focuses on training logs and race prep rather than lifestyle [[NORTHSTAR/VANTAGE-DECK@v1:SL10]].\n\n### Interpretation\n\nVantage's race-results emphasis could fit peer recommendations like \"worked on my long run,\" because performance claims are what a friend would vouch for [inference]. Vantage's club and campus programmes suggest it reaches community discovery through institutional channels (teams, coaches, team pricing), not through informal friend-to-friend group chats [inference]. The evidence does not show Vantage actively seeding or tracking messaging-app discovery [inference].\n\n### Gaps & unknowns\n\nThe evidence is a single interview, so it cannot show how typical this discovery route is among Gen Z runners [inference]. Nothing shows whether Vantage's homepage or club programmes influence what gets recommended in group chats, or whether the interviewee's pairs came from Vantage at all [inference]. Brand-tracking data or surveys on discovery sources by brand would close this gap.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 800.5,
+      "total_ms": 5705.1,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 5225,
+      "cost_usd": 0.014448,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nVantage Athletic's stated mission and homepage emphasis centre on performance and race results, not on community or peer discovery [[NORTHSTAR/VANTAGE-WEB@v1:S1.B3]][[NORTHSTAR/VANTAGE-WEB@v1:S1.B2]]. The interviewee found their last three pairs through a run club group chat rather than ads [[NORTHSTAR/INTERVIEWS@v1:S13.Q1]]. The evidence shows no Vantage content that addresses group-chat or word-of-mouth discovery, so the two are largely misaligned in emphasis, though the evidence does not show how Vantage actually acquires customers [inference].\n\n### Key findings\n\n- Vantage describes its mission as \"engineering speed for athletes who compete,\" and its homepage leads with race results rather than lifestyle imagery [[NORTHSTAR/VANTAGE-WEB@v1:S1.B3]].\n- The hero copy is \"Built for the finish line\" and stresses stopwatch, wear tests and athletes who will not compromise [[NORTHSTAR/VANTAGE-WEB@v1:S1.B2]].\n- Vantage marketing leads with finish line results, and the homepage is organised the same way [[NORTHSTAR/VANTAGE-DECK@v1:SL6.N1]].\n- The interviewee says \"Ads wash right over me,\" but a friend's report of a shoe working on a long run gets their attention [[NORTHSTAR/INTERVIEWS@v1:S13.Q1]].\n- Gen Z focus group participants rely on people they know or follow, and some said the group chat was the first place they heard about a new product [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7]].\n- Another source names run clubs, campus teams, studio classes and group chats as the most trusted discovery routes [[NORTHSTAR/GENZ-TRENDS@v2:P4.B4]].\n- Vantage does offer team pricing for collegiate and club programmes, and a membership giving individual athletes early access to race releases [[NORTHSTAR/VANTAGE-WEB@v1:S1.B13]].\n\n### Interpretation\n\nVantage's results-led messaging is a brand-side broadcast approach, whereas the interviewee's route is peer-to-peer, so the homepage is unlikely to be the main trigger for this kind of buyer [inference]. The club team pricing programme could be a partial bridge to community channels, but nothing in the evidence shows it is used for discovery [inference]. Performance credentials could still matter once a friend recommends a shoe, but the evidence does not test this [inference].\n\n### Gaps & unknowns\n\nThe evidence does not show how Vantage actually acquires customers, whether it runs community, club or creator programmes beyond team pricing, or how its advertising performs. It also covers a single interviewee and a small focus group, so it cannot indicate how widespread this discovery route is among Vantage's target buyers [inference]. Vantage channel-mix or marketing-spend data, and a survey of its own customers' discovery sources, would close these gaps.",
+     "stop_reason": "finish_research",
+     "tool_calls": 3,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "list_sources",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 694.3,
+      "total_ms": 11205.3,
+      "model_calls": 3,
+      "tool_calls": 3,
+      "retrieval_calls": 2,
+      "tokens_total": 13748,
+      "cost_usd": 0.027203,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-CC-05",
+    "question": "What kind of personalization got the Gen Z focus-group participants most excited, and how does Vantage Athletic's personalization offer compare with that?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -673.9,
+     "total_ms": 7473.9,
+     "model_calls": 3.0,
+     "tool_calls": 5.0,
+     "retrieval_calls": 2.0,
+     "tokens_total": 18905.0,
+     "cost_usd": 0.0311
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nFocus-group participants reacted most strongly to personalization framed as a status signal that friends would notice, such as initials on a heel tab, a team colorway, a stitched name, or a limited release few friends would own [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]]. Vantage Athletic's personalization is limited to a choice of 12 preset colorways on its flagship racer [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]]. The evidence therefore shows partial overlap (colorway choice), but Vantage's offer does not include the name or initials examples that excited participants [inference].\n\n### Key findings\n\n- Personalization drew the strongest reaction when framed as a status signal friends would notice, e.g. initials on a heel tab or a team colorway [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Participants also lit up at a stitched name, a club colorway, or a limited release that only a few friends would own [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Several participants said they would post a picture of a personalized pair before a standard one [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Vantage's personalization is limited to a choice of 12 preset colorways on its flagship racer [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n- Despite the excitement, participants ranked fit guarantee, faster delivery and honest materials information ahead of personalization in the points allocation exercise [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n\n### Interpretation\n\nVantage's preset colorways partly match the \"team colorway\" example from the group, but a fixed menu of 12 is not the same as a club-specific colorway or a limited release [inference]. Name or initials personalization, which excited participants, appears to be something Vantage does not offer, based only on the description of its limited offer [inference].\n\n### Gaps & unknowns\n\nThe focus group involved only ten participants and did not compare Vantage's offer directly, so the match between their preferences and Vantage's offering is my inference rather than something participants assessed [inference]. The evidence does not say whether Vantage has other personalization options beyond its flagship racer, or how Vantage's customers respond to its colorway program. Vantage product pages or customer research on its offer would close this gap.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 2417.1,
+      "total_ms": 7185.2,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6052,
+      "cost_usd": 0.015782,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nFocus-group participants reacted most strongly to personalization framed as a status signal that friends would notice, such as initials on a heel tab, a team or club colorway, or a limited release few friends would own [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]]. Vantage's offer is narrower: a choice of 12 preset colorways on its flagship racer only [[NORTHSTAR/VANTAGE-WEB@v1:S1.B4]]. It overlaps with the colorway-style excitement but offers no initials or stitched names, and no personalization beyond that one shoe [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]][[NORTHSTAR/VANTAGE-WEB@v1:S1.B4]].\n\n### Key findings\n\n- The stimulus round generated the most energy of the session, and participants lit up at a stitched name, a club colorway, or a limited release only a few friends would own [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Several participants said they would post a picture of a personalized pair before a standard one [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Vantage offers personalization \"only as a choice of 12 preset colorways on its flagship racer\" [[NORTHSTAR/VANTAGE-WEB@v1:S1.B4]]; Brand Strategy likewise describes it as limited to 12 preset colorways [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n- Vantage keeps the engineering identical for every runner so a custom tweak does not undo the tuning of plate, foam and geometry [[NORTHSTAR/VANTAGE-WEB@v1:S1.B4]].\n- Vantage's Fit Lab recommends from the existing range and the company has no plans for made-to-order manufacturing [[NORTHSTAR/VANTAGE-WEB@v1:S1.B7]][[NORTHSTAR/VANTAGE-DECK@v1:SL8.N1]].\n\n### Interpretation\n\nVantage's preset colorways partly match the \"club colorway\" appeal, but they are chosen from a fixed list rather than being personal marks like initials or a name [inference]. Vantage's offer is a product-configuration choice and Fit Lab is a fit service, so neither delivers the individual status signal that excited participants [inference].\n\n### Gaps & unknowns\n\nThe focus group had ten participants and reflects stated reactions in a hypothetical setting, so it cannot show how many Gen Z shoppers share this excitement [inference]. The evidence does not show how Gen Z shoppers view Vantage's colorway offer specifically, since the group was not shown it. Reactions to Vantage's actual offer would require a customer test or survey. The evidence does not say whether Vantage plans to extend its personalization beyond the flagship racer.",
+     "stop_reason": "finish_research",
+     "tool_calls": 5,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "list_sources",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1743.2,
+      "total_ms": 14659.1,
+      "model_calls": 4,
+      "tool_calls": 5,
+      "retrieval_calls": 3,
+      "tokens_total": 24957,
+      "cost_usd": 0.046904,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-CI-02",
+    "question": "What made a shopper who loved the custom colorway tool give up on ordering, and what did Northstar leadership decide about personalization at the Q3 strategy review?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0909,
+     "first_token_ms": 771.0,
+     "total_ms": 7517.8,
+     "model_calls": 2.0,
+     "tool_calls": 2.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 7362.0,
+     "cost_usd": 0.0107
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe shopper (Sam K.) loved the custom colorway tool but gave up because of the twelve day wait [[NORTHSTAR/INTERVIEWS@v1:S14.Q1]]. At the Q3 strategy review, leadership agreed to pause any national rollout of personalization until the full pilot readout in October [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n\n### Key findings\n\n- Sam K. tried the custom colorway tool, loved it, and said \"the twelve day wait killed it for me\"; with delivery in a few days, he would have bought two pairs [[NORTHSTAR/INTERVIEWS@v1:S14.Q1]].\n- Leadership's reasoning for the pause was that the early signal came from a tiny sample and that the operational constraints are significant [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n- Made to order pairs took an average of 12 days to arrive, and customers could not see production milestones in the tracker [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B3]].\n- The pilot's lead time of about 12 days was the most common reason customers gave for not ordering again [[NORTHSTAR/FY27-MEMO@v1:S1.B3]].\n\n### Conflicting evidence\n\n- The Q3 review slide set the final decision point as the full pilot readout in October [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]]. The final readout document is dated September 30 [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]] and recommends keeping personalization as a limited test rather than a national program [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]]. This may reflect a different date or a different readout, which the evidence does not clarify.\n- An early read circulated in July suggested a more favorable picture, but it was based on week six data and a very small sample and is treated as superseded [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n\n### Interpretation\n\nSam K.'s experience fits the wider pilot pattern, where wait time rather than the tool itself drove customers away [inference].\n\n### Gaps & unknowns\n\nThe evidence does not show whether leadership took any further decision on personalization after the pause, or how the October readout timing relates to the September readout date. Minutes of the review meeting or a follow-up decision memo would close this gap.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 2378.6,
+      "total_ms": 6371.2,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6699,
+      "cost_usd": 0.016548,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nA shopper who loved the custom colorway tool gave up on ordering because of the twelve day wait [[NORTHSTAR/INTERVIEWS@v1:S14.Q1]]. At the Q3 strategy review, leadership agreed to pause any national rollout of personalization until the full pilot readout in October, and the decision requested was to hold it at a limited test [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]][[NORTHSTAR/Q3-REVIEW@v1:SL14]].\n\n### Key findings\n\n- Interview 12 (Sam K.) said he \"loved\" the custom colorway tool, but \"the twelve day wait killed it for me\" [[NORTHSTAR/INTERVIEWS@v1:S14.Q1]].\n- Sam K. said that if the order had come in a few days, he \"would have bought two pairs\" [[NORTHSTAR/INTERVIEWS@v1:S14.Q1]].\n- Other pilot-related feedback also points to waiting time as a barrier: one interviewee loved the online colorway tool but abandoned the order after seeing the wait [[NORTHSTAR/PERSO-PILOT@v1:S1.B8]].\n- Leadership agreed to pause any national rollout of personalization until the full pilot readout in October [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n- The stated reasoning was that the early signal came from a tiny sample and the operational constraints are significant [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n- The Q3 review's first decision requested was to \"Hold personalization at a limited test and defer any national rollout decision\" [[NORTHSTAR/Q3-REVIEW@v1:SL14]].\n\n### Conflicting evidence\n\n- The Q3 review's reasoning cites an early signal from a tiny sample [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]]. The pilot final readout says an early read circulated in July suggested a more favorable picture, but it was based on week six data and a very small sample and \"should be treated as superseded\" [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n- The final readout states the evidence does not support the hypothesis that young customers will pay a premium for made-for-them products, in the form tested [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]]. It recommends keeping personalization as a limited test.\n\n### Interpretation\n\nThe pause and limited-test decision rests on the earlier, smaller read, while the later final readout reaches a more negative conclusion on the premium hypothesis yet recommends the same limited-test posture [inference]. The shopper's reason for abandoning (delivery wait) is consistent with the wait being the main reason given by pilot customers for not returning [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]] [inference].\n\n### Gaps & unknowns\n\nThe evidence does not show whether leadership formally confirmed each requested decision at the meeting, only that the pause was agreed and the hold was requested. It also does not say whether the October full readout has changed the decision [inference]. A post-October leadership record or decision log would close this gap.",
+     "stop_reason": "finish_research",
+     "tool_calls": 2,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.09090909090909091,
+      "first_token_ms": 3149.6,
+      "total_ms": 13889.0,
+      "model_calls": 3,
+      "tool_calls": 2,
+      "retrieval_calls": 2,
+      "tokens_total": 14061,
+      "cost_usd": 0.027293,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-CI-05",
+    "question": "Customers say they discover shoes through run clubs and group chats rather than ads. How large is the proposed FY27 Gen Z marketing budget, and how much of it would move toward creator and community programmes?",
+    "delta": {
+     "gold_coverage": 0.5,
+     "answer_completeness": 0.5,
+     "gold_handle_recall": 0.5,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": 1774.3,
+     "total_ms": 7419.4,
+     "model_calls": 2.0,
+     "tool_calls": 2.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 6916.0,
+     "cost_usd": 0.0094
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe proposed FY27 Gen Z marketing budget is $24 million, of which 40% would shift to creator and community programs [[NORTHSTAR/FY27-MEMO@v1:S1.B7]]. The allocation sets creator and community programs at $9.6 million [[NORTHSTAR/FY27-MEMO@v1:S1.B7]]. The shift is funded mainly by reducing broad reach advertising and trimming spend on promotions that discount core styles [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n\n### Key findings\n\n- Proposed FY27 Gen Z marketing budget: $24 million, with 40% shifting to creator and community programs [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- Creator and community programs: $9.6 million; Social Shop and performance channels: $5.4 million [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- Other lines: Fit Promise launch and fit education content at $4.5 million, brand and awareness building at $3.0 million, and measurement and test reserve at $1.5 million [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- The brand strategy supports the direction, citing discovery through run clubs, studio instructors and creator videos, and trust in peer content over advertising [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B4]].\n- Focus group participants likewise said the group chat was often the first place they heard about a new product [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7]].\n\n### Interpretation\n\nThe budget shift matches the customer discovery pattern described in the strategy document and focus groups, which is the rationale the question points to [inference]. The memo's recommendation to measure repeat purchase, not only reach, suggests the shift is meant to be judged on outcomes rather than exposure [E10 supports the recommendation itself, but not this reading of intent] [inference].\n\n### Gaps & unknowns\n\nIt also does not show whether the proposal has been approved, since the memo is a recommendation to leadership [inference]. A finance-approved budget document or the leadership review outcome would close these gaps.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.5,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 0.5,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 928.2,
+      "total_ms": 4811.3,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6333,
+      "cost_usd": 0.016128,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe proposed FY27 Gen Z marketing budget is $24 million, of which 40% would shift to creator and community programs [[NORTHSTAR/FY27-MEMO@v1:S1.B7]]. The memo allocates $9.6 million to creator and community programs [[NORTHSTAR/FY27-MEMO@v1:S1.B7]]. The customer evidence is consistent with this direction, since interviewees and focus group participants say they learn about shoes through run clubs, group chats and creators rather than ads [[NORTHSTAR/INTERVIEWS@v1:S13.Q1]][[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7]].\n\n### Key findings\n\n- Proposed FY27 Gen Z marketing budget: $24 million, with 40% shifting to creator and community programs [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- Creator and community programs are allocated $9.6 million; other lines are $5.4 million for Social Shop and performance channels, $4.5 million for Fit Promise launch and fit education content, $3.0 million for brand and awareness building, and $1.5 million for measurement and test reserve [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- The shift is funded mainly by reducing broad reach advertising and trimming spend on promotions that discount core styles [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n- One interviewee found his last three pairs through a run club group chat, not ads [[NORTHSTAR/INTERVIEWS@v1:S13.Q1]].\n- Focus group participants named friends, team mates, class groups and creators as sources, and some said the group chat was the first place they heard about a new product [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7]].\n- The memo states that customers say they trust peer reviews and creator videos more than brand advertising [[NORTHSTAR/FY27-MEMO@v1:S1.B5]].\n\n### Interpretation\n\nThe budget shift toward creators and community appears to be aimed at the discovery behaviour customers describe, though the evidence does not show the memo was designed specifically around run clubs or group chats [inference]. Run clubs and group chats are peer channels that brand-run creator and community programs may only partly reach, so the fit between the spend and this behaviour is not established [inference].\n\n### Gaps & unknowns\n\nIt does not say how much creator and community spend would go to run-club or group-chat style activity versus other creator programs [inference]. It also lacks evidence on the effectiveness or return of such spending, which would require pilot results or channel attribution data.",
+     "stop_reason": "finish_research",
+     "tool_calls": 2,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 2702.5,
+      "total_ms": 12230.7,
+      "model_calls": 3,
+      "tool_calls": 2,
+      "retrieval_calls": 2,
+      "tokens_total": 13249,
+      "cost_usd": 0.025509,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-CF-01",
+    "question": "Northstar is sizing a paid fit-personalization tier at a 15% markup. What uptake should it plan for: the stated acceptance in the external study, or the take-up actually observed when pilot shoppers were offered that tier?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -401.7,
+     "total_ms": 12680.7,
+     "model_calls": 3.0,
+     "tool_calls": 3.0,
+     "retrieval_calls": 0.0,
+     "tokens_total": 16561.0,
+     "cost_usd": 0.0319
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nNorthstar should plan on the observed pilot take-up of 9% rather than the stated acceptance from the external study [[NORTHSTAR/PERSO-PILOT@v1:S1.B5]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]]. The study's own authors say its percentages should be treated as a ceiling and a way to rank options, not as a sales forecast [[NORTHSTAR/WTP-STUDY@v1:P4.B1]]. Northstar's pilot readout likewise recommends using revealed behaviour for any revenue assumption and treating stated willingness to pay only as a ceiling [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n\n### Key findings\n\n- Stated: roughly two in five Gen Z respondents said they would pay about 15% more for a fit-based premium [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- Observed: when offered a 15% premium tier for personalized fit, only 9% of pilot shoppers selected it, and most chose the free monogram [[NORTHSTAR/PERSO-PILOT@v1:S1.B5]].\n- Uptake of the paid tier was less than a quarter of the stated share, a larger gap than is typical even allowing for survey overstatement [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- The pilot tested exactly the price zone where the study found its strongest results [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- The study reports that acceptance falls quickly beyond 15%, and that most of the revenue opportunity lies at or below that level [[NORTHSTAR/WTP-STUDY@v1:P4.B2]].\n- Pilot customers said they would pay a bit more only if delivery were as fast as standard; average lead time was 12 days [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n- An external analyst said results showing low uptake of a paid tier would be consistent with other clients he has seen [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Conflicting evidence\n\n- An early read circulated in July suggested a more favorable picture, but it was based on week six data and a very small sample and is superseded by the final results [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n- The Q3 strategy review slide describes early repeat signals as encouraging but from a very small sample, with the final window still running at that time [[NORTHSTAR/Q3-REVIEW@v1:SL10]]. The final 90 day repeat figure is 18% against 24% for the control group [[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n\n### Interpretation\n\nUsing the 9% figure as the base case is the prudent choice, with the stated share serving only as an upper bound [inference]. If lead time could be cut materially, uptake might rise above 9%, but the evidence does not quantify by how much [inference].\n\n### Gaps & unknowns\n\nThe pilot ran in three stores plus online, so it may not represent a national program [inference]. It does not show how uptake would change with a lower premium, faster delivery, or a tiered structure; the study did not test tiering directly [inference]. A repeat pilot with shorter lead time, or price-variation tests, would close these gaps.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.5,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 0.5,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1944.2,
+      "total_ms": 7069.0,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6650,
+      "cost_usd": 0.01821,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nNorthstar should plan on the take-up observed in the pilot, which was 9% of shoppers choosing the 15% tier [[NORTHSTAR/PERSO-PILOT@v1:S1.B5]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]], not the stated acceptance from the external study. The study reported roughly two in five Gen Z respondents saying they would pay about 15% more [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]], and its own authors advise treating those percentages as a ceiling, not a sales forecast [[NORTHSTAR/WTP-STUDY@v1:P4.B1]]. Northstar's pilot readout recommends using revealed behaviour for any revenue assumption and stated willingness to pay only as a ceiling [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n\n### Key findings\n\n- Only 9% of pilot shoppers selected the 15% premium tier for personalized fit, and most chose the free monogram [[NORTHSTAR/PERSO-PILOT@v1:S1.B5]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n- The external study found roughly two in five Gen Z respondents saying they would pay about 15% more [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- Pilot uptake was less than a quarter of the stated share, a larger gap than is typical even allowing for survey overstatement [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- The study's authors say the gap between stated acceptance and observed uptake tends to be largest for attractive but non-essential features, and recommend treating percentages as a ceiling [[NORTHSTAR/WTP-STUDY@v1:P4.B1]].\n- Possible reasons for the gap include real money at point of sale, a 12 day lead time that was not part of the study scenario, and the free monogram alternative [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n- Customer survey verbatims say they would pay a bit more only if delivery were as fast as standard, a condition the pilot could not meet [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- An outside analyst said low paid-tier uptake would be consistent with other clients he has seen [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Conflicting evidence\n\n- Stated side: roughly two in five Gen Z respondents said they would pay about 15% more [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]].\n- Revealed side: 9% of pilot shoppers chose the 15% tier [[NORTHSTAR/PERSO-PILOT@v1:S1.B5]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n- An early July read was more favorable but was based on week six data and a very small sample, and is superseded by the final results [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]][[NORTHSTAR/PERSO-PILOT@v1:S1.B12]].\n\n### Interpretation\n\nA planning base case near the observed 9% is better supported than the stated figure, since it reflects real prices and orders [inference]. Uptake could differ if lead time were cut to match standard delivery, but the evidence does not show by how much, so any upside should be treated as a scenario rather than the base case [inference].\n\n### Gaps & unknowns\n\nThe pilot covered three stores plus online, so it may not represent a national rollout [inference]. No evidence shows uptake at a lower premium or with faster delivery. A repeat pilot with shorter lead time on a single style, or a test of different price points, would close these gaps.",
+     "stop_reason": "finish_research",
+     "tool_calls": 3,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "list_sources",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.5,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 0.5,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1542.5,
+      "total_ms": 19749.7,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "retrieval_calls": 1,
+      "tokens_total": 23211,
+      "cost_usd": 0.050068,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-CF-03",
+    "question": "The board tracks Gen Z share of revenue against a 30% FY28 target. What is the FY25 starting point, and do the brand team and finance agree on it?",
+    "delta": {
+     "gold_coverage": 0.3333,
+     "answer_completeness": 0.3333,
+     "gold_handle_recall": 0.3333,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -1287.9,
+     "total_ms": 9460.9,
+     "model_calls": 4.0,
+     "tool_calls": 8.0,
+     "retrieval_calls": 5.0,
+     "tokens_total": 29902.0,
+     "cost_usd": 0.0531
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe brand-materials figure for Gen Z's share of FY25 net revenue is 21%, up from 17% two years earlier [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. Finance, using a narrower age definition, puts the FY25 share a little under 20% [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]]. So the two teams do not quote the same starting point, though both treat their definitions as legitimate and plan to publish a reconciliation [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n\n### Key findings\n\n- The Brand Strategy executive summary states that Gen Z shoppers generated 21% of Northstar net revenue in FY25, against a board target of 30% by the end of FY28 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Finance defines Gen Z as customers aged 18 to 27; on that basis the share is \"a little under 20%\" in FY25 and \"a little above 20%\" in FY26 [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- Finance's Gen Z revenue was $110.8 million in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The brand team's loyalty program definition covers ages 16 through 29, which is why the share in brand materials is higher [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- Both views are described as legitimate for their purpose, and the two teams will publish a reconciliation bridge so the board target is measured on a single, stated basis [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The planning memo asks leadership to agree one Gen Z definition for target tracking, and the strategy team lists differing definitions as a risk to tracking progress [[NORTHSTAR/FY27-MEMO@v1:S1.B9]][[NORTHSTAR/BRAND-STRATEGY@v1:P7.B1]].\n\n### Conflicting evidence\n\n- Brand materials: 21% of FY25 net revenue [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Finance definition (ages 18 to 27): a little under 20% in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n\n### Interpretation\n\nThe gap of roughly one point or a bit more is probably explained by the wider 16-to-29 age band, but the evidence does not quantify the effect of each definition [inference]. Until one definition is adopted, progress toward the 30% target will look different depending on which team's baseline is used [inference].\n\n### Gaps & unknowns\n\nIt does not show which definition the board target was originally set against, or whether the reconciliation bridge or a single agreed definition has yet been published [inference]. The insights team's reconciled Gen Z definition for board use, or finance's reported FY25 share to one decimal place, would close this gap.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.6666666666666666,
+      "answer_completeness": 0.6666666666666666,
+      "gold_handle_recall": 0.6666666666666666,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 3263.9,
+      "total_ms": 9086.6,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6472,
+      "cost_usd": 0.017566,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe two teams do not agree on a single starting point [inference]. Finance, which defines Gen Z as customers aged 18 to 27, puts the FY25 share at 19.4% [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]], while the brand team's materials cite 21% for FY25 on its wider definition [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. The brand team's loyalty definition covers ages 16 through 29, which explains why its figure is higher [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n\n### Key findings\n\n- Brand strategy document: Gen Z shoppers generated 21% of net revenue in FY25, up from 17% two years earlier [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- The document says the finance share is \"a little under 20%\" in FY25 and attributes the higher brand figure to the wider 16 to 29 age band [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The two teams plan to publish a reconciliation bridge so the board target is measured on one stated basis [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The reconciled Gen Z definition for board use has not yet been published [[NORTHSTAR/BRAND-STRATEGY@v1:P7.B2]].\n- The board target is a Gen Z share of revenue of 30% by the end of FY28 [[NORTHSTAR/FY27-MEMO@v1:S1.B2]].\n\n### Conflicting evidence\n\n- Brand team: 21% FY25 share, on a broader age definition [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]][[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The memo flags that differing definitions risk confusion about progress against the board target [[NORTHSTAR/BRAND-STRATEGY@v1:P7.B1]].\n\n### Interpretation\n\nNeither figure is wrong; they measure different populations, so the FY25 baseline depends on which definition the board adopts [inference]. Until the reconciled definition is published, progress toward 30% could look materially different depending on which team's figure is used [inference].\n\n### Gaps & unknowns\n\nThe reconciliation bridge between the two definitions is not yet available. The board's resolution or the published reconciliation document would close these gaps.",
+     "stop_reason": "step_limit",
+     "tool_calls": 8,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 4,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 4,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1976.0,
+      "total_ms": 18547.5,
+      "model_calls": 5,
+      "tool_calls": 8,
+      "retrieval_calls": 6,
+      "tokens_total": 36374,
+      "cost_usd": 0.070669,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-CF-05",
+    "question": "Should Northstar lead its Gen Z messaging with personalization? Check what framing excited the focus group most, and where personalization landed when participants allocated a fixed budget of points across benefits.",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -3522.9,
+     "total_ms": 6123.4,
+     "model_calls": 3.0,
+     "tool_calls": 4.0,
+     "retrieval_calls": 2.0,
+     "tokens_total": 16858.0,
+     "cost_usd": 0.027
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nNo, the evidence does not support leading Gen Z messaging with personalization. It drew the strongest reaction in the focus group when framed as a status signal friends would notice [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]], but in the points allocation exercise participants ranked fit guarantee, faster delivery and honest materials information ahead of it. The focus group summary itself recommends positioning personalization as a gifting, team and status feature rather than the lead reason to buy [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1]].\n\n### Key findings\n\n- The framing that excited the group most was personalization as a status signal, such as initials on a heel tab or a team colorway; several participants said they would post a personalized pair before a standard one [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- In the hypothetical 100-point allocation, personalization did not lead; fit guarantee, faster delivery and honest materials information ranked ahead [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Participants described a well-fitting, quickly delivered shoe as something they need and a personalized shoe as something they would enjoy [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- The focus group implications recommend testing personalization in small steps instead of leading with it [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1]].\n- The pilot readout states that the hypothesis that young customers will pay a premium for made-for-them products is not supported in the form tested, and that long delivery waits were the main reason people did not return [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n- The May survey found personalization was named by a small share of respondents as their top frustration, while fit inconsistency led [[NORTHSTAR/FY27-MEMO@v1:S1.B4]].\n- The planning memo recommends keeping personalization a limited test in FY27 [[NORTHSTAR/FY27-MEMO@v1:S1.B6]], and the Q3 review asks to hold it at a limited test [[NORTHSTAR/Q3-REVIEW@v1:SL14]].\n\n### Conflicting evidence\n\n- An early July read of the pilot suggested a more favorable picture, but it was based on week six data and a very small sample and is described as superseded by the final results [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n- Stated willingness to pay was real in the March study (roughly two in five would pay about 15% more) [[NORTHSTAR/PERSO-PILOT@v1:S1.B9]], but revealed uptake of the paid tier was less than a quarter of the stated share; the pilot readout advises using revealed behavior for revenue assumptions.\n\n### Interpretation\n\nPersonalization is better suited to a secondary role in messaging, such as gifting, team and status content, than to the headline benefit [inference]. Leading with it would promise something customers rank below fit and delivery speed, and the pilot's slow lead time could undercut the promise [inference].\n\n### Gaps & unknowns\n\nThe focus group had only ten participants and its allocation exercise was hypothetical, so the ranking is directional, not statistical [inference]. The evidence does not include message testing of personalization-led versus fit-led copy with a larger Gen Z sample, and it does not show how personalization-led messaging would affect acquisition. A/B message tests or a quantitative survey with a larger sample would close these gaps.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 4516.0,
+      "total_ms": 10848.1,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6469,
+      "cost_usd": 0.018696,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nPersonalization excited the focus group most when it was framed as a status signal that friends would notice [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]]. But when participants spent a hypothetical 100 points, it did not lead: fit guarantee, faster delivery and honest materials information ranked ahead of it [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]]. The evidence therefore does not support leading Gen Z messaging with personalization; it is better positioned as a gifting, team and status feature [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1]].\n\n### Key findings\n\n- The strongest reaction came from personalization framed as a status signal, such as initials on a heel tab or a team colorway; several participants said they would post a personalized pair before a standard one [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- In the points allocation exercise, participants ranked fit guarantee, faster delivery and honest materials information ahead of personalization [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- Participants described a shoe that fits and arrives quickly as something they need, and a personalized shoe as something they would enjoy [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]].\n- The focus group's own implications recommend positioning personalization as a gifting, team and status feature tested in small steps, not as the lead reason to buy [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S4.B1]].\n- Waiting was acceptable for gifts and special items, but longer lead times on everyday purchases were a reason to shop elsewhere [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B5]].\n- Pilot feedback was consistent: customers liked the scan and colorway tool but complained about waiting time, and one reviewer said the order took almost two weeks and she nearly cancelled [[NORTHSTAR/PERSO-PILOT@v1:S1.B8]].\n- A separate willingness-to-pay study found longer waits reduced acceptance of a premium at every price level [[NORTHSTAR/WTP-STUDY@v1:P3.B2]].\n\n### Conflicting evidence\n\n- The willingness-to-pay study scores personalized fit at 45% relative importance, the top attribute, versus 15% for personalized colorway and 7% for name or initials [[NORTHSTAR/WTP-STUDY@v1:P3.B2]]. The focus group put personalization behind fit guarantees and other basics [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6]]. These measure different things (a conjoint on personalization options versus a point allocation across benefits), so they may be compatible: fit-based personalization appears more valued than cosmetic personalization.\n\n### Interpretation\n\nThe most defensible lead message for Gen Z is fit confidence and delivery reliability, with personalization as a secondary, delight-oriented layer [inference]. If personalization is highlighted, fit-based personalization appears the stronger angle, while cosmetic options such as initials carry less weight [inference].\n\n### Gaps & unknowns\n\nThe focus group had only ten participants, and its allocation exercise reflects stated priorities in a hypothetical setting, so the ranking is directional, not statistical [inference]. The evidence does not show how personalization-led messaging would perform with real customers, in tests of ads or landing pages, or whether Gen Z survey data confirm the focus group ranking. A messaging A/B test and the survey data on stated priorities would close these gaps.",
+     "stop_reason": "finish_research",
+     "tool_calls": 4,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 0.5,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 993.1,
+      "total_ms": 16971.5,
+      "model_calls": 4,
+      "tool_calls": 4,
+      "retrieval_calls": 3,
+      "tokens_total": 23327,
+      "cost_usd": 0.045652,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-FP-04",
+    "question": "How many people did the external willingness-to-pay study survey, and how did the older millennial respondents compare on paying a 15% premium for fit-personalized shoes?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -2555.1,
+     "total_ms": 6118.4,
+     "model_calls": 4.0,
+     "tool_calls": 3.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 16379.0,
+     "cost_usd": 0.0204
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe external study surveyed 2,400 US consumers aged 16 to 40 in March 2026, including 1,350 Gen Z respondents [[NORTHSTAR/WTP-STUDY@v1:P1.B3]]. The evidence does not break out \"older millennials\" as a separate group; it reports millennials overall, of whom 29% would accept a 15% premium for fit-personalized footwear, versus 38% of Gen Z [[NORTHSTAR/WTP-STUDY@v1:P3.B3]][[NORTHSTAR/WTP-STUDY@v1:P2.B3]].\n\n### Key findings\n\n- The sample was 2,400 US consumers aged 16 to 40, with roughly 780 classified as millennials [[NORTHSTAR/WTP-STUDY@v1:P1.B3]].\n- 29% of millennials said they would pay a 15% premium for footwear personalized to their fit [[NORTHSTAR/WTP-STUDY@v1:P2.B3]].\n- 38% of Gen Z respondents accepted the same 15% premium [[NORTHSTAR/WTP-STUDY@v1:P2.B2]].\n- The study's acceptance table shows 38% for Gen Z and 29% for millennials at a 15% premium [[NORTHSTAR/WTP-STUDY@v1:P3.B3]].\n- Margins of error for the Gen Z and millennial groups are roughly plus or minus three points [[NORTHSTAR/WTP-STUDY@v1:P1.B3]].\n\n### Interpretation\n\nMillennials accepted the 15% fit premium at a lower rate than Gen Z, a gap larger than the stated margin of error for each group [inference].\n\n### Gaps & unknowns\n\nThe evidence does not separate older millennials from the broader millennial cohort, so a comparison specific to older millennials cannot be made [inference]. A sub-cohort cut by birth year from the study's underlying data would close this gap.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 3934.6,
+      "total_ms": 7026.4,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 5514,
+      "cost_usd": 0.013282,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe study surveyed 2,400 US consumers aged 16 to 40 in March 2026 [[NORTHSTAR/WTP-STUDY@v1:P1.B3]]. Millennials were less willing to pay: 29% said they would pay a 15% premium for fit-personalized footwear, versus 38% of Gen Z [[NORTHSTAR/WTP-STUDY@v1:P2.B3]][[NORTHSTAR/WTP-STUDY@v1:P2.B2]][[NORTHSTAR/WTP-STUDY@v1:P3.B3]]. The evidence does not break out \"older millennials\" as a separate group [inference].\n\n### Key findings\n\n- The sample was 2,400 US consumers aged 16 to 40, including 1,350 Gen Z respondents and roughly 780 millennials [[NORTHSTAR/WTP-STUDY@v1:P1.B3]].\n- Among millennial respondents, 29% would accept a 15% premium for fit personalization [[NORTHSTAR/WTP-STUDY@v1:P2.B3]][[NORTHSTAR/WTP-STUDY@v1:P3.B3]].\n- The comparable Gen Z figure is 38% [[NORTHSTAR/WTP-STUDY@v1:P2.B2]][[NORTHSTAR/WTP-STUDY@v1:P3.B3]].\n- Margins of error for the Gen Z and millennial groups are roughly plus or minus three points [[NORTHSTAR/WTP-STUDY@v1:P1.B3]].\n\n### Interpretation\n\nThe gap between the two cohorts (29% vs 38%) is larger than the stated margin of error, so it likely reflects a real difference in stated willingness to pay rather than noise [inference].\n\n### Gaps & unknowns\n\nThe evidence reports millennials as a single group and gives no age split within it, so a comparison specific to older millennials cannot be made [inference]. A cross-tab of the survey data by exact age band would close this gap.",
+     "stop_reason": "finish_research",
+     "tool_calls": 3,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1379.5,
+      "total_ms": 13144.8,
+      "model_calls": 5,
+      "tool_calls": 3,
+      "retrieval_calls": 2,
+      "tokens_total": 21893,
+      "cost_usd": 0.033691,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-FP-05",
+    "question": "How much of Gen Z athletic spending now flows through third-party platforms instead of brand-owned sites, and how far do young shoppers trust fellow customers over advertising?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -919.3,
+     "total_ms": 8681.3,
+     "model_calls": 3.0,
+     "tool_calls": 5.0,
+     "retrieval_calls": 2.0,
+     "tokens_total": 18068.0,
+     "cost_usd": 0.0298
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nMarketplace and social commerce together took 34% of Gen Z athletic spend in 2026, compared with 22% for brand owned sites [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]]. On trust, 57% of Gen Z respondents said they trust peer reviews and creator try on videos more than brand advertising [[NORTHSTAR/GENZ-TRENDS@v2:P4.B1]]. Social commerce alone accounts for 26% of Gen Z athletic footwear purchases, a figure the panel's own analyst expects to be restated upward [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]][[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Key findings\n\n- Marketplace and social commerce together took 34% of Gen Z athletic spend in 2026, versus 22% for brand owned sites [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n- Brand owned sites remain important for loyal customers but are losing share of first purchases [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n- Social commerce platforms account for 26% of Gen Z athletic footwear purchases, according to the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]].\n- 57% of Gen Z respondents trust peer reviews and creator try on videos more than brand advertising; advertising was seen as a prompt to look, not a reason to buy [[NORTHSTAR/GENZ-TRENDS@v2:P4.B1]].\n- Northstar's internal documents echo this: customers trust peer content over advertising, and Social Shop is its fastest growing route to market [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B4]].\n- The 2026 trends report recommends using 2026 values wherever the two editions overlap and treating earlier values as superseded [[NORTHSTAR/GENZ-TRENDS@v2:P1.B2]].\n\n### Conflicting evidence\n\n- The 26% social commerce share is a footwear-specific figure from the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]], while the 34% figure covers marketplace plus social commerce across Gen Z athletic spend [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]]. These are different metrics, not direct contradictions.\n- The 2026 edition states that several published figures moved versus 2025, partly from real behavior change and partly from better panel reach [[NORTHSTAR/GENZ-TRENDS@v2:P1.B2]].\n\n### Interpretation\n\nThird-party platforms (marketplaces plus social) appear to capture more Gen Z athletic spend than brand owned sites, with the 34% versus 22% gap pointing in a consistent direction across sources [inference]. Trust in peer evidence over advertising appears to be a majority view, though 57% leaves a substantial minority who do not hold it [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give the split between marketplace and social commerce within the combined spend share, nor the trust figure by segment, region or category. A restated edition of the trends report, or a panel cut by channel and category, would close these gaps.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1550.4,
+      "total_ms": 7643.8,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 7555,
+      "cost_usd": 0.021044,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nMarketplace and social commerce together took 34% of Gen Z athletic spend in 2026, versus 22% for brand owned sites [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]]. Separately, social commerce alone accounts for 26% of Gen Z athletic footwear purchases, though an analyst expects that figure to be restated upward [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]][[NORTHSTAR/ANALYST-CALL@v1:S1.B2]]. On trust, 57% of Gen Z respondents said they trust peer reviews and creator try on videos more than brand advertising [[NORTHSTAR/GENZ-TRENDS@v2:P4.B1]].\n\n### Key findings\n\n- Marketplace and social commerce together took 34% of Gen Z athletic spend in 2026, compared with 22% for brand owned sites [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n- Social commerce platforms account for 26% of Gen Z athletic footwear purchases, per the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]].\n- 57% of Gen Z respondents trust peer reviews and creator try on videos more than brand advertising [[NORTHSTAR/GENZ-TRENDS@v2:P4.B1]].\n- Advertising was seen as a prompt to look, not a reason to buy, and reviews on fit, sizing and durability were rated most useful [[NORTHSTAR/GENZ-TRENDS@v2:P4.B1]].\n- Brand owned sites are losing share of first purchases [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n- An analyst reports that creator videos and peer reviews are the strongest purchase triggers, but return rates on social orders are also higher [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Conflicting evidence\n\n- The 26% social commerce figure comes from the 2026 panel [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]]. The analyst says the panel's measurement will be restated upward in its next edition because earlier panels undercounted young shoppers [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]]. The 26% is therefore likely a floor, and no restated value is provided.\n- The 34% figure covers all spend across marketplaces and social combined [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]], while the 26% covers footwear purchases through social alone [[NORTHSTAR/GENZ-TRENDS@v2:P2.B2]]. These measure different things and are not directly comparable.\n\n### Interpretation\n\nThe 34% vs 22% comparison suggests third-party platforms now take a larger share of Gen Z athletic spend than brand owned sites, though the two figures come from a single note and may differ in scope from the footwear-only data [inference]. The trust finding helps explain the channel shift, since creator videos and reviews live on social and marketplace platforms rather than brand sites [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give a single reconciled share of Gen Z spend through third-party platforms, nor a restated social commerce figure. A methodology note or the next edition of the trends report would close these gaps.",
+     "stop_reason": "finish_research",
+     "tool_calls": 5,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "list_sources",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 631.1,
+      "total_ms": 16325.1,
+      "model_calls": 4,
+      "tool_calls": 5,
+      "retrieval_calls": 3,
+      "tokens_total": 25623,
+      "cost_usd": 0.050892,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-RF-01",
+    "question": "What CTR uplift did bespoke-colour email creative achieve against business-as-usual sends?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -550.2,
+     "total_ms": 11202.0,
+     "model_calls": 3.0,
+     "tool_calls": 3.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 10641.0,
+     "cost_usd": 0.0158
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nCustom colorway emails drove a 2.3x click-through rate versus standard creative [[NORTHSTAR/Q3-REVIEW@v1:SL12]]. This is the only quantified email uplift in the evidence, and it comes from an early test with short windows [[NORTHSTAR/Q3-REVIEW@v1:SL12]].\n\n### Key findings\n\n- Custom colorway emails drove a 2.3x click through rate versus standard creative [[NORTHSTAR/Q3-REVIEW@v1:SL12]].\n- The results are described as early and based on short test windows [[NORTHSTAR/Q3-REVIEW@v1:SL12]].\n- Internal notes say email clicks are a cheap, fast signal, but clicks are not purchases, and interest does not automatically convert into willingness to pay a premium or to wait [[NORTHSTAR/Q3-REVIEW@v1:SL12.N1]].\n\n### Interpretation\n\n\"Standard creative\" in [[NORTHSTAR/Q3-REVIEW@v1:SL12]] is most plausibly the same as the business-as-usual sends in the question, though the evidence does not define it explicitly [inference]. The 2.3x figure indicates top-of-funnel interest only, not a sales or revenue uplift [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give absolute click-through rates, send volumes, test duration, audience segment or statistical significance. It also does not show downstream conversion for these emails [inference]. The underlying test report or email platform data would close these gaps.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1398.3,
+      "total_ms": 4079.1,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6044,
+      "cost_usd": 0.013702,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nCustom colorway emails drove a 2.3x click-through rate versus standard creative [[NORTHSTAR/Q3-REVIEW@v1:SL12]]. The evidence describes the comparison group as \"standard creative\", which is the closest available match to business-as-usual sends [inference].\n\n### Key findings\n\n- Custom colorway emails drove a 2.3x click through rate versus standard creative [[NORTHSTAR/Q3-REVIEW@v1:SL12]].\n- The results are described as early and based on short test windows [[NORTHSTAR/Q3-REVIEW@v1:SL12]].\n- Email clicks are characterised as a cheap, fast signal; clicks are not purchases, and interest does not automatically convert into willingness to pay a premium or to wait [[NORTHSTAR/Q3-REVIEW@v1:SL12.N1]].\n\n### Interpretation\n\nThe 2.3x figure indicates top-of-funnel interest in colorway customization, not demonstrated purchase demand [inference]. Because stated or click-based interest can overstate real behaviour, the uplift should be treated as a directional signal rather than a sales forecast [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give absolute click-through rates, send volumes, test duration, audience segments or statistical significance. It does not establish downstream conversion, revenue per send, or whether the \"standard creative\" baseline matches the full set of regular sends [inference]. Closing these gaps would require the underlying email test report or campaign analytics, including conversion and order data.",
+     "stop_reason": "finish_research",
+     "tool_calls": 3,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 848.1,
+      "total_ms": 15281.1,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "retrieval_calls": 2,
+      "tokens_total": 16685,
+      "cost_usd": 0.02948,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-RF-03",
+    "question": "Which shopper personas does Northstar's Gen Z segmentation define?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": 1810.8,
+     "total_ms": 12585.4,
+     "model_calls": 3.0,
+     "tool_calls": 4.0,
+     "retrieval_calls": 2.0,
+     "tokens_total": 17812.0,
+     "cost_usd": 0.0312
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nNorthstar's brand team divides its Gen Z customer base into four segments: Campus Competitors, Studio Social, Trail Starters and Value Seekers [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]]. The segmentation was rebuilt this year from survey responses and order history [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n\n### Key findings\n\n- Campus Competitors make up 24% of Gen Z and are college and club athletes aged 18 to 22 [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Studio Social makes up 31% and covers class-based fitness and athleisure shoppers [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Trail Starters make up 19% and are new runners and hikers going light trail [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Value Seekers make up 26% and are price-led shoppers who switch with Pace & Co. [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Studio Social is the largest Gen Z segment and carries the highest average order value of $94 [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B2]].\n- Customer interviews were recruited to cover all four Gen Z segments [[NORTHSTAR/INTERVIEWS@v1:S2.B1]].\n\n### Gaps & unknowns\n\nThe evidence does not describe Campus Competitors, Trail Starters or Value Seekers beyond a one-line definition each, so their average order values, buying behavior and needs are not established. A fuller segmentation methodology document or the underlying survey cut would close this gap.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 0.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1191.6,
+      "total_ms": 3542.4,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6520,
+      "cost_usd": 0.014846,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nNorthstar's Gen Z segmentation defines four segments: Campus Competitors, Studio Social, Trail Starters and Value Seekers [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]]. The framework was rebuilt this year from survey responses and order history for use by merchandising, marketing and product [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n\n### Key findings\n\n- Campus Competitors make up 24% of the Gen Z customer base and are college and club athletes aged 18 to 22 [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Studio Social make up 31% and are described as class based fitness and athleisure shoppers [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Trail Starters make up 19% and are new runners and hikers going light trail [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Value Seekers make up 26% and are price led, switching with Pace & Co. [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B1]].\n- Campus Competitors buy for training and team sport, are driven by team calendars, group orders and peer behavior, and are heavy users of social channels for discovery [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B3]].\n\n### Gaps & unknowns\n\nThe evidence provided only describes Campus Competitors in depth; the other three segments have only brief descriptions [inference]. The survey document notes that segment-level observations are directional because the sample is too small to cut reliably by segment and region at once [inference]. Fuller segment profiles (needs, purchase drivers, assortment implications) would require the remaining sub-sections of the brand strategy document [inference].",
+     "stop_reason": "finish_research",
+     "tool_calls": 4,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 0.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 3002.4,
+      "total_ms": 16127.8,
+      "model_calls": 4,
+      "tool_calls": 4,
+      "retrieval_calls": 3,
+      "tokens_total": 24332,
+      "cost_usd": 0.046094,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-IS-01",
+    "question": "How many patents does Kinetic Lab hold on its phone foot-scanning technology?",
+    "delta": {
+     "gold_coverage": null,
+     "answer_completeness": null,
+     "gold_handle_recall": null,
+     "unsupported_claim_rate": null,
+     "first_token_ms": -414.7,
+     "total_ms": 5976.0,
+     "model_calls": 3.0,
+     "tool_calls": 3.0,
+     "retrieval_calls": 2.0,
+     "tokens_total": 11154.0,
+     "cost_usd": 0.0145
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe evidence does not state how many patents Kinetic Lab holds on its phone foot-scanning technology. None of the provided items mention patents, patent filings or intellectual property holdings.\n\n### Gaps & unknowns\n\nThe evidence describes the scan process, the fit system and the micro factory, but never addresses patent ownership or counts [inference]. A patent registry search (for example national or international patent office databases, filtered by assignee), or an IP or risk-factors section of a company filing, would close this gap. The annual report excerpts provided are partial, so a full annual report or investor materials might disclose intellectual property holdings [inference].",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 0.0,
+      "gold_coverage": null,
+      "answer_completeness": null,
+      "gold_handle_recall": null,
+      "unsupported_claim_rate": null,
+      "first_token_ms": 1978.3,
+      "total_ms": 4700.8,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 3897,
+      "cost_usd": 0.008072,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe evidence does not state how many patents, if any, Kinetic Lab holds on its phone foot-scanning technology.\n\n### Gaps & unknowns\n\nNone of the provided items mention patents, patent applications, or intellectual property ownership. They describe the scan process, the product range, and financial performance, but not legal protection of the technology. A patent database search (for example USPTO, EPO or WIPO records filed under Kinetic Lab or its founders) or the company's intellectual property disclosures in a regulatory filing or investor materials would close this gap. Whether the scanning software is proprietary, licensed, or built on third-party technology is also not established [inference].",
+     "stop_reason": "finish_research",
+     "tool_calls": 3,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 0.0,
+      "gold_coverage": null,
+      "answer_completeness": null,
+      "gold_handle_recall": null,
+      "unsupported_claim_rate": null,
+      "first_token_ms": 1563.6,
+      "total_ms": 10676.8,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "retrieval_calls": 3,
+      "tokens_total": 15051,
+      "cost_usd": 0.022596,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-IS-06",
+    "question": "How did Northstar's share price react after the Q3 strategy review?",
+    "delta": {
+     "gold_coverage": null,
+     "answer_completeness": null,
+     "gold_handle_recall": null,
+     "unsupported_claim_rate": null,
+     "first_token_ms": -148.8,
+     "total_ms": 12074.3,
+     "model_calls": 3.0,
+     "tool_calls": 3.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 14995.0,
+     "cost_usd": 0.0224
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe evidence does not say how Northstar's share price reacted after the Q3 strategy review. None of the provided items contains share price, stock market or investor reaction data.\n\n### Gaps & unknowns\n\nNo item reports any share price, trading volume or market reaction following the review. The review is only described through a title slide and a next-steps slide, and neither covers external market response [inference]. A market data source (exchange price history around the review date), analyst or investor commentary, or an investor relations release would close this gap. It is also unclear from the evidence whether Northstar is publicly listed, which would need to be confirmed from a corporate filing or company profile.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 0.0,
+      "gold_coverage": null,
+      "answer_completeness": null,
+      "gold_handle_recall": null,
+      "unsupported_claim_rate": null,
+      "first_token_ms": 1555.2,
+      "total_ms": 3752.0,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 6553,
+      "cost_usd": 0.013408,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe evidence does not answer this question [inference]. None of the provided items reports Northstar's share price, any stock market reaction, or trading data following the Q3 strategy review [inference].\n\n### Key findings\n\n- The only item tied to the review is a title slide giving its date as July 21, 2026, with no financial market information [[NORTHSTAR/Q3-REVIEW@v1:SL1]].\n- Other Northstar items cover revenue, Gen Z share targets, brand awareness and customer support metrics, not share price performance [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]][[NORTHSTAR/SUPPORT-THEMES@v1:P3.B3]].\n\n### Gaps & unknowns\n\nThe evidence does not establish whether Northstar is publicly traded, what its share price was before or after the review, or how analysts or investors responded. Closing this gap would need market data (historical price series around the review date), an exchange filing or investor relations release, or equity analyst commentary covering the period.",
+     "stop_reason": "finish_research",
+     "tool_calls": 3,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "list_sources",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": null,
+      "answer_completeness": null,
+      "gold_handle_recall": null,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1406.4,
+      "total_ms": 15826.3,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "retrieval_calls": 2,
+      "tokens_total": 21548,
+      "cost_usd": 0.03583,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-SC-01",
+    "question": "How much revenue did Northstar actually book for the FY25 year, per the financial summary?",
+    "delta": {
+     "gold_coverage": -1.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": -1.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": 1198.4,
+     "total_ms": 14233.5,
+     "model_calls": 5.0,
+     "tool_calls": 4.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 18761.0,
+     "cost_usd": 0.03
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe brand strategy document states the same figure as $571.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]].\n\n### Key findings\n\n- The Segment_Revenue sheet's Total row gives fy25_revenue_usd_m of 571 for \"All identified customers\" [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6]].\n- The brand strategy document reports FY25 net revenue closing at $571.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]][[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- The segment rows are consistent with this total: Gen Z (18-27) at 110.8, Millennial (28-43) at 251.2, Gen X (44-59) at 158.2 and Boomer and older (60+) at 50.8, all in USD millions [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R5]].\n\n### Gaps & unknowns\n\nThe P&L summary sheet is described only by its structure, with no actual values shown, so the figure could not be confirmed on that sheet [inference]. The FY25 figure is labelled as an actual in that sheet's column description, but no audited or externally reported statement is provided to verify it [inference].",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 583.0,
+      "total_ms": 3715.4,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 4842,
+      "cost_usd": 0.011146,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe financial summary's Segment_Revenue total row shows 571 (USD millions) for the prior-year column [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6]]. The four age-segment rows are stated separately and are listed below [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4]][[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R5]].\n\n### Key findings\n\n- The Total row, defined as \"All identified customers\", states fy25_revenue_usd_m of 571 [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6]].\n- Segment-level fy25_revenue_usd_m values are 110.8 for Gen Z (18-27) [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]], 251.2 for Millennial (28-43) [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R3]], 158.2 for Gen X (44-59) [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R4]], and 50.8 for Boomer and older (60+) [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R5]].\n- For comparison, the Total row states fy26_le_revenue_usd_m of 612 and yoy_growth_pct of 7.2 [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R6]].\n\n### Gaps & unknowns\n\nThe PnL_Summary table (net revenue line, fy25_actual column) is described only by its structure; its actual values are not shown, so the segment total cannot be reconciled with reported net revenue [inference]. The segment total covers \"All identified customers\", so it may exclude revenue from unidentified customers. A reconciliation note or the full P&L values would close this gap.",
+     "stop_reason": "step_limit",
+     "tool_calls": 4,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 4,
+       "tool": "get_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 0.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1781.4,
+      "total_ms": 17948.9,
+      "model_calls": 6,
+      "tool_calls": 4,
+      "retrieval_calls": 2,
+      "tokens_total": 23603,
+      "cost_usd": 0.041141,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-SC-03",
+    "question": "What value does the category sizing workbook put on the 2026 US athletic footwear market for millennials?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -3003.9,
+     "total_ms": 3674.9,
+     "model_calls": 3.0,
+     "tool_calls": 3.0,
+     "retrieval_calls": 0.0,
+     "tokens_total": 12409.0,
+     "cost_usd": 0.0153
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe category sizing workbook puts the 2026 US millennial athletic footwear market at 23.9 (value_usd_bn), with year-over-year growth of 3 percent [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]]. The figure is labelled an Estimate in the Cobalt Insight Partners model, September 2026 update [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]].\n\n### Key findings\n\n- Athletic footwear, US, Millennial, 2026: value_usd_bn 23.9, yoy_growth_pct 3, basis Estimate [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]].\n- For context, the adjacent year 2025 is recorded at value_usd_bn 23.2 (Estimate) [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R22]], and the 2027 forecast at value_usd_bn 24.6 [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R24]].\n- The related personalized athletic footwear segment for 2026 is recorded at value_usd_bn 0.9, which is a separate category line, not part of the answer to this question [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R35]].\n\n### Interpretation\n\nThe evidence notes flag many \"conflicts\", but these only reflect different years for different records; there is no competing value for the 2026 athletic footwear figure [inference].\n\n### Gaps & unknowns\n\nThe evidence does not state whether the personalized footwear line is included in the broader athletic footwear total. An independent source, such as retail sales data or a methodology note from the model provider, would help validate the estimate [inference].",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 4323.3,
+      "total_ms": 7743.5,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 5188,
+      "cost_usd": 0.012758,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe category sizing workbook puts the 2026 US millennial athletic footwear market at 23.9 (value_usd_bn), labelled as an estimate [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]]. It shows 3 as the year-over-year growth figure for 2026 [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]]. The figure comes from the Cobalt Insight Partners model, September 2026 update [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]].\n\n### Key findings\n\n- 2026 athletic footwear, US millennials: value_usd_bn 23.9, yoy_growth_pct 3, basis Estimate [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R23]].\n- Neighbouring years in the same series: 2024 is 22.6 (Actual) [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R21]], 2027 is 24.6 (Forecast) [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R24]], and 2028 is 25.3 (Forecast) [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R25]].\n\n### Gaps & unknowns\n\nAn independent source, such as a second market model or company-reported sales data, would help validate the estimate [inference].",
+     "stop_reason": "finish_research",
+     "tool_calls": 3,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "list_sources",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "get_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1319.4,
+      "total_ms": 11418.4,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "retrieval_calls": 1,
+      "tokens_total": 17597,
+      "cost_usd": 0.028056,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-SC-05",
+    "question": "What is the FY26 return rate of the original Knit Runner, SKU NS-KR1?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.2,
+     "first_token_ms": 2358.8,
+     "total_ms": 12616.9,
+     "model_calls": 4.0,
+     "tool_calls": 4.0,
+     "retrieval_calls": 3.0,
+     "tokens_total": 18365.0,
+     "cost_usd": 0.0249
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nThe evidence reports a return rate of 13.1% for the original Knit Runner, but it does not tie that figure to SKU NS-KR1 or to FY26 specifically [[NORTHSTAR/Q3-REVIEW@v1:SL8]][[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]]. The SKU-level tables that would give the FY26 figure for NS-KR1 are described only by their column structure, with no values shown [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]][[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n\n### Key findings\n\n- The Knit Runner 2 has a 16.8% return rate, against 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]].\n- The brand strategy document repeats the same comparison: 16.8% against 13.1%, with the newest running shoe returned at a higher rate than its predecessor [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]].\n- The SKU_Performance table has a return_rate_pct column and lists \"Knit Runner\" as a product, but the evidence provided shows no row values [[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n- The Returns table includes NS-KR1 as a SKU for \"Knit Runner\" with a total_sku_returns column, but no values are shown [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n\n### Conflicting evidence\n\n- E1, E4 and E9 are flagged as possibly restating or superseding figures. The evidence does not show which figures, and E1 and E9 give identical values (16.8% and 13.1%), so no conflicting value for the original Knit Runner is visible [[NORTHSTAR/Q3-REVIEW@v1:SL8]][[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]].\n\n### Interpretation\n\n13.1% is probably the current return rate of the original Knit Runner as used in internal strategy documents, but the evidence does not state the period it covers [inference]. The 13.1% figure may correspond to the return_rate_pct value for NS-KR1 in the SKU_Performance table, but the evidence does not confirm this [inference].\n\n### Gaps & unknowns\n\nThe actual row values for NS-KR1 in the SKU_Performance and Returns tables are not shown. Pulling the NS-KR1 row from the SKU_Performance sheet, with its return_rate_pct and units for FY26 year to date, would settle the question [inference]. It is unclear which figures the restatement flags refer to; a version history or change note for the strategy review would clarify this.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 0.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1876.6,
+      "total_ms": 7426.9,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 5781,
+      "cost_usd": 0.016,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nThe evidence gives a return rate of 13.1% for the original Knit Runner, as quoted in two strategy documents [[NORTHSTAR/Q3-REVIEW@v1:SL8]][[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]]. It does not give a figure explicitly labelled FY26 or tied to SKU NS-KR1 [inference]. The SKU-level return_rate_pct data exists only as a table schema without values [[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n\n### Key findings\n\n- The Q3 Strategy Review states the return rate is 16.8% on the Knit Runner 2, against 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]].\n- The Brand Strategy 2026 document repeats the same comparison, 16.8% against 13.1% [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]].\n\n### Conflicting evidence\n\n- No source states a different return rate for the original Knit Runner. The two sources citing 13.1% are consistent with each other [[NORTHSTAR/Q3-REVIEW@v1:SL8]][[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]].\n\n### Gaps & unknowns\n\nNeither document ties the figure to SKU NS-KR1 by identifier, and the SKU-level values are not shown [inference]. The row for NS-KR1 in the SKU_Performance table (return_rate_pct) would settle both points, as would a note in the strategy documents defining the period and basis of the return rate [inference].",
+     "stop_reason": "finish_research",
+     "tool_calls": 4,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 0.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 0.0,
+      "unsupported_claim_rate": 0.2,
+      "first_token_ms": 4235.4,
+      "total_ms": 20043.8,
+      "model_calls": 5,
+      "tool_calls": 4,
+      "retrieval_calls": 4,
+      "tokens_total": 24146,
+      "cost_usd": 0.040909,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-SC-08",
+    "question": "What brand position does Northstar's 2026 brand strategy want to own with active Gen Z consumers?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -5008.1,
+     "total_ms": -5073.3,
+     "model_calls": 4.0,
+     "tool_calls": 4.0,
+     "retrieval_calls": 2.0,
+     "tokens_total": 20018.0,
+     "cost_usd": 0.027
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nNorthstar's 2026 brand strategy wants to own the position of the \"dependable fit brand\" for active Gen Z consumers, rather than competing on elite performance claims [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. It explicitly chooses not to out-engineer the premium incumbent or out-discount value players [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. The target customer is someone tired of ordering two sizes and returning one, who wants durable trainers and a brand that talks to her the way her run club does [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n\n### Key findings\n\n- The stated positioning is \"the dependable fit brand for active Gen Z consumers rather than competing on elite performance claims\" [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- The strategy says the main obstacle is trust in the basics: unpredictable size fit, doubt that price is justified by durability, and impatience with brands that cannot explain what products are made of [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z shoppers generated 21% of Northstar net revenue in FY25, and the board target is a 30% Gen Z share by the end of FY28 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Aided awareness among Gen Z is 46% for Northstar versus 71% for Vantage Athletic [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- Gen Z customers gave a net promoter score of 22 versus 49 among customers aged 28 and older [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B2]].\n- Value Seekers, 26% of the Gen Z base, will stay only if the premium is justified by something tangible such as a trusted fit, durability or an easy exchange [[NORTHSTAR/BRAND-STRATEGY@v1:P3.B5]].\n\n### Conflicting evidence\n\n- The brand-materials figure of 21% Gen Z revenue share in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]] differs from the finance definition (ages 18 to 27), which puts the FY25 share \"a little under 20%\" [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]]. The difference stems from the brand team's wider 16 to 29 age band.\n\n### Interpretation\n\nThe positioning appears designed to address the trust gaps and low advocacy among Gen Z by making fit reliability and durability the proof points of the brand [inference]. Value Seekers act as the test of whether the \"dependable\" promise is real, since they leave when the premium feels arbitrary [inference].\n\n### Gaps & unknowns\n\nThe evidence does not show the full wording of the positioning statement beyond the executive summary, nor the specific growth bets and KPIs that operationalise it. The interviews, focus group and FY27 memo provided only title-page content, so they do not show whether customers or later planning endorse this position [inference]. The competitive section is also cut off, so how the position contrasts with each named competitor is not established [inference].",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 8440.2,
+      "total_ms": 21017.7,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 5224,
+      "cost_usd": 0.015526,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nNorthstar intends to position itself as the dependable fit brand for active Gen Z consumers, rather than competing on elite performance claims [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. It will not out-engineer the premium incumbent or out-discount value players, and instead aims to win customers who want predictability and trust in the basics [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]][[NORTHSTAR/BRAND-STRATEGY@v1:P5.B6]].\n\n### Key findings\n\n- The stated recommendation is to be \"the dependable fit brand for active Gen Z consumers\" rather than compete on elite performance claims [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- The strategy says customers do not reject Northstar for lacking elite performance credentials and do not primarily ask for customization; they ask for predictability [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B6]].\n- Four pillars translate the position into daily decisions, starting with dependable fit: one sizing logic across footwear, bottoms, tops and outerwear, backed by a clear exchange promise [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B6]].\n- The other pillars are honest materials (plain disclosure of recycled content and production locations), built to last (durability standards and fast, fair handling of early failures), and community first (programs led by clubs, studios and creators rather than broadcast advertising) [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B1]].\n- Performance and personalization stay part of the story but not its headline, and neither may distract from fixing the basics [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B1]].\n- The main obstacles cited are unpredictable sizing, doubt that price is justified by durability, and impatience with brands that cannot explain what products are made of [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n- The strategy links the position to the board target of lifting the Gen Z share of revenue to 30% by the end of FY28 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]].\n\n### Interpretation\n\nThe position is a trust-based, \"get the basics right\" claim aimed at turning Gen Z customers who like the product into advocates, which fits the stated gap between Gen Z and older customers on recommendation [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B2]] [inference].\n\n### Gaps & unknowns\n\nThe evidence does not show how well this position is resonating with Gen Z customers today, since the KPIs meant to test it are not included here. It also does not detail how the pillars will be resourced or sequenced [inference].",
+     "stop_reason": "step_limit",
+     "tool_calls": 4,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 2,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 3,
+       "tool": "get_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 4,
+       "tool": "search_evidence",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 3432.1,
+      "total_ms": 15944.4,
+      "model_calls": 5,
+      "tool_calls": 4,
+      "retrieval_calls": 3,
+      "tokens_total": 25242,
+      "cost_usd": 0.042573,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "research",
+    "item_id": "R-SC-10",
+    "question": "What net revenue did Vantage Athletic report for FY2025?",
+    "delta": {
+     "gold_coverage": 0.0,
+     "answer_completeness": 0.0,
+     "gold_handle_recall": 0.0,
+     "unsupported_claim_rate": 0.0,
+     "first_token_ms": -858.7,
+     "total_ms": 5005.3,
+     "model_calls": 2.0,
+     "tool_calls": 2.0,
+     "retrieval_calls": 1.0,
+     "tokens_total": 8616.0,
+     "cost_usd": 0.0119
+    },
+    "standard": {
+     "answer_markdown": "### Answer\n\nVantage Athletic reported FY2025 net revenue of $4.2 billion, with footwear accounting for 63% of sales [[NORTHSTAR/VANTAGE-DECK@v1:SL3]]. Northstar's internal brand strategy document cites the same figure, described as \"about $4.2 billion\" [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n\n### Key findings\n\n- Vantage's own Investor Day deck states net revenue of $4.2 billion in FY2025, with footwear at 63% of sales [[NORTHSTAR/VANTAGE-DECK@v1:SL3]].\n- Northstar's brand strategy restates this as \"about $4.2 billion\" with footwear at 63% of sales, consistent with the company's own figure [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n\n### Gaps & unknowns\n\nThe evidence gives only a rounded headline figure and does not provide a more precise number, a segment breakdown beyond the footwear share, or the underlying audited financial statements [inference]. A Vantage annual report or regulatory filing would close that gap.",
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1904.9,
+      "total_ms": 3944.7,
+      "model_calls": 1,
+      "tool_calls": 0,
+      "retrieval_calls": 1,
+      "tokens_total": 4717,
+      "cost_usd": 0.010336,
+      "stop_reason": null,
+      "research_fallback": 0.0
+     }
+    },
+    "research": {
+     "answer_markdown": "### Answer\n\nVantage Athletic reported FY2025 net revenue of $4.2 billion [[NORTHSTAR/VANTAGE-DECK@v1:SL3]]. Northstar's brand strategy document gives the same figure, described as \"about $4.2 billion\" [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n\n### Key findings\n\n- Vantage's own Investor Day deck states net revenue of $4.2 billion in FY2025, with footwear at 63% of sales [[NORTHSTAR/VANTAGE-DECK@v1:SL3]].\n- Northstar's internal strategy document independently cites FY2025 net revenue of about $4.2 billion and the same 63% footwear share [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B2]].\n\n### Gaps & unknowns\n\nThe evidence gives only a rounded headline figure, not an exact reported value [inference]. The evidence note says some figures were restated or superseded, but it does not specify which ones, and nothing in the cited Vantage items indicates a restatement of this number [inference]. A Vantage annual report or filing would confirm the precise figure and any revisions [inference].",
+     "stop_reason": "finish_research",
+     "tool_calls": 2,
+     "trace": [
+      {
+       "step": 1,
+       "tool": "search_evidence",
+       "status": "ok"
+      },
+      {
+       "step": 1,
+       "tool": "search_evidence_keyword",
+       "status": "ok"
+      }
+     ],
+     "metrics": {
+      "behaviour_pass": 1.0,
+      "answered": 1.0,
+      "gold_coverage": 1.0,
+      "answer_completeness": 1.0,
+      "gold_handle_recall": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "first_token_ms": 1046.2,
+      "total_ms": 8950.0,
+      "model_calls": 3,
+      "tool_calls": 2,
+      "retrieval_calls": 2,
+      "tokens_total": 13333,
+      "cost_usd": 0.022237,
+      "research_fallback": 0.0
+     }
+    }
+   }
+  }
+ ]
+}

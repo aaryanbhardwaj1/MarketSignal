@@ -1,0 +1,5069 @@
+{
+ "run_id": "p5-analytics-holdout",
+ "items": [
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-CNT-03",
+    "question": "Tally the Social Shop reviews written about Leggings and Bottoms items.",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence includes 7 Social Shop reviews of Leggings and Bottoms items: E1, E2, E3, E4, E5, E6 and E7 [inference]. This is a count of the provided excerpts only, not of the full 800-row table, so it is not a verified channel total [[NORTHSTAR/REVIEWS@v1:T1]].\n\n### Key findings\n\n- Studio Contour Legging has 4 Social Shop reviews in the evidence: [[NORTHSTAR/REVIEWS@v1:R591]], [[NORTHSTAR/REVIEWS@v1:R78]], [[NORTHSTAR/REVIEWS@v1:R784]], [[NORTHSTAR/REVIEWS@v1:R141]].\n- High Rise Flare Legging has 2 Social Shop reviews in the evidence: [[NORTHSTAR/REVIEWS@v1:R237]], [[NORTHSTAR/REVIEWS@v1:R666]].\n- Studio Contour Short has 1 Social Shop review in the evidence: [[NORTHSTAR/REVIEWS@v1:R173]].\n- Ratings among these reviews range from 3 [[NORTHSTAR/REVIEWS@v1:R666]] to 5 [[NORTHSTAR/REVIEWS@v1:R591]].\n- The other Leggings and Bottoms reviews in the evidence come from other channels: App [[NORTHSTAR/REVIEWS@v1:R392]], [[NORTHSTAR/REVIEWS@v1:R669]] and Marketplace [[NORTHSTAR/REVIEWS@v1:R180]], [[NORTHSTAR/REVIEWS@v1:R92]].\n\n### Conflicting evidence\n\n- The evidence notes flag differing values, but these are only different review dates (for example 2026-05-16 in [[NORTHSTAR/REVIEWS@v1:R591]] versus 2025-10-06 in [[NORTHSTAR/REVIEWS@v1:R78]]) and ratings across separate reviews. They are distinct records, not contradictions about the same metric, so they do not affect the tally.\n\n### Gaps & unknowns\n\nClosing the gap requires the complete review table, or a pre-computed channel-by-category summary from the same source.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "REVIEWS:1",
+      "dataset_title": "Northstar Product Reviews",
+      "source_confidentiality": "public",
+      "spec": {
+       "dataset": "REVIEWS:1",
+       "metrics": [
+        {
+         "fn": "count"
+        }
+       ],
+       "filters": [
+        {
+         "column": "channel",
+         "op": "eq",
+         "value": "Social Shop"
+        },
+        {
+         "column": "category",
+         "op": "eq",
+         "value": "Leggings and Bottoms"
+        }
+       ]
+      },
+      "rows_scanned": 800,
+      "rows_matched": 20,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "count",
+        "value": 20,
+        "exact": "20",
+        "unit": "count",
+        "rounding": "exact",
+        "denominator": 20
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-CNT-04",
+    "question": "How many Southpeak survey participants say climbing is their main outdoor activity?",
+    "task_type": "analytics",
+    "routed_task_type": "mixed",
+    "task_type_correct": false,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\n59 survey participants in the Southpeak Customer Survey 2026 have climbing as their primary activity [[result:516d3e3a-822f-4392-b1d8-347d391f329d]]. This is a count of survey rows where primary_activity is \"Climbing\", out of 300 rows scanned [[result:516d3e3a-822f-4392-b1d8-347d391f329d]].\n\n### Interpretation\n\nThe survey records \"primary_activity\", which I am treating as equivalent to the \"main outdoor activity\" in the question; the dataset's own wording does not confirm that the two are the same [inference].\n\n### Gaps & unknowns\n\nNo text evidence items were provided, so the survey's questionnaire wording, sampling method and respondent definition are not established.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Southpeak Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "count"
+        }
+       ],
+       "filters": [
+        {
+         "column": "primary_activity",
+         "op": "eq",
+         "value": "Climbing"
+        }
+       ]
+      },
+      "rows_scanned": 300,
+      "rows_matched": 59,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "count",
+        "value": 59,
+        "exact": "59",
+        "unit": "count",
+        "rounding": "exact",
+        "denominator": 59
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "primary_activity",
+         "operands": [
+          "Climbing"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "climbing",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 59,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-SHR-01",
+    "question": "Among Gen Z survey respondents (ages 18 to 27), what percent picked fit inconsistency as their single biggest frustration?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nAmong the 400 survey respondents aged 18 to 27 (age groups 18-21, 22-24 and 25-27), 27.0% picked fit inconsistency as their top pain point [[result:71274793-e184-4df8-a2bf-ce764e17c029]]. That is 108 of 400 respondents [[result:71274793-e184-4df8-a2bf-ce764e17c029]].\n\n### Key findings\n\n- 27.0% of respondents in the 18-21, 22-24 and 25-27 age groups selected fit_inconsistency as their top pain point (numerator 108, denominator 400) [[result:71274793-e184-4df8-a2bf-ce764e17c029]].\n- The filtered base was 400 rows out of 600 scanned in the Northstar Customer Survey 2026 [[result:71274793-e184-4df8-a2bf-ce764e17c029]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so there is no context on how the survey was fielded, the sampling method, the exact question wording, or whether the respondents are representative. The result does not show how fit inconsistency ranks against other pain points among this group; a breakdown of all pain-point categories would close that gap.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "share",
+         "condition": {
+          "column": "top_pain_point",
+          "op": "eq",
+          "value": "fit_inconsistency"
+         }
+        }
+       ],
+       "filters": [
+        {
+         "column": "age_group",
+         "op": "in",
+         "values": [
+          "18-21",
+          "22-24",
+          "25-27"
+         ]
+        }
+       ]
+      },
+      "rows_scanned": 600,
+      "rows_matched": 400,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "share(top_pain_point eq fit_inconsistency)",
+        "value": 27.0,
+        "exact": "27",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 400,
+        "numerator": 108
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "in",
+         "column": "age_group",
+         "operands": [
+          "18-21",
+          "22-24",
+          "25-27"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "share",
+         "key": "share(top_pain_point=fit_inconsistency)",
+         "label": "fit share",
+         "column": "top_pain_point",
+         "condition": {
+          "op": "eq",
+          "column": "top_pain_point",
+          "operands": [
+           "fit_inconsistency"
+          ]
+         }
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 400,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-SHR-02",
+    "question": "For respondents aged 28 and over, what share cite price versus value as the top pain point?",
+    "task_type": "analytics",
+    "routed_task_type": "mixed",
+    "task_type_correct": false,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nNo evidence items were provided, so there is no comparison against other pain points or other groups [inference].\n\n### Key findings\n\n- The age filter (28-34, 35-44, 45+) matched 200 of 600 scanned survey rows [[result:58a3dbbe-ffd6-46ed-ad8f-6f74b7e59e7d]].\n- 52 of those 200 respondents (26.0%) named price_vs_value as their top pain point [[result:58a3dbbe-ffd6-46ed-ad8f-6f74b7e59e7d]].\n\n### Gaps & unknowns\n\nThe question's \"versus\" is read here as the single category \"price versus value\". If a comparison of price against value as separate pain points was intended, the data does not break them out [inference]. No document evidence explains why respondents chose this pain point or how the survey was fielded and weighted. Survey methodology documentation or verbatim responses would close this gap.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "share",
+         "condition": {
+          "column": "top_pain_point",
+          "op": "eq",
+          "value": "price_vs_value"
+         }
+        }
+       ],
+       "filters": [
+        {
+         "column": "age_group",
+         "op": "in",
+         "values": [
+          "28-34",
+          "35-44",
+          "45+"
+         ]
+        }
+       ]
+      },
+      "rows_scanned": 600,
+      "rows_matched": 200,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "share(top_pain_point eq price_vs_value)",
+        "value": 26.0,
+        "exact": "26",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 200,
+        "numerator": 52
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "in",
+         "column": "age_group",
+         "operands": [
+          "28-34",
+          "35-44",
+          "45+"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "share",
+         "key": "share(top_pain_point=price_vs_value)",
+         "label": "price_vs_value share",
+         "column": "top_pain_point",
+         "condition": {
+          "op": "eq",
+          "column": "top_pain_point",
+          "operands": [
+           "price_vs_value"
+          ]
+         }
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 200,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-SHR-04",
+    "question": "What proportion of Knit Runner 2 reviews give two stars or fewer?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\n38.5% of Knit Runner 2 reviews in the dataset give two stars or fewer, which is 5 of 13 reviews [[result:c3460996-33c3-4bbd-9170-75e20cd71a15]].\n\n### Key findings\n\n- 5 of 13 Knit Runner 2 reviews have a rating of 2 or below, a share of 38.5% [[result:c3460996-33c3-4bbd-9170-75e20cd71a15]].\n- One of the low-rated reviews is a 2-star review from 2026-06-03 that cites dull colour versus the photos and a slow refund, not a durability problem [[NORTHSTAR/REVIEWS@v1:R172]].\n- A 5-star review from 2026-05-06 is among the Knit Runner 2 reviews [[NORTHSTAR/REVIEWS@v1:R70]].\n- Separately, the return rate on the Knit Runner 2 is stated as 16.8%, against 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]].\n\n### Gaps & unknowns\n\nIt is unclear whether the review dataset is complete or a sample of all reviews collected by Northstar.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "REVIEWS:1",
+      "dataset_title": "Northstar Product Reviews",
+      "source_confidentiality": "public",
+      "spec": {
+       "dataset": "REVIEWS:1",
+       "metrics": [
+        {
+         "fn": "share",
+         "condition": {
+          "column": "rating",
+          "op": "lte",
+          "value": 2
+         }
+        }
+       ],
+       "filters": [
+        {
+         "column": "product",
+         "op": "eq",
+         "value": "Knit Runner 2"
+        }
+       ]
+      },
+      "rows_scanned": 800,
+      "rows_matched": 13,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "share(rating lte 2)",
+        "value": 38.5,
+        "exact": "38.46153846153846153846153846",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 13,
+        "numerator": 5
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "REVIEWS:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "REVIEWS:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "product",
+         "operands": [
+          "Knit Runner 2"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "share",
+         "key": "share(rating<=2)",
+         "label": "share<=2",
+         "column": "rating",
+         "condition": {
+          "op": "lte",
+          "column": "rating",
+          "operands": [
+           "2"
+          ]
+         }
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 13,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-AVG-01",
+    "question": "What's the mean likelihood-to-recommend score among Studio Social respondents?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe mean likelihood-to-recommend (NPS) rating among Studio Social respondents is 7.9, computed across 124 matching respondents [[result:ca3f9c79-ad6e-4e80-8192-61b68147b1a0]].\n\n### Key findings\n\n- The Northstar Customer Survey 2026, filtered to the Studio Social segment, shows a mean nps of 7.9 (rating unit) [[result:ca3f9c79-ad6e-4e80-8192-61b68147b1a0]].\n- That mean is based on 124 respondents out of 600 rows scanned [[result:ca3f9c79-ad6e-4e80-8192-61b68147b1a0]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so there is no document context on how the score was collected, its scale, or the survey methodology. There is no comparison to other segments or to prior survey waves, so it is unclear whether this score is high or low in relative terms. Segment-level results from the same survey, or earlier survey editions, would close that gap.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "mean",
+         "column": "nps"
+        }
+       ],
+       "filters": [
+        {
+         "column": "segment",
+         "op": "eq",
+         "value": "Studio Social"
+        }
+       ]
+      },
+      "rows_scanned": 600,
+      "rows_matched": 124,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "mean(nps)",
+        "value": 7.9,
+        "exact": "7.895161290322580645161290323",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 124
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "segment",
+         "operands": [
+          "Studio Social"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(nps)",
+         "label": "mean nps",
+         "column": "nps"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 124,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-AVG-03",
+    "question": "What average star rating do Running Footwear products get in the review data?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nRunning Footwear products average a rating of 3.78 in the review data, based on 40 matching reviews [[result:6c30bbb0-b69d-4297-b644-e29a37d61b16]].\n\n### Key findings\n\n- The mean rating for the Running Footwear category is 3.78 across 40 reviews, filtered from 800 rows scanned in the Northstar Product Reviews table [[result:6c30bbb0-b69d-4297-b644-e29a37d61b16]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so the figure rests solely on the computed result. The result gives no spread, distribution, time period, or brand breakdown; a review-level extract or a segmented aggregate would close these gaps.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "REVIEWS:1",
+      "dataset_title": "Northstar Product Reviews",
+      "source_confidentiality": "public",
+      "spec": {
+       "dataset": "REVIEWS:1",
+       "metrics": [
+        {
+         "fn": "mean",
+         "column": "rating"
+        }
+       ],
+       "filters": [
+        {
+         "column": "category",
+         "op": "eq",
+         "value": "Running Footwear"
+        }
+       ]
+      },
+      "rows_scanned": 800,
+      "rows_matched": 40,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "mean(rating)",
+        "value": 3.78,
+        "exact": "3.775",
+        "unit": "rating",
+        "rounding": "2dp",
+        "denominator": 40
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "REVIEWS:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "REVIEWS:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "category",
+         "operands": [
+          "Running Footwear"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(rating)",
+         "label": "avg",
+         "column": "rating"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 40,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MMM-02",
+    "question": "Which is the highest return rate recorded by any Accessories SKU?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe highest return rate among Accessories SKUs is 5.5, recorded by the Run Belt (NS-BLT) [[result:d9bfc0dd-e1a5-4b04-9304-7e92e0919394]]. The next highest is the Studio Duffel at 4.6 [[result:d9bfc0dd-e1a5-4b04-9304-7e92e0919394]].\n\n### Key findings\n\n- Run Belt (NS-BLT) has return_rate_pct of 5.5, the highest of the 5 Accessories SKUs returned [[result:d9bfc0dd-e1a5-4b04-9304-7e92e0919394]].\n- Studio Duffel (NS-DUF) has return_rate_pct of 4.6 [[result:d9bfc0dd-e1a5-4b04-9304-7e92e0919394]].\n- Run Cap (NS-CAP) has return_rate_pct of 3.3 [[result:d9bfc0dd-e1a5-4b04-9304-7e92e0919394]].\n- Insulated Bottle (NS-BTL) has return_rate_pct of 2.8 [[result:d9bfc0dd-e1a5-4b04-9304-7e92e0919394]].\n- Crew Sock 3 Pack (NS-CRW) has return_rate_pct of 2.1 [[result:d9bfc0dd-e1a5-4b04-9304-7e92e0919394]].\n- The Run Belt's units_fy26_ytd is 12400 [[result:d9bfc0dd-e1a5-4b04-9304-7e92e0919394]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so the result rests solely on the computed filter of the SKU_Performance table. The data does not state how return rate is defined (returned units over units sold, or over a different base), or the period it covers beyond the FY26 YTD unit column.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:2",
+      "dataset_title": "SKU_Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:2",
+       "metrics": [
+        {
+         "fn": "max",
+         "column": "return_rate_pct"
+        }
+       ],
+       "filters": [
+        {
+         "column": "category",
+         "op": "eq",
+         "value": "Accessories"
+        }
+       ]
+      },
+      "rows_scanned": 32,
+      "rows_matched": 5,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "max(return_rate_pct)",
+        "value": 5.5,
+        "exact": "5.5",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 5
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "PRODUCT-PERF:2",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 5,
+       "columns": [
+        "sku",
+        "product_name",
+        "category",
+        "return_rate_pct",
+        "units_fy26_ytd"
+       ],
+       "dataset": "PRODUCT-PERF:2",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "category",
+         "operands": [
+          "Accessories"
+         ]
+        }
+       ],
+       "order_by": "return_rate_pct",
+       "direction": "desc"
+      },
+      "rows_matched": 5,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MMM-03",
+    "question": "What was the weakest monthly gross margin for the Accessories category during 2026?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not establish the weakest monthly gross margin for Accessories during 2026 [inference]. The only monthly data source is described by its structure alone, with no values, and the one Accessories margin figure available is a single non-monthly number with no period stated [inference].\n\n### Key findings\n\n- The 'Category_Monthly' table has 147 data rows, with columns for month, category (including Accessories) and gross_margin_pct, but the excerpt shows only the schema and none of the actual values [[NORTHSTAR/PRODUCT-PERF@v1:SH1.T1]].\n- A Q3 strategy review slide states an Accessories margin of 41.0%, described as the lowest in the range; this is a single figure, not a monthly series, and no year is given [[NORTHSTAR/Q3-REVIEW@v1:SL4]].\n\n### Gaps & unknowns\n\nThe actual monthly gross_margin_pct values for Accessories are not provided, so no minimum can be identified.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:1",
+      "dataset_title": "Category_Monthly",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:1",
+       "metrics": [
+        {
+         "fn": "min",
+         "column": "gross_margin_pct"
+        }
+       ],
+       "filters": [
+        {
+         "column": "category",
+         "op": "eq",
+         "value": "Accessories"
+        },
+        {
+         "column": "month",
+         "op": "gte",
+         "value": "2026-01"
+        }
+       ]
+      },
+      "rows_scanned": 147,
+      "rows_matched": 9,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "min(gross_margin_pct)",
+        "value": 39.5,
+        "exact": "39.5",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 9
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MMM-04",
+    "question": "What was the single best month of net sales for Southpeak's Stores channel?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not identify the best month of net sales for the Stores channel. The only monthly channel data is described by its structure, not its contents, and the other sources give quarterly figures only [inference].\n\n### Key findings\n\n- The Channel_Monthly table has 60 data rows with month, channel (including Stores) and net_sales_usd columns, but the actual values are not shown [[SOUTHPEAK/CHANNEL-DATA@v1:SH1.T1]].\n- The Q2 board deck reports Stores sales of 12.9 ($M) for the quarter, with a change vs Q2 FY25 of +3% [[SOUTHPEAK/BOARD-DECK@v1:SL4]].\n- The same deck says Stores grew slowly, with traffic up but average basket flat [[SOUTHPEAK/BOARD-DECK@v1:SL4]].\n\n### Gaps & unknowns\n\nThe row-level values in the monthly channel table were not provided, so no single month can be ranked or identified. The quarterly Stores figure cannot be broken down into months from the evidence given [inference]. Closing the gap requires the actual Stores rows from the monthly channel data, or a monthly sales report by channel.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "CHANNEL-DATA:1",
+      "dataset_title": "Channel_Monthly",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-DATA:1",
+       "metrics": [
+        {
+         "fn": "max",
+         "column": "net_sales_usd"
+        }
+       ],
+       "filters": [
+        {
+         "column": "channel",
+         "op": "eq",
+         "value": "Stores"
+        }
+       ]
+      },
+      "rows_scanned": 60,
+      "rows_matched": 12,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "max(net_sales_usd)",
+        "value": 4569331,
+        "exact": "4569331",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 12
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MMM-05",
+    "question": "What is the median recommend score among Campus Competitors respondents?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe median NPS rating among Campus Competitors respondents in the Northstar Customer Survey 2026 is 8.0, computed across 96 matched respondents [[result:53e997b2-f03b-40a0-91d8-2db5ad9b4cb7]]. No document evidence items were provided, so this rests solely on the computed result [inference].\n\n### Key findings\n\n- Median nps for the segment \"Campus Competitors\" is 8.0 (rating unit, exact value 8) [[result:53e997b2-f03b-40a0-91d8-2db5ad9b4cb7]].\n- The result is based on 96 rows matched out of 600 rows scanned [[result:53e997b2-f03b-40a0-91d8-2db5ad9b4cb7]].\n\n### Interpretation\n\n\"Recommend score\" is taken to correspond to the survey's nps column, since that is the only rating-type field the computation reports [inference].\n\n### Gaps & unknowns\n\nNo evidence items were supplied, so the survey's question wording, scale definition, and fieldwork details cannot be confirmed. The result does not show how the score distribution looks (spread, share of promoters or detractors) or how this segment compares with other segments; the underlying survey documentation or a distribution breakdown would close these gaps.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "median",
+         "column": "nps"
+        }
+       ],
+       "filters": [
+        {
+         "column": "segment",
+         "op": "eq",
+         "value": "Campus Competitors"
+        }
+       ]
+      },
+      "rows_scanned": 600,
+      "rows_matched": 96,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "median(nps)",
+        "value": 8.0,
+        "exact": "8",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 96
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "segment",
+         "operands": [
+          "Campus Competitors"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "median",
+         "key": "median(nps)",
+         "label": "median nps",
+         "column": "nps"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 96,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-GRP-01",
+    "question": "Break down September 2026 net sales by channel, combining both age segments.",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nEach channel figure sums two rows (the two age segments) from the Northstar Channel Performance dataset [[result:2e28ac59-810c-4d3e-b6b7-1f3b79024054]].\n\n### Key findings\n\n- Stores: 14050054 USD net sales [[result:2e28ac59-810c-4d3e-b6b7-1f3b79024054]]\n- Brand Site: 4477748 USD net sales [[result:2e28ac59-810c-4d3e-b6b7-1f3b79024054]]\n- Marketplace: 4106158 USD net sales [[result:2e28ac59-810c-4d3e-b6b7-1f3b79024054]]\n- App: 3034559 USD net sales [[result:2e28ac59-810c-4d3e-b6b7-1f3b79024054]]\n- Social Shop: 824334 USD net sales [[result:2e28ac59-810c-4d3e-b6b7-1f3b79024054]]\n- Each channel aggregates 2 rows, consistent with two age segments per channel for the month; 10 of 120 rows were matched by the September 2026 filter [[result:2e28ac59-810c-4d3e-b6b7-1f3b79024054]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so the figures rest solely on the computed aggregation and cannot be cross-checked against documents. The results do not label the two rows per channel, so the age segments are assumed rather than confirmed; a data dictionary or the segment-level rows would confirm this [inference]. Channel shares of the total and comparisons with prior months or years are not stated; they would require additional computed results.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "CHANNEL-PERF:1",
+      "dataset_title": "Northstar Channel Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-PERF:1",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "net_sales_usd"
+        }
+       ],
+       "filters": [
+        {
+         "column": "month",
+         "op": "eq",
+         "value": "2026-09"
+        }
+       ],
+       "group_by": [
+        "channel"
+       ]
+      },
+      "rows_scanned": 120,
+      "rows_matched": 10,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "channel": "App"
+        },
+        "metric": "sum(net_sales_usd)",
+        "value": 3034559,
+        "exact": "3034559",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 2
+       },
+       {
+        "group": {
+         "channel": "Brand Site"
+        },
+        "metric": "sum(net_sales_usd)",
+        "value": 4477748,
+        "exact": "4477748",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 2
+       },
+       {
+        "group": {
+         "channel": "Marketplace"
+        },
+        "metric": "sum(net_sales_usd)",
+        "value": 4106158,
+        "exact": "4106158",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 2
+       },
+       {
+        "group": {
+         "channel": "Social Shop"
+        },
+        "metric": "sum(net_sales_usd)",
+        "value": 824334,
+        "exact": "824334",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 2
+       },
+       {
+        "group": {
+         "channel": "Stores"
+        },
+        "metric": "sum(net_sales_usd)",
+        "value": 14050054,
+        "exact": "14050054",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 2
+       }
+      ],
+      "answer_kind": "breakdown"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CHANNEL-PERF:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "CHANNEL-PERF:1",
+       "filters": [
+        {
+         "op": "gte",
+         "column": "month",
+         "operands": [
+          "2026-09-01"
+         ]
+        },
+        {
+         "op": "lte",
+         "column": "month",
+         "operands": [
+          "2026-09-30"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "sum",
+         "key": "sum(net_sales_usd)",
+         "label": "net_sales",
+         "column": "net_sales_usd"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "rows",
+         "column": null
+        }
+       ],
+       "group_by": [
+        "channel"
+       ]
+      },
+      "rows_matched": 10,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-GRP-02",
+    "question": "Show the average NPS response for each customer segment in the 2026 survey.",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nIn the 2026 survey, Established Active customers give the highest average NPS response at 8.36, and Trail Starters the lowest at 7.38 [[result:0dc52757-d2b0-4336-aa39-31d0f32adecd]]. The other three segments fall between those two values [[result:0dc52757-d2b0-4336-aa39-31d0f32adecd]].\n\n### Key findings\n\n- Established Active: mean nps of 8.36 across 200 respondents [[result:0dc52757-d2b0-4336-aa39-31d0f32adecd]].\n- Campus Competitors: mean nps of 8.0 across 96 respondents [[result:0dc52757-d2b0-4336-aa39-31d0f32adecd]].\n- Studio Social: mean nps of 7.9 across 124 respondents [[result:0dc52757-d2b0-4336-aa39-31d0f32adecd]].\n- Value Seekers: mean nps of 7.88 across 104 respondents [[result:0dc52757-d2b0-4336-aa39-31d0f32adecd]].\n- Trail Starters: mean nps of 7.38 across 76 respondents [[result:0dc52757-d2b0-4336-aa39-31d0f32adecd]].\n\n### Interpretation\n\nThe \"nps\" column is reported as a rating, so these are mean scores on the survey's rating scale, not Net Promoter Score values (percent promoters minus percent detractors) [inference].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so nothing beyond the computed table supports these figures. The scale of the rating, the exact question wording, and the survey fieldwork dates are not established [inference]. A survey methodology document or questionnaire would close these gaps. Statistical significance of the differences between segments is also not established [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "mean",
+         "column": "nps"
+        }
+       ],
+       "group_by": [
+        "segment"
+       ]
+      },
+      "rows_scanned": 600,
+      "rows_matched": 600,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "segment": "Campus Competitors"
+        },
+        "metric": "mean(nps)",
+        "value": 8.0,
+        "exact": "8",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 96
+       },
+       {
+        "group": {
+         "segment": "Established Active"
+        },
+        "metric": "mean(nps)",
+        "value": 8.36,
+        "exact": "8.36",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 200
+       },
+       {
+        "group": {
+         "segment": "Studio Social"
+        },
+        "metric": "mean(nps)",
+        "value": 7.9,
+        "exact": "7.895161290322580645161290323",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 124
+       },
+       {
+        "group": {
+         "segment": "Trail Starters"
+        },
+        "metric": "mean(nps)",
+        "value": 7.38,
+        "exact": "7.381578947368421052631578947",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 76
+       },
+       {
+        "group": {
+         "segment": "Value Seekers"
+        },
+        "metric": "mean(nps)",
+        "value": 7.88,
+        "exact": "7.875",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 104
+       }
+      ],
+      "answer_kind": "breakdown"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(nps)",
+         "label": "avg_nps",
+         "column": "nps"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": [
+        "segment"
+       ]
+      },
+      "rows_matched": 600,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-GRP-04",
+    "question": "Sum the Q3 2026 return counts by return reason across the tracked SKUs.",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not allow this calculation [inference]. The only relevant item describes the structure of the Returns table (columns, reason categories, quarters) but does not include any of its 120 data rows or the returns_count values [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n\n### Key findings\n\n- The Returns table has columns for quarter, sku, reason, and returns_count, and its quarters include 2026-Q3, so the data needed exists in the source workbook [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n- The reason categories listed are Fit - runs small, Changed mind, Fit - runs large, Color not as shown, Arrived late, Durability - upper wear, and Durability - fabric or seams [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:3",
+      "dataset_title": "Returns",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:3",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "returns_count"
+        }
+       ],
+       "filters": [
+        {
+         "column": "quarter",
+         "op": "eq",
+         "value": "2026-Q3"
+        }
+       ],
+       "group_by": [
+        "reason"
+       ]
+      },
+      "rows_scanned": 120,
+      "rows_matched": 30,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "reason": "Arrived late"
+        },
+        "metric": "sum(returns_count)",
+        "value": 810,
+        "exact": "810",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "reason": "Changed mind"
+        },
+        "metric": "sum(returns_count)",
+        "value": 7301,
+        "exact": "7301",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 7
+       },
+       {
+        "group": {
+         "reason": "Color not as shown"
+        },
+        "metric": "sum(returns_count)",
+        "value": 1982,
+        "exact": "1982",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 4
+       },
+       {
+        "group": {
+         "reason": "Durability - fabric or seams"
+        },
+        "metric": "sum(returns_count)",
+        "value": 2973,
+        "exact": "2973",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 2
+       },
+       {
+        "group": {
+         "reason": "Durability - upper wear"
+        },
+        "metric": "sum(returns_count)",
+        "value": 3380,
+        "exact": "3380",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 2
+       },
+       {
+        "group": {
+         "reason": "Fit - runs large"
+        },
+        "metric": "sum(returns_count)",
+        "value": 5085,
+        "exact": "5085",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 5
+       },
+       {
+        "group": {
+         "reason": "Fit - runs small"
+        },
+        "metric": "sum(returns_count)",
+        "value": 4449,
+        "exact": "4449",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 7
+       }
+      ],
+      "answer_kind": "breakdown"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-GRP-05",
+    "question": "Total units sold per product category from January through September 2026.",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nComputed results give total units sold per product category for January through September 2026 [inference]. Tops and Tees led with 1668240 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]], followed by Accessories with 1399351 units and Leggings and Bottoms with 1379184 units. The lowest category was Training Footwear with 582602 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]].\n\n### Key findings\n\n- Tops and Tees: 1668240 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]]\n- Accessories: 1399351 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]]\n- Leggings and Bottoms: 1379184 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]]\n- Running Footwear: 917333 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]]\n- Court and Lifestyle Footwear: 721975 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]]\n- Outerwear and Hoodies: 681751 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]]\n- Training Footwear: 582602 units [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]]\n- Each category's total covers all 9 months in the period (month count of 9 per category) [[result:72c60d52-78e1-4a32-816f-3b7470c79d84]].\n\n### Gaps & unknowns\n\nNo document evidence items were provided, so the figures rest solely on the computed aggregate. The evidence does not describe how \"units\" is defined (for example gross versus net of returns), which channels or regions are included, or whether the seven listed categories are the complete category set. A product-performance data dictionary or a source document describing the dataset's scope would close these gaps.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:1",
+      "dataset_title": "Category_Monthly",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:1",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "units"
+        }
+       ],
+       "filters": [
+        {
+         "column": "month",
+         "op": "between",
+         "values": [
+          "2026-01",
+          "2026-09"
+         ]
+        }
+       ],
+       "group_by": [
+        "category"
+       ]
+      },
+      "rows_scanned": 147,
+      "rows_matched": 63,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "category": "Accessories"
+        },
+        "metric": "sum(units)",
+        "value": 1399351,
+        "exact": "1399351",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 9
+       },
+       {
+        "group": {
+         "category": "Court and Lifestyle Footwear"
+        },
+        "metric": "sum(units)",
+        "value": 721975,
+        "exact": "721975",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 9
+       },
+       {
+        "group": {
+         "category": "Leggings and Bottoms"
+        },
+        "metric": "sum(units)",
+        "value": 1379184,
+        "exact": "1379184",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 9
+       },
+       {
+        "group": {
+         "category": "Outerwear and Hoodies"
+        },
+        "metric": "sum(units)",
+        "value": 681751,
+        "exact": "681751",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 9
+       },
+       {
+        "group": {
+         "category": "Running Footwear"
+        },
+        "metric": "sum(units)",
+        "value": 917333,
+        "exact": "917333",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 9
+       },
+       {
+        "group": {
+         "category": "Tops and Tees"
+        },
+        "metric": "sum(units)",
+        "value": 1668240,
+        "exact": "1668240",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 9
+       },
+       {
+        "group": {
+         "category": "Training Footwear"
+        },
+        "metric": "sum(units)",
+        "value": 582602,
+        "exact": "582602",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 9
+       }
+      ],
+      "answer_kind": "breakdown"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "PRODUCT-PERF:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "PRODUCT-PERF:1",
+       "filters": [
+        {
+         "op": "between",
+         "column": "month",
+         "operands": [
+          "2026-01-01",
+          "2026-09-30"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "sum",
+         "key": "sum(units)",
+         "label": "total_units",
+         "column": "units"
+        },
+        {
+         "fn": "count_distinct",
+         "key": "count_distinct(month)",
+         "label": "months",
+         "column": "month"
+        }
+       ],
+       "group_by": [
+        "category"
+       ]
+      },
+      "rows_matched": 63,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-GRP-06",
+    "question": "Give the mean conversion rate for every channel and age segment combination in Q3 2026 (July to September).",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe mean conversion rate for every channel and segment combination in Q3 2026 (July to September) is given in the computed results, covering five channels (App, Brand Site, Marketplace, Social Shop, Stores) across two segments (Gen Z, Millennial) [inference]. Stores convert highest, at 19.0% for Gen Z and 21.9% for Millennial [[result:18e7691c-3e95-4985-b59e-70ce788b62c7]]. Each figure is a mean over 3 monthly rows [[result:18e7691c-3e95-4985-b59e-70ce788b62c7]].\n\n### Key findings\n\n- App: Gen Z 3.5%; Millennial 4.1% [[result:18e7691c-3e95-4985-b59e-70ce788b62c7]]\n- Brand Site: Gen Z 2.2%; Millennial 3.0% [[result:18e7691c-3e95-4985-b59e-70ce788b62c7]]\n- Marketplace: Gen Z 4.0%; Millennial 4.8% [[result:18e7691c-3e95-4985-b59e-70ce788b62c7]]\n- Social Shop: Gen Z 3.1%; Millennial 2.0% [[result:18e7691c-3e95-4985-b59e-70ce788b62c7]]\n- Stores: Gen Z 19.0%; Millennial 21.9% [[result:18e7691c-3e95-4985-b59e-70ce788b62c7]]\n\n### Interpretation\n\nMillennials convert better than Gen Z in every channel except Social Shop, where Gen Z is higher [inference]. The Stores figures are far above the other channels, which may reflect a different conversion definition (for example, in-store visitors versus online sessions) rather than a like-for-like comparison [inference].\n\n### Gaps & unknowns\n\nNo document evidence items were provided, so the definition of conversion rate, the unit of measurement per channel, and the segment age bands are not established. The results are unweighted means of monthly values; a traffic-weighted rate would require session or visitor volumes by channel, segment and month [inference]. Rounding in the displayed figures is to one decimal place; exact values are available in the computed results [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "CHANNEL-PERF:1",
+      "dataset_title": "Northstar Channel Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-PERF:1",
+       "metrics": [
+        {
+         "fn": "mean",
+         "column": "conversion_rate_pct"
+        }
+       ],
+       "filters": [
+        {
+         "column": "month",
+         "op": "between",
+         "values": [
+          "2026-07",
+          "2026-09"
+         ]
+        }
+       ],
+       "group_by": [
+        "channel",
+        "segment"
+       ]
+      },
+      "rows_scanned": 120,
+      "rows_matched": 30,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "channel": "App",
+         "segment": "Gen Z"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 3.5,
+        "exact": "3.5",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "App",
+         "segment": "Millennial"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 4.1,
+        "exact": "4.1",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "Brand Site",
+         "segment": "Gen Z"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 2.2,
+        "exact": "2.2",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "Brand Site",
+         "segment": "Millennial"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 3.0,
+        "exact": "3",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "Marketplace",
+         "segment": "Gen Z"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 4.0,
+        "exact": "4",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "Marketplace",
+         "segment": "Millennial"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 4.8,
+        "exact": "4.8",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "Social Shop",
+         "segment": "Gen Z"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 3.1,
+        "exact": "3.066666666666666666666666667",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "Social Shop",
+         "segment": "Millennial"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 2.0,
+        "exact": "1.966666666666666666666666667",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "Stores",
+         "segment": "Gen Z"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 19.0,
+        "exact": "18.96666666666666666666666667",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       },
+       {
+        "group": {
+         "channel": "Stores",
+         "segment": "Millennial"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 21.9,
+        "exact": "21.93333333333333333333333333",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 3
+       }
+      ],
+      "answer_kind": "breakdown"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CHANNEL-PERF:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "group",
+        "direction": "asc",
+        "metric_index": 0
+       },
+       "dataset": "CHANNEL-PERF:1",
+       "filters": [
+        {
+         "op": "between",
+         "column": "month",
+         "operands": [
+          "2026-07-01",
+          "2026-09-30"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(conversion_rate_pct)",
+         "label": "mean_conv",
+         "column": "conversion_rate_pct"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": [
+        "channel",
+        "segment"
+       ]
+      },
+      "rows_matched": 30,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-FLT-01",
+    "question": "How many orders did Gen Z place through the Social Shop between July and September 2026?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nGen Z placed 28284 orders through the Social Shop between July and September 2026 [[result:d1860ffa-c035-41ed-8c89-7a1079e55fe6]].\n\n### Key findings\n\n- July 2026: 8140 orders [[result:a561495e-45d0-4642-9aa1-b4055cd34c6b]].\n- August 2026: 8544 orders [[result:a561495e-45d0-4642-9aa1-b4055cd34c6b]].\n- September 2026: 11600 orders [[result:a561495e-45d0-4642-9aa1-b4055cd34c6b]].\n- Qualitative context: internal documents describe Social Shop as the fastest-growing channel, but it started from a small base, so growth rates overstate its absolute contribution [[NORTHSTAR/Q3-REVIEW@v1:SL5.N1]].\n\n### Gaps & unknowns\n\nThe evidence items do not state order counts themselves; the figures come only from the computed channel performance results. The computed results do not show whether the order counts are gross or net of returns or cancellations; the dataset documentation or its owner would clarify this [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "CHANNEL-PERF:1",
+      "dataset_title": "Northstar Channel Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-PERF:1",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "orders"
+        }
+       ],
+       "filters": [
+        {
+         "column": "channel",
+         "op": "eq",
+         "value": "Social Shop"
+        },
+        {
+         "column": "segment",
+         "op": "eq",
+         "value": "Gen Z"
+        },
+        {
+         "column": "month",
+         "op": "between",
+         "values": [
+          "2026-07",
+          "2026-09"
+         ]
+        }
+       ]
+      },
+      "rows_scanned": 120,
+      "rows_matched": 3,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "sum(orders)",
+        "value": 28284,
+        "exact": "28284",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 3
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CHANNEL-PERF:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "group",
+        "direction": "asc",
+        "metric_index": 0
+       },
+       "dataset": "CHANNEL-PERF:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "channel",
+         "operands": [
+          "Social Shop"
+         ]
+        },
+        {
+         "op": "eq",
+         "column": "segment",
+         "operands": [
+          "Gen Z"
+         ]
+        },
+        {
+         "op": "between",
+         "column": "month",
+         "operands": [
+          "2026-07-01",
+          "2026-09-30"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "sum",
+         "key": "sum(orders)",
+         "label": "orders",
+         "column": "orders"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "rows",
+         "column": null
+        }
+       ],
+       "group_by": [
+        "month"
+       ]
+      },
+      "rows_matched": 3,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     },
+     {
+      "dataset": "CHANNEL-PERF:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "CHANNEL-PERF:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "channel",
+         "operands": [
+          "Social Shop"
+         ]
+        },
+        {
+         "op": "eq",
+         "column": "segment",
+         "operands": [
+          "Gen Z"
+         ]
+        },
+        {
+         "op": "between",
+         "column": "month",
+         "operands": [
+          "2026-07-01",
+          "2026-09-30"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "sum",
+         "key": "sum(orders)",
+         "label": "total_orders",
+         "column": "orders"
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 3,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-FLT-02",
+    "question": "What were combined Running Footwear net sales for the first half of 2026?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not establish combined Running Footwear net sales for the first half of 2026 [inference]. The only monthly category-level sales data is a table whose schema is described but whose values are not provided, so no figure can be stated [inference].\n\n### Key findings\n\n- The Category_Monthly table has 147 data rows with a net_sales_usd column by month and category, including Running Footwear, but only its structure is shown, not its contents [[NORTHSTAR/PRODUCT-PERF@v1:SH1.T1]].\n- The SKU_Performance table has a net_sales_fy26_ytd_usd column, but again only column names are provided, not values [[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n- Company-level figures are available (Q2 FY26 net revenue of $158 million, and an FY26 latest estimate of $612.0 million), but neither is broken out by category or covers Q1 [[NORTHSTAR/Q3-REVIEW@v1:SL3]].\n\n### Gaps & unknowns\n\nA Q1 FY26 total revenue figure and a category-level breakdown for H1 would close the gap, for example from finance reporting or the populated product performance workbook.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:1",
+      "dataset_title": "Category_Monthly",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:1",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "net_sales_usd"
+        }
+       ],
+       "filters": [
+        {
+         "column": "category",
+         "op": "eq",
+         "value": "Running Footwear"
+        },
+        {
+         "column": "month",
+         "op": "between",
+         "values": [
+          "2026-01",
+          "2026-06"
+         ]
+        }
+       ]
+      },
+      "rows_scanned": 147,
+      "rows_matched": 6,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "sum(net_sales_usd)",
+        "value": 63902415,
+        "exact": "63902415",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 6
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-FLT-03",
+    "question": "How many app sessions did Southpeak log from January 2026 onward?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nHowever, no evidence item identifies the dataset as belonging to Southpeak, so attributing this figure to Southpeak is an inference [inference].\n\n### Gaps & unknowns\n\nNo evidence item names Southpeak or links the channel dataset to that company; a dataset description or source document stating the data's owner would close this gap.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "CHANNEL-DATA:1",
+      "dataset_title": "Channel_Monthly",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-DATA:1",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "sessions"
+        }
+       ],
+       "filters": [
+        {
+         "column": "channel",
+         "op": "eq",
+         "value": "App"
+        },
+        {
+         "column": "month",
+         "op": "gte",
+         "value": "2026-01"
+        }
+       ]
+      },
+      "rows_scanned": 60,
+      "rows_matched": 9,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "sum(sessions)",
+        "value": 900299,
+        "exact": "900299",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 9
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CHANNEL-DATA:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "CHANNEL-DATA:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "channel",
+         "operands": [
+          "App"
+         ]
+        },
+        {
+         "op": "gte",
+         "column": "month",
+         "operands": [
+          "2026-01-01"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "sum",
+         "key": "sum(sessions)",
+         "label": "app sessions",
+         "column": "sessions"
+        },
+        {
+         "fn": "min",
+         "key": "min(month)",
+         "label": "first month",
+         "column": "month"
+        },
+        {
+         "fn": "max",
+         "key": "max(month)",
+         "label": "last month",
+         "column": "month"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "rows",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 9,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-CMP-01",
+    "question": "Compare mean NPS between Studio Social and Value Seekers respondents.",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nMean NPS is nearly identical across the two segments: Studio Social respondents average 7.9 [[result:c7914d54-e272-4950-945a-90f98e5dd153]] and Value Seekers average 7.88. The computed difference between the two means is 0.02 rating points [[result:c7914d54-e272-4950-945a-90f98e5dd153]].\n\n### Key findings\n\n- Studio Social: mean(nps) of 7.9 across 124 respondents [[result:c7914d54-e272-4950-945a-90f98e5dd153]].\n- Value Seekers: mean(nps) of 7.88 across 104 respondents [[result:c7914d54-e272-4950-945a-90f98e5dd153]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so there is no document context on how the survey was fielded, how the NPS question was worded, or how segments were defined. Mean NPS rating is not the same as a classic NPS score (promoters minus detractors); a distribution breakdown by segment would be needed for that [inference].",
+    "gold_values": [
+     {
+      "tool": "group_compare",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metric": {
+        "fn": "mean",
+        "column": "nps"
+       },
+       "compare_column": "segment",
+       "group_a": "Studio Social",
+       "group_b": "Value Seekers"
+      },
+      "rows_scanned": 600,
+      "rows_matched": 600,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "segment": "Studio Social"
+        },
+        "metric": "mean(nps)",
+        "value": 7.9,
+        "exact": "7.895161290322580645161290323",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 124
+       },
+       {
+        "group": {
+         "segment": "Value Seekers"
+        },
+        "metric": "mean(nps)",
+        "value": 7.88,
+        "exact": "7.875",
+        "unit": "number",
+        "rounding": "2dp",
+        "denominator": 104
+       }
+      ],
+      "answer_kind": "compare",
+      "difference": {
+       "key": "difference(mean(nps): Studio Social - Value Seekers)",
+       "value": 0.02,
+       "exact": "0.020161290322580645161290323",
+       "unit": "number",
+       "rounding": "2dp",
+       "denominator": 228
+      }
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "group_compare",
+      "spec": {
+       "metric": {
+        "fn": "mean",
+        "key": "mean(nps)",
+        "label": "mean NPS",
+        "column": "nps"
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [],
+       "group_a": "Studio Social",
+       "group_b": "Value Seekers",
+       "compare_column": "segment"
+      },
+      "rows_matched": 228,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-CMP-02",
+    "question": "On Social Shop, how does average monthly conversion differ between Gen Z and Millennial shoppers?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nOn Social Shop, Gen Z shoppers show a higher average conversion rate than Millennial shoppers: 2.9 percent versus 1.9 percent, a difference of 1.0 percent [[result:033c3e88-6dc2-4acd-81ab-e1fd0004f32a]]. These figures are means of the conversion_rate_pct column across 12 rows per segment [[result:033c3e88-6dc2-4acd-81ab-e1fd0004f32a]].\n\n### Key findings\n\n- Gen Z mean conversion rate on Social Shop: 2.9 percent, based on 12 rows [[result:033c3e88-6dc2-4acd-81ab-e1fd0004f32a]].\n- Millennial mean conversion rate on Social Shop: 1.9 percent, based on 12 rows [[result:033c3e88-6dc2-4acd-81ab-e1fd0004f32a]].\n\n### Gaps & unknowns\n\nNo evidence documents were provided, so there is no context on how conversion is defined or what the rows represent (months, campaigns, or other units). The time period covered by the dataset is not established [inference]. The result does not show whether the gap is statistically meaningful or driven by specific months or outliers. Sample size, traffic volume, and shopper counts behind each rate are unknown. A methodology note or data dictionary for the channel performance dataset would close these gaps.",
+    "gold_values": [
+     {
+      "tool": "group_compare",
+      "dataset": "CHANNEL-PERF:1",
+      "dataset_title": "Northstar Channel Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-PERF:1",
+       "metric": {
+        "fn": "mean",
+        "column": "conversion_rate_pct"
+       },
+       "compare_column": "segment",
+       "group_a": "Gen Z",
+       "group_b": "Millennial",
+       "filters": [
+        {
+         "column": "channel",
+         "op": "eq",
+         "value": "Social Shop"
+        }
+       ]
+      },
+      "rows_scanned": 120,
+      "rows_matched": 24,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "segment": "Gen Z"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 2.9,
+        "exact": "2.916666666666666666666666667",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 12
+       },
+       {
+        "group": {
+         "segment": "Millennial"
+        },
+        "metric": "mean(conversion_rate_pct)",
+        "value": 1.9,
+        "exact": "1.9",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 12
+       }
+      ],
+      "answer_kind": "compare",
+      "difference": {
+       "key": "difference(mean(conversion_rate_pct): Gen Z - Millennial)",
+       "value": 1.0,
+       "exact": "1.016666666666666666666666667",
+       "unit": "percent",
+       "rounding": "1dp",
+       "denominator": 24
+      }
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CHANNEL-PERF:1",
+      "operation": "group_compare",
+      "spec": {
+       "metric": {
+        "fn": "mean",
+        "key": "mean(conversion_rate_pct)",
+        "label": "avg conversion pct",
+        "column": "conversion_rate_pct"
+       },
+       "dataset": "CHANNEL-PERF:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "channel",
+         "operands": [
+          "Social Shop"
+         ]
+        }
+       ],
+       "group_a": "Gen Z",
+       "group_b": "Millennial",
+       "compare_column": "segment"
+      },
+      "rows_matched": 24,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-CMP-03",
+    "question": "Is knit upper durability a bigger top complaint for Trail Starters or Campus Competitors, in percentage terms?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.6666666666666666,
+    "answer_markdown": "### Answer\n\nKnit upper durability is the top pain point for a slightly larger share of Campus Competitors (12.5%) than of Trail Starters (11.8%) [[result:7b914df4-9ce0-47be-8861-2848cda7bea8]]. The gap is small, so it is a marginal difference rather than a clear separation [inference].\n\n### Key findings\n\n- Campus Competitors: 12 of 96 respondents (12.5%) named knit upper durability as their top pain point [[result:7b914df4-9ce0-47be-8861-2848cda7bea8]].\n- Trail Starters: 9 of 76 respondents (11.8%) named knit upper durability as their top pain point [[result:7b914df4-9ce0-47be-8861-2848cda7bea8]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so there is no qualitative context on why respondents flagged knit upper durability. The figures are based on a single survey, and no significance test or confidence intervals were supplied [inference]. A statistical comparison, or a larger or repeated survey wave, would show whether the difference is meaningful [inference].",
+    "gold_values": [
+     {
+      "tool": "group_compare",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metric": {
+        "fn": "share",
+        "condition": {
+         "column": "top_pain_point",
+         "op": "eq",
+         "value": "knit_upper_durability"
+        }
+       },
+       "compare_column": "segment",
+       "group_a": "Trail Starters",
+       "group_b": "Campus Competitors"
+      },
+      "rows_scanned": 600,
+      "rows_matched": 600,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "segment": "Trail Starters"
+        },
+        "metric": "share(top_pain_point eq knit_upper_durability)",
+        "value": 11.8,
+        "exact": "11.84210526315789473684210526",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 76,
+        "numerator": 9
+       },
+       {
+        "group": {
+         "segment": "Campus Competitors"
+        },
+        "metric": "share(top_pain_point eq knit_upper_durability)",
+        "value": 12.5,
+        "exact": "12.5",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 96,
+        "numerator": 12
+       }
+      ],
+      "answer_kind": "compare",
+      "difference": {
+       "key": "difference(share(top_pain_point eq knit_upper_durability): Trail Starters - Campus Competitors)",
+       "value": -0.7,
+       "exact": "-0.65789473684210526315789474",
+       "unit": "percent",
+       "rounding": "1dp",
+       "denominator": 172
+      }
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "group",
+        "direction": "asc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "in",
+         "column": "segment",
+         "operands": [
+          "Trail Starters",
+          "Campus Competitors"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        },
+        {
+         "fn": "share",
+         "key": "share(top_pain_point=knit_upper_durability)",
+         "label": "knit_share",
+         "column": "top_pain_point",
+         "condition": {
+          "op": "eq",
+          "column": "top_pain_point",
+          "operands": [
+           "knit_upper_durability"
+          ]
+         }
+        }
+       ],
+       "group_by": [
+        "segment"
+       ]
+      },
+      "rows_matched": 172,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-CMP-04",
+    "question": "Weekend Hikers versus Urban Outdoor: what percent of each cite sustainability transparency as their top concern?",
+    "task_type": "analytics",
+    "routed_task_type": "mixed",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.6666666666666666,
+    "answer_markdown": "### Answer\n\nThe survey results show Weekend Hikers slightly more likely to name it as their top concern [[result:b070a5dc-7082-467a-b265-735763226a37]].\n\n### Key findings\n\n- Weekend Hikers: 15.8% (18 of 114 respondents) cite sustainability transparency as their top pain point [[result:b070a5dc-7082-467a-b265-735763226a37]].\n- Urban Outdoor: 13.9% (10 of 72 respondents) cite sustainability transparency as their top pain point [[result:b070a5dc-7082-467a-b265-735763226a37]].\n- The figures come from the Southpeak Customer Survey 2026, covering 186 matched respondents across the two segments [[result:b070a5dc-7082-467a-b265-735763226a37]].\n\n### Interpretation\n\nThe gap between the two segments is small, and with segment sizes of this order it may not be statistically meaningful [inference]. \"Top pain point\" in the survey is treated here as equivalent to \"top concern\" in the question; this is a reasonable but unverified mapping [inference].\n\n### Gaps & unknowns\n\nNo evidence documents were provided, only the computed survey results, so there is no qualitative context on why respondents prioritise sustainability transparency. No significance test or confidence interval is available to say whether the difference between segments is reliable [inference]. The survey's wording and sampling method are not described; a methodology document would clarify how \"top pain point\" was captured and how representative the sample is [inference].",
+    "gold_values": [
+     {
+      "tool": "group_compare",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Southpeak Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metric": {
+        "fn": "share",
+        "condition": {
+         "column": "top_pain_point",
+         "op": "eq",
+         "value": "sustainability_transparency"
+        }
+       },
+       "compare_column": "segment",
+       "group_a": "Weekend Hikers",
+       "group_b": "Urban Outdoor"
+      },
+      "rows_scanned": 300,
+      "rows_matched": 300,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "segment": "Weekend Hikers"
+        },
+        "metric": "share(top_pain_point eq sustainability_transparency)",
+        "value": 15.8,
+        "exact": "15.78947368421052631578947368",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 114,
+        "numerator": 18
+       },
+       {
+        "group": {
+         "segment": "Urban Outdoor"
+        },
+        "metric": "share(top_pain_point eq sustainability_transparency)",
+        "value": 13.9,
+        "exact": "13.88888888888888888888888889",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 72,
+        "numerator": 10
+       }
+      ],
+      "answer_kind": "compare",
+      "difference": {
+       "key": "difference(share(top_pain_point eq sustainability_transparency): Weekend Hikers - Urban Outdoor)",
+       "value": 1.9,
+       "exact": "1.90058479532163742690058479",
+       "unit": "percent",
+       "rounding": "1dp",
+       "denominator": 186
+      }
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "group",
+        "direction": "asc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "in",
+         "column": "segment",
+         "operands": [
+          "Weekend Hikers",
+          "Urban Outdoor"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "share",
+         "key": "share(top_pain_point=sustainability_transparency)",
+         "label": "pct_sustainability",
+         "column": "top_pain_point",
+         "condition": {
+          "op": "eq",
+          "column": "top_pain_point",
+          "operands": [
+           "sustainability_transparency"
+          ]
+         }
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": [
+        "segment"
+       ]
+      },
+      "rows_matched": 186,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-CMP-06",
+    "question": "How does Southpeak's average order value on the brand site compare with the marketplace?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe gap is consistent across the monthly range, as the brand site's lowest monthly AOV (136.2 USD) is above the marketplace's highest (121.1 USD) [[result:6d4d3c6b-6436-4f49-9c6d-3fa868bb7825]].\n\n### Key findings\n\n- Brand Site mean AOV is 143.09 USD, computed over 12 monthly rows [[result:3ced1841-a5b8-457b-b850-5d1ac448f272]].\n- Marketplace mean AOV is 117.8 USD, computed over 12 monthly rows [[result:3ced1841-a5b8-457b-b850-5d1ac448f272]].\n- Brand Site monthly AOV ranges from 136.2 USD to 148.8 USD [[result:6d4d3c6b-6436-4f49-9c6d-3fa868bb7825]].\n- Marketplace monthly AOV ranges from 112.9 USD to 121.1 USD [[result:6d4d3c6b-6436-4f49-9c6d-3fa868bb7825]].\n- Brand Site: 81884 orders; Marketplace: 87859 orders [[result:6d4d3c6b-6436-4f49-9c6d-3fa868bb7825]].\n- Brand Site net sales are 11707647.0 USD and Marketplace net sales are 10356555.0 USD over the same rows [[result:6d4d3c6b-6436-4f49-9c6d-3fa868bb7825]].\n- The Q2 board deck lists Brand Site sales of 15.8 ($M) and Marketplace of 13.6 ($M), but gives no AOV [[SOUTHPEAK/BOARD-DECK@v1:SL4]].\n\n### Interpretation\n\nThe Marketplace's higher order count with lower net sales is consistent with a smaller basket per order there, matching the AOV gap [inference]. The board deck notes marketplaces carry higher fulfillment cost, which may make the lower marketplace AOV more costly to serve, though the evidence does not quantify this [[SOUTHPEAK/BOARD-DECK@v1:SL4]] [inference].\n\n### Gaps & unknowns\n\nThe evidence does not explain why AOV differs (product mix, pricing, promotions, or shipping thresholds). Channel-level order and basket composition data would close this. The survey items address price perception only and say nothing about order value by channel [inference].",
+    "gold_values": [
+     {
+      "tool": "group_compare",
+      "dataset": "CHANNEL-DATA:1",
+      "dataset_title": "Channel_Monthly",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-DATA:1",
+       "metric": {
+        "fn": "mean",
+        "column": "aov_usd"
+       },
+       "compare_column": "channel",
+       "group_a": "Brand Site",
+       "group_b": "Marketplace"
+      },
+      "rows_scanned": 60,
+      "rows_matched": 60,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "channel": "Brand Site"
+        },
+        "metric": "mean(aov_usd)",
+        "value": 143.09,
+        "exact": "143.0916666666666666666666667",
+        "unit": "currency_usd",
+        "rounding": "2dp",
+        "denominator": 12
+       },
+       {
+        "group": {
+         "channel": "Marketplace"
+        },
+        "metric": "mean(aov_usd)",
+        "value": 117.8,
+        "exact": "117.8",
+        "unit": "currency_usd",
+        "rounding": "2dp",
+        "denominator": 12
+       }
+      ],
+      "answer_kind": "compare",
+      "difference": {
+       "key": "difference(mean(aov_usd): Brand Site - Marketplace)",
+       "value": 25.29,
+       "exact": "25.2916666666666666666666667",
+       "unit": "currency_usd",
+       "rounding": "2dp",
+       "denominator": 24
+      }
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CHANNEL-DATA:1",
+      "operation": "group_compare",
+      "spec": {
+       "metric": {
+        "fn": "mean",
+        "key": "mean(aov_usd)",
+        "label": "mean AOV",
+        "column": "aov_usd"
+       },
+       "dataset": "CHANNEL-DATA:1",
+       "filters": [],
+       "group_a": "Brand Site",
+       "group_b": "Marketplace",
+       "compare_column": "channel"
+      },
+      "rows_matched": 24,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     },
+     {
+      "dataset": "CHANNEL-DATA:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "group",
+        "direction": "asc",
+        "metric_index": 0
+       },
+       "dataset": "CHANNEL-DATA:1",
+       "filters": [
+        {
+         "op": "in",
+         "column": "channel",
+         "operands": [
+          "Brand Site",
+          "Marketplace"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "sum",
+         "key": "sum(net_sales_usd)",
+         "label": "sales",
+         "column": "net_sales_usd"
+        },
+        {
+         "fn": "sum",
+         "key": "sum(orders)",
+         "label": "orders",
+         "column": "orders"
+        },
+        {
+         "fn": "min",
+         "key": "min(aov_usd)",
+         "label": "min",
+         "column": "aov_usd"
+        },
+        {
+         "fn": "max",
+         "key": "max(aov_usd)",
+         "label": "max",
+         "column": "aov_usd"
+        }
+       ],
+       "group_by": [
+        "channel"
+       ]
+      },
+      "rows_matched": 24,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-TOP-01",
+    "question": "Which three SKUs generated the most FY26 year-to-date net sales?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not identify the three SKUs with the highest FY26 year-to-date net sales. The only relevant item describes the structure of the SKU performance table but does not include its values [inference].\n\n### Key findings\n\n- The SKU_Performance table has 32 data rows and includes the columns sku, product_name, units_fy26_ytd and net_sales_fy26_ytd_usd [[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n- Only the column descriptions are provided; no row-level SKU values or net sales figures appear in the evidence [[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n\n### Gaps & unknowns\n\nThe actual net sales values per SKU are missing, so no ranking can be made. Other items in the evidence report company, channel and category totals but not SKU-level results [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:2",
+      "dataset_title": "SKU_Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:2",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "net_sales_fy26_ytd_usd"
+        }
+       ],
+       "group_by": [
+        "product_name"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "desc"
+       },
+       "limit": 3
+      },
+      "rows_scanned": 32,
+      "rows_matched": 32,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "product_name": "Studio Contour Legging"
+        },
+        "metric": "sum(net_sales_fy26_ytd_usd)",
+        "value": 12020317,
+        "exact": "12020317",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 1
+       },
+       {
+        "group": {
+         "product_name": "Knit Runner 2"
+        },
+        "metric": "sum(net_sales_fy26_ytd_usd)",
+        "value": 6995630,
+        "exact": "6995630",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 1
+       },
+       {
+        "group": {
+         "product_name": "Cloudweight Hoodie"
+        },
+        "metric": "sum(net_sales_fy26_ytd_usd)",
+        "value": 6638066,
+        "exact": "6638066",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 1
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-TOP-02",
+    "question": "Which product has the lowest average customer rating in the SKU table?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nKnit Runner 2 has the lowest average customer rating in the SKU table, at a mean avg_rating of 3.4 [[result:7b8a4013-990a-4261-b429-a161f53f7513]]. The next lowest in the returned results is Switchback Trail at 3.8 [[result:7b8a4013-990a-4261-b429-a161f53f7513]].\n\n### Key findings\n\n- Knit Runner 2: mean(avg_rating) of 3.4, from 1 row [[result:7b8a4013-990a-4261-b429-a161f53f7513]].\n- Switchback Trail: mean(avg_rating) of 3.8 [[result:7b8a4013-990a-4261-b429-a161f53f7513]].\n- Cargo Trail Pant, Circuit HIIT Shoe and Puffer Vest each have a mean(avg_rating) of 3.9 [[result:7b8a4013-990a-4261-b429-a161f53f7513]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so the review volume behind each rating and the time period it covers are unknown. A product-level review-count or ratings-detail source would close this gap.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:2",
+      "dataset_title": "SKU_Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:2",
+       "metrics": [
+        {
+         "fn": "min",
+         "column": "avg_rating"
+        }
+       ],
+       "group_by": [
+        "product_name"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "asc"
+       },
+       "limit": 1
+      },
+      "rows_scanned": 32,
+      "rows_matched": 32,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "product_name": "Knit Runner 2"
+        },
+        "metric": "min(avg_rating)",
+        "value": 3.4,
+        "exact": "3.4",
+        "unit": "rating",
+        "rounding": "exact",
+        "denominator": 1
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "PRODUCT-PERF:2",
+      "operation": "aggregate",
+      "spec": {
+       "limit": 5,
+       "order": {
+        "by": "value",
+        "direction": "asc",
+        "metric_index": 0
+       },
+       "dataset": "PRODUCT-PERF:2",
+       "filters": [],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(avg_rating)",
+         "label": "mean_rating",
+         "column": "avg_rating"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n_skus",
+         "column": null
+        },
+        {
+         "fn": "min",
+         "key": "min(avg_rating)",
+         "label": "min_rating",
+         "column": "avg_rating"
+        }
+       ],
+       "group_by": [
+        "product_name"
+       ]
+      },
+      "rows_matched": 32,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-TOP-03",
+    "question": "Which product category had the highest sell-through in September 2026?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not answer this question [inference].\n\n### Key findings\n\n- The Category_Monthly table has 147 data rows, with a month column, a category column (Running Footwear, Training Footwear, Court and Lifestyle Footwear, Leggings and Bottoms, Tops and Tees, Outerwear and Hoodies, Accessories) and a sell_through_pct column [[NORTHSTAR/PRODUCT-PERF@v1:SH1.T1]].\n\n### Conflicting evidence\n\n- The two survey rows give different NPS values: 7 for respondent R0031 [[NORTHSTAR/SURVEY-2026@v1:R32]] and 10 for respondent R0076 [[NORTHSTAR/SURVEY-2026@v1:R77]]. This is a difference between individual respondents and is unrelated to the question asked.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:1",
+      "dataset_title": "Category_Monthly",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:1",
+       "metrics": [
+        {
+         "fn": "max",
+         "column": "sell_through_pct"
+        }
+       ],
+       "filters": [
+        {
+         "column": "month",
+         "op": "eq",
+         "value": "2026-09"
+        }
+       ],
+       "group_by": [
+        "category"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "desc"
+       },
+       "limit": 1
+      },
+      "rows_scanned": 147,
+      "rows_matched": 7,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "category": "Outerwear and Hoodies"
+        },
+        "metric": "max(sell_through_pct)",
+        "value": 73.2,
+        "exact": "73.2",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 1
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-TOP-05",
+    "question": "Name Southpeak's two biggest regions by share of FY26 year-to-date sales.",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe Region_Summary table covers five regions in total [[SOUTHPEAK/CHANNEL-DATA@v1:SH2.T1]].\n\n### Key findings\n\n- Pacific Northwest accounts for 19.8 percent, the second-largest share [[result:c2a1a042-f39b-410a-965b-b63788963392]].\n- The remaining three regions are Northeast at 16.5 percent, Midwest at 12.1 percent and Southwest at 10.4 percent [[result:70318dcb-7c5e-43aa-986e-c71fd9353851]].\n\n### Gaps & unknowns\n\nThe evidence gives only percentage shares, not the underlying dollar sales by region, so absolute regional revenue is not established [inference]. The cut-off date for \"year-to-date\" is not stated in the regional data; a dated version of the Region_Summary table or a finance reconciliation would close this. The shares are labelled as fictional demo data, so they should not be treated as real company figures [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "CHANNEL-DATA:2",
+      "dataset_title": "Region_Summary",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-DATA:2",
+       "metrics": [
+        {
+         "fn": "max",
+         "column": "share_of_fy26_ytd_sales_pct"
+        }
+       ],
+       "group_by": [
+        "region"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "desc"
+       },
+       "limit": 2
+      },
+      "rows_scanned": 5,
+      "rows_matched": 5,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "region": "Mountain West"
+        },
+        "metric": "max(share_of_fy26_ytd_sales_pct)",
+        "value": 41.2,
+        "exact": "41.2",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 1
+       },
+       {
+        "group": {
+         "region": "Pacific Northwest"
+        },
+        "metric": "max(share_of_fy26_ytd_sales_pct)",
+        "value": 19.8,
+        "exact": "19.8",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 1
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CHANNEL-DATA:2",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 5,
+       "columns": [
+        "region",
+        "share_of_fy26_ytd_sales_pct",
+        "data_notice"
+       ],
+       "dataset": "CHANNEL-DATA:2",
+       "filters": [],
+       "order_by": "share_of_fy26_ytd_sales_pct",
+       "direction": "desc"
+      },
+      "rows_matched": 5,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     },
+     {
+      "dataset": "CHANNEL-DATA:2",
+      "operation": "aggregate",
+      "spec": {
+       "limit": 5,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "CHANNEL-DATA:2",
+       "filters": [],
+       "metrics": [
+        {
+         "fn": "sum",
+         "key": "sum(share_of_fy26_ytd_sales_pct)",
+         "label": "share",
+         "column": "share_of_fy26_ytd_sales_pct"
+        }
+       ],
+       "group_by": [
+        "region"
+       ]
+      },
+      "rows_matched": 5,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-TOP-06",
+    "question": "Which tracked product had the most total returns in Q3 2026?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nStudio Contour Legging had the most returns in Q3 2026, with a summed returns count of 6705 [[result:8b6796b9-b064-44f5-8cd3-4b7cce5df649]]. Knit Runner 2 was next at 5139 [[result:8b6796b9-b064-44f5-8cd3-4b7cce5df649]]. No evidence items were provided, so this rests solely on the computed result [inference].\n\n### Key findings\n\n- Studio Contour Legging: sum(returns_count) of 6705 for 2026-Q3 [[result:8b6796b9-b064-44f5-8cd3-4b7cce5df649]].\n- Knit Runner 2: sum(returns_count) of 5139 [[result:8b6796b9-b064-44f5-8cd3-4b7cce5df649]].\n- Studio Sports Bra: sum(returns_count) of 3237 [[result:8b6796b9-b064-44f5-8cd3-4b7cce5df649]].\n- Flex Jogger: sum(returns_count) of 3069 [[result:8b6796b9-b064-44f5-8cd3-4b7cce5df649]].\n- Cloudweight Hoodie: sum(returns_count) of 2856 [[result:8b6796b9-b064-44f5-8cd3-4b7cce5df649]].\n\n### Conflicting evidence\n\n- The figure for Studio Contour Legging differs by metric: sum(returns_count) is 6705 while max(total_sku_returns) is 6783 [[result:8b6796b9-b064-44f5-8cd3-4b7cce5df649]]. These are different measures, and both rank it first, so the answer does not change.\n\n### Gaps & unknowns\n\nNo evidence documents were supplied, so there is no context on why returns were high or on how \"total returns\" is defined in the source. The result covers only the products present in the Returns table. Whether \"tracked\" products include any not in that table is not established [inference]. The relationship between returns_count and total_sku_returns (per-record versus SKU-level figures) is not explained. A data dictionary for the product performance dataset would clarify this [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:3",
+      "dataset_title": "Returns",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:3",
+       "metrics": [
+        {
+         "fn": "max",
+         "column": "total_sku_returns"
+        }
+       ],
+       "filters": [
+        {
+         "column": "quarter",
+         "op": "eq",
+         "value": "2026-Q3"
+        }
+       ],
+       "group_by": [
+        "product_name"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "desc"
+       },
+       "limit": 1
+      },
+      "rows_scanned": 120,
+      "rows_matched": 30,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "product_name": "Studio Contour Legging"
+        },
+        "metric": "max(total_sku_returns)",
+        "value": 6783,
+        "exact": "6783",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 3
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "PRODUCT-PERF:3",
+      "operation": "aggregate",
+      "spec": {
+       "limit": 10,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "PRODUCT-PERF:3",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "quarter",
+         "operands": [
+          "2026-Q3"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "sum",
+         "key": "sum(returns_count)",
+         "label": "returns",
+         "column": "returns_count"
+        },
+        {
+         "fn": "max",
+         "key": "max(total_sku_returns)",
+         "label": "total_sku_returns",
+         "column": "total_sku_returns"
+        }
+       ],
+       "group_by": [
+        "product_name"
+       ]
+      },
+      "rows_matched": 30,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-TOP-07",
+    "question": "Rank the SKUs by fiscal-2026-to-date units: which one tops the list, and with how many?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe top-ranked SKU by fiscal-2026-to-date units is NS-SCL (Studio Contour Legging), with 212400 units [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n\n### Key findings\n\n- NS-SCL, Studio Contour Legging (Leggings and Bottoms): units_fy26_ytd=212400, net_sales_fy26_ytd_usd=12020317 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-CRW, Crew Sock 3 Pack (Accessories): units_fy26_ytd=176500 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-BTE, Breeze Tee (Tops and Tees): units_fy26_ytd=154300 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-SBR, Studio Sports Bra (Tops and Tees): units_fy26_ytd=118700 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-FLJ, Flex Jogger (Leggings and Bottoms): units_fy26_ytd=97200 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-CHD, Cloudweight Hoodie (Outerwear and Hoodies): units_fy26_ytd=92600 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-SCS, Studio Contour Short (Leggings and Bottoms): units_fy26_ytd=88900 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-CRP, Crop Training Tank (Tops and Tees): units_fy26_ytd=86500 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-HFL, High Rise Flare Legging (Leggings and Bottoms): units_fy26_ytd=73600 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n- NS-GPH, Graphic Campus Tee (Tops and Tees): units_fy26_ytd=69200 [[result:60fe3ff4-2e66-4f44-a594-a054486874b7]].\n\n### Gaps & unknowns\n\nNo evidence documents were provided to confirm the fiscal-year definition or whether \"year-to-date\" covers a consistent period across SKUs. The SKU performance table itself would need to be reviewed to close this.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:2",
+      "dataset_title": "SKU_Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:2",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "units_fy26_ytd"
+        }
+       ],
+       "group_by": [
+        "product_name"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "desc"
+       },
+       "limit": 1
+      },
+      "rows_scanned": 32,
+      "rows_matched": 32,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "product_name": "Studio Contour Legging"
+        },
+        "metric": "sum(units_fy26_ytd)",
+        "value": 212400,
+        "exact": "212400",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 1
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "PRODUCT-PERF:2",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 20,
+       "columns": [
+        "sku",
+        "product_name",
+        "category",
+        "units_fy26_ytd",
+        "net_sales_fy26_ytd_usd"
+       ],
+       "dataset": "PRODUCT-PERF:2",
+       "filters": [],
+       "order_by": "units_fy26_ytd",
+       "direction": "desc"
+      },
+      "rows_matched": 32,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-TOP-08",
+    "question": "For Q3 2026 returns tagged 'Fit - runs small', which product had the largest share of its returns in that reason?",
+    "task_type": "analytics",
+    "routed_task_type": "mixed",
+    "task_type_correct": false,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nSwitchback Trail had the largest share of its own returns tagged 'Fit - runs small' in Q3 2026, at 41 percent [[result:8fd5f304-40fb-4356-9a69-20b6ad8dd6b4]]. Knit Runner was next at 33.2 percent [[result:8fd5f304-40fb-4356-9a69-20b6ad8dd6b4]].\n\n### Key findings\n\n- Switchback Trail: 41 percent of its SKU returns were tagged 'Fit - runs small', which is 583 returns out of a SKU total of 1421 [[result:8fd5f304-40fb-4356-9a69-20b6ad8dd6b4]].\n- Knit Runner: 33.2 percent, which is 477 returns out of 1435 [[result:8fd5f304-40fb-4356-9a69-20b6ad8dd6b4]].\n- Court Classic Custom: 32.6 percent, which is 62 returns out of 190 [[result:8fd5f304-40fb-4356-9a69-20b6ad8dd6b4]].\n- Studio Sports Bra: 29.8 percent, which is 1161 returns out of 3899 [[result:8fd5f304-40fb-4356-9a69-20b6ad8dd6b4]].\n- Lower shares: Flex Jogger at 23.3 percent, Knit Runner 2 at 21.4 percent, and Pivot Trainer at 19 percent [[result:8fd5f304-40fb-4356-9a69-20b6ad8dd6b4]].\n\n### Gaps & unknowns\n\nNo text evidence items were provided; the answer rests solely on the computed aggregate over the returns table. The data does not explain why Switchback Trail runs small (for example sizing, fit changes or customer segments). Product design notes or customer review analysis would address this. The data does not show whether the share changed from earlier quarters, which would need a multi-quarter returns series.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:3",
+      "dataset_title": "Returns",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:3",
+       "metrics": [
+        {
+         "fn": "max",
+         "column": "share_of_sku_returns_pct"
+        }
+       ],
+       "filters": [
+        {
+         "column": "quarter",
+         "op": "eq",
+         "value": "2026-Q3"
+        },
+        {
+         "column": "reason",
+         "op": "eq",
+         "value": "Fit - runs small"
+        }
+       ],
+       "group_by": [
+        "product_name"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "desc"
+       },
+       "limit": 1
+      },
+      "rows_scanned": 120,
+      "rows_matched": 7,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "product_name": "Switchback Trail"
+        },
+        "metric": "max(share_of_sku_returns_pct)",
+        "value": 41,
+        "exact": "41",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 1
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "PRODUCT-PERF:3",
+      "operation": "aggregate",
+      "spec": {
+       "limit": 10,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "PRODUCT-PERF:3",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "quarter",
+         "operands": [
+          "2026-Q3"
+         ]
+        },
+        {
+         "op": "eq",
+         "column": "reason",
+         "operands": [
+          "Fit - runs small"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "max",
+         "key": "max(share_of_sku_returns_pct)",
+         "label": "share",
+         "column": "share_of_sku_returns_pct"
+        },
+        {
+         "fn": "sum",
+         "key": "sum(returns_count)",
+         "label": "returns",
+         "column": "returns_count"
+        },
+        {
+         "fn": "max",
+         "key": "max(total_sku_returns)",
+         "label": "total",
+         "column": "total_sku_returns"
+        }
+       ],
+       "group_by": [
+        "product_name"
+       ]
+      },
+      "rows_matched": 7,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-NUL-02",
+    "question": "How many rows of the market sizing sheet have a blank YoY growth value?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\n9 rows in the market sizing sheet have a blank YoY growth value, out of 54 rows scanned [[result:def5eb4a-ec1e-4e7e-b141-38c6d75acb80]].\n\n### Key findings\n\n- A count of rows where yoy_growth_pct is null in the Market_Sizing table returned 9 matched rows [[result:def5eb4a-ec1e-4e7e-b141-38c6d75acb80]].\n- The check scanned 54 rows in total [[result:def5eb4a-ec1e-4e7e-b141-38c6d75acb80]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so there is no context on why these values are blank (for example, missing source data versus a first-period row with no prior year). The result does not identify which rows or categories are affected; a row-level listing of the blank entries would close that gap.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "CATEGORY-SIZING:1",
+      "dataset_title": "Market_Sizing",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CATEGORY-SIZING:1",
+       "metrics": [
+        {
+         "fn": "count"
+        }
+       ],
+       "filters": [
+        {
+         "column": "yoy_growth_pct",
+         "op": "is_null"
+        }
+       ]
+      },
+      "rows_scanned": 54,
+      "rows_matched": 9,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "count",
+        "value": 9,
+        "exact": "9",
+        "unit": "count",
+        "rounding": "exact",
+        "denominator": 9
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CATEGORY-SIZING:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "CATEGORY-SIZING:1",
+       "filters": [
+        {
+         "op": "is_null",
+         "column": "yoy_growth_pct",
+         "operands": []
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "blank_yoy",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 9,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-NUL-03",
+    "question": "Averaged over the P&L lines that report one, what is the year-over-year change percentage in the FY26 financial summary?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe mean year-over-year change across the P&L lines that report one is 9.0 percent, computed over 7 lines [[result:6afcda72-e325-4236-9720-7baf397356e6]].\n\n### Key findings\n\n- The aggregate mean of yoy_change_pct is 9.0 percent [[result:6afcda72-e325-4236-9720-7baf397356e6]].\n- Of the 10 rows scanned, the null values were excluded from the mean [[result:6afcda72-e325-4236-9720-7baf397356e6]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so there is no line-level detail on which P&L lines report a year-over-year change or what their individual values are. The result is an unweighted mean of percentages, so it does not reflect the relative size of each line [inference]. A source such as the underlying P&L table itself would be needed to show the individual lines and any weighting [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "FIN-SUMMARY-FY26:1",
+      "dataset_title": "PnL_Summary",
+      "source_confidentiality": "confidential",
+      "spec": {
+       "dataset": "FIN-SUMMARY-FY26:1",
+       "metrics": [
+        {
+         "fn": "mean",
+         "column": "yoy_change_pct"
+        }
+       ]
+      },
+      "rows_scanned": 10,
+      "rows_matched": 10,
+      "warnings": [
+       "NULLS_EXCLUDED"
+      ],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "mean(yoy_change_pct)",
+        "value": 9.0,
+        "exact": "9",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 7
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "FIN-SUMMARY-FY26:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "FIN-SUMMARY-FY26:1",
+       "filters": [],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(yoy_change_pct)",
+         "label": "mean yoy",
+         "column": "yoy_change_pct"
+        },
+        {
+         "fn": "count",
+         "key": "count(yoy_change_pct)",
+         "label": "n",
+         "column": "yoy_change_pct"
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 10,
+      "warnings": [
+       "NULLS_EXCLUDED"
+      ],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-NOR-02",
+    "question": "What is the mean star rating for Puffer Vest reviews submitted through the app?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not establish a mean star rating for Puffer Vest reviews submitted through the app. The computed aggregate filtered to product Puffer Vest and channel App matched no rows, so there is no data and no mean can be stated [inference].\n\n### Key findings\n\n- The aggregate on the reviews table, filtered to Puffer Vest and channel App, matched 0 of 800 rows scanned, so the mean rating has no data (zero denominator) [[result:df24a96f-4e39-43c3-af2b-acc0b492b6d7]].\n- The only Puffer Vest review retrieved is a 5-star review from the Marketplace channel, not the App channel, so it does not bear on the question [[NORTHSTAR/REVIEWS@v1:R368]].\n\n### Gaps & unknowns\n\nNo app-channel Puffer Vest reviews appear in the dataset as filtered, so no mean can be reported [inference]. It is unclear whether app-submitted reviews are recorded under a different channel label or product name; the dataset's channel value definitions or a data dictionary would settle this. The research gathering stopped when its step budget ran out, so other relevant records may not have been retrieved [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "REVIEWS:1",
+      "dataset_title": "Northstar Product Reviews",
+      "source_confidentiality": "public",
+      "spec": {
+       "dataset": "REVIEWS:1",
+       "metrics": [
+        {
+         "fn": "mean",
+         "column": "rating"
+        }
+       ],
+       "filters": [
+        {
+         "column": "product",
+         "op": "eq",
+         "value": "Puffer Vest"
+        },
+        {
+         "column": "channel",
+         "op": "eq",
+         "value": "App"
+        }
+       ]
+      },
+      "rows_scanned": 800,
+      "rows_matched": 0,
+      "warnings": [
+       "EMPTY_SELECTION",
+       "ZERO_DENOMINATOR"
+      ],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "mean(rating)",
+        "value": null,
+        "exact": null,
+        "unit": "rating",
+        "rounding": "2dp",
+        "denominator": 0
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "REVIEWS:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "REVIEWS:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "product",
+         "operands": [
+          "Puffer Vest"
+         ]
+        },
+        {
+         "op": "eq",
+         "column": "channel",
+         "operands": [
+          "App"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(rating)",
+         "label": "mean",
+         "column": "rating"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 0,
+      "warnings": [
+       "EMPTY_SELECTION",
+       "ZERO_DENOMINATOR"
+      ],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-NOR-03",
+    "question": "What net sales did the Marketplace channel book in Q4 2026 (October to December)?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not state Marketplace net sales for Q4 2026 (October to December) [inference]. The only Marketplace sales information is directional and refers to Q2 FY26, and the channel performance table is described only by its structure, with no values shown [inference].\n\n### Key findings\n\n- The Q3 Strategy Review describes Marketplace as \"Volume rising, margin under pressure\" in its Q2 FY26 read, with no dollar figure given [[NORTHSTAR/Q3-REVIEW@v1:SL5]].\n- The Northstar Channel Performance table has a Marketplace channel and a net_sales_usd column across 120 rows, but only the schema is provided, not the underlying values [[NORTHSTAR/CHANNEL-PERF@v1:T1]].\n- The Retail Channel Shift Note says marketplace and social commerce together took 34% of Gen Z athletic spend in 2026. This is a market-wide share, not Northstar Marketplace net sales [[NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2]].\n\n### Gaps & unknowns\n\nFailing that, a finance report or Q4 channel review with Marketplace net sales would close the gap.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "CHANNEL-PERF:1",
+      "dataset_title": "Northstar Channel Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-PERF:1",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "net_sales_usd"
+        }
+       ],
+       "filters": [
+        {
+         "column": "channel",
+         "op": "eq",
+         "value": "Marketplace"
+        },
+        {
+         "column": "month",
+         "op": "between",
+         "values": [
+          "2026-10",
+          "2026-12"
+         ]
+        }
+       ]
+      },
+      "rows_scanned": 120,
+      "rows_matched": 0,
+      "warnings": [
+       "EMPTY_SELECTION"
+      ],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "sum(net_sales_usd)",
+        "value": null,
+        "exact": null,
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 0
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-INV-03",
+    "question": "Project Running Footwear net sales for December 2026 by extrapolating the monthly trend.",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": null,
+    "exact_result_accuracy": null,
+    "answer_markdown": "### Answer\n\nThe evidence does not contain a December 2026 figure for Running Footwear, and no forecast or projection exists in the provided data [inference]. No extrapolation is offered [inference].\n\n### Key findings\n\n- Monthly Running Footwear net sales are available through 2026-08, with net_sales_usd=11518005 and units=111571 for that month [[result:2c807b89-4bf6-4729-a7c9-04f3e766c849]].\n- A further row shows 2026-09 with net_sales_usd=11846307 and units=114811 [[result:48d7f98e-29ae-4bd9-8aa0-8e615c682c31]].\n- The 2026-08 row appears in both result sets with the same values, so those two results agree [[result:2c807b89-4bf6-4729-a7c9-04f3e766c849]][[result:48d7f98e-29ae-4bd9-8aa0-8e615c682c31]].\n- The most recent prior December in the data (2025-12) shows net_sales_usd=11809454 and units=106236 [[result:2c807b89-4bf6-4729-a7c9-04f3e766c849]].\n- The 2026-06 month is the highest in the 2026 rows, at net_sales_usd=12954734 [[result:2c807b89-4bf6-4729-a7c9-04f3e766c849]].\n\n### Interpretation\n\nSales are volatile month to month, so any simple linear extrapolation would carry wide uncertainty [inference].\n\n### Gaps & unknowns\n\nA deterministic trend or seasonal-forecast analytic run over the full monthly series (ideally with several years of history) would be needed to produce a defensible projection, along with any company-stated forecast or plan for the period [inference]. The summary noted the research step budget ran out, so the evidence may be incomplete [inference].",
+    "gold_values": [],
+    "computed": [
+     {
+      "dataset": "PRODUCT-PERF:1",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 20,
+       "columns": [
+        "month",
+        "net_sales_usd",
+        "units"
+       ],
+       "dataset": "PRODUCT-PERF:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "category",
+         "operands": [
+          "Running Footwear"
+         ]
+        }
+       ],
+       "order_by": "month",
+       "direction": "asc"
+      },
+      "rows_matched": 21,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     },
+     {
+      "dataset": "PRODUCT-PERF:1",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 2,
+       "columns": [
+        "month",
+        "net_sales_usd",
+        "units"
+       ],
+       "dataset": "PRODUCT-PERF:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "category",
+         "operands": [
+          "Running Footwear"
+         ]
+        }
+       ],
+       "order_by": "month",
+       "direction": "desc"
+      },
+      "rows_matched": 21,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-INV-05",
+    "question": "List the gross margin percentage for every individual SKU.",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": null,
+    "exact_result_accuracy": null,
+    "answer_markdown": "### Answer\n\nThe evidence does not contain gross margin percentages for individual SKUs, so the requested list cannot be produced [inference]. The only margin data available is at product-category level, not SKU level [inference].\n\n### Key findings\n\n- Category-level gross margins are available for five categories: Running Footwear 45.5%, Leggings and Bottoms 52.0%, Tops and Tees 50.5%, Court and Lifestyle 48.5%, and Outerwear and Hoodies 47.0% [[NORTHSTAR/Q3-REVIEW@v1:SL4]].\n- Accessories margin of 41.0% is stated as the lowest in the range [[NORTHSTAR/Q3-REVIEW@v1:SL4]].\n- The company-level P&L summary includes a Gross margin % line, but the evidence gives only the table's structure, not its values [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1]].\n- Competitor materials describe margin direction or channel profile only, with no SKU-level figures [[NORTHSTAR/VANTAGE-DECK@v1:SL3]][[NORTHSTAR/VANTAGE-DECK@v1:SL11]].\n\n### Interpretation\n\nCategory figures are aggregates and cannot be disaggregated into per-SKU margins without underlying SKU data [inference].\n\n### Gaps & unknowns\n\nNo SKU-level sales, cost, or margin data was provided. A SKU-level product margin file or ERP/merchandising export would close this gap. Training footwear margin is not shown in the category table, and the actual values in the P&L summary table were not included in the evidence. Competitor documents provide no comparable SKU or category margin figures [inference].",
+    "gold_values": [],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-INV-06",
+    "question": "Break down Southpeak survey NPS by respondent gender.",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": null,
+    "exact_result_accuracy": null,
+    "answer_markdown": "### Answer\n\nThe workspace evidence does not contain information that answers this question, so no answer was generated.\n\n### Gaps & unknowns\n\nNo relevant evidence was found in this workspace. The workspace has no competitor, market, financial sources; adding them could close the gap.\n",
+    "gold_values": [],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-INV-07",
+    "question": "What's the standard deviation of review ratings within each product category?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": null,
+    "exact_result_accuracy": null,
+    "answer_markdown": "### Answer\n\nThe evidence does not answer this question [inference]. The Northstar Product Reviews table is described only by its structure, and no actual rating values or summary statistics are provided [inference].\n\n### Key findings\n\n- The reviews table has 800 data rows, with columns for product, category, rating (numeric), date and channel, but no rating values are shown [[NORTHSTAR/REVIEWS@v1:T1]].\n- The product performance sheet has an avg_rating column per SKU, which is an average and cannot yield a within-category standard deviation [[NORTHSTAR/PRODUCT-PERF@v1:SH2.T1]].\n\n### Gaps & unknowns\n\nThe row-level rating data behind the reviews table is not in the evidence, so no category-level spread can be computed or quoted [inference]. No evidence states a standard deviation or any other dispersion measure for ratings. Closing this gap requires the full review dataset (rating values joined to category) or a pre-computed per-category summary from the data team.",
+    "gold_values": [],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-RET-01",
+    "question": "Why does interviewee Lena O. doubt brands' green claims?",
+    "task_type": "retrieval",
+    "routed_task_type": "retrieval",
+    "task_type_correct": true,
+    "values_matched": null,
+    "exact_result_accuracy": null,
+    "answer_markdown": "### Answer\n\nLena O. doubts green claims when brands do not give concrete details such as where a product was made and how much of it is recycled [[NORTHSTAR/INTERVIEWS@v1:S11.Q1]]. She treats vague claims, like a leaf badge, as marketing rather than information [[NORTHSTAR/INTERVIEWS@v1:S11.Q1]]. This skepticism affects her behavior: she will skip a brand that is vague because she does not want to feel played [[NORTHSTAR/INTERVIEWS@v1:S11.Q2]].\n\n### Key findings\n\n- She assumes green claims are marketing if a brand cannot say where the shoe was made and what is recycled in it [[NORTHSTAR/INTERVIEWS@v1:S11.Q1]].\n- She says \"A little leaf badge is not information\" and would believe a brand more if given \"percentages and a country\" [[NORTHSTAR/INTERVIEWS@v1:S11.Q1]].\n- The doubt has a modest effect on purchasing: she will skip a vague brand, though she says she is \"not a perfect shopper\" [[NORTHSTAR/INTERVIEWS@v1:S11.Q2]].\n- Her stated reason for avoiding vague brands is that she does not want to \"feel played\" [[NORTHSTAR/INTERVIEWS@v1:S11.Q2]].\n\n### Conflicting evidence\n\n- The evidence notes flag differing \"nps\" values between two survey rows [[NORTHSTAR/SURVEY-2026@v1:R77]][[NORTHSTAR/SURVEY-2026@v1:R478]].\n\n### Interpretation\n\nHer doubt seems rooted in a desire for verifiable specifics and for not being misled, rather than in opposition to sustainability itself [inference].\n\n### Gaps & unknowns\n\nThe interview excerpts do not show whether she has had a specific past experience of being misled by a brand, or which brands she has skipped. Fuller interview transcripts would close this gap.",
+    "gold_values": [],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-RET-02",
+    "question": "In the personalization pilot, what stopped customers from ordering another personalized pair?",
+    "task_type": "retrieval",
+    "routed_task_type": "retrieval",
+    "task_type_correct": true,
+    "values_matched": null,
+    "exact_result_accuracy": null,
+    "answer_markdown": "### Answer\n\nThe main stated barrier was the long wait for delivery: personalized pairs took an average of 12 days, and the lead time was the most common reason customers gave for not reordering [[NORTHSTAR/PERSO-PILOT@v1:S1.B7]][[NORTHSTAR/FY27-MEMO@v1:S1.B3]]. Customers also felt they were paying more for something that should be standard, and lacked order tracking [[NORTHSTAR/PERSO-PILOT@v1:S1.B8]].\n\n### Key findings\n\n- Average lead time for personalized pairs was 12 days, and 41% of exit survey respondents named the wait as their main reason not to order again [[NORTHSTAR/PERSO-PILOT@v1:S1.B7]].\n- The pilot readout names the long delivery wait as the main reason people gave for not coming back [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]].\n- Customers praised the scan and colorway tool but commented on the waiting time, the lack of tracking, and the sense of paying more for something that should be standard [[NORTHSTAR/PERSO-PILOT@v1:S1.B8]].\n- Standard delivery takes a few days, and support saw more order status questions on personalized orders [[NORTHSTAR/Q3-REVIEW@v1:SL11]].\n- Personalized buyers repurchased at 18% within 90 days versus 24% for the matched control group [[NORTHSTAR/PERSO-PILOT@v1:S1.B4]].\n- An interviewee abandoned an order after seeing the wait, and a reviewer nearly cancelled because the order took almost two weeks [[NORTHSTAR/PERSO-PILOT@v1:S1.B8]].\n\n### Conflicting evidence\n\n- An early week-six read showed personalized buyers repeating at 27%, but on a sample under 300 customers [[NORTHSTAR/Q3-REVIEW@v1:SL10.N1]].\n- The final readout says that early read is superseded, with the 90-day figure at 18% against 24% for control [[NORTHSTAR/PERSO-PILOT@v1:S1.B2]][[NORTHSTAR/PERSO-PILOT@v1:S1.B4]].\n\n### Interpretation\n\nLead time appears to be the dominant, but not the only, barrier, since price perception and poor order visibility were also raised [inference]. The few paid-tier takers and the preference for the free monogram suggest the price premium may also have limited appetite, though the evidence does not link this directly to non-reordering [inference].\n\n### Gaps & unknowns\n\nThe evidence does not give the share of non-reorderers citing price, tracking, or other reasons beyond the main reason. It does not show whether shorter lead times would raise repeat purchase; a repeat test with faster delivery on a single style would help [inference]. The exit survey covered only buyers who did not reorder, so it cannot show what drove those who did reorder [inference].",
+    "gold_values": [],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-RET-05",
+    "question": "Where will Southpeak first trial its faster delivery promise, and starting when?",
+    "task_type": "retrieval",
+    "routed_task_type": "retrieval",
+    "task_type_correct": true,
+    "values_matched": null,
+    "exact_result_accuracy": null,
+    "answer_markdown": "### Answer\n\nSouthpeak will pilot a 48 hour delivery promise first in the Denver and Salt Lake City markets, starting in March 2027 [[SOUTHPEAK/PLANNING-NOTES@v1:S1.B5]]. This fits the broader strategy of focusing initial work on a small number of Mountain West markets before expanding [[SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3]].\n\n### Key findings\n\n- The 48 hour delivery promise pilot is planned for Denver and Salt Lake City, starting March 2027 [[SOUTHPEAK/PLANNING-NOTES@v1:S1.B5]].\n- The pilot will be assessed on whether customers who receive the faster option reorder at a higher rate, and on cost per order [[SOUTHPEAK/PLANNING-NOTES@v1:S1.B5]].\n- The strategy says initial work will concentrate on a small number of Mountain West markets, with expansion only after measuring cost and customer response [[SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3]].\n\n### Gaps & unknowns\n\nThe evidence does not give an exact start date within the month, the pilot's duration, or the success thresholds for reorder rate and cost per order. It also does not name which markets would follow the pilot [inference]. Project plans or operations briefs would close these gaps.",
+    "gold_values": [],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-RET-06",
+    "question": "What did a Southpeak interviewee dislike about the Glacier Pack?",
+    "task_type": "retrieval",
+    "routed_task_type": "retrieval",
+    "task_type_correct": true,
+    "values_matched": null,
+    "exact_result_accuracy": null,
+    "answer_markdown": "### Answer\n\nInterviewee Tomas R. disliked that the Glacier Pack's straps dug into his shoulders after an hour on the trail [[SOUTHPEAK/INTERVIEWS@v1:S6.Q1]]. As a result, he carried it by the top handle for half the hike, which he said defeated the whole purpose [[SOUTHPEAK/INTERVIEWS@v1:S6.Q1]].\n\n### Key findings\n\n- His specific dislike was shoulder strap discomfort: the straps \"dug into my shoulders after an hour on the trail\" [[SOUTHPEAK/INTERVIEWS@v1:S6.Q1]].\n- The discomfort changed how he used the pack, since he carried it by the top handle for half the hike [[SOUTHPEAK/INTERVIEWS@v1:S6.Q1]].\n- The interviews are a small base of six conversations, which the brand team says complement the spring survey rather than replace it [[SOUTHPEAK/INTERVIEWS@v1:S2.B1]].\n\n### Gaps & unknowns\n\nOnly one interviewee mentions the Glacier Pack by name in the evidence, so it is unclear whether the strap complaint is widespread. The evidence does not say what strap design, load weight or fit contributed to the discomfort. Product specifications or fit-testing data would close this gap. Survey responses about pack problems do not name the Glacier Pack, so they cannot be tied to this model without product-level survey data [inference].",
+    "gold_values": [],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MIX-01",
+    "question": "Which Gen Z segment most often names delivery speed as its top pain point, and what do those respondents say about shipping?",
+    "task_type": "mixed",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not identify a Gen Z segment that most often names delivery speed as its top pain point. Delivery speed is a minor top frustration for Gen Z overall (8%), and the survey rows provided mostly come from respondents outside the Gen Z age bands, so no segment ranking or Gen Z shipping verbatims can be drawn from them [[NORTHSTAR/BRAND-STRATEGY@v1:P4.B2]].\n\n### Key findings\n\n- Delivery speed was named as the top frustration by 8% of Gen Z survey respondents, well behind fit inconsistency at 27% [[NORTHSTAR/BRAND-STRATEGY@v1:P4.B2]].\n- The only provided survey row from a young respondent is R0335 (age 25-27, segment Studio Social), who named delivery_speed as top pain point and wrote: \"Free shipping is great but not if it takes ten days. The tracking page was not updated for four days.\" [[NORTHSTAR/SURVEY-2026@v1:R336]]\n- The other delivery-speed rows are from respondents aged 35-44, 28-34, and 45+ in the Established Active segment, with complaints about delivery taking over a week, a package arriving after a race, and split shipments [[NORTHSTAR/SURVEY-2026@v1:R367]][[NORTHSTAR/SURVEY-2026@v1:R477]][[NORTHSTAR/SURVEY-2026@v1:R169]][[NORTHSTAR/SURVEY-2026@v1:R357]].\n- Among Gen Z in market research, delivery within three days was rated essential by 48%, and the weight on delivery time rose among those who buy through social platforms [[NORTHSTAR/GENZ-TRENDS@v2:P3.B4]][[NORTHSTAR/WTP-STUDY@v1:P3.B2]].\n- Internal notes say a twelve day wait for the personalization pilot cuts against Gen Z delivery expectations [[NORTHSTAR/Q3-REVIEW@v1:SL11.N1]].\n\n### Conflicting evidence\n\n- The survey rows show NPS values that differ by respondent: 10 [[NORTHSTAR/SURVEY-2026@v1:R367]], 9 [[NORTHSTAR/SURVEY-2026@v1:R477]], 8 [[NORTHSTAR/SURVEY-2026@v1:R169]], 10 [[NORTHSTAR/SURVEY-2026@v1:R336]], and 10 [[NORTHSTAR/SURVEY-2026@v1:R357]]. These are individual scores rather than a true contradiction.\n\n### Interpretation\n\nDelivery speed appears to be a more notable pain point in the Established Active segment than among Gen Z, though the sampled rows cannot confirm this [inference]. Among Gen Z, the Studio Social segment (and social-platform buyers) is the most plausible place where delivery matters, but one row is not enough to establish it [inference].\n\n### Gaps & unknowns\n\nThe evidence lacks a segment-by-segment breakdown of Gen Z top pain points, and the survey rows are an unrepresentative sample rather than full counts. A cross-tabulation of the full survey by age group, segment, and top pain point, plus the full set of Gen Z delivery verbatims, would answer the question [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "share",
+         "condition": {
+          "column": "top_pain_point",
+          "op": "eq",
+          "value": "delivery_speed"
+         }
+        }
+       ],
+       "filters": [
+        {
+         "column": "age_group",
+         "op": "in",
+         "values": [
+          "18-21",
+          "22-24",
+          "25-27"
+         ]
+        }
+       ],
+       "group_by": [
+        "segment"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "desc"
+       },
+       "limit": 1
+      },
+      "rows_scanned": 600,
+      "rows_matched": 400,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "segment": "Campus Competitors"
+        },
+        "metric": "share(top_pain_point eq delivery_speed)",
+        "value": 9.4,
+        "exact": "9.375",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 96,
+        "numerator": 9
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MIX-02",
+    "question": "How many survey respondents call knit upper durability their biggest problem, and what kinds of wear do they report?",
+    "task_type": "mixed",
+    "routed_task_type": "analytics",
+    "task_type_correct": false,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\n68 of the 600 survey rows scanned name knit upper durability as their top pain point [[result:d3d38949-dbb4-422b-8963-6591b6cb5182]]. The wear they describe centres on fraying or small holes near the toe flex point within a couple of months, plus mesh tearing and uppers that did not hold up to daily wear [[NORTHSTAR/SURVEY-2026@v1:R43]][[NORTHSTAR/SURVEY-2026@v1:R482]][[NORTHSTAR/SURVEY-2026@v1:R205]].\n\n### Key findings\n\n- 68 respondents have knit_upper_durability as their top pain point, out of 600 rows scanned [[result:d3d38949-dbb4-422b-8963-6591b6cb5182]].\n- Fraying near the toe within a couple of months is the most repeated description [[NORTHSTAR/SURVEY-2026@v1:R211]][[NORTHSTAR/SURVEY-2026@v1:R299]].\n- A small hole forming where the big toe bends after about ten weeks [[NORTHSTAR/SURVEY-2026@v1:R482]].\n- Mesh tearing at the flex point, even with light gym and walking use [[NORTHSTAR/SURVEY-2026@v1:R43]][[NORTHSTAR/SURVEY-2026@v1:R288]].\n- Uppers not holding up to daily wear despite good out-of-the-box comfort [[NORTHSTAR/SURVEY-2026@v1:R415]][[NORTHSTAR/SURVEY-2026@v1:R205]].\n- Pilling after a few washes is mentioned alongside the upper issue [[NORTHSTAR/SURVEY-2026@v1:R211]][[NORTHSTAR/SURVEY-2026@v1:R520]].\n- Support offered a discount rather than a replacement when the upper wore through [[NORTHSTAR/SURVEY-2026@v1:R444]][[NORTHSTAR/SURVEY-2026@v1:R503]].\n- Support tickets corroborate the pattern: 1,140 tickets in Q3, mostly fraying near the toe flex point within 90 days [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]]. The internal strategy document cites returns of 16.8% against 13.1% for the predecessor, with reasons clustering around toe-flex fraying [[NORTHSTAR/BRAND-STRATEGY@v1:P6.B3]].\n\n### Interpretation\n\nThe sample verbatims suggest the issue is early toe-area wear under ordinary use rather than hard training, which matches the support and returns evidence [inference].\n\n### Gaps & unknowns\n\nOnly a sample of respondents' verbatims was provided, so the full range of wear reported may be broader [inference]. It is unclear whether \"top pain point\" is a single-choice field, i.e. whether it truly means \"biggest problem\" for each respondent; the survey questionnaire would confirm this.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Northstar Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "count"
+        }
+       ],
+       "filters": [
+        {
+         "column": "top_pain_point",
+         "op": "eq",
+         "value": "knit_upper_durability"
+        }
+       ]
+      },
+      "rows_scanned": 600,
+      "rows_matched": 68,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "count",
+        "value": 68,
+        "exact": "68",
+        "unit": "count",
+        "rounding": "exact",
+        "denominator": 68
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "top_pain_point",
+         "operands": [
+          "knit_upper_durability"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 68,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MIX-03",
+    "question": "What is the Knit Runner 2's mean review rating, and what do its 1- and 2-star reviewers complain about?",
+    "task_type": "mixed",
+    "routed_task_type": "mixed",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe Knit Runner 2's mean review rating is 3.0 across 13 reviews [[result:27e942d4-293b-491b-ae8a-8f8f304019e3]]. Its low-rated reviewers (five reviews rated 2 or below, none rated 1) complain mainly about early wear at the upper and stitching [[NORTHSTAR/REVIEWS@v1:R413]][[NORTHSTAR/REVIEWS@v1:R197]], while others cite slow refunds, dull color versus photos, and a waistband issue [[NORTHSTAR/REVIEWS@v1:R360]][[NORTHSTAR/REVIEWS@v1:R172]][[NORTHSTAR/REVIEWS@v1:R498]].\n\n### Key findings\n\n- Mean rating is 3.0 across 13 reviews [[result:27e942d4-293b-491b-ae8a-8f8f304019e3]].\n- Five reviews are rated 2 or below, all rated 2 [[result:fbb5d73a-5fbd-4f2c-ae7e-1fbe59b47c84]].\n- Durability: the upper tore at the flex point in under two months of normal walking, with a price-versus-expectation complaint (\"$128\") [[NORTHSTAR/REVIEWS@v1:R413]]; stitching came loose after a few weeks and the shoe was \"too expensive for how quickly it wore out\" [[NORTHSTAR/REVIEWS@v1:R197]].\n- Returns and refunds: the return process was slow and the refund took two weeks [[NORTHSTAR/REVIEWS@v1:R360]][[NORTHSTAR/REVIEWS@v1:R172]].\n- Color: the shoe was \"much duller than the photos\" [[NORTHSTAR/REVIEWS@v1:R172]].\n- Fit/product mismatch: one review says the waistband rolls down during squats, which does not describe a shoe and may be mis-tagged [[NORTHSTAR/REVIEWS@v1:R498]].\n- Internal sources corroborate the durability theme: 1,140 Q3 tickets about knit upper wear, mostly fraying near the toe flex point [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]], and a 16.8% return rate versus 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]].\n\n### Interpretation\n\nDurability appears to be the dominant complaint, since it matches the support ticket and return-rate evidence, but with only five low-rated reviews the review sample is small [inference]. The waistband review likely reflects a data-tagging error rather than a genuine Knit Runner 2 complaint [inference].\n\n### Gaps & unknowns\n\nThe proportion of low-rated reviews citing each complaint type is not established beyond these five reviews [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "REVIEWS:1",
+      "dataset_title": "Northstar Product Reviews",
+      "source_confidentiality": "public",
+      "spec": {
+       "dataset": "REVIEWS:1",
+       "metrics": [
+        {
+         "fn": "mean",
+         "column": "rating"
+        }
+       ],
+       "filters": [
+        {
+         "column": "product",
+         "op": "eq",
+         "value": "Knit Runner 2"
+        }
+       ]
+      },
+      "rows_scanned": 800,
+      "rows_matched": 13,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "mean(rating)",
+        "value": 3.0,
+        "exact": "3",
+        "unit": "rating",
+        "rounding": "2dp",
+        "denominator": 13
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "REVIEWS:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "REVIEWS:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "product",
+         "operands": [
+          "Knit Runner 2"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(rating)",
+         "label": "mean",
+         "column": "rating"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 13,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     },
+     {
+      "dataset": "REVIEWS:1",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 20,
+       "columns": [
+        "review_id",
+        "rating",
+        "channel",
+        "review_text"
+       ],
+       "dataset": "REVIEWS:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "product",
+         "operands": [
+          "Knit Runner 2"
+         ]
+        },
+        {
+         "op": "lte",
+         "column": "rating",
+         "operands": [
+          "2"
+         ]
+        }
+       ],
+       "order_by": "rating",
+       "direction": "asc"
+      },
+      "rows_matched": 5,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MIX-04",
+    "question": "Which Southpeak segment has the highest share citing durability as its top pain point, and what breaks for them?",
+    "task_type": "mixed",
+    "routed_task_type": "analytics",
+    "task_type_correct": false,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nUrban Outdoor has the highest share of respondents citing durability as their top pain point, at 13.9 percent (10 of 72) [[result:3e4deb5f-9927-4b60-96d8-0ffa9f86f3b5]]. The complaints are about product failures: pack zippers breaking, soles peeling away, and fleece fabric pilling [[SOUTHPEAK/SURVEY-2026@v1:R56]][[SOUTHPEAK/SURVEY-2026@v1:R126]].\n\n### Key findings\n\n- Urban Outdoor: 13.9 percent (10 of 72) cite durability, the highest of the four segments [[result:3e4deb5f-9927-4b60-96d8-0ffa9f86f3b5]].\n- Alpine Committed: 11.8 percent (6 of 51) [[result:3e4deb5f-9927-4b60-96d8-0ffa9f86f3b5]].\n- Weekend Hikers: 10.5 percent (12 of 114) [[result:3e4deb5f-9927-4b60-96d8-0ffa9f86f3b5]].\n- Family Campers: 7.9 percent (5 of 63) [[result:3e4deb5f-9927-4b60-96d8-0ffa9f86f3b5]].\n- Soles peeling: \"Sole started peeling away on the trail after a few months\" [[SOUTHPEAK/SURVEY-2026@v1:R126]]. This appears for several Urban Outdoor respondents, including a trail runner [[SOUTHPEAK/SURVEY-2026@v1:R188]] and a camper [[SOUTHPEAK/SURVEY-2026@v1:R221]].\n- Pack zippers: \"The pack zipper broke on my second trip\" [[SOUTHPEAK/SURVEY-2026@v1:R56]]. A backpacker reports the same failure [[SOUTHPEAK/SURVEY-2026@v1:R144]].\n- Fleece pilling: \"Fabric on the fleece pilled quickly\" [[SOUTHPEAK/SURVEY-2026@v1:R101]]. The same complaint appears from a day hiker [[SOUTHPEAK/SURVEY-2026@v1:R299]].\n- Brand loyalty varies: one respondent still loves the brand [[SOUTHPEAK/SURVEY-2026@v1:R56]], while others are considering switching brands [[SOUTHPEAK/SURVEY-2026@v1:R144]][[SOUTHPEAK/SURVEY-2026@v1:R188]].\n\n### Conflicting evidence\n\n- The evidence items show different individual NPS scores among Urban Outdoor durability complainers, ranging from 3 [[SOUTHPEAK/SURVEY-2026@v1:R136]] to 9 [[SOUTHPEAK/SURVEY-2026@v1:R143]]. These are separate respondents, not contradictory measurements of one metric.\n\n### Interpretation\n\nFootwear soles appear most often in the verbatims, but the evidence is a 10-row set, so the relative frequency of sole, zipper and fleece complaints is only indicative [inference]. Low NPS scores, such as 3 [[SOUTHPEAK/SURVEY-2026@v1:R216]], often coincide with switching intent or a service-rescued issue, but the sample is too small to confirm a pattern [inference].\n\n### Gaps & unknowns\n\nThe evidence does not say whether the differences between segment shares are statistically meaningful, since some segments have small bases. The verbatims are not coded by product category, so a proper breakdown of what breaks (footwear, packs, apparel) would need categorised survey coding or product-level return and warranty data [inference]. The evidence does not show whether durability is the top pain point for other segments in ways that differ in kind from Urban Outdoor.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "SURVEY-2026:1",
+      "dataset_title": "Southpeak Customer Survey 2026",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "SURVEY-2026:1",
+       "metrics": [
+        {
+         "fn": "share",
+         "condition": {
+          "column": "top_pain_point",
+          "op": "eq",
+          "value": "durability"
+         }
+        }
+       ],
+       "group_by": [
+        "segment"
+       ],
+       "order": {
+        "by": "value",
+        "metric_index": 0,
+        "direction": "desc"
+       },
+       "limit": 1
+      },
+      "rows_scanned": 300,
+      "rows_matched": 300,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {
+         "segment": "Urban Outdoor"
+        },
+        "metric": "share(top_pain_point eq durability)",
+        "value": 13.9,
+        "exact": "13.88888888888888888888888889",
+        "unit": "percent",
+        "rounding": "1dp",
+        "denominator": 72,
+        "numerator": 10
+       }
+      ],
+      "answer_kind": "top_n"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "SURVEY-2026:1",
+       "filters": [],
+       "metrics": [
+        {
+         "fn": "share",
+         "key": "share(top_pain_point=durability)",
+         "label": "durability_share",
+         "column": "top_pain_point",
+         "condition": {
+          "op": "eq",
+          "column": "top_pain_point",
+          "operands": [
+           "durability"
+          ]
+         }
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": [
+        "segment"
+       ]
+      },
+      "rows_matched": 300,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     },
+     {
+      "dataset": "SURVEY-2026:1",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 12,
+       "columns": [
+        "respondent_id",
+        "primary_activity",
+        "nps",
+        "verbatim"
+       ],
+       "dataset": "SURVEY-2026:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "segment",
+         "operands": [
+          "Urban Outdoor"
+         ]
+        },
+        {
+         "op": "eq",
+         "column": "top_pain_point",
+         "operands": [
+          "durability"
+         ]
+        }
+       ],
+       "order_by": null,
+       "direction": "asc"
+      },
+      "rows_matched": 10,
+      "warnings": [],
+      "workspace": "SOUTHPEAK"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MIX-08",
+    "question": "How did Court Classic Custom reviews rate the shoe on average, and what did buyers say about the customization experience?",
+    "task_type": "mixed",
+    "routed_task_type": "mixed",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nCourt Classic Custom reviews average 4.67 across 3 reviews [[result:4deb2686-cf7e-46b6-8556-16ad456220ed]]. Buyers praised the accuracy of the custom colorway and the heel initials [[NORTHSTAR/REVIEWS@v1:R21]][[NORTHSTAR/REVIEWS@v1:R656]], but one found the extra cost hard to justify and one noted a slow delivery [[NORTHSTAR/REVIEWS@v1:R684]].\n\n### Key findings\n\n- Mean rating for Court Classic Custom is 4.67 on a count of 3 reviews [[result:4deb2686-cf7e-46b6-8556-16ad456220ed]].\n- The three individual ratings are 5, 4 and 5 [[result:0c4667cc-d572-49e9-89e5-bbd39eb6a9fe]].\n- A buyer said the custom colorway \"turned out exactly like the preview\" [[NORTHSTAR/REVIEWS@v1:R21]].\n- A buyer loved the custom heel initials, and friends noticed right away, but it \"took 13 days to arrive and I almost cancelled\" [[NORTHSTAR/REVIEWS@v1:R656]].\n- A buyer called the customizer fun but said \"the extra cost is hard to justify\" [[NORTHSTAR/REVIEWS@v1:R684]].\n\n### Conflicting evidence\n\n- The evidence notes flag differing dates and ratings, but these are only differences between separate reviews, not conflicts over the same metric. The three Custom reviews differ in rating (5 [[NORTHSTAR/REVIEWS@v1:R21]], 4 [[NORTHSTAR/REVIEWS@v1:R656]], 5 [[NORTHSTAR/REVIEWS@v1:R684]]), which is already reflected in the stated average [[result:4deb2686-cf7e-46b6-8556-16ad456220ed]].\n\n### Interpretation\n\nCustomization appears to deliver on visual accuracy and personalization appeal, while price premium and fulfilment time are the friction points [inference]. With only three reviews, the average and themes are directional rather than representative [inference].\n\n### Gaps & unknowns\n\nOnly three Court Classic Custom reviews were found, so the sample is too small to judge how typical these views are [inference]. The evidence does not quantify the price premium or typical delivery times for custom orders; order or fulfilment data would close this. The research step budget ran out, so additional Custom reviews may exist that were not retrieved [inference].",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "REVIEWS:1",
+      "dataset_title": "Northstar Product Reviews",
+      "source_confidentiality": "public",
+      "spec": {
+       "dataset": "REVIEWS:1",
+       "metrics": [
+        {
+         "fn": "mean",
+         "column": "rating"
+        }
+       ],
+       "filters": [
+        {
+         "column": "product",
+         "op": "eq",
+         "value": "Court Classic Custom"
+        }
+       ]
+      },
+      "rows_scanned": 800,
+      "rows_matched": 3,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "mean(rating)",
+        "value": 4.67,
+        "exact": "4.666666666666666666666666667",
+        "unit": "rating",
+        "rounding": "2dp",
+        "denominator": 3
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "REVIEWS:1",
+      "operation": "aggregate",
+      "spec": {
+       "limit": null,
+       "order": {
+        "by": "value",
+        "direction": "desc",
+        "metric_index": 0
+       },
+       "dataset": "REVIEWS:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "product",
+         "operands": [
+          "Court Classic Custom"
+         ]
+        }
+       ],
+       "metrics": [
+        {
+         "fn": "mean",
+         "key": "mean(rating)",
+         "label": "avg",
+         "column": "rating"
+        },
+        {
+         "fn": "count",
+         "key": "count(*)",
+         "label": "n",
+         "column": null
+        }
+       ],
+       "group_by": []
+      },
+      "rows_matched": 3,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     },
+     {
+      "dataset": "REVIEWS:1",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 5,
+       "columns": [
+        "review_id",
+        "rating",
+        "channel",
+        "date"
+       ],
+       "dataset": "REVIEWS:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "product",
+         "operands": [
+          "Court Classic Custom"
+         ]
+        }
+       ],
+       "order_by": null,
+       "direction": "asc"
+      },
+      "rows_matched": 3,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-MIX-09",
+    "question": "Size the Knit Runner 2 knit-upper problem three ways: Q3 2026 durability returns from the returns table, Q3 complaint tickets, and the Q2 dollar hit.",
+    "task_type": "mixed",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence supports two of the three sizings: 1,140 Q3 complaint tickets [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]] and an estimated $3.1 million Q2 returns-and-replacement cost [[NORTHSTAR/Q3-REVIEW@v1:SL8.N1]]. The Q3 2026 durability return count cannot be quoted, because the returns table is described only by its structure, not its values [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n\n### Key findings\n\n- Complaints about knit upper wear on the Knit Runner 2 rose to 1,140 tickets in Q3, mostly citing fraying near the toe flex point within 90 days [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n- The durability issue cost an estimated $3.1 million in Q2 returns and replacements, covering refunds, replacement shipping and write-downs on returned stock [[NORTHSTAR/Q3-REVIEW@v1:SL8.N1]].\n- The Knit Runner 2 return rate is 16.8%, against 13.1% for the original Knit Runner [[NORTHSTAR/Q3-REVIEW@v1:SL8]].\n- The returns table has a quarter field (including 2026-Q3), a \"Durability - upper wear\" reason, and returns_count and share_of_sku_returns_pct columns, but the evidence gives no row values [[NORTHSTAR/PRODUCT-PERF@v1:SH3.T1]].\n- Ticket volume understates the problem: returns data show more durability returns than contacts [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]].\n\n### Conflicting evidence\n\n- The Q3 Strategy Review and the Support Themes report carry different quarter framings (Q2 dollar hit vs. Q3 tickets), and the evidence notes flag that some strategy-review figures were restated or superseded [[NORTHSTAR/Q3-REVIEW@v1:SL8.N1]][[NORTHSTAR/Q3-REVIEW@v1:SL8]][[NORTHSTAR/Q3-REVIEW@v1:SL15]]. The evidence does not say which figures changed or by how much.\n- The $3.1 million is a Q2 estimate, so it is not directly comparable with the Q3 ticket count [[NORTHSTAR/SUPPORT-THEMES@v1:P2.B2]][[NORTHSTAR/Q3-REVIEW@v1:SL8.N1]].\n\n### Interpretation\n\nThe three measures are not like-for-like: tickets count customer contacts, returns count units, and the dollar figure captures cost, so they should be presented side by side rather than reconciled [inference]. Since returns exceed tickets for this issue, the ticket count is best treated as a floor on affected customers [inference].\n\n### Gaps & unknowns\n\nThe dollar cost for Q3 is not provided; only Q2 is covered. A finance extract for Q3 returns and replacements would close this. It is unclear which strategy-review figures were restated; a final reconciled version of the review would clarify this.",
+    "gold_values": [
+     {
+      "tool": "aggregate",
+      "dataset": "PRODUCT-PERF:3",
+      "dataset_title": "Returns",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:3",
+       "metrics": [
+        {
+         "fn": "sum",
+         "column": "returns_count"
+        }
+       ],
+       "filters": [
+        {
+         "column": "product_name",
+         "op": "eq",
+         "value": "Knit Runner 2"
+        },
+        {
+         "column": "quarter",
+         "op": "eq",
+         "value": "2026-Q3"
+        },
+        {
+         "column": "reason",
+         "op": "eq",
+         "value": "Durability - upper wear"
+        }
+       ]
+      },
+      "rows_scanned": 120,
+      "rows_matched": 1,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "values": [
+       {
+        "group": {},
+        "metric": "sum(returns_count)",
+        "value": 2960,
+        "exact": "2960",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 1
+       }
+      ],
+      "answer_kind": "scalar"
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [
+    "values_mismatch",
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-LKP-02",
+    "question": "Look up August 2026's Gen Z return rate for the brand site in the channel performance file.",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": false,
+    "exact_result_accuracy": 0.0,
+    "answer_markdown": "### Answer\n\nThe evidence does not provide August 2026's Gen Z return rate for the brand site [inference]. The channel performance file is described only by its structure, and none of its row values are shown [inference].\n\n### Key findings\n\n- The Northstar Channel Performance table has 120 data rows, with channel (including Brand Site), segment (Gen Z, Millennial), month, and return_rate_pct columns [[NORTHSTAR/CHANNEL-PERF@v1:T1]].\n- Only the column definitions are included, not the underlying records, so no value can be read for Brand Site, Gen Z, or any month [[NORTHSTAR/CHANNEL-PERF@v1:T1]].",
+    "gold_values": [
+     {
+      "tool": "filter_rows",
+      "dataset": "CHANNEL-PERF:1",
+      "dataset_title": "Northstar Channel Performance",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CHANNEL-PERF:1",
+       "filters": [
+        {
+         "column": "channel",
+         "op": "eq",
+         "value": "Brand Site"
+        },
+        {
+         "column": "segment",
+         "op": "eq",
+         "value": "Gen Z"
+        },
+        {
+         "column": "month",
+         "op": "eq",
+         "value": "2026-08"
+        }
+       ],
+       "columns": [
+        "record_id",
+        "return_rate_pct"
+       ]
+      },
+      "rows_scanned": 120,
+      "rows_matched": 1,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "answer_kind": "lookup",
+      "values": [
+       {
+        "group": {
+         "record_id": "CP-2026-08-SITE-GENZ",
+         "return_rate_pct": 21.3
+        },
+        "metric": "return_rate_pct",
+        "value": 21.3,
+        "exact": "21.3",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 1,
+        "handle": "NORTHSTAR/CHANNEL-PERF@v1:R102"
+       }
+      ]
+     }
+    ],
+    "computed": []
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-LKP-03",
+    "question": "Pull the Aug 2026 margin percentage for the running shoe category from the category-by-month tab.",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe running footwear gross margin for August 2026 is 44.5 percent, per the category-by-month table [[result:d7234c49-2e3b-4e9c-8b73-2ee07601adac]].\n\n### Key findings\n\n- The Category_Monthly row for Running Footwear in 2026-08 (record CM-2026-08-RUN) shows gross_margin_pct=44.5 [[result:d7234c49-2e3b-4e9c-8b73-2ee07601adac]].\n- The same row shows net_sales_usd=11518005 [[result:d7234c49-2e3b-4e9c-8b73-2ee07601adac]].\n\n### Gaps & unknowns\n\nNo evidence items were provided, so there is no document context for how gross margin is defined in this tab (for example, whether it is calculated before or after returns or discounts). The category label \"Running Footwear\" was matched to \"the running shoe category\" by the filter. A category taxonomy or data dictionary would confirm there is no separate running shoe category [inference].",
+    "gold_values": [
+     {
+      "tool": "filter_rows",
+      "dataset": "PRODUCT-PERF:1",
+      "dataset_title": "Category_Monthly",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "PRODUCT-PERF:1",
+       "filters": [
+        {
+         "column": "category",
+         "op": "eq",
+         "value": "Running Footwear"
+        },
+        {
+         "column": "month",
+         "op": "eq",
+         "value": "2026-08"
+        }
+       ],
+       "columns": [
+        "record_id",
+        "gross_margin_pct"
+       ]
+      },
+      "rows_scanned": 147,
+      "rows_matched": 1,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "answer_kind": "lookup",
+      "values": [
+       {
+        "group": {
+         "record_id": "CM-2026-08-RUN",
+         "gross_margin_pct": 44.5
+        },
+        "metric": "gross_margin_pct",
+        "value": 44.5,
+        "exact": "44.5",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 1,
+        "handle": "NORTHSTAR/PRODUCT-PERF@v1:SH1.R135"
+       }
+      ]
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "PRODUCT-PERF:1",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 20,
+       "columns": [
+        "record_id",
+        "month",
+        "category",
+        "gross_margin_pct",
+        "net_sales_usd"
+       ],
+       "dataset": "PRODUCT-PERF:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "category",
+         "operands": [
+          "Running Footwear"
+         ]
+        },
+        {
+         "op": "between",
+         "column": "month",
+         "operands": [
+          "2026-08-01",
+          "2026-08-31"
+         ]
+        }
+       ],
+       "order_by": "month",
+       "direction": "asc"
+      },
+      "rows_matched": 1,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-LKP-06",
+    "question": "In the Cobalt category sizing sheet, how many billions of dollars are estimated for US Gen Z footwear spending this year (2026)?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe Cobalt category sizing sheet estimates US Gen Z athletic footwear spending in 2026 at 18.6 billion USD [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]]. A narrower sub-category, personalized athletic footwear, is separately estimated at 1.1 billion USD [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17]].\n\n### Key findings\n\n- Athletic footwear, US Gen Z, 2026: value_usd_bn of 18.6, with yoy_growth_pct of 6.9, basis Estimate [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]].\n- Personalized athletic footwear, US Gen Z, 2026: value_usd_bn of 1.1, with yoy_growth_pct of 22.2, basis Estimate [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17]].\n- The server-computed filter on Gen Z and 2026 returns the same footwear rows: 18.6 for athletic footwear and 1.1 for personalized athletic footwear [[result:33e2f308-96e4-40a4-ada7-9854353a9b3a]].\n- Both figures come from the Cobalt Insight Partners model, September 2026 update [[NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5]].\n\n### Interpretation\n\nThe question's \"footwear spending\" most plausibly maps to the broad \"Athletic footwear\" category, since the sheet lists no other general footwear row for Gen Z [inference]. The personalized segment is reported as its own category, so it is not clearly additive to or nested within the broader footwear figure [inference].\n\n### Gaps & unknowns\n\nThe evidence covers only athletic footwear categories, so non-athletic footwear (e.g., casual or dress) spending for US Gen Z is not established [inference]. The sheet does not state whether personalized footwear is included in the broader athletic footwear total; the model documentation or a methodology note from the data provider would clarify this [inference]. All figures are labelled as estimates, and no confidence range or actual-spend data is provided [inference].",
+    "gold_values": [
+     {
+      "tool": "filter_rows",
+      "dataset": "CATEGORY-SIZING:1",
+      "dataset_title": "Market_Sizing",
+      "source_confidentiality": "internal",
+      "spec": {
+       "dataset": "CATEGORY-SIZING:1",
+       "filters": [
+        {
+         "column": "generation",
+         "op": "eq",
+         "value": "Gen Z"
+        },
+        {
+         "column": "category",
+         "op": "eq",
+         "value": "Athletic footwear"
+        },
+        {
+         "column": "year",
+         "op": "eq",
+         "value": 2026
+        }
+       ],
+       "columns": [
+        "record_id",
+        "value_usd_bn"
+       ]
+      },
+      "rows_scanned": 54,
+      "rows_matched": 1,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "answer_kind": "lookup",
+      "values": [
+       {
+        "group": {
+         "record_id": "US-GENZ-FW-2026",
+         "value_usd_bn": 18.6
+        },
+        "metric": "value_usd_bn",
+        "value": 18.6,
+        "exact": "18.6",
+        "unit": "currency_usd",
+        "rounding": "exact",
+        "denominator": 1,
+        "handle": "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5"
+       }
+      ]
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "CATEGORY-SIZING:1",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 20,
+       "columns": [
+        "record_id",
+        "generation",
+        "category",
+        "year",
+        "value_usd_bn",
+        "yoy_growth_pct",
+        "basis"
+       ],
+       "dataset": "CATEGORY-SIZING:1",
+       "filters": [
+        {
+         "op": "eq",
+         "column": "generation",
+         "operands": [
+          "Gen Z"
+         ]
+        },
+        {
+         "op": "eq",
+         "column": "year",
+         "operands": [
+          "2026"
+         ]
+        }
+       ],
+       "order_by": null,
+       "direction": "asc"
+      },
+      "rows_matched": 3,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [
+    "task_type_wrong"
+   ],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-LKP-07",
+    "question": "What gross margin percentage does the FY26 latest estimate show in the P&L summary?",
+    "task_type": "analytics",
+    "routed_task_type": "retrieval",
+    "task_type_correct": false,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Evidence (no generated answer)\n\nA verified answer could not be produced, so the most relevant workspace evidence is listed instead.\n\n- **Computed result** (FIN-SUMMARY-FY26 v1, PnL\\_Summary, filter_rows): row 2: line\\_item=Net revenue, unit=USD m, fy25\\_actual=571, fy26\\_le=612, yoy\\_change\\_pct=7.2, data\\_notice=Fictional data created for the MarketSignal demo.; row 3: line\\_item=Cost of goods sold, unit=USD m, fy25\\_actual=306.1, fy26\\_le=323.1, yoy\\_change\\_pct=5.6, data\\_notice=Fictional data created for the MarketSignal demo.; row 4: line\\_item=Gross profit, unit=USD m, fy25\\_actual=264.9, fy26\\_le=288.9, yoy\\_change\\_pct=9.1, data\\_notice=Fictional data created for the MarketSignal demo.; row 5: line\\_item=Gross margin %, unit=percent, fy25\\_actual=46.4, fy26\\_le=47.2, yoy\\_change\\_pct=None, data\\_notice=Fictional data created for the MarketSignal demo.; row 6: line\\_item=Marketing expense, unit=USD m, fy25\\_actual=52.4, fy26\\_le=58.1, yoy\\_change\\_pct=10.9, data\\_notice=Fictional data created for the MarketSignal demo.; row 7: line\\_item=SG&A excluding marketing, unit=USD m, fy25\\_actual=160.2, fy26\\_le=168.9, yoy\\_change\\_pct=5.4, data\\_notice=Fictional data created for the MarketSignal demo. [[result:6dbd1a1f-98c3-47b7-82a5-9f6816a7d731]]\n",
+    "gold_values": [
+     {
+      "tool": "filter_rows",
+      "dataset": "FIN-SUMMARY-FY26:1",
+      "dataset_title": "PnL_Summary",
+      "source_confidentiality": "confidential",
+      "spec": {
+       "dataset": "FIN-SUMMARY-FY26:1",
+       "filters": [
+        {
+         "column": "line_item",
+         "op": "eq",
+         "value": "Gross margin %"
+        }
+       ],
+       "columns": [
+        "line_item",
+        "fy26_le"
+       ]
+      },
+      "rows_scanned": 10,
+      "rows_matched": 1,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "answer_kind": "lookup",
+      "values": [
+       {
+        "group": {
+         "line_item": "Gross margin %",
+         "fy26_le": 47.2
+        },
+        "metric": "fy26_le",
+        "value": 47.2,
+        "exact": "47.2",
+        "unit": "number",
+        "rounding": "exact",
+        "denominator": 1,
+        "handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R5"
+       }
+      ]
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "FIN-SUMMARY-FY26:1",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 20,
+       "columns": [
+        "line_item",
+        "unit",
+        "fy25_actual",
+        "fy26_le",
+        "yoy_change_pct",
+        "data_notice"
+       ],
+       "dataset": "FIN-SUMMARY-FY26:1",
+       "filters": [],
+       "order_by": null,
+       "direction": "asc"
+      },
+      "rows_matched": 10,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "analytics",
+    "item_id": "A-LKP-09",
+    "question": "What share of FY25 net revenue does finance attribute to the Gen Z (18-27) segment?",
+    "task_type": "analytics",
+    "routed_task_type": "analytics",
+    "task_type_correct": true,
+    "values_matched": true,
+    "exact_result_accuracy": 1.0,
+    "answer_markdown": "### Answer\n\nThe brand materials' 21% figure rests on a different, wider age definition [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]][[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n\n### Key findings\n\n- The finance segment table shows Gen Z (customers aged 18 to 27 at time of purchase) with fy25_revenue_usd_m of 110.8 and fy25_share_pct of 19.4 [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]].\n- The computed result confirms the same row: fy25_share_pct=19.4 against a total of 571 [[result:7bdafc6d-7c5d-402d-b475-e1e0b62eabec]].\n- The strategy document describes the strict finance basis as \"a little under 20%\" of net revenue in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- FY26 latest estimate for the same segment is $126.1 million, with a share of 20.6% [[NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2]].\n\n### Conflicting evidence\n\n- Brand/executive-summary figure: Gen Z shoppers generated 21% of net revenue in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]]. The strategy document attributes the higher brand-materials share to the loyalty program definition, which stretches the age band to 16 through 29 [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- The document says a reconciliation bridge will be published so the board target is measured on one stated basis [[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]][[NORTHSTAR/BRAND-STRATEGY@v1:P7.B2]].\n\n### Gaps & unknowns\n\nThe evidence does not provide the reconciled definition for board use, nor a bridge quantifying the difference between the finance and loyalty-program definitions. A published reconciliation from the finance and brand teams would close this gap.",
+    "gold_values": [
+     {
+      "tool": "filter_rows",
+      "dataset": "FIN-SUMMARY-FY26:2",
+      "dataset_title": "Segment_Revenue",
+      "source_confidentiality": "confidential",
+      "spec": {
+       "dataset": "FIN-SUMMARY-FY26:2",
+       "filters": [
+        {
+         "column": "segment",
+         "op": "eq",
+         "value": "Gen Z (18-27)"
+        }
+       ],
+       "columns": [
+        "segment",
+        "fy25_share_pct"
+       ]
+      },
+      "rows_scanned": 5,
+      "rows_matched": 1,
+      "warnings": [],
+      "rounding": "half_even; share/percent 1dp; currency_usd 2dp; mean/median non-currency 2dp; ratio 3dp; counts, integer sums, min/max exact",
+      "answer_kind": "lookup",
+      "values": [
+       {
+        "group": {
+         "segment": "Gen Z (18-27)",
+         "fy25_share_pct": 19.4
+        },
+        "metric": "fy25_share_pct",
+        "value": 19.4,
+        "exact": "19.4",
+        "unit": "percent",
+        "rounding": "exact",
+        "denominator": 1,
+        "handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2"
+       }
+      ]
+     }
+    ],
+    "computed": [
+     {
+      "dataset": "FIN-SUMMARY-FY26:2",
+      "operation": "filter_rows",
+      "spec": {
+       "limit": 5,
+       "columns": [
+        "segment",
+        "definition",
+        "fy25_revenue_usd_m",
+        "fy25_share_pct",
+        "fy26_le_revenue_usd_m",
+        "fy26_le_share_pct",
+        "yoy_growth_pct",
+        "data_notice"
+       ],
+       "dataset": "FIN-SUMMARY-FY26:2",
+       "filters": [],
+       "order_by": null,
+       "direction": "asc"
+      },
+      "rows_matched": 5,
+      "warnings": [],
+      "workspace": "NORTHSTAR"
+     }
+    ]
+   }
+  }
+ ]
+}

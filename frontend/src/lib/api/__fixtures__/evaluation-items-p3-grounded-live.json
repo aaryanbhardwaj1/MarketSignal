@@ -1,0 +1,355 @@
+{
+ "run_id": "p3-grounded-live",
+ "total": 76,
+ "items": [
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-001",
+   "question": "What did Northstar leadership decide about a national rollout of personalization at the Q3 strategy review?",
+   "category": "answerable_fact",
+   "answer_markdown": "### Answer\n\nLeadership agreed to pause any national rollout of personalization until the full pilot readout in October [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]]. The decision slide frames this as holding personalization at a limited test and deferring any national rollout decision [[NORTHSTAR/Q3-REVIEW@v1:SL14]]. The reasoning given was that the early signal came from a tiny sample and that operational constraints are significant [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n\n### Key findings\n\n- Leadership agreed to pause any national rollout until the full pilot readout in October [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n- The decision requested was to \"Hold personalization at a limited test and defer any national rollout decision\" [[NORTHSTAR/Q3-REVIEW@v1:SL14]].\n- Stated rationale: the early signal came from a tiny sample, and the operational constraints are significant [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n- Operations notes describe the lead time as a structural challenge; a twelve day wait cuts against Gen Z delivery-speed expectations, and a broader rollout would need faster production or clearer expectation setting [[NORTHSTAR/Q3-REVIEW@v1:SL11.N1]].\n- The slide notes say the team wanted confirmation of each decision that day so teams could begin planning for FY27 [[NORTHSTAR/Q3-REVIEW@v1:SL14.N1]].\n\n### Interpretation\n\nThe pause is a deferral rather than a rejection, since the decision is tied to the October readout [inference]. The pilot readout and FY27 memo, which recommend no national rollout in FY27 and expansion only if repeat purchase matches or beats control, appear to postdate this review and go further than the pause alone [[NORTHSTAR/PERSO-PILOT@v1:S1.B11]][[NORTHSTAR/FY27-MEMO@v1:S1.B6]] [inference].\n\n### Gaps & unknowns\n\nThe evidence does not show whether leadership formally confirmed the decision at the meeting or recorded any dissent. The slide notes describe what was agreed and what was requested, but meeting minutes or a decision log would close this gap. The evidence also does not say how the other three requested decisions were resolved [inference].",
+   "cited_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+    "NORTHSTAR/Q3-REVIEW@v1:SL14",
+    "NORTHSTAR/Q3-REVIEW@v1:SL11.N1",
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B6"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL14.N1"
+   ],
+   "checks": {
+    "citations": 5,
+    "resolvable": 5,
+    "in_pack": 5,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "pass_behaviour": true,
+    "first_token_ms": 1560.7,
+    "total_ms": 5723.9
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-002",
+   "question": "When does the FY27 planning memo propose introducing the cross-category Fit Promise free exchange guarantee?",
+   "category": "answerable_fact",
+   "answer_markdown": "### Answer\n\nThe FY27 planning memo recommends launching the cross-category Fit Promise, a free exchange guarantee covering every apparel and footwear size, in Q1 FY27 [[NORTHSTAR/FY27-MEMO@v1:S1.B6]].\n\n### Key findings\n\n- The memo's recommendation is to launch the Fit Promise in Q1 FY27 [[NORTHSTAR/FY27-MEMO@v1:S1.B6]].\n- The guarantee would be supported by a unified grading standard so the promise is credible and exchange costs are contained [[NORTHSTAR/FY27-MEMO@v1:S1.B6]].\n- The memo's next steps are to finalize budgets and the Fit Promise design over October, with the detailed FY27 plan going to the leadership meeting in November, followed by board review [[NORTHSTAR/FY27-MEMO@v1:S1.B9]].\n- The proposed budget includes $4.5 million for the Fit Promise launch and fit education content [[NORTHSTAR/FY27-MEMO@v1:S1.B7]].\n\n### Gaps & unknowns\n\nThe evidence does not give a calendar date for Q1 FY27, since the fiscal year boundaries are not defined in the provided items [inference]. The launch timing is a proposal pending leadership and board approval, and the Fit Promise design and the exchange guarantee cost estimate are still to be finalized, so a firm launch date could change [inference].",
+   "cited_handles": [
+    "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B9",
+    "NORTHSTAR/FY27-MEMO@v1:S1.B7"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/FY27-MEMO@v1:S1.B6"
+   ],
+   "checks": {
+    "citations": 3,
+    "resolvable": 3,
+    "in_pack": 3,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "pass_behaviour": true,
+    "first_token_ms": 3685.8,
+    "total_ms": 5997.0
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-003",
+   "question": "Where and over what dates did Northstar's spring 2026 personalization pilot run, and how many customers did it reach?",
+   "category": "answerable_fact",
+   "answer_markdown": "### Answer\n\nNorthstar's spring 2026 personalization pilot ran from April 6 to June 28, 2026, in 3 Northstar stores plus online [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]]. It reached 4,812 customers [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]]. The stores were in Portland, Seattle and Sacramento [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]].\n\n### Key findings\n\n- Dates: April 6 to June 28, 2026 [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]]; the earlier strategy review gives the same April 6 to June 28 window [[NORTHSTAR/Q3-REVIEW@v1:SL10]].\n- Locations: 3 stores (Portland, Seattle and Sacramento) and online [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]].\n- Reach: 4,812 customers in total, of whom 2,672 transacted in store and 2,140 transacted online [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]].\n- Offer by channel: in store, a gait and foot scan informing size selection and insole options; online, custom colorways and monograms on selected styles [[NORTHSTAR/PERSO-PILOT@v1:S1.B3]].",
+   "cited_handles": [
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+    "NORTHSTAR/Q3-REVIEW@v1:SL10"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/PERSO-PILOT@v1:S1.B3"
+   ],
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1857.9,
+    "total_ms": 4315.3
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-004",
+   "question": "What ceiling does the consumer panel analyst expect personalized shoes to stay under, as a share of US athletic footwear units, through 2028?",
+   "category": "answerable_fact",
+   "answer_markdown": "### Answer\n\nThe consumer panel analyst expects personalization to remain below 5% of US athletic footwear units through 2028 [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]]. He described it as an important niche rather than a mass market feature in the next few years [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Key findings\n\n- The analyst's stated ceiling is below 5% of US athletic footwear units through 2028 [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n- His three reasons: long lead times for made to order production, poor unit economics (scanning, small batches and shipping erode the premium), and customers who say they like the idea but choose the standard product when delivery speed and price are put alongside it [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n- He expects simple forms of personalization, such as monograms, team colors and preset colorways, to spread because they cost little and carry social signalling value [[NORTHSTAR/ANALYST-CALL@v1:S1.B2]].\n\n### Interpretation\n\nThe 5% ceiling is a unit-share view from one analyst, so it is not directly comparable with the dollar-value forecasts in the sizing sheets [inference].\n\n### Gaps & unknowns\n\nThe call notes give only the analyst's stated expectation and do not show the model, data or methodology behind the ceiling [inference]. The notes mention a methodology note on a separate estimate, but nothing equivalent for this one [inference]. A published panel report or methodology document from the analyst's firm would show how the unit-share ceiling was derived [inference].",
+   "cited_handles": [
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+   ],
+   "checks": {
+    "citations": 1,
+    "resolvable": 1,
+    "in_pack": 1,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "pass_behaviour": true,
+    "first_token_ms": 648.6,
+    "total_ms": 3413.7
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-005",
+   "question": "Why does Pace & Co. stay away from offering customized products?",
+   "category": "answerable_fact",
+   "answer_markdown": "### Answer\n\nPace & Co. avoids customization because it would conflict with its value model, which depends on simple styles, a repeatable manufacturing process and low prices [[NORTHSTAR/PACE-WEB@v1:S1.B10]][[NORTHSTAR/PACE-DECK@v1:SL9]]. Its own materials say simplicity is what lets it drop new styles every fortnight while holding prices down [[NORTHSTAR/PACE-WEB@v1:S1.B10]]. Its investor update adds that customer feedback centers on price, fit consistency and newness rather than custom options [[NORTHSTAR/PACE-DECK@v1:SL9]].\n\n### Key findings\n\n- Pace & Co. says it keeps every style simple so it can drop something new every fortnight and hold its prices down; asked about customization, it answers \"Not at the moment\" [[NORTHSTAR/PACE-WEB@v1:S1.B10]].\n- Its investor update states \"No plans to offer custom or personalized products\" [[NORTHSTAR/PACE-DECK@v1:SL9]].\n- The same update says its value positioning relies on a simple, repeatable manufacturing process [[NORTHSTAR/PACE-DECK@v1:SL9]].\n- The update also says customer feedback focuses on price, fit consistency and newness, not custom options [[NORTHSTAR/PACE-DECK@v1:SL9]].\n- Northstar's internal brand strategy describes Pace & Co. as deliberately avoiding customization and competing on price, speed and freshness [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B4]].\n- Pace & Co.'s core legging sells for $38 and its range turns every two weeks [[NORTHSTAR/BRAND-STRATEGY@v1:P5.B4]].\n\n### Interpretation\n\nCustomization would likely add complexity and lead time, which would undercut the fortnightly cadence and low-price promise that define the brand [inference]. The investor-update remark about customer feedback suggests Pace & Co. also sees little demand-side reason to change course [inference].\n\n### Gaps & unknowns\n\nThe evidence gives Pace & Co.'s stated rationale but no cost or operational analysis showing how customization would affect its margins or lead times [inference]. It also does not show whether the \"Not at the moment\" wording signals any future change [inference]. Pace & Co.'s internal planning documents or management commentary would be needed to close these gaps.",
+   "cited_handles": [
+    "NORTHSTAR/PACE-WEB@v1:S1.B10",
+    "NORTHSTAR/PACE-DECK@v1:SL9",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P5.B4",
+    "NORTHSTAR/PACE-DECK@v1:SL9.N1"
+   ],
+   "checks": {
+    "citations": 3,
+    "resolvable": 3,
+    "in_pack": 3,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "pass_behaviour": true,
+    "first_token_ms": 3341.7,
+    "total_ms": 7524.1
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-006",
+   "question": "Who took part in the Northstar Gen Z focus group, and where and when was it held?",
+   "category": "answerable_fact",
+   "answer_markdown": "### Answer\n\nThe focus group was held in Chicago on June 18, 2026, with ten participants aged 18 to 25 [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1]]. An independent field agency recruited a mix of Northstar customers and shoppers who mainly buy from other brands, including students, early career workers and a few part time instructors [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1]].\n\n### Key findings\n\n- Location and date: Chicago, June 18, 2026 [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1]].\n- Participants: ten people aged 18 to 25 [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1]].\n- Recruitment: done by an independent field agency, mixing Northstar customers with mainly other-brand shoppers [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1]].\n- Occupations: students, early career workers and a few part time instructors [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1]].\n- Format: the session lasted about two and a half hours and was led by an agency moderator, with two Northstar team members observing silently from behind the glass [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1]].\n- The group was described as young athletic shoppers, and the summary was prepared by the Northstar Brand and Insights team in June 2026 [[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1]][[NORTHSTAR/GENZ-FOCUS-GROUP@v1:S1.B1]].\n\n### Gaps & unknowns\n\nThe evidence does not give participants' gender, regional background, or the exact split between Northstar customers and other-brand shoppers [inference]. The group is too small to represent all Gen Z shoppers, as the summary itself notes [inference]. The full recruitment screener from the field agency would close these gaps.",
+   "cited_handles": [
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S1.B1"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1"
+   ],
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 0.0,
+    "pass_behaviour": true,
+    "first_token_ms": 1540.1,
+    "total_ms": 4394.0
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-007",
+   "question": "Which markets is Southpeak planning to pilot its 48 hour delivery promise in?",
+   "category": "answerable_fact",
+   "answer_markdown": "### Answer\n\nSouthpeak plans to pilot a 48 hour delivery promise in the Denver and Salt Lake City markets, starting in March 2027 [[SOUTHPEAK/PLANNING-NOTES@v1:S1.B5]]. Other documents describe the pilot only as covering selected or a small number of Mountain West markets, and one says the pilot markets are still to be confirmed [[SOUTHPEAK/BOARD-DECK@v1:SL9]][[SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3]][[SOUTHPEAK/BOARD-DECK@v1:SL9.N1]].\n\n### Key findings\n\n- The planning notes name Denver and Salt Lake City as the markets for the 48 hour delivery promise pilot, starting in March 2027 [[SOUTHPEAK/PLANNING-NOTES@v1:S1.B5]].\n- The Q2 board deck refers to a faster delivery pilot in \"selected Mountain West markets in early 2027\" without naming them [[SOUTHPEAK/BOARD-DECK@v1:SL9]].\n- The brand strategy says initial work will focus on \"a small number of Mountain West markets\", with expansion only after measuring cost and customer response [[SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3]].\n- The board deck notes say the pilot markets are being selected with the logistics team and will be confirmed in the next planning cycle [[SOUTHPEAK/BOARD-DECK@v1:SL9.N1]].\n- The brand strategy lists selecting pilot markets and agreeing the operating budget as a next step [[SOUTHPEAK/BRAND-STRATEGY@v1:P5.B1]].\n\n### Conflicting evidence\n\n- The planning notes name specific markets (Denver and Salt Lake City) and a March 2027 start [[SOUTHPEAK/PLANNING-NOTES@v1:S1.B5]], while the board deck notes say the markets are still being selected and will be confirmed in the next planning cycle [[SOUTHPEAK/BOARD-DECK@v1:SL9.N1]][[SOUTHPEAK/BRAND-STRATEGY@v1:P5.B1]]. These may reflect different points in the planning process, but the evidence does not say which is more current.\n\n### Interpretation\n\nThe planning notes are dated September 2026 and may reflect a later decision than the board deck notes, but the evidence does not establish the relative timing of the two documents [[SOUTHPEAK/PLANNING-NOTES@v1:S1.B1]] [inference].\n\n### Gaps & unknowns\n\nThe evidence does not confirm whether Denver and Salt Lake City are final, or whether further markets will be added [inference]. A confirmed pilot design document or a post-planning-cycle board update would close this gap.",
+   "cited_handles": [
+    "SOUTHPEAK/PLANNING-NOTES@v1:S1.B5",
+    "SOUTHPEAK/BOARD-DECK@v1:SL9",
+    "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3",
+    "SOUTHPEAK/BOARD-DECK@v1:SL9.N1",
+    "SOUTHPEAK/BRAND-STRATEGY@v1:P5.B1",
+    "SOUTHPEAK/PLANNING-NOTES@v1:S1.B1"
+   ],
+   "gold_handles": [
+    "SOUTHPEAK/PLANNING-NOTES@v1:S1.B5"
+   ],
+   "checks": {
+    "citations": 6,
+    "resolvable": 6,
+    "in_pack": 6,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": null,
+    "pass_behaviour": true,
+    "first_token_ms": 600.7,
+    "total_ms": 4935.0
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-008",
+   "question": "What is Northstar's FY26 latest estimate for net revenue?",
+   "category": "exact_number",
+   "answer_markdown": "### Answer\n\nNorthstar's FY26 latest estimate for net revenue is $612.0 million, up from $571.0 million in FY25 [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]]. The figure remains an estimate because the fiscal year is not yet closed [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]][[NORTHSTAR/Q3-REVIEW@v1:SL3.N1]].\n\n### Key findings\n\n- The FY26 latest estimate of $612.0 million represents growth of roughly 7% over FY25 net revenue of $571.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]].\n- The same $612.0 million figure is restated in the executive summary and in the Q3 Strategy Review [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B2]][[NORTHSTAR/Q3-REVIEW@v1:SL3]].\n- Supporting quarterly data points: Q1 was $137.0 million, Q2 was $158 million, and the forecast for Q4 is $168.0 million [[NORTHSTAR/BRAND-STRATEGY@v1:P1.B3]][[NORTHSTAR/Q3-REVIEW@v1:SL3]][[NORTHSTAR/BRAND-STRATEGY@v1:P2.B1]].\n- FY26 figures are described as latest estimates because the year is still open [[NORTHSTAR/Q3-REVIEW@v1:SL3.N1]].\n\n### Gaps & unknowns\n\nThe evidence does not provide the Q3 forecast, so the quarterly build-up to the full-year estimate cannot be fully verified. The P&L summary table is described only by its structure, without values, so a finance-sheet confirmation of the figure is not available here.",
+   "cited_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+    "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+    "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.R2",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3"
+   ],
+   "checks": {
+    "citations": 5,
+    "resolvable": 5,
+    "in_pack": 5,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "pass_behaviour": true,
+    "first_token_ms": 935.5,
+    "total_ms": 3267.5
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-011",
+   "question": "How much net revenue did Northstar book in Q2 FY26 according to the Q3 strategy review?",
+   "category": "exact_number",
+   "answer_markdown": "### Answer\n\nAccording to the Q3 Strategy Review, Northstar's Q2 FY26 net revenue reached $158 million, 6% above the same quarter last year [[NORTHSTAR/Q3-REVIEW@v1:SL3]]. The review's speaker notes also describe Q2 as the largest quarter to date [[NORTHSTAR/Q3-REVIEW@v1:SL3.N1]].\n\n### Key findings\n\n- Q2 FY26 net revenue was $158 million, 6% above the same quarter last year [[NORTHSTAR/Q3-REVIEW@v1:SL3]].\n- Q2 was the company's largest quarter to date, and the top line is described as on plan [[NORTHSTAR/Q3-REVIEW@v1:SL3.N1]].\n- The FY26 figures are latest estimates because the year is still open [[NORTHSTAR/Q3-REVIEW@v1:SL3.N1]].\n\n### Gaps & unknowns\n\nA Q2 line in the finance reporting (for example, the Financial Summary FY26) would confirm the figure independently [inference].",
+   "cited_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL3",
+    "NORTHSTAR/Q3-REVIEW@v1:SL3.N1"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/Q3-REVIEW@v1:SL3"
+   ],
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "pass_behaviour": true,
+    "first_token_ms": 778.1,
+    "total_ms": 2740.8
+   },
+   "termination_state": "completed",
+   "failure": null
+  },
+  {
+   "phase": "grounded",
+   "item_id": "G-R0-012",
+   "question": "In Q3 2026, what was the median first response time for customer contacts arriving via social channels?",
+   "category": "exact_number",
+   "answer_markdown": "### Answer\n\nThe median first response time on social channels was 9.5 hours in Q3, against a service target of 4 hours [[NORTHSTAR/SUPPORT-THEMES@v1:P3.B3]]. This was the widest gap among the channels reported [[NORTHSTAR/SUPPORT-THEMES@v1:P3.B3]].\n\n### Key findings\n\n- Median first response time on social messages was 9.5 hours versus a service target of 4 hours [[NORTHSTAR/SUPPORT-THEMES@v1:P3.B3]].\n- The shortfall reflects social messages being handled by a small team during business hours, with no weekend cover [[NORTHSTAR/SUPPORT-THEMES@v1:P3.B3]].\n- Social is described as the one channel clearly below the standard customers expect [[NORTHSTAR/SUPPORT-THEMES@v1:P3.B3]].\n- Social messages accounted for 14% of contact volume [[NORTHSTAR/SUPPORT-THEMES@v1:P1.B2]].\n\n### Gaps & unknowns\n\nThe evidence does not give the response-time distribution (for example mean or 90th percentile) for social contacts, nor a month-by-month breakdown [inference]. Internal operational data from the care team's ticketing system would close this gap.",
+   "cited_handles": [
+    "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+    "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2"
+   ],
+   "gold_handles": [
+    "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3"
+   ],
+   "checks": {
+    "citations": 2,
+    "resolvable": 2,
+    "in_pack": 2,
+    "southpeak_marker_leak": false,
+    "evidence_only": false,
+    "abstained_deterministic": false,
+    "has_final": true,
+    "has_done": true,
+    "answered": true,
+    "llm_called": true,
+    "gold_coverage": 1.0,
+    "numeric_correct": 1.0,
+    "pass_behaviour": true,
+    "first_token_ms": 669.2,
+    "total_ms": 7808.7
+   },
+   "termination_state": "completed",
+   "failure": {
+    "final_classification": "verifier_false_positive",
+    "root_cause": "(1) A bare calendar year is treated as a numeric figure, and _check_cited requires it to appear in the cited item. A true time qualifier that is in another pack item (E2, same document) and in the question is therefore an 'unsupported number'. (2) A single-sentence Answer has no slack: one dropped unit gives ANSWER_MISSING, which forces regeneration instead of stripping or tolerating the year. (Secondary: _GAP_RE/INSUFFICIENT_RE do not match 'does not give', so the gaps unit was mislabelled [inference].)",
+    "user_impact": "The stored final is correct and contains the gold fact: \"The median first response time on social channels was 9.5 hours in Q3, against a service target of 4 hours [[NORTHSTAR/SUPPORT-THEMES@v1:P3.B3]]\". No correct fact was lost except the redundant '2026' qualifier, and no wrong fact was prevented. The cost was one full regeneration, with extra latency and tokens. The Gaps sentence carries a spurious [inference] tag."
+   }
+  }
+ ]
+}

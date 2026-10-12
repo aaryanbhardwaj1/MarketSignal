@@ -1,0 +1,1871 @@
+{
+ "run_id": "p2-test-c3",
+ "items": [
+  {
+   "buckets": [
+    "hybrid_only"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-003",
+    "question": "Where and over what dates did Northstar's spring 2026 personalization pilot run, and how many customers did it reach?",
+    "category": "single_source_fact",
+    "bucket": "hybrid_only",
+    "expected_handles": [
+     "NORTHSTAR/PERSO-PILOT@v1:S1.B3"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       12
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B1",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+       "NORTHSTAR/Q3-REVIEW@v1:SL10",
+       "NORTHSTAR/SURVEY-2026@v1:R107",
+       "NORTHSTAR/SURVEY-2026@v1:R592",
+       "NORTHSTAR/SURVEY-2026@v1:R596",
+       "NORTHSTAR/SURVEY-2026@v1:R68",
+       "NORTHSTAR/SURVEY-2026@v1:R485",
+       "NORTHSTAR/SURVEY-2026@v1:R377",
+       "NORTHSTAR/SURVEY-2026@v1:R225"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       6
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B1",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P6.B5",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+       "NORTHSTAR/SURVEY-2026@v1:T1",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+       "NORTHSTAR/SURVEY-2026@v1:R209"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       4
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B1",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+       "NORTHSTAR/Q3-REVIEW@v1:SL10",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+       "NORTHSTAR/SURVEY-2026@v1:R596",
+       "NORTHSTAR/SURVEY-2026@v1:R30",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+       "NORTHSTAR/Q3-REVIEW@v1:SL10.N1"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B1",
+       "NORTHSTAR/SURVEY-2026@v1:R596",
+       "NORTHSTAR/SURVEY-2026@v1:R30",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+       "NORTHSTAR/Q3-REVIEW@v1:SL10",
+       "NORTHSTAR/SURVEY-2026@v1:R527",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+       "NORTHSTAR/SURVEY-2026@v1:R145"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-007",
+    "question": "Which markets is Southpeak planning to pilot its 48 hour delivery promise in?",
+    "category": "single_source_fact",
+    "bucket": null,
+    "expected_handles": [
+     "SOUTHPEAK/PLANNING-NOTES@v1:S1.B5"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B5",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3",
+       "SOUTHPEAK/BOARD-DECK@v1:SL9",
+       "SOUTHPEAK/INTERVIEWS@v1:S1.B1",
+       "SOUTHPEAK/BOARD-DECK@v1:SL2",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B1",
+       "SOUTHPEAK/BOARD-DECK@v1:SL9.N1",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B3",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P1.B2",
+       "SOUTHPEAK/SURVEY-2026@v1:R251"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B5",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P5.B1",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B8",
+       "SOUTHPEAK/BOARD-DECK@v1:SL9",
+       "SOUTHPEAK/BOARD-DECK@v1:SL9.N1",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3",
+       "SOUTHPEAK/BOARD-DECK@v1:SL12",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B7",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B6",
+       "SOUTHPEAK/BOARD-DECK@v1:SL8"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B5",
+       "SOUTHPEAK/BOARD-DECK@v1:SL9",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3",
+       "SOUTHPEAK/BOARD-DECK@v1:SL9.N1",
+       "SOUTHPEAK/BOARD-DECK@v1:SL2",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P1.B2",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B3",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B8",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B7",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B1"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B5",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P5.B1",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B8",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B7",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B3",
+       "SOUTHPEAK/BOARD-DECK@v1:SL9",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B1",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B6",
+       "SOUTHPEAK/SURVEY-2026@v1:R35",
+       "SOUTHPEAK/SURVEY-2026@v1:R128"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "both_miss"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-010",
+    "question": "What was the Gen Z return rate on Northstar's brand site in August 2026?",
+    "category": "exact_number",
+    "bucket": "both_miss",
+    "expected_handles": [
+     "NORTHSTAR/CHANNEL-PERF@v1:R102"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+       "NORTHSTAR/SURVEY-2026@v1:R430",
+       "NORTHSTAR/SURVEY-2026@v1:R570",
+       "NORTHSTAR/SURVEY-2026@v1:R577"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/CHANNEL-PERF@v1:T1",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+       "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P2.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B1",
+       "NORTHSTAR/INTERVIEWS@v1:S1.B1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/INTERVIEWS@v1:S2.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B1",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+       "NORTHSTAR/INTERVIEWS@v1:S1.B1",
+       "NORTHSTAR/INTERVIEWS@v1:S2.B1"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-012",
+    "question": "In Q3 2026, what was the median first response time for customer contacts arriving via social channels?",
+    "category": "exact_number",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/SURVEY-2026@v1:R555",
+       "NORTHSTAR/SURVEY-2026@v1:R153",
+       "NORTHSTAR/SURVEY-2026@v1:R455",
+       "NORTHSTAR/SURVEY-2026@v1:R128",
+       "NORTHSTAR/SURVEY-2026@v1:R570",
+       "NORTHSTAR/SURVEY-2026@v1:R126",
+       "NORTHSTAR/SURVEY-2026@v1:R575",
+       "NORTHSTAR/SURVEY-2026@v1:R434"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+       "NORTHSTAR/GENZ-TRENDS@v2:P4.B6"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/SURVEY-2026@v1:R153",
+       "NORTHSTAR/SURVEY-2026@v1:R555",
+       "NORTHSTAR/SURVEY-2026@v1:R128",
+       "NORTHSTAR/SURVEY-2026@v1:R130",
+       "NORTHSTAR/SURVEY-2026@v1:R361",
+       "NORTHSTAR/SURVEY-2026@v1:R110",
+       "NORTHSTAR/SURVEY-2026@v1:R489",
+       "NORTHSTAR/SURVEY-2026@v1:R270"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+       "NORTHSTAR/SURVEY-2026@v1:R153",
+       "NORTHSTAR/SURVEY-2026@v1:R555",
+       "NORTHSTAR/SURVEY-2026@v1:R128",
+       "NORTHSTAR/SURVEY-2026@v1:R126",
+       "NORTHSTAR/SURVEY-2026@v1:R361",
+       "NORTHSTAR/SURVEY-2026@v1:R542",
+       "NORTHSTAR/SURVEY-2026@v1:R270"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "both_miss"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-015",
+    "question": "Running Footwear gross margin for August 2026",
+    "category": "exact_number",
+    "bucket": "both_miss",
+    "expected_handles": [
+     "NORTHSTAR/PRODUCT-PERF@v1:SH1.R135"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL4",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL4",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+       "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+       "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+       "NORTHSTAR/PACE-DECK@v1:SL8",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+       "NORTHSTAR/SURVEY-2026@v1:R57",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13",
+       "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R5"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL4",
+       "NORTHSTAR/PRODUCT-PERF@v1:SH1.T1",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+       "NORTHSTAR/KINETIC-AR@v1:P4.B1",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL3.N1",
+       "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL11"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL4",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+       "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+       "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL4",
+       "NORTHSTAR/PRODUCT-PERF@v1:SH1.T1",
+       "NORTHSTAR/KINETIC-AR@v1:P2.B3",
+       "NORTHSTAR/KINETIC-AR@v1:P4.B1",
+       "NORTHSTAR/PACE-DECK@v1:SL8",
+       "NORTHSTAR/SURVEY-2026@v1:R57"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL4",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3",
+       "NORTHSTAR/KINETIC-AR@v1:P4.B2",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL3",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/REVIEWS@v1:R631",
+       "NORTHSTAR/PRODUCT-PERF@v1:SH1.T1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL4",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "both_miss"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-021",
+    "question": "What is Northstar's best-selling product by units so far in FY26?",
+    "category": "named_entity",
+    "bucket": "both_miss",
+    "expected_handles": [
+     "NORTHSTAR/PRODUCT-PERF@v1:SH2.R14"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+       "NORTHSTAR/SURVEY-2026@v1:R32",
+       "NORTHSTAR/REVIEWS@v1:R666",
+       "NORTHSTAR/SURVEY-2026@v1:R161",
+       "NORTHSTAR/REVIEWS@v1:R515",
+       "NORTHSTAR/SURVEY-2026@v1:R127",
+       "NORTHSTAR/SURVEY-2026@v1:R26",
+       "NORTHSTAR/REVIEWS@v1:R513"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/PRODUCT-PERF@v1:SH1.T1",
+       "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL5",
+       "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B3",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+       "NORTHSTAR/PACE-DECK@v1:SL6"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+       "NORTHSTAR/SURVEY-2026@v1:R161",
+       "NORTHSTAR/Q3-REVIEW@v1:SL2",
+       "NORTHSTAR/REVIEWS@v1:R513",
+       "NORTHSTAR/SURVEY-2026@v1:R456",
+       "NORTHSTAR/SURVEY-2026@v1:R598",
+       "NORTHSTAR/SURVEY-2026@v1:R102",
+       "NORTHSTAR/SURVEY-2026@v1:R45"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/PRODUCT-PERF@v1:SH2.T1",
+       "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH1.T1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+       "NORTHSTAR/PRODUCT-PERF@v1:SH1.T1",
+       "NORTHSTAR/REVIEWS@v1:R666",
+       "NORTHSTAR/REVIEWS@v1:R138",
+       "NORTHSTAR/REVIEWS@v1:R513",
+       "NORTHSTAR/SURVEY-2026@v1:R161",
+       "NORTHSTAR/SURVEY-2026@v1:R102"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-022",
+    "question": "Which Gen Z customer group is Northstar's biggest and also spends the most per order?",
+    "category": "named_entity",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+     "NORTHSTAR/Q3-REVIEW@v1:SL7"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       2
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+       "NORTHSTAR/INTERVIEWS@v1:S1.B1",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+       "NORTHSTAR/INTERVIEWS@v1:S2.B1",
+       "NORTHSTAR/SURVEY-2026@v1:R246",
+       "NORTHSTAR/SURVEY-2026@v1:R555",
+       "NORTHSTAR/SURVEY-2026@v1:R456",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       5
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+       "NORTHSTAR/PACE-DECK@v1:SL10",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B3",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B10",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+       "NORTHSTAR/INTERVIEWS@v1:S2.B1",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B2"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       2
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+       "NORTHSTAR/INTERVIEWS@v1:S2.B1",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+       "NORTHSTAR/INTERVIEWS@v1:S1.B1",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B4"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+       "NORTHSTAR/Q3-REVIEW@v1:SL7",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+       "NORTHSTAR/INTERVIEWS@v1:S1.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B1",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S1.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "both_miss"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-023",
+    "question": "Which Northstar product had a big chunk of its Q3 2026 returns blamed on running small?",
+    "category": "named_entity",
+    "bucket": "both_miss",
+    "expected_handles": [
+     "NORTHSTAR/PRODUCT-PERF@v1:SH3.R35"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/REVIEWS@v1:R664",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B3",
+       "NORTHSTAR/SURVEY-2026@v1:R96",
+       "NORTHSTAR/Q3-REVIEW@v1:SL3.N1",
+       "NORTHSTAR/Q3-REVIEW@v1:SL2",
+       "NORTHSTAR/SURVEY-2026@v1:R81",
+       "NORTHSTAR/SURVEY-2026@v1:R524"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/SURVEY-2026@v1:R168",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B4",
+       "NORTHSTAR/SURVEY-2026@v1:R505",
+       "NORTHSTAR/SURVEY-2026@v1:R279",
+       "NORTHSTAR/SURVEY-2026@v1:R431",
+       "NORTHSTAR/SURVEY-2026@v1:R23",
+       "NORTHSTAR/SURVEY-2026@v1:R329"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/REVIEWS@v1:R664",
+       "NORTHSTAR/SURVEY-2026@v1:R81",
+       "NORTHSTAR/SURVEY-2026@v1:R255",
+       "NORTHSTAR/SURVEY-2026@v1:R73",
+       "NORTHSTAR/SURVEY-2026@v1:R41",
+       "NORTHSTAR/SURVEY-2026@v1:R136"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+       "NORTHSTAR/REVIEWS@v1:R664",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+       "NORTHSTAR/REVIEWS@v1:R29",
+       "NORTHSTAR/Q3-REVIEW@v1:SL1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B1",
+       "NORTHSTAR/SURVEY-2026@v1:R41",
+       "NORTHSTAR/SURVEY-2026@v1:R255",
+       "NORTHSTAR/SURVEY-2026@v1:R361"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "hybrid_only"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-025",
+    "question": "What did survey respondent R0147 say about sizing?",
+    "category": "keyword_sensitive",
+    "bucket": "hybrid_only",
+    "expected_handles": [
+     "NORTHSTAR/SURVEY-2026@v1:R148"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       15
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/SURVEY-2026@v1:R356",
+       "NORTHSTAR/SURVEY-2026@v1:R28",
+       "NORTHSTAR/SURVEY-2026@v1:R498",
+       "NORTHSTAR/SURVEY-2026@v1:R291",
+       "NORTHSTAR/SURVEY-2026@v1:R167",
+       "NORTHSTAR/SURVEY-2026@v1:R338",
+       "NORTHSTAR/SURVEY-2026@v1:R171",
+       "NORTHSTAR/SURVEY-2026@v1:R451",
+       "NORTHSTAR/SURVEY-2026@v1:R303",
+       "NORTHSTAR/SURVEY-2026@v1:R247"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SURVEY-2026@v1:R148",
+       "NORTHSTAR/SURVEY-2026@v1:R163",
+       "NORTHSTAR/SURVEY-2026@v1:R407",
+       "NORTHSTAR/SURVEY-2026@v1:R27",
+       "NORTHSTAR/SURVEY-2026@v1:R384",
+       "NORTHSTAR/SURVEY-2026@v1:R94",
+       "NORTHSTAR/SURVEY-2026@v1:R238",
+       "NORTHSTAR/SURVEY-2026@v1:R467",
+       "NORTHSTAR/SURVEY-2026@v1:R417",
+       "NORTHSTAR/SURVEY-2026@v1:R90"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SURVEY-2026@v1:R148",
+       "NORTHSTAR/SURVEY-2026@v1:R369",
+       "NORTHSTAR/SURVEY-2026@v1:R304",
+       "NORTHSTAR/SURVEY-2026@v1:R28",
+       "NORTHSTAR/SURVEY-2026@v1:R356",
+       "NORTHSTAR/SURVEY-2026@v1:R163",
+       "NORTHSTAR/SURVEY-2026@v1:R97",
+       "NORTHSTAR/SURVEY-2026@v1:R167",
+       "NORTHSTAR/SURVEY-2026@v1:R247",
+       "NORTHSTAR/SURVEY-2026@v1:R395"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       12
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/SURVEY-2026@v1:R171",
+       "NORTHSTAR/SURVEY-2026@v1:R167",
+       "NORTHSTAR/SURVEY-2026@v1:R156",
+       "NORTHSTAR/SURVEY-2026@v1:R28",
+       "NORTHSTAR/SURVEY-2026@v1:R247",
+       "NORTHSTAR/SURVEY-2026@v1:R396",
+       "NORTHSTAR/SURVEY-2026@v1:R356",
+       "NORTHSTAR/SURVEY-2026@v1:R451",
+       "NORTHSTAR/SURVEY-2026@v1:R338",
+       "NORTHSTAR/SURVEY-2026@v1:R230"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "hybrid_only"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-028",
+    "question": "RV-00412 Knit Runner 2 durability complaint details",
+    "category": "keyword_sensitive",
+    "bucket": "hybrid_only",
+    "expected_handles": [
+     "NORTHSTAR/REVIEWS@v1:R413"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       14
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL8",
+       "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/REVIEWS@v1:R360",
+       "NORTHSTAR/REVIEWS@v1:R197",
+       "NORTHSTAR/REVIEWS@v1:R172",
+       "NORTHSTAR/REVIEWS@v1:R631",
+       "NORTHSTAR/REVIEWS@v1:R70",
+       "NORTHSTAR/REVIEWS@v1:R742",
+       "NORTHSTAR/REVIEWS@v1:R544"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       4
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL8",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+       "NORTHSTAR/REVIEWS@v1:R413",
+       "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+       "NORTHSTAR/PRODUCT-PERF@v1:SH3.T1",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+       "NORTHSTAR/SURVEY-2026@v1:R522",
+       "NORTHSTAR/Q3-REVIEW@v1:SL2",
+       "NORTHSTAR/Q3-REVIEW@v1:SL14"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       4
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL8",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/Q3-REVIEW@v1:SL8.N1",
+       "NORTHSTAR/REVIEWS@v1:R413",
+       "NORTHSTAR/SURVEY-2026@v1:R522",
+       "NORTHSTAR/REVIEWS@v1:R360",
+       "NORTHSTAR/REVIEWS@v1:R197",
+       "NORTHSTAR/REVIEWS@v1:R70",
+       "NORTHSTAR/REVIEWS@v1:R172",
+       "NORTHSTAR/REVIEWS@v1:R631"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       4
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/Q3-REVIEW@v1:SL8",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/REVIEWS@v1:R583",
+       "NORTHSTAR/REVIEWS@v1:R413",
+       "NORTHSTAR/REVIEWS@v1:R360",
+       "NORTHSTAR/REVIEWS@v1:R172",
+       "NORTHSTAR/REVIEWS@v1:R498",
+       "NORTHSTAR/REVIEWS@v1:R197",
+       "NORTHSTAR/REVIEWS@v1:R631",
+       "NORTHSTAR/REVIEWS@v1:R326"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-030",
+    "question": "How many stores have Vantage's Fit Lab, and how many scans has it done?",
+    "category": "keyword_sensitive",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B7",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B11",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL11.N1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL10.N1"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+       "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B7",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B11",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B5",
+       "NORTHSTAR/KINETIC-WEB@v1:S1.B2",
+       "NORTHSTAR/KINETIC-WEB@v1:S1.B8"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B7",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B11",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL11.N1",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B5"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P5.B2",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B7",
+       "NORTHSTAR/VANTAGE-WEB@v1:S1.B11",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8",
+       "NORTHSTAR/Q3-REVIEW@v1:SL13.N1",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL11.N1",
+       "NORTHSTAR/KINETIC-AR@v1:P1.B3",
+       "NORTHSTAR/KINETIC-WEB@v1:S1.B8"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "both_miss"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-031",
+    "question": "What do Southpeak's survey respondents name as their top issue?",
+    "category": "single_source_fact",
+    "bucket": "both_miss",
+    "expected_handles": [
+     "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B3"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       null
+      ],
+      "hit_at_10": false,
+      "top": [
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B2",
+       "SOUTHPEAK/SURVEY-2026@v1:R177",
+       "SOUTHPEAK/SURVEY-2026@v1:R159",
+       "SOUTHPEAK/SURVEY-2026@v1:R32",
+       "SOUTHPEAK/SURVEY-2026@v1:R282",
+       "SOUTHPEAK/SURVEY-2026@v1:R51",
+       "SOUTHPEAK/SURVEY-2026@v1:R233",
+       "SOUTHPEAK/SURVEY-2026@v1:R187",
+       "SOUTHPEAK/SURVEY-2026@v1:R180",
+       "SOUTHPEAK/SURVEY-2026@v1:R279"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       9
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P3.B2",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B5",
+       "SOUTHPEAK/BOARD-DECK@v1:SL8",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B3",
+       "SOUTHPEAK/BOARD-DECK@v1:SL8.N1",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B2",
+       "SOUTHPEAK/BOARD-DECK@v1:SL9.N1",
+       "SOUTHPEAK/INTERVIEWS@v1:S6.Q2",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B3",
+       "SOUTHPEAK/BOARD-DECK@v1:SL10"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       28
+      ],
+      "hit_at_10": false,
+      "top": [
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B2",
+       "SOUTHPEAK/SURVEY-2026@v1:R159",
+       "SOUTHPEAK/SURVEY-2026@v1:R180",
+       "SOUTHPEAK/SURVEY-2026@v1:R243",
+       "SOUTHPEAK/SURVEY-2026@v1:R171",
+       "SOUTHPEAK/SURVEY-2026@v1:R198",
+       "SOUTHPEAK/SURVEY-2026@v1:R97",
+       "SOUTHPEAK/SURVEY-2026@v1:R210",
+       "SOUTHPEAK/SURVEY-2026@v1:R160",
+       "SOUTHPEAK/SURVEY-2026@v1:R147"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       28
+      ],
+      "hit_at_10": false,
+      "top": [
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B2",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P3.B2",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B5",
+       "SOUTHPEAK/SURVEY-2026@v1:R171",
+       "SOUTHPEAK/SURVEY-2026@v1:R275",
+       "SOUTHPEAK/SURVEY-2026@v1:R160",
+       "SOUTHPEAK/SURVEY-2026@v1:R159",
+       "SOUTHPEAK/SURVEY-2026@v1:R180",
+       "SOUTHPEAK/SURVEY-2026@v1:R177",
+       "SOUTHPEAK/SURVEY-2026@v1:R97"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "hybrid_only"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-033",
+    "question": "What did survey respondent R0147 say about how they buy leggings and tees?",
+    "category": "customer_free_text",
+    "bucket": "hybrid_only",
+    "expected_handles": [
+     "NORTHSTAR/SURVEY-2026@v1:R148"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       16
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/SURVEY-2026@v1:R518",
+       "NORTHSTAR/SURVEY-2026@v1:R29",
+       "NORTHSTAR/SURVEY-2026@v1:R33",
+       "NORTHSTAR/SURVEY-2026@v1:R134",
+       "NORTHSTAR/SURVEY-2026@v1:R379",
+       "NORTHSTAR/SURVEY-2026@v1:R18",
+       "NORTHSTAR/SURVEY-2026@v1:R182",
+       "NORTHSTAR/SURVEY-2026@v1:R236",
+       "NORTHSTAR/SURVEY-2026@v1:R461",
+       "NORTHSTAR/SURVEY-2026@v1:R264"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SURVEY-2026@v1:R148",
+       "NORTHSTAR/SURVEY-2026@v1:R18",
+       "NORTHSTAR/SURVEY-2026@v1:R29",
+       "NORTHSTAR/SURVEY-2026@v1:R388",
+       "NORTHSTAR/SURVEY-2026@v1:R288",
+       "NORTHSTAR/SURVEY-2026@v1:R461",
+       "NORTHSTAR/SURVEY-2026@v1:R236",
+       "NORTHSTAR/SURVEY-2026@v1:R439",
+       "NORTHSTAR/SURVEY-2026@v1:R120",
+       "NORTHSTAR/SURVEY-2026@v1:R379"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       6
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SURVEY-2026@v1:R29",
+       "NORTHSTAR/SURVEY-2026@v1:R18",
+       "NORTHSTAR/SURVEY-2026@v1:R379",
+       "NORTHSTAR/SURVEY-2026@v1:R461",
+       "NORTHSTAR/SURVEY-2026@v1:R236",
+       "NORTHSTAR/SURVEY-2026@v1:R148",
+       "NORTHSTAR/SURVEY-2026@v1:R388",
+       "NORTHSTAR/SURVEY-2026@v1:R518",
+       "NORTHSTAR/SURVEY-2026@v1:R134",
+       "NORTHSTAR/SURVEY-2026@v1:R33"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       6
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SURVEY-2026@v1:R18",
+       "NORTHSTAR/SURVEY-2026@v1:R134",
+       "NORTHSTAR/SURVEY-2026@v1:R182",
+       "NORTHSTAR/SURVEY-2026@v1:R518",
+       "NORTHSTAR/SURVEY-2026@v1:R120",
+       "NORTHSTAR/SURVEY-2026@v1:R148",
+       "NORTHSTAR/SURVEY-2026@v1:R461",
+       "NORTHSTAR/SURVEY-2026@v1:R91",
+       "NORTHSTAR/SURVEY-2026@v1:R29",
+       "NORTHSTAR/SURVEY-2026@v1:R33"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "hybrid_only"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-039",
+    "question": "What did Southpeak respondent SP-R0207 say about boot sizing?",
+    "category": "customer_free_text",
+    "bucket": "hybrid_only",
+    "expected_handles": [
+     "SOUTHPEAK/SURVEY-2026@v1:R208"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       25
+      ],
+      "hit_at_10": false,
+      "top": [
+       "SOUTHPEAK/SURVEY-2026@v1:R213",
+       "SOUTHPEAK/SURVEY-2026@v1:R258",
+       "SOUTHPEAK/SURVEY-2026@v1:R195",
+       "SOUTHPEAK/SURVEY-2026@v1:R82",
+       "SOUTHPEAK/SURVEY-2026@v1:R96",
+       "SOUTHPEAK/SURVEY-2026@v1:R269",
+       "SOUTHPEAK/SURVEY-2026@v1:R43",
+       "SOUTHPEAK/SURVEY-2026@v1:R209",
+       "SOUTHPEAK/SURVEY-2026@v1:R178",
+       "SOUTHPEAK/SURVEY-2026@v1:R292"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/SURVEY-2026@v1:R208",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B5",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B5",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B2",
+       "SOUTHPEAK/INTERVIEWS@v1:S4.Q6",
+       "SOUTHPEAK/INTERVIEWS@v1:S5.Q6",
+       "SOUTHPEAK/SURVEY-2026@v1:R81",
+       "SOUTHPEAK/SURVEY-2026@v1:R89",
+       "SOUTHPEAK/SURVEY-2026@v1:R124",
+       "SOUTHPEAK/SURVEY-2026@v1:R179"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/SURVEY-2026@v1:R208",
+       "SOUTHPEAK/SURVEY-2026@v1:R269",
+       "SOUTHPEAK/SURVEY-2026@v1:R81",
+       "SOUTHPEAK/SURVEY-2026@v1:R256",
+       "SOUTHPEAK/SURVEY-2026@v1:R213",
+       "SOUTHPEAK/SURVEY-2026@v1:R258",
+       "SOUTHPEAK/SURVEY-2026@v1:R11",
+       "SOUTHPEAK/SURVEY-2026@v1:R59",
+       "SOUTHPEAK/SURVEY-2026@v1:R195",
+       "SOUTHPEAK/SURVEY-2026@v1:R82"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/SURVEY-2026@v1:R208",
+       "SOUTHPEAK/SURVEY-2026@v1:R209",
+       "SOUTHPEAK/SURVEY-2026@v1:R258",
+       "SOUTHPEAK/SURVEY-2026@v1:R43",
+       "SOUTHPEAK/SURVEY-2026@v1:R178",
+       "SOUTHPEAK/SURVEY-2026@v1:R213",
+       "SOUTHPEAK/SURVEY-2026@v1:R82",
+       "SOUTHPEAK/SURVEY-2026@v1:R292",
+       "SOUTHPEAK/SURVEY-2026@v1:R269",
+       "SOUTHPEAK/SURVEY-2026@v1:R112"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-041",
+    "question": "How slowly did the care team typically get back to people who messaged through social apps last quarter, compared with the goal they had set?",
+    "category": "semantic_paraphrase",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B5",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B4",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B7",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+       "NORTHSTAR/SURVEY-2026@v1:R252"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       13
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+       "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B2"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       3
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+       "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B2"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       2
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P1.B2",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+       "NORTHSTAR/KINETIC-AR@v1:P3.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+       "NORTHSTAR/PACE-DECK@v1:SL4",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B7",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-043",
+    "question": "What slice of young buyers' sneaker purchases still happens at shops dedicated to runners?",
+    "category": "semantic_paraphrase",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B5",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+       "NORTHSTAR/INTERVIEWS@v1:S13.Q1",
+       "NORTHSTAR/REVIEWS@v1:R428",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL4",
+       "NORTHSTAR/REVIEWS@v1:R394",
+       "NORTHSTAR/REVIEWS@v1:R683"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       10
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B10",
+       "NORTHSTAR/KINETIC-AR@v1:P1.B3",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B4",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B4",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/REVIEWS@v1:R428",
+       "NORTHSTAR/SURVEY-2026@v1:R420",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B4",
+       "NORTHSTAR/REVIEWS@v1:R631",
+       "NORTHSTAR/REVIEWS@v1:R197",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B4",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/KINETIC-AR@v1:P1.B3",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+       "NORTHSTAR/REVIEWS@v1:R631",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B5"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-047",
+    "question": "In the trade-off exercise, how did shoppers weigh getting a shoe shaped to their foot against picking their own colors?",
+    "category": "semantic_paraphrase",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+     "NORTHSTAR/WTP-STUDY@v1:P3.B2"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       4
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL9.N1",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B5",
+       "NORTHSTAR/KINETIC-AR@v1:P2.B4"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       29
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+       "NORTHSTAR/KINETIC-WEB@v1:S1.B7",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+       "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8",
+       "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B2"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       6
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+       "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+       "NORTHSTAR/KINETIC-WEB@v1:S1.B7",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8",
+       "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+       "NORTHSTAR/INTERVIEWS@v1:S9.Q1"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       11
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+       "NORTHSTAR/INTERVIEWS@v1:S13.Q5",
+       "NORTHSTAR/INTERVIEWS@v1:S6.Q3",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+       "NORTHSTAR/GENZ-TRENDS@v2:P4.B5",
+       "NORTHSTAR/KINETIC-WEB@v1:S1.B7",
+       "NORTHSTAR/VANTAGE-DECK@v1:SL8"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [
+    "hybrid_only"
+   ],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-052",
+    "question": "For Southpeak, what share of survey respondents say inconsistent fit between boots and trail runners is their top issue, and what did respondent SP-R0207 say about boot sizing?",
+    "category": "cross_format",
+    "bucket": "hybrid_only",
+    "expected_handles": [
+     "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B3",
+     "SOUTHPEAK/SURVEY-2026@v1:R208"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       16,
+       20
+      ],
+      "hit_at_10": false,
+      "top": [
+       "SOUTHPEAK/SURVEY-2026@v1:R269",
+       "SOUTHPEAK/SURVEY-2026@v1:R52",
+       "SOUTHPEAK/SURVEY-2026@v1:R59",
+       "SOUTHPEAK/SURVEY-2026@v1:R256",
+       "SOUTHPEAK/SURVEY-2026@v1:R218",
+       "SOUTHPEAK/BOARD-DECK@v1:SL8",
+       "SOUTHPEAK/SURVEY-2026@v1:R25",
+       "SOUTHPEAK/SURVEY-2026@v1:R66",
+       "SOUTHPEAK/SURVEY-2026@v1:R11",
+       "SOUTHPEAK/SURVEY-2026@v1:R224"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       35,
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/SURVEY-2026@v1:R208",
+       "SOUTHPEAK/BOARD-DECK@v1:SL8",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P2.B5",
+       "SOUTHPEAK/PLANNING-NOTES@v1:S1.B3",
+       "SOUTHPEAK/BRAND-STRATEGY@v1:P4.B1",
+       "SOUTHPEAK/SURVEY-2026@v1:R124",
+       "SOUTHPEAK/SURVEY-2026@v1:R246",
+       "SOUTHPEAK/SURVEY-2026@v1:R26",
+       "SOUTHPEAK/SURVEY-2026@v1:R31",
+       "SOUTHPEAK/SURVEY-2026@v1:R145"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       26,
+       3
+      ],
+      "hit_at_10": true,
+      "top": [
+       "SOUTHPEAK/BOARD-DECK@v1:SL8",
+       "SOUTHPEAK/SURVEY-2026@v1:R218",
+       "SOUTHPEAK/SURVEY-2026@v1:R208",
+       "SOUTHPEAK/SURVEY-2026@v1:R269",
+       "SOUTHPEAK/SURVEY-2026@v1:R224",
+       "SOUTHPEAK/SURVEY-2026@v1:R66",
+       "SOUTHPEAK/SURVEY-2026@v1:R59",
+       "SOUTHPEAK/SURVEY-2026@v1:R242",
+       "SOUTHPEAK/SURVEY-2026@v1:R44",
+       "SOUTHPEAK/SURVEY-2026@v1:R256"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       26,
+       19
+      ],
+      "hit_at_10": false,
+      "top": [
+       "SOUTHPEAK/BOARD-DECK@v1:SL8",
+       "SOUTHPEAK/SURVEY-2026@v1:R59",
+       "SOUTHPEAK/SURVEY-2026@v1:R256",
+       "SOUTHPEAK/SURVEY-2026@v1:R11",
+       "SOUTHPEAK/SURVEY-2026@v1:R269",
+       "SOUTHPEAK/SURVEY-2026@v1:R14",
+       "SOUTHPEAK/SURVEY-2026@v1:R31",
+       "SOUTHPEAK/SURVEY-2026@v1:R25",
+       "SOUTHPEAK/SURVEY-2026@v1:R124",
+       "SOUTHPEAK/SURVEY-2026@v1:R52"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-054",
+    "question": "Pull every individual customer voice (interviewees, survey verbatims, product reviews) describing the knit upper on their running shoes fraying, splitting or tearing early.",
+    "category": "enumeration",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/INTERVIEWS@v1:S7.Q1",
+     "NORTHSTAR/REVIEWS@v1:R413",
+     "NORTHSTAR/SURVEY-2026@v1:R522"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       41,
+       5,
+       28
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+       "NORTHSTAR/SUPPORT-THEMES@v1:P3.B4",
+       "NORTHSTAR/SURVEY-2026@v1:R522",
+       "NORTHSTAR/SURVEY-2026@v1:R299",
+       "NORTHSTAR/SURVEY-2026@v1:R509",
+       "NORTHSTAR/SURVEY-2026@v1:R75",
+       "NORTHSTAR/SURVEY-2026@v1:R482",
+       "NORTHSTAR/SURVEY-2026@v1:R43"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       null,
+       6,
+       55
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+       "NORTHSTAR/Q3-REVIEW@v1:SL8",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+       "NORTHSTAR/SURVEY-2026@v1:R522",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B4",
+       "NORTHSTAR/SURVEY-2026@v1:R315",
+       "NORTHSTAR/SURVEY-2026@v1:R337",
+       "NORTHSTAR/SURVEY-2026@v1:R75"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       83,
+       4,
+       28
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P6.B3",
+       "NORTHSTAR/SURVEY-2026@v1:R522",
+       "NORTHSTAR/SURVEY-2026@v1:R75",
+       "NORTHSTAR/SURVEY-2026@v1:R299",
+       "NORTHSTAR/SURVEY-2026@v1:R337",
+       "NORTHSTAR/SURVEY-2026@v1:R482",
+       "NORTHSTAR/SURVEY-2026@v1:R315",
+       "NORTHSTAR/Q3-REVIEW@v1:SL8"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       83,
+       14,
+       28
+      ],
+      "hit_at_10": false,
+      "top": [
+       "NORTHSTAR/SUPPORT-THEMES@v1:P2.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+       "NORTHSTAR/SURVEY-2026@v1:R43",
+       "NORTHSTAR/SURVEY-2026@v1:R299",
+       "NORTHSTAR/SURVEY-2026@v1:R211",
+       "NORTHSTAR/SURVEY-2026@v1:R75",
+       "NORTHSTAR/SURVEY-2026@v1:R503",
+       "NORTHSTAR/SURVEY-2026@v1:R482",
+       "NORTHSTAR/SURVEY-2026@v1:R337",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B2"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-057",
+    "question": "In the willingness-to-pay study, what share of Gen Z respondents say they'd accept a 15% markup for footwear tailored to their fit (fit, not colorway)?",
+    "category": "ambiguous_distractor",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/WTP-STUDY@v1:P2.B2"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       2
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B1",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B3"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       2
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B3",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B2"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B2",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+       "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B3"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P2.B3",
+       "NORTHSTAR/PERSO-PILOT@v1:S1.B9",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B3",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P3.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+       "NORTHSTAR/WTP-STUDY@v1:P1.B3"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "buckets": [],
+   "item": {
+    "phase": "retrieval",
+    "item_id": "R0-065",
+    "question": "Current figure: what share of Gen Z say eco or green claims affect which sports brand they pick?",
+    "category": "versioning",
+    "bucket": null,
+    "expected_handles": [
+     "NORTHSTAR/GENZ-TRENDS@v2:P3.B2"
+    ],
+    "by_arm": {
+     "dense": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B3",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+       "NORTHSTAR/GENZ-TRENDS@v2:P1.B1",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B4",
+       "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B5",
+       "NORTHSTAR/FY27-MEMO@v1:S1.B5"
+      ]
+     },
+     "lexical": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B1",
+       "NORTHSTAR/Q3-REVIEW@v1:SL7",
+       "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+       "NORTHSTAR/SURVEY-2026@v1:R66",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+       "NORTHSTAR/SURVEY-2026@v1:R437"
+      ]
+     },
+     "hybrid": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/Q3-REVIEW@v1:SL7",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+       "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B4",
+       "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B1",
+       "NORTHSTAR/WTP-STUDY@v1:P4.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B2"
+      ]
+     },
+     "hybrid-rerank": {
+      "fact_ranks": [
+       1
+      ],
+      "hit_at_10": true,
+      "top": [
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+       "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P7.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+       "NORTHSTAR/GENZ-TRENDS@v2:P3.B3",
+       "NORTHSTAR/GENZ-TRENDS@v2:P1.B2",
+       "NORTHSTAR/BRAND-STRATEGY@v1:P2.B1",
+       "NORTHSTAR/ANALYST-CALL@v1:S1.B1"
+      ]
+     }
+    }
+   }
+  }
+ ]
+}

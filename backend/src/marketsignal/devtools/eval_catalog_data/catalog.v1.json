@@ -1,0 +1,4154 @@
+{
+ "schema_version": 1,
+ "built_at": "2026-10-12T20:39:53+00:00",
+ "sources": [
+  {
+   "path": "docs/phase-reports/phase-2.md",
+   "sha256": "533fabbdd182ecc8848430cb03a042592def038e08a5356118595b83abd2cdc2",
+   "bytes": 23798
+  },
+  {
+   "path": "docs/phase-reports/phase-5.md",
+   "sha256": "937307000328d05d3df5b0dff205af7cf9a0e5500035b558968a63cc4387651c",
+   "bytes": 21106
+  },
+  {
+   "path": "eval/baselines/phase2/06-final-dev/results.json",
+   "sha256": "038718cfa96120fcef46a627a2588a21880422d06d18d6e5ee1bcf02258a8ed9",
+   "bytes": 1000282
+  },
+  {
+   "path": "eval/baselines/phase2/07-test-milestone-c3/results.json",
+   "sha256": "7bbf2f90a1cd413f8895e9301e58c7de4edcf15c7f1b76088827d9d705433a0c",
+   "bytes": 513821
+  },
+  {
+   "path": "eval/baselines/phase2/summary-eligible.json",
+   "sha256": "7d05ecd7b80d65d64e3189cb49153f1859003ace747df84eb1ea3f9aa481fcbc",
+   "bytes": 31998
+  },
+  {
+   "path": "eval/baselines/phase2/summary.json",
+   "sha256": "9f1192d393af317a7a0a6eef263319e47004f252880c3ab32cb005981571ce02",
+   "bytes": 39107
+  },
+  {
+   "path": "eval/baselines/phase3/live-v0/failure-analysis.json",
+   "sha256": "6d64ad8f093199f17c001a42b6e73dd80c649c92ee27dc8c15ee47661ce01b07",
+   "bytes": 69389
+  },
+  {
+   "path": "eval/baselines/phase3/live-v0/numeric-recheck.json",
+   "sha256": "a06e44efcdfa0673a6b3e800ddaec718752070b4e2a3c7cb7fb8fb59d9752baf",
+   "bytes": 12851
+  },
+  {
+   "path": "eval/baselines/phase3/live-v0/results.json",
+   "sha256": "dfa9b73ed6d79dbf55862ab72402b985101893be52b2324bd97e8b2ba9c4ee61",
+   "bytes": 292618
+  },
+  {
+   "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+   "sha256": "bce0dff510b9d7c3782c44dd46f30317762fd8a2b901dd57b873792f6d392974",
+   "bytes": 53609
+  },
+  {
+   "path": "eval/baselines/phase4/research-v0-dev-live/results-research.json",
+   "sha256": "e364ba7c369cb2e66e182956cdb41cfb2f9026d9239a185af5b14cffa0a5bf82",
+   "bytes": 224184
+  },
+  {
+   "path": "eval/baselines/phase4/research-v0-dev-live/results-standard.json",
+   "sha256": "31b4e85ea3cff5a9f93f82919398d127671c60732caa4b90142c9f14b4a73791",
+   "bytes": 161849
+  },
+  {
+   "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+   "sha256": "3f0f758927f021c0a0177c54c9d11d0590875ec4740f586e923f7919e4af815a",
+   "bytes": 69131
+  },
+  {
+   "path": "eval/baselines/phase4/research-v0-test-live/results-research.json",
+   "sha256": "06c22f6b57981171676a8abd237884f390d5d2bddb28e69f6cbe0be9d74ac217",
+   "bytes": 308313
+  },
+  {
+   "path": "eval/baselines/phase4/research-v0-test-live/results-standard.json",
+   "sha256": "1425ba55856a1d140ca665775495610926a7da2af1da25cc2e596fc1ead9fef8",
+   "bytes": 227226
+  },
+  {
+   "path": "eval/baselines/phase4/verifier/SUMMARY.md",
+   "sha256": "c5e3e5d8682ef94734e1472d2663d8103ff24152569420d45529da33d600cb8b",
+   "bytes": 6503
+  },
+  {
+   "path": "eval/baselines/phase4/verifier/dev-after.json",
+   "sha256": "4c3bf9f3f620237a22070da65faa044745ce26b9a5f6bfe1c7d9bd62bcc5d103",
+   "bytes": 46524
+  },
+  {
+   "path": "eval/baselines/phase4/verifier/dev-before.json",
+   "sha256": "f85dc0f0d502a040642e01211461a308fc988a34f48d022131080ea1edaeea74",
+   "bytes": 46487
+  },
+  {
+   "path": "eval/baselines/phase4/verifier/holdout-after.json",
+   "sha256": "1b29662ee642b3c327c3cb0f0b43792e0215e52fb377812b1fcd655b0418d982",
+   "bytes": 38780
+  },
+  {
+   "path": "eval/baselines/phase4/verifier/holdout-before.json",
+   "sha256": "b440c98722044840dcc73ec903b0735b2873dae4c383d0b52ea66673c3ee3f37",
+   "bytes": 38618
+  },
+  {
+   "path": "eval/baselines/phase5/analytics-v0-dev-live-attempt1-strict-limit/results.json",
+   "sha256": "75332889a600402635b8e9d627d0c181b4626c2140b70b4e6c264accba862f8c",
+   "bytes": 305793
+  },
+  {
+   "path": "eval/baselines/phase5/analytics-v0-dev-live-attempt2-verifier-fp/results.json",
+   "sha256": "c89f5df907ead79915fdf65a9310a28dc44866922ada11d80d3ef09bda4ea72e",
+   "bytes": 321667
+  },
+  {
+   "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+   "sha256": "e628e814048f0ba7aac3a2fe5f57e5ebd19dc4aa989f34a57c0298158495a6a3",
+   "bytes": 320026
+  },
+  {
+   "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+   "sha256": "f610e3e2a1b86fc599ede50f60a52c96ce0c709b5f8b1b97d7c3c9fea234bc6d",
+   "bytes": 468972
+  },
+  {
+   "path": "eval/baselines/phase5/research-dev-p5-summary-off/results.json",
+   "sha256": "1c35a51ea734389983ad1b82068da08e802b692fa6e18338feef310c2c32965b",
+   "bytes": 120482
+  },
+  {
+   "path": "eval/datasets/analytics-v0/items.json",
+   "sha256": "fbb89127635ac33fd69646a43710124de4c9aef0eb61ec2b023063cec84c49b7",
+   "bytes": 207646
+  },
+  {
+   "path": "eval/datasets/grounded-v0/items.json",
+   "sha256": "558ee3cff7ffea7d85fb5c52850bb139c33a361744ff3405ec780ab89011370e",
+   "bytes": 39906
+  },
+  {
+   "path": "eval/datasets/research-v0/items.json",
+   "sha256": "e0d55532ffd1ea9ca697a0c88541b7908e28a4936d9342f4b5c8f0647f79a966",
+   "bytes": 80559
+  },
+  {
+   "path": "eval/datasets/retrieval-v0/frozen.json",
+   "sha256": "acf5fccee6768d8d29d96ccf443129d1a85b98ddf35e79c7b681d386388e998e",
+   "bytes": 64298
+  }
+ ],
+ "caveats": [
+  {
+   "id": "small-test-n",
+   "applies_to": [
+    "overview",
+    "retrieval",
+    "research_tradeoff"
+   ],
+   "text": "Test splits are small (retrieval test: 21 items, 17 retrieval-eligible; Standard vs Research test: 34 pairs). Confidence intervals are wide; read point estimates with care."
+  },
+  {
+   "id": "v0-test-informed-default",
+   "applies_to": [
+    "overview",
+    "retrieval"
+   ],
+   "text": "The production default (hybrid without the reranker) was chosen after seeing v0 test results, so the v0 test split is no longer a clean holdout for that choice."
+  },
+  {
+   "id": "verifier-holdout-used-twice",
+   "applies_to": [
+    "overview",
+    "grounded"
+   ],
+   "text": "The verifier-v1 holdout was run twice: at the end of development and once more after the review safety fixes. No rule was tuned to holdout scores."
+  },
+  {
+   "id": "a3-not-run",
+   "applies_to": [
+    "overview",
+    "analytics",
+    "research_tradeoff"
+   ],
+   "text": "The Phase 5 A3 research-summary on/off comparison was not run live because API credits ran out. The summary hand-off is implemented and tested offline only."
+  },
+  {
+   "id": "p5-holdout-routing",
+   "applies_to": [
+    "overview",
+    "analytics"
+   ],
+   "text": "Analytics routing generalised weakly: task-type accuracy was 36/36 on dev but 31/54 on the holdout split."
+  }
+ ],
+ "overview": {
+  "headline": [
+   {
+    "id": "headline.test_hybrid_recall10",
+    "label": "Recall@10, hybrid default (test, retrieval-eligible)",
+    "value": 0.8725490196078431,
+    "unit": "ratio",
+    "ci_low": 0.7254901960784315,
+    "ci_high": 1.0,
+    "n": 17,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase2/summary-eligible.json",
+     "pointer": "/rows/33/recall@10/estimate"
+    }
+   },
+   {
+    "id": "headline.citation_resolvability",
+    "label": "Citation resolvability",
+    "value": 1.0,
+    "unit": "ratio",
+    "n": 256,
+    "k": 256,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/hard_gates/citation_resolvability/value"
+    }
+   },
+   {
+    "id": "headline.cross_workspace_leaks",
+    "label": "Cross-workspace leaks",
+    "value": 0,
+    "unit": "count",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/hard_gates/cross_workspace_leaks/value"
+    }
+   },
+   {
+    "id": "headline.analytics_numeric_faithfulness_dev",
+    "label": "Analytics numeric faithfulness (dev)",
+    "value": 1.0,
+    "unit": "ratio",
+    "n": 201,
+    "k": 201,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+     "pointer": "/summary/answer/numeric_faithfulness/rate"
+    }
+   },
+   {
+    "id": "headline.analytics_numeric_faithfulness_holdout",
+    "label": "Analytics numeric faithfulness (holdout)",
+    "value": 0.9904,
+    "unit": "ratio",
+    "n": 313,
+    "k": 310,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+     "pointer": "/summary/answer/numeric_faithfulness/rate"
+    }
+   }
+  ],
+  "phases": [
+   {
+    "id": "retrieval",
+    "title": "Phase 2: hybrid retrieval",
+    "summary": "Dense, lexical, hybrid and reranked retrieval measured on the frozen retrieval-v0 dataset (dev and a one-time test milestone)."
+   },
+   {
+    "id": "grounded",
+    "title": "Phase 3: grounded answers",
+    "summary": "Live standard-mode answers with citation, abstention and numeric-faithfulness gates; verifier precision before and after Phase 4."
+   },
+   {
+    "id": "research_tradeoff",
+    "title": "Phase 4: standard vs research",
+    "summary": "Paired comparison of single-pass answers and the bounded research agent: quality gains against calls, tokens, cost and latency."
+   },
+   {
+    "id": "analytics",
+    "title": "Phase 5: structured analytics",
+    "summary": "Deterministic analytics tools with routing; dev and a fresh holdout split, plus superseded dev attempts kept for the record."
+   }
+  ]
+ },
+ "retrieval": {
+  "runs": [
+   {
+    "run_id": "p2-dev-final",
+    "label": "Dev split, run 06-final-dev",
+    "provenance": {
+     "path": "eval/baselines/phase2/06-final-dev/results.json",
+     "git": "65f8667",
+     "at": "2026-10-05T23:21:02+00:00",
+     "model": null,
+     "split": "dev",
+     "config_hash": "41dd3956306c46f9",
+     "dataset": {
+      "name": "retrieval-v0",
+      "version": "retrieval-v0",
+      "sha256": "8519fbe778771927c145d1126ae246a3ec2004a2831a95a2a10b333775d823dd"
+     }
+    },
+    "n": 44,
+    "n_eligible": 38,
+    "arms": [
+     {
+      "arm": "dense",
+      "label": "Dense (vector only)",
+      "is_default": false,
+      "all": {
+       "hit@1": {
+        "id": "p2-dev-final.dense.all.hit@1",
+        "label": "Hit@1",
+        "value": 0.5681818181818182,
+        "unit": "ratio",
+        "ci_low": 0.4222414699362943,
+        "ci_high": 0.703172765914822,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/19/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-dev-final.dense.all.hit@10",
+        "label": "Hit@10",
+        "value": 0.8409090909090909,
+        "unit": "ratio",
+        "ci_low": 0.7063379493775939,
+        "ci_high": 0.9207332298779876,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/19/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-dev-final.dense.all.recall@10",
+        "label": "Recall@10",
+        "value": 0.8030303030303031,
+        "unit": "ratio",
+        "ci_low": 0.6856060606060607,
+        "ci_high": 0.9053977272727259,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/19/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-dev-final.dense.all.recall@20",
+        "label": "Recall@20",
+        "value": 0.8333333333333333,
+        "unit": "ratio",
+        "ci_low": 0.7234848484848485,
+        "ci_high": 0.9318181818181818,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/19/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-dev-final.dense.all.mrr",
+        "label": "MRR",
+        "value": 0.6637265512265512,
+        "unit": "ratio",
+        "ci_low": 0.5413365800865801,
+        "ci_high": 0.7826037157287157,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/19/mrr/estimate"
+        }
+       }
+      },
+      "eligible": {
+       "hit@1": {
+        "id": "p2-dev-final.dense.eligible.hit@1",
+        "label": "Hit@1 (retrieval-eligible)",
+        "value": 0.6052631578947368,
+        "unit": "ratio",
+        "ci_low": 0.4471786799604255,
+        "ci_high": 0.744019242518399,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/19/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-dev-final.dense.eligible.hit@10",
+        "label": "Hit@10 (retrieval-eligible)",
+        "value": 0.9210526315789473,
+        "unit": "ratio",
+        "ci_low": 0.7920062854222853,
+        "ci_high": 0.9727854044930122,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/19/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-dev-final.dense.eligible.recall@10",
+        "label": "Recall@10 (retrieval-eligible)",
+        "value": 0.8991228070175438,
+        "unit": "ratio",
+        "ci_low": 0.8026315789473685,
+        "ci_high": 0.9780701754385964,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/19/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-dev-final.dense.eligible.recall@20",
+        "label": "Recall@20 (retrieval-eligible)",
+        "value": 0.9342105263157895,
+        "unit": "ratio",
+        "ci_low": 0.8552631578947368,
+        "ci_high": 1.0,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/19/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-dev-final.dense.eligible.mrr",
+        "label": "MRR (retrieval-eligible)",
+        "value": 0.7158939014202171,
+        "unit": "ratio",
+        "ci_low": 0.5943870091896407,
+        "ci_high": 0.8298271720969089,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/19/mrr/estimate"
+        }
+       }
+      },
+      "latency_ms": {
+       "p50": 13.14,
+       "p95": 20.01
+      }
+     },
+     {
+      "arm": "lexical",
+      "label": "Lexical (full-text only)",
+      "is_default": false,
+      "all": {
+       "hit@1": {
+        "id": "p2-dev-final.lexical.all.hit@1",
+        "label": "Hit@1",
+        "value": 0.45454545454545453,
+        "unit": "ratio",
+        "ci_low": 0.31705234142220895,
+        "ci_high": 0.5993381680103802,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/20/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-dev-final.lexical.all.hit@10",
+        "label": "Hit@10",
+        "value": 0.8181818181818182,
+        "unit": "ratio",
+        "ci_low": 0.6803944911281533,
+        "ci_high": 0.9048719428437227,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/20/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-dev-final.lexical.all.recall@10",
+        "label": "Recall@10",
+        "value": 0.7840909090909091,
+        "unit": "ratio",
+        "ci_low": 0.662878787878788,
+        "ci_high": 0.893939393939394,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/20/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-dev-final.lexical.all.recall@20",
+        "label": "Recall@20",
+        "value": 0.8219696969696969,
+        "unit": "ratio",
+        "ci_low": 0.7083333333333334,
+        "ci_high": 0.9242424242424242,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/20/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-dev-final.lexical.all.mrr",
+        "label": "MRR",
+        "value": 0.5792345979331351,
+        "unit": "ratio",
+        "ci_low": 0.45664041239306546,
+        "ci_high": 0.697932371070958,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/20/mrr/estimate"
+        }
+       }
+      },
+      "eligible": {
+       "hit@1": {
+        "id": "p2-dev-final.lexical.eligible.hit@1",
+        "label": "Hit@1 (retrieval-eligible)",
+        "value": 0.47368421052631576,
+        "unit": "ratio",
+        "ci_low": 0.32479023322526057,
+        "ci_high": 0.6274102861550331,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/20/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-dev-final.lexical.eligible.hit@10",
+        "label": "Hit@10 (retrieval-eligible)",
+        "value": 0.8947368421052632,
+        "unit": "ratio",
+        "ci_low": 0.7586947827711269,
+        "ci_high": 0.9582974265244647,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/20/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-dev-final.lexical.eligible.recall@10",
+        "label": "Recall@10 (retrieval-eligible)",
+        "value": 0.8771929824561404,
+        "unit": "ratio",
+        "ci_low": 0.7719298245614035,
+        "ci_high": 0.9736842105263158,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/20/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-dev-final.lexical.eligible.recall@20",
+        "label": "Recall@20 (retrieval-eligible)",
+        "value": 0.9210526315789473,
+        "unit": "ratio",
+        "ci_low": 0.8421052631578947,
+        "ci_high": 1.0,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/20/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-dev-final.lexical.eligible.mrr",
+        "label": "MRR (retrieval-eligible)",
+        "value": 0.6180611133962618,
+        "unit": "ratio",
+        "ci_low": 0.49335855858222055,
+        "ci_high": 0.739544272158548,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/20/mrr/estimate"
+        }
+       }
+      },
+      "latency_ms": {
+       "p50": 16.16,
+       "p95": 28.52
+      }
+     },
+     {
+      "arm": "hybrid",
+      "label": "Hybrid (production default)",
+      "is_default": true,
+      "all": {
+       "hit@1": {
+        "id": "p2-dev-final.hybrid.all.hit@1",
+        "label": "Hit@1",
+        "value": 0.5909090909090909,
+        "unit": "ratio",
+        "ci_low": 0.444097537410319,
+        "ci_high": 0.7231214437245027,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/21/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-dev-final.hybrid.all.hit@10",
+        "label": "Hit@10",
+        "value": 0.8636363636363636,
+        "unit": "ratio",
+        "ci_low": 0.7329054695148456,
+        "ci_high": 0.9359704550244412,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/21/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-dev-final.hybrid.all.recall@10",
+        "label": "Recall@10",
+        "value": 0.8371212121212122,
+        "unit": "ratio",
+        "ci_low": 0.7272727272727273,
+        "ci_high": 0.9318181818181818,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/21/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-dev-final.hybrid.all.recall@20",
+        "label": "Recall@20",
+        "value": 0.8787878787878788,
+        "unit": "ratio",
+        "ci_low": 0.7839962121212122,
+        "ci_high": 0.9583333333333333,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/21/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-dev-final.hybrid.all.mrr",
+        "label": "MRR",
+        "value": 0.6929436409550046,
+        "unit": "ratio",
+        "ci_low": 0.5724223771808999,
+        "ci_high": 0.8056506112258952,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/21/mrr/estimate"
+        }
+       }
+      },
+      "eligible": {
+       "hit@1": {
+        "id": "p2-dev-final.hybrid.eligible.hit@1",
+        "label": "Hit@1 (retrieval-eligible)",
+        "value": 0.631578947368421,
+        "unit": "ratio",
+        "ci_low": 0.47283959557009003,
+        "ci_high": 0.7661578075284404,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/21/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-dev-final.hybrid.eligible.hit@10",
+        "label": "Hit@10 (retrieval-eligible)",
+        "value": 0.9473684210526315,
+        "unit": "ratio",
+        "ci_low": 0.8271453786822962,
+        "ci_high": 0.9854457918527075,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/21/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-dev-final.hybrid.eligible.recall@10",
+        "label": "Recall@10 (retrieval-eligible)",
+        "value": 0.9385964912280701,
+        "unit": "ratio",
+        "ci_low": 0.8596491228070174,
+        "ci_high": 1.0,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/21/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-dev-final.hybrid.eligible.recall@20",
+        "label": "Recall@20 (retrieval-eligible)",
+        "value": 0.9868421052631579,
+        "unit": "ratio",
+        "ci_low": 0.9605263157894737,
+        "ci_high": 1.0,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/21/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-dev-final.hybrid.eligible.mrr",
+        "label": "MRR (retrieval-eligible)",
+        "value": 0.7497242158426369,
+        "unit": "ratio",
+        "ci_low": 0.636272095959596,
+        "ci_high": 0.8557044956140349,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/21/mrr/estimate"
+        }
+       }
+      },
+      "latency_ms": {
+       "p50": 28.05,
+       "p95": 42.95
+      }
+     },
+     {
+      "arm": "hybrid-rerank",
+      "label": "Hybrid + reranker (experimental)",
+      "is_default": false,
+      "all": {
+       "hit@1": {
+        "id": "p2-dev-final.hybrid-rerank.all.hit@1",
+        "label": "Hit@1",
+        "value": 0.7045454545454546,
+        "unit": "ratio",
+        "ci_low": 0.5577979987383977,
+        "ci_high": 0.8184447088149512,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/23/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-dev-final.hybrid-rerank.all.hit@10",
+        "label": "Hit@10",
+        "value": 0.8863636363636364,
+        "unit": "ratio",
+        "ci_low": 0.7602084758339172,
+        "ci_high": 0.950472193989075,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/23/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-dev-final.hybrid-rerank.all.recall@10",
+        "label": "Recall@10",
+        "value": 0.8333333333333333,
+        "unit": "ratio",
+        "ci_low": 0.7309659090909091,
+        "ci_high": 0.9242424242424242,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/23/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-dev-final.hybrid-rerank.all.recall@20",
+        "label": "Recall@20",
+        "value": 0.8787878787878788,
+        "unit": "ratio",
+        "ci_low": 0.7839962121212122,
+        "ci_high": 0.9583333333333333,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/23/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-dev-final.hybrid-rerank.all.mrr",
+        "label": "MRR",
+        "value": 0.7740530303030302,
+        "unit": "ratio",
+        "ci_low": 0.6606060606060606,
+        "ci_high": 0.8787878787878788,
+        "n": 44,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/23/mrr/estimate"
+        }
+       }
+      },
+      "eligible": {
+       "hit@1": {
+        "id": "p2-dev-final.hybrid-rerank.eligible.hit@1",
+        "label": "Hit@1 (retrieval-eligible)",
+        "value": 0.7631578947368421,
+        "unit": "ratio",
+        "ci_low": 0.607931876367602,
+        "ci_high": 0.8700629298294591,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/23/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-dev-final.hybrid-rerank.eligible.hit@10",
+        "label": "Hit@10 (retrieval-eligible)",
+        "value": 0.9736842105263158,
+        "unit": "ratio",
+        "ci_low": 0.8650512388404787,
+        "ci_high": 0.9953394123142312,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/23/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-dev-final.hybrid-rerank.eligible.recall@10",
+        "label": "Recall@10 (retrieval-eligible)",
+        "value": 0.9342105263157895,
+        "unit": "ratio",
+        "ci_low": 0.868421052631579,
+        "ci_high": 0.9868421052631579,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/23/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-dev-final.hybrid-rerank.eligible.recall@20",
+        "label": "Recall@20 (retrieval-eligible)",
+        "value": 0.9868421052631579,
+        "unit": "ratio",
+        "ci_low": 0.9605263157894737,
+        "ci_high": 1.0,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/23/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-dev-final.hybrid-rerank.eligible.mrr",
+        "label": "MRR (retrieval-eligible)",
+        "value": 0.8436403508771929,
+        "unit": "ratio",
+        "ci_low": 0.7445175438596492,
+        "ci_high": 0.9287280701754386,
+        "n": 38,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/23/mrr/estimate"
+        }
+       }
+      },
+      "latency_ms": {
+       "p50": 668.67,
+       "p95": 929.49
+      }
+     }
+    ]
+   },
+   {
+    "run_id": "p2-test-c3",
+    "label": "Test split, run 07-test-milestone-c3",
+    "provenance": {
+     "path": "eval/baselines/phase2/07-test-milestone-c3/results.json",
+     "git": "6f7486c",
+     "at": "2026-10-05T23:23:15+00:00",
+     "model": null,
+     "split": "test",
+     "config_hash": "41dd3956306c46f9",
+     "dataset": {
+      "name": "retrieval-v0",
+      "version": "retrieval-v0",
+      "sha256": "8519fbe778771927c145d1126ae246a3ec2004a2831a95a2a10b333775d823dd"
+     }
+    },
+    "n": 21,
+    "n_eligible": 17,
+    "arms": [
+     {
+      "arm": "dense",
+      "label": "Dense (vector only)",
+      "is_default": false,
+      "all": {
+       "hit@1": {
+        "id": "p2-test-c3.dense.all.hit@1",
+        "label": "Hit@1",
+        "value": 0.2857142857142857,
+        "unit": "ratio",
+        "ci_low": 0.1381386295212213,
+        "ci_high": 0.49956380716085597,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/31/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-test-c3.dense.all.hit@10",
+        "label": "Hit@10",
+        "value": 0.47619047619047616,
+        "unit": "ratio",
+        "ci_low": 0.2834400610153417,
+        "ci_high": 0.6763046541715557,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/31/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-test-c3.dense.all.recall@10",
+        "label": "Recall@10",
+        "value": 0.4444444444444445,
+        "unit": "ratio",
+        "ci_low": 0.23809523809523808,
+        "ci_high": 0.6666666666666666,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/31/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-test-c3.dense.all.recall@20",
+        "label": "Recall@20",
+        "value": 0.6825396825396826,
+        "unit": "ratio",
+        "ci_low": 0.4920634920634921,
+        "ci_high": 0.8571428571428571,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/31/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-test-c3.dense.all.mrr",
+        "label": "MRR",
+        "value": 0.3731632653061225,
+        "unit": "ratio",
+        "ci_low": 0.20111663832199547,
+        "ci_high": 0.559921343537415,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/31/mrr/estimate"
+        }
+       }
+      },
+      "eligible": {
+       "hit@1": {
+        "id": "p2-test-c3.dense.eligible.hit@1",
+        "label": "Hit@1 (retrieval-eligible)",
+        "value": 0.35294117647058826,
+        "unit": "ratio",
+        "ci_low": 0.17309720397243744,
+        "ci_high": 0.5869963651478132,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/31/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-test-c3.dense.eligible.hit@10",
+        "label": "Hit@10 (retrieval-eligible)",
+        "value": 0.5882352941176471,
+        "unit": "ratio",
+        "ci_low": 0.3600544264299978,
+        "ci_high": 0.7838894320978518,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/31/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-test-c3.dense.eligible.recall@10",
+        "label": "Recall@10 (retrieval-eligible)",
+        "value": 0.5490196078431373,
+        "unit": "ratio",
+        "ci_low": 0.3137254901960784,
+        "ci_high": 0.7647058823529411,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/31/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-test-c3.dense.eligible.recall@20",
+        "label": "Recall@20 (retrieval-eligible)",
+        "value": 0.8431372549019608,
+        "unit": "ratio",
+        "ci_low": 0.6666666666666667,
+        "ci_high": 1.0,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/31/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-test-c3.dense.eligible.mrr",
+        "label": "MRR (retrieval-eligible)",
+        "value": 0.46096638655462185,
+        "unit": "ratio",
+        "ci_low": 0.26391158963585437,
+        "ci_high": 0.6603480392156863,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/31/mrr/estimate"
+        }
+       }
+      },
+      "latency_ms": {
+       "p50": 14.67,
+       "p95": 18.95
+      }
+     },
+     {
+      "arm": "lexical",
+      "label": "Lexical (full-text only)",
+      "is_default": false,
+      "all": {
+       "hit@1": {
+        "id": "p2-test-c3.lexical.all.hit@1",
+        "label": "Hit@1",
+        "value": 0.38095238095238093,
+        "unit": "ratio",
+        "ci_low": 0.20751011368564493,
+        "ci_high": 0.5912134622488425,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/32/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-test-c3.lexical.all.hit@10",
+        "label": "Hit@10",
+        "value": 0.7142857142857143,
+        "unit": "ratio",
+        "ci_low": 0.5004361928391441,
+        "ci_high": 0.8618613704787788,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/32/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-test-c3.lexical.all.recall@10",
+        "label": "Recall@10",
+        "value": 0.6587301587301587,
+        "unit": "ratio",
+        "ci_low": 0.4603174603174603,
+        "ci_high": 0.8492063492063492,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/32/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-test-c3.lexical.all.recall@20",
+        "label": "Recall@20",
+        "value": 0.7063492063492064,
+        "unit": "ratio",
+        "ci_low": 0.5158730158730159,
+        "ci_high": 0.8809523809523809,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/32/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-test-c3.lexical.all.mrr",
+        "label": "MRR",
+        "value": 0.45742144190420053,
+        "unit": "ratio",
+        "ci_low": 0.2759796429624016,
+        "ci_high": 0.6458271756978653,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/32/mrr/estimate"
+        }
+       }
+      },
+      "eligible": {
+       "hit@1": {
+        "id": "p2-test-c3.lexical.eligible.hit@1",
+        "label": "Hit@1 (retrieval-eligible)",
+        "value": 0.47058823529411764,
+        "unit": "ratio",
+        "ci_low": 0.26165106442409436,
+        "ci_high": 0.6903676493999558,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/32/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-test-c3.lexical.eligible.hit@10",
+        "label": "Hit@10 (retrieval-eligible)",
+        "value": 0.8823529411764706,
+        "unit": "ratio",
+        "ci_low": 0.6566364940511412,
+        "ci_high": 0.9671202262362074,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/32/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-test-c3.lexical.eligible.recall@10",
+        "label": "Recall@10 (retrieval-eligible)",
+        "value": 0.8137254901960784,
+        "unit": "ratio",
+        "ci_low": 0.6372549019607844,
+        "ci_high": 0.9607843137254901,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/32/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-test-c3.lexical.eligible.recall@20",
+        "label": "Recall@20 (retrieval-eligible)",
+        "value": 0.8725490196078431,
+        "unit": "ratio",
+        "ci_low": 0.7254901960784315,
+        "ci_high": 1.0,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/32/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-test-c3.lexical.eligible.mrr",
+        "label": "MRR (retrieval-eligible)",
+        "value": 0.5650500164698947,
+        "unit": "ratio",
+        "ci_low": 0.3672848078223332,
+        "ci_high": 0.7667342799188641,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/32/mrr/estimate"
+        }
+       }
+      },
+      "latency_ms": {
+       "p50": 13.91,
+       "p95": 30.4
+      }
+     },
+     {
+      "arm": "hybrid",
+      "label": "Hybrid (production default)",
+      "is_default": true,
+      "all": {
+       "hit@1": {
+        "id": "p2-test-c3.hybrid.all.hit@1",
+        "label": "Hit@1",
+        "value": 0.38095238095238093,
+        "unit": "ratio",
+        "ci_low": 0.20751011368564493,
+        "ci_high": 0.5912134622488425,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/33/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-test-c3.hybrid.all.hit@10",
+        "label": "Hit@10",
+        "value": 0.7619047619047619,
+        "unit": "ratio",
+        "ci_low": 0.5490882631704924,
+        "ci_high": 0.8937198697736354,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/33/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-test-c3.hybrid.all.recall@10",
+        "label": "Recall@10",
+        "value": 0.7063492063492064,
+        "unit": "ratio",
+        "ci_low": 0.5158730158730159,
+        "ci_high": 0.8809523809523809,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/33/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-test-c3.hybrid.all.recall@20",
+        "label": "Recall@20",
+        "value": 0.7063492063492064,
+        "unit": "ratio",
+        "ci_low": 0.5158730158730159,
+        "ci_high": 0.8809523809523809,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/33/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-test-c3.hybrid.all.mrr",
+        "label": "MRR",
+        "value": 0.489795918367347,
+        "unit": "ratio",
+        "ci_low": 0.3134920634920635,
+        "ci_high": 0.6706774376417228,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/33/mrr/estimate"
+        }
+       }
+      },
+      "eligible": {
+       "hit@1": {
+        "id": "p2-test-c3.hybrid.eligible.hit@1",
+        "label": "Hit@1 (retrieval-eligible)",
+        "value": 0.47058823529411764,
+        "unit": "ratio",
+        "ci_low": 0.26165106442409436,
+        "ci_high": 0.6903676493999558,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/33/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-test-c3.hybrid.eligible.hit@10",
+        "label": "Hit@10 (retrieval-eligible)",
+        "value": 0.9411764705882353,
+        "unit": "ratio",
+        "ci_low": 0.7301796936242461,
+        "ci_high": 0.9895395990150025,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/33/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-test-c3.hybrid.eligible.recall@10",
+        "label": "Recall@10 (retrieval-eligible)",
+        "value": 0.8725490196078431,
+        "unit": "ratio",
+        "ci_low": 0.7254901960784315,
+        "ci_high": 1.0,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/33/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-test-c3.hybrid.eligible.recall@20",
+        "label": "Recall@20 (retrieval-eligible)",
+        "value": 0.8725490196078431,
+        "unit": "ratio",
+        "ci_low": 0.7254901960784315,
+        "ci_high": 1.0,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/33/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-test-c3.hybrid.eligible.mrr",
+        "label": "MRR (retrieval-eligible)",
+        "value": 0.6050420168067228,
+        "unit": "ratio",
+        "ci_low": 0.4264705882352941,
+        "ci_high": 0.7892156862745098,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/33/mrr/estimate"
+        }
+       }
+      },
+      "latency_ms": {
+       "p50": 26.96,
+       "p95": 41.07
+      }
+     },
+     {
+      "arm": "hybrid-rerank",
+      "label": "Hybrid + reranker (experimental)",
+      "is_default": false,
+      "all": {
+       "hit@1": {
+        "id": "p2-test-c3.hybrid-rerank.all.hit@1",
+        "label": "Hit@1",
+        "value": 0.42857142857142855,
+        "unit": "ratio",
+        "ci_low": 0.2446996892537596,
+        "ci_high": 0.6345344563069328,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/35/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-test-c3.hybrid-rerank.all.hit@10",
+        "label": "Hit@10",
+        "value": 0.5714285714285714,
+        "unit": "ratio",
+        "ci_low": 0.3654655436930671,
+        "ci_high": 0.7553003107462404,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/35/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-test-c3.hybrid-rerank.all.recall@10",
+        "label": "Recall@10",
+        "value": 0.5714285714285714,
+        "unit": "ratio",
+        "ci_low": 0.38095238095238093,
+        "ci_high": 0.7619047619047619,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/35/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-test-c3.hybrid-rerank.all.recall@20",
+        "label": "Recall@20",
+        "value": 0.7063492063492064,
+        "unit": "ratio",
+        "ci_low": 0.5158730158730159,
+        "ci_high": 0.8809523809523809,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/35/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-test-c3.hybrid-rerank.all.mrr",
+        "label": "MRR",
+        "value": 0.4881277869999674,
+        "unit": "ratio",
+        "ci_low": 0.29445427692608145,
+        "ci_high": 0.6863026071672688,
+        "n": 21,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary.json",
+         "pointer": "/35/mrr/estimate"
+        }
+       }
+      },
+      "eligible": {
+       "hit@1": {
+        "id": "p2-test-c3.hybrid-rerank.eligible.hit@1",
+        "label": "Hit@1 (retrieval-eligible)",
+        "value": 0.5294117647058824,
+        "unit": "ratio",
+        "ci_low": 0.30963235060004424,
+        "ci_high": 0.7383489355759056,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/35/hit@1/estimate"
+        }
+       },
+       "hit@10": {
+        "id": "p2-test-c3.hybrid-rerank.eligible.hit@10",
+        "label": "Hit@10 (retrieval-eligible)",
+        "value": 0.7058823529411765,
+        "unit": "ratio",
+        "ci_low": 0.4686688993346016,
+        "ci_high": 0.8672001038970478,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/35/hit@10/estimate"
+        }
+       },
+       "recall@10": {
+        "id": "p2-test-c3.hybrid-rerank.eligible.recall@10",
+        "label": "Recall@10 (retrieval-eligible)",
+        "value": 0.7058823529411765,
+        "unit": "ratio",
+        "ci_low": 0.47058823529411764,
+        "ci_high": 0.8823529411764706,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/35/recall@10/estimate"
+        }
+       },
+       "recall@20": {
+        "id": "p2-test-c3.hybrid-rerank.eligible.recall@20",
+        "label": "Recall@20 (retrieval-eligible)",
+        "value": 0.8725490196078431,
+        "unit": "ratio",
+        "ci_low": 0.7254901960784315,
+        "ci_high": 1.0,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/35/recall@20/estimate"
+        }
+       },
+       "mrr": {
+        "id": "p2-test-c3.hybrid-rerank.eligible.mrr",
+        "label": "MRR (retrieval-eligible)",
+        "value": 0.6029813839411362,
+        "unit": "ratio",
+        "ci_low": 0.39779395011593155,
+        "ci_high": 0.8069162712932062,
+        "n": 17,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/phase2/summary-eligible.json",
+         "pointer": "/rows/35/mrr/estimate"
+        }
+       }
+      },
+      "latency_ms": {
+       "p50": 670.44,
+       "p95": 921.15
+      }
+     }
+    ]
+   }
+  ],
+  "comparisons": [
+   {
+    "run_id": "p2-dev-final",
+    "a": "dense",
+    "b": "hybrid",
+    "n": 38,
+    "metrics": [
+     {
+      "id": "p2-dev-final.dense->hybrid.d_recall@10",
+      "label": "Δ Recall@10 (eligible)",
+      "value": 0.039473684210526314,
+      "unit": "ratio",
+      "ci_low": -0.02631578947368421,
+      "ci_high": 0.13157894736842105,
+      "n": 38,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/0/d_recall@10/estimate"
+      }
+     },
+     {
+      "id": "p2-dev-final.dense->hybrid.d_mrr",
+      "label": "Δ MRR (eligible)",
+      "value": 0.03383031442241969,
+      "unit": "ratio",
+      "ci_low": -0.08459128408141565,
+      "ci_high": 0.14907243250170876,
+      "n": 38,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/0/d_mrr/estimate"
+      }
+     }
+    ],
+    "hit_at_10": {
+     "gains": 2,
+     "losses": 1,
+     "p": 1.0
+    }
+   },
+   {
+    "run_id": "p2-dev-final",
+    "a": "dense",
+    "b": "hybrid-rerank",
+    "n": 38,
+    "metrics": [
+     {
+      "id": "p2-dev-final.dense->hybrid-rerank.d_recall@10",
+      "label": "Δ Recall@10 (eligible)",
+      "value": 0.03508771929824562,
+      "unit": "ratio",
+      "ci_low": -0.039473684210526314,
+      "ci_high": 0.12280701754385966,
+      "n": 38,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/1/d_recall@10/estimate"
+      }
+     },
+     {
+      "id": "p2-dev-final.dense->hybrid-rerank.d_mrr",
+      "label": "Δ MRR (eligible)",
+      "value": 0.12774644945697577,
+      "unit": "ratio",
+      "ci_low": 0.02555059523809524,
+      "ci_high": 0.23611346073517125,
+      "n": 38,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/1/d_mrr/estimate"
+      }
+     }
+    ],
+    "hit_at_10": {
+     "gains": 2,
+     "losses": 0,
+     "p": 0.5
+    }
+   },
+   {
+    "run_id": "p2-dev-final",
+    "a": "hybrid",
+    "b": "hybrid-rerank",
+    "n": 38,
+    "metrics": [
+     {
+      "id": "p2-dev-final.hybrid->hybrid-rerank.d_recall@10",
+      "label": "Δ Recall@10 (eligible)",
+      "value": -0.004385964912280701,
+      "unit": "ratio",
+      "ci_low": -0.05263157894736842,
+      "ci_high": 0.04385964912280702,
+      "n": 38,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/2/d_recall@10/estimate"
+      }
+     },
+     {
+      "id": "p2-dev-final.hybrid->hybrid-rerank.d_mrr",
+      "label": "Δ MRR (eligible)",
+      "value": 0.09391613503455609,
+      "unit": "ratio",
+      "ci_low": 0.0059965610047846875,
+      "ci_high": 0.1915238736044657,
+      "n": 38,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/2/d_mrr/estimate"
+      }
+     }
+    ],
+    "hit_at_10": {
+     "gains": 1,
+     "losses": 0,
+     "p": 1.0
+    }
+   },
+   {
+    "run_id": "p2-test-c3",
+    "a": "dense",
+    "b": "hybrid",
+    "n": 17,
+    "metrics": [
+     {
+      "id": "p2-test-c3.dense->hybrid.d_recall@10",
+      "label": "Δ Recall@10 (eligible)",
+      "value": 0.3235294117647059,
+      "unit": "ratio",
+      "ci_low": 0.11764705882352941,
+      "ci_high": 0.5294117647058824,
+      "n": 17,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/4/d_recall@10/estimate"
+      }
+     },
+     {
+      "id": "p2-test-c3.dense->hybrid.d_mrr",
+      "label": "Δ MRR (eligible)",
+      "value": 0.14407563025210085,
+      "unit": "ratio",
+      "ci_low": -0.022452731092436975,
+      "ci_high": 0.32617226890756296,
+      "n": 17,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/4/d_mrr/estimate"
+      }
+     }
+    ],
+    "hit_at_10": {
+     "gains": 6,
+     "losses": 0,
+     "p": 0.03125
+    }
+   },
+   {
+    "run_id": "p2-test-c3",
+    "a": "dense",
+    "b": "hybrid-rerank",
+    "n": 17,
+    "metrics": [
+     {
+      "id": "p2-test-c3.dense->hybrid-rerank.d_recall@10",
+      "label": "Δ Recall@10 (eligible)",
+      "value": 0.1568627450980392,
+      "unit": "ratio",
+      "ci_low": -0.0784313725490196,
+      "ci_high": 0.4117647058823529,
+      "n": 17,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/5/d_recall@10/estimate"
+      }
+     },
+     {
+      "id": "p2-test-c3.dense->hybrid-rerank.d_mrr",
+      "label": "Δ MRR (eligible)",
+      "value": 0.1420149973865144,
+      "unit": "ratio",
+      "ci_low": -0.017539688124053446,
+      "ci_high": 0.3228568722943722,
+      "n": 17,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/5/d_mrr/estimate"
+      }
+     }
+    ],
+    "hit_at_10": {
+     "gains": 4,
+     "losses": 2,
+     "p": 0.6875
+    }
+   },
+   {
+    "run_id": "p2-test-c3",
+    "a": "hybrid",
+    "b": "hybrid-rerank",
+    "n": 17,
+    "metrics": [
+     {
+      "id": "p2-test-c3.hybrid->hybrid-rerank.d_recall@10",
+      "label": "Δ Recall@10 (eligible)",
+      "value": -0.16666666666666669,
+      "unit": "ratio",
+      "ci_low": -0.3431372549019608,
+      "ci_high": -0.0196078431372549,
+      "n": 17,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/6/d_recall@10/estimate"
+      }
+     },
+     {
+      "id": "p2-test-c3.hybrid->hybrid-rerank.d_mrr",
+      "label": "Δ MRR (eligible)",
+      "value": -0.0020606328655864213,
+      "unit": "ratio",
+      "ci_low": -0.16253635425462049,
+      "ci_high": 0.1475080582472223,
+      "n": 17,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/6/d_mrr/estimate"
+      }
+     }
+    ],
+    "hit_at_10": {
+     "gains": 0,
+     "losses": 4,
+     "p": 0.125
+    }
+   }
+  ],
+  "decisions": [
+   {
+    "id": "hybrid-default",
+    "title": "Hybrid retrieval (dense + lexical, RRF) is the production default",
+    "outcome": "adopted",
+    "text": "Production default: hybrid RRF without the reranker. On the retrieval-eligible test items, hybrid beats dense on hit@10 (+6 / -0, p = 0.031). On dev the difference is not distinguishable.",
+    "metrics": [
+     {
+      "id": "decision.hybrid.test.d_recall@10",
+      "label": "Δ Recall@10, dense → hybrid (test, eligible)",
+      "value": 0.3235294117647059,
+      "unit": "ratio",
+      "ci_low": 0.11764705882352941,
+      "ci_high": 0.5294117647058824,
+      "n": 17,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/4/d_recall@10/estimate"
+      }
+     }
+    ],
+    "source": {
+     "kind": "report_md",
+     "path": "docs/phase-reports/phase-2.md",
+     "anchor": "addendum-review-decisions-2026-10-05-after-approval"
+    }
+   },
+   {
+    "id": "reranker-rejected",
+    "title": "Cross-encoder reranker rejected on held-out data",
+    "outcome": "rejected",
+    "text": "Negative finding: the reranker looked better on dev (MRR), but on the held-out test split it lowered Recall@10 against hybrid. It stays experimental behind MS_RERANK_ENABLED; future reranker experiments need new dev questions and a newly frozen holdout.",
+    "metrics": [
+     {
+      "id": "decision.rerank.test.d_recall@10",
+      "label": "Δ Recall@10, hybrid → hybrid + rerank (test, eligible)",
+      "value": -0.16666666666666669,
+      "unit": "ratio",
+      "ci_low": -0.3431372549019608,
+      "ci_high": -0.0196078431372549,
+      "n": 17,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/6/d_recall@10/estimate"
+      }
+     },
+     {
+      "id": "decision.rerank.dev.d_mrr",
+      "label": "Δ MRR, hybrid → hybrid + rerank (dev, eligible)",
+      "value": 0.09391613503455609,
+      "unit": "ratio",
+      "ci_low": 0.0059965610047846875,
+      "ci_high": 0.1915238736044657,
+      "n": 38,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary-eligible.json",
+       "pointer": "/comparisons/2/d_mrr/estimate"
+      }
+     }
+    ],
+    "source": {
+     "kind": "report_md",
+     "path": "docs/phase-reports/phase-2.md",
+     "anchor": "addendum-review-decisions-2026-10-05-after-approval"
+    }
+   },
+   {
+    "id": "bge-query-instruction",
+    "title": "BGE query instruction prefix",
+    "outcome": "not_adopted",
+    "text": "Dense hit@10 −3 / +0 (p = 0.25); reranked arm unchanged. Not adopted (iteration 04).",
+    "metrics": [
+     {
+      "id": "04-bge-instruction-dev.dense+bge-instruction.hit@10",
+      "label": "Dense + instruction Hit@10 (dev, all items)",
+      "value": 0.75,
+      "unit": "ratio",
+      "ci_low": 0.6055943364104086,
+      "ci_high": 0.8542578617103511,
+      "n": 44,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary.json",
+       "pointer": "/12/hit@10/estimate"
+      }
+     }
+    ],
+    "source": {
+     "kind": "report_md",
+     "path": "docs/phase-reports/phase-2.md",
+     "anchor": "measured-iterations-dev"
+    }
+   },
+   {
+    "id": "source-balancing",
+    "title": "Source balancing (per-source cap and pool cap)",
+    "outcome": "not_adopted",
+    "text": "hit@10 −1, hit@20 −2; the pool cap alone causes the drop. Built and left off (iteration 03).",
+    "metrics": [
+     {
+      "id": "03-balance-dev.hybrid-rerank.hit@10",
+      "label": "Hybrid + rerank Hit@10 (dev, all items)",
+      "value": 0.8636363636363636,
+      "unit": "ratio",
+      "ci_low": 0.7329054695148456,
+      "ci_high": 0.9359704550244412,
+      "n": 44,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary.json",
+       "pointer": "/9/hit@10/estimate"
+      }
+     },
+     {
+      "id": "03-balance-dev.hybrid-rerank-balance.hit@10",
+      "label": "With balancing Hit@10 (dev, all items)",
+      "value": 0.8409090909090909,
+      "unit": "ratio",
+      "ci_low": 0.7063379493775939,
+      "ci_high": 0.9207332298779876,
+      "n": 44,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary.json",
+       "pointer": "/10/hit@10/estimate"
+      }
+     },
+     {
+      "id": "03-balance-dev.hybrid-rerank.recall@20",
+      "label": "Hybrid + rerank Recall@20 (dev, all items)",
+      "value": 0.856060606060606,
+      "unit": "ratio",
+      "ci_low": 0.7536931818181819,
+      "ci_high": 0.9469696969696969,
+      "n": 44,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary.json",
+       "pointer": "/9/recall@20/estimate"
+      }
+     },
+     {
+      "id": "03-balance-dev.hybrid-rerank-balance.recall@20",
+      "label": "With balancing Recall@20 (dev, all items)",
+      "value": 0.8030303030303031,
+      "unit": "ratio",
+      "ci_low": 0.6856060606060607,
+      "ci_high": 0.9053030303030304,
+      "n": 44,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase2/summary.json",
+       "pointer": "/10/recall@20/estimate"
+      }
+     }
+    ],
+    "source": {
+     "kind": "report_md",
+     "path": "docs/phase-reports/phase-2.md",
+     "anchor": "measured-iterations-dev"
+    }
+   },
+   {
+    "id": "row-identifiers",
+    "title": "Row identifiers in table-row passages (chunking c3)",
+    "outcome": "adopted",
+    "text": "Lexical RV-00655 rank 26 → 2, R0062 21 → 1; hybrid ΔMRR +0.046 [+0.007, +0.095]; no reranked regressions. Adopted as c3 (iteration 05). Recorded in the report only.",
+    "metrics": [],
+    "source": {
+     "kind": "report_md",
+     "path": "docs/phase-reports/phase-2.md",
+     "anchor": "measured-iterations-dev"
+    }
+   }
+  ]
+ },
+ "grounded": {
+  "provenance": {
+   "path": "eval/baselines/phase3/live-v0/results.json",
+   "git": "585977b",
+   "at": "2026-10-06T16:38:03+00:00",
+   "model": "claude-sonnet-5-5",
+   "split": null,
+   "config_hash": "35fc5c5a734a67e9",
+   "dataset": {
+    "name": "grounded-v0",
+    "version": "grounded-v0",
+    "sha256": "558ee3cff7ffea7d85fb5c52850bb139c33a361744ff3405ec780ab89011370e"
+   }
+  },
+  "hard_gates": [
+   {
+    "id": "citation_resolvability",
+    "label": "Citations resolve to a stored passage",
+    "k": 256,
+    "n": 256,
+    "pass": true,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/items"
+    }
+   },
+   {
+    "id": "citation_in_pack",
+    "label": "Citations point into the retrieved evidence pack",
+    "k": 256,
+    "n": 256,
+    "pass": true,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/items"
+    }
+   },
+   {
+    "id": "cross_workspace_leaks",
+    "label": "Runs with no cross-workspace citation or marker leak",
+    "k": 76,
+    "n": 76,
+    "pass": true,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/items"
+    }
+   },
+   {
+    "id": "every_run_done",
+    "label": "Runs that emitted a done event",
+    "k": 76,
+    "n": 76,
+    "pass": true,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/items"
+    }
+   },
+   {
+    "id": "answer_items_have_final",
+    "label": "Answer-expected runs with a final answer",
+    "k": 74,
+    "n": 74,
+    "pass": true,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/items"
+    }
+   },
+   {
+    "id": "empty_pack_never_calls_llm",
+    "label": "Empty-pack runs that never call the model",
+    "k": 2,
+    "n": 2,
+    "pass": true,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/items"
+    }
+   }
+  ],
+  "metrics": [
+   {
+    "id": "p3.citation_resolvability",
+    "label": "Citation resolvability",
+    "value": 1.0,
+    "unit": "ratio",
+    "n": 256,
+    "k": 256,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/hard_gates/citation_resolvability/value"
+    }
+   },
+   {
+    "id": "p3.cross_workspace_leaks",
+    "label": "Cross-workspace leaks",
+    "value": 0,
+    "unit": "count",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/hard_gates/cross_workspace_leaks/value"
+    }
+   },
+   {
+    "id": "p3.insufficient_correct",
+    "label": "Insufficient-evidence items abstained correctly",
+    "value": 9,
+    "unit": "count",
+    "n": 9,
+    "k": 9,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/insufficient_correct/k"
+    }
+   },
+   {
+    "id": "p3.over_refusal",
+    "label": "Over-refusals on answerable items",
+    "value": 1,
+    "unit": "count",
+    "n": 60,
+    "k": 1,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/over_refusal/k"
+    }
+   },
+   {
+    "id": "p3.cited_units",
+    "label": "Cited answer units re-checked for numbers",
+    "value": 460,
+    "unit": "count",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/numeric-recheck.json",
+     "pointer": "/summary/cited_units"
+    }
+   },
+   {
+    "id": "p3.cited_units_flagged",
+    "label": "Cited units flagged by the numeric re-check (all locator labels in G-R0-055)",
+    "value": 8,
+    "unit": "count",
+    "n": 460,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/numeric-recheck.json",
+     "pointer": "/summary/cited_units_with_unsupported_numbers"
+    }
+   },
+   {
+    "id": "p3.uncited_numbers_absent",
+    "label": "Uncited units with a number absent from the pack",
+    "value": 0,
+    "unit": "count",
+    "n": 266,
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/numeric-recheck.json",
+     "pointer": "/summary/uncited_units_with_numbers_absent_from_pack"
+    }
+   },
+   {
+    "id": "p3.regenerated",
+    "label": "Answers regenerated after verification",
+    "value": 7,
+    "unit": "count",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/pipeline/verification/regenerated"
+    }
+   },
+   {
+    "id": "p3.fallback_after_verification",
+    "label": "Evidence-only fallbacks after verification",
+    "value": 1,
+    "unit": "count",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/pipeline/verification/fallback_after_verification"
+    }
+   },
+   {
+    "id": "p3.repairs_total",
+    "label": "Verifier repairs (all runs)",
+    "value": 161,
+    "unit": "count",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/pipeline/verification/repairs_total"
+    }
+   },
+   {
+    "id": "p3.numeric_units_dropped",
+    "label": "Units dropped for unsupported numbers",
+    "value": 13,
+    "unit": "count",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/pipeline/verification/numeric_units_dropped"
+    }
+   },
+   {
+    "id": "p3.first_token_p50",
+    "label": "First token p50",
+    "value": 1320.7,
+    "unit": "ms",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/latency_ms/first_token_p50"
+    }
+   },
+   {
+    "id": "p3.first_token_p95",
+    "label": "First token p95",
+    "value": 4571.81,
+    "unit": "ms",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/latency_ms/first_token_p95"
+    }
+   },
+   {
+    "id": "p3.total_p50",
+    "label": "End-to-end p50",
+    "value": 4809.05,
+    "unit": "ms",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/latency_ms/total_p50"
+    }
+   },
+   {
+    "id": "p3.total_p95",
+    "label": "End-to-end p95",
+    "value": 9605.625,
+    "unit": "ms",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/latency_ms/total_p95"
+    }
+   },
+   {
+    "id": "p3.input_tokens_total",
+    "label": "Input tokens (all runs)",
+    "value": 308631,
+    "unit": "tokens",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/usage_total/input_tokens"
+    }
+   },
+   {
+    "id": "p3.output_tokens_total",
+    "label": "Output tokens (all runs)",
+    "value": 37367,
+    "unit": "tokens",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/usage_total/output_tokens"
+    }
+   },
+   {
+    "id": "p3.cache_read_tokens_total",
+    "label": "Cache-read tokens (all runs)",
+    "value": 53298,
+    "unit": "tokens",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/usage_total/cache_read_input_tokens"
+    }
+   },
+   {
+    "id": "p3.input_tokens_mean",
+    "label": "Input tokens per model run (mean)",
+    "value": 4170.7,
+    "unit": "tokens",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/usage_per_llm_run_mean/input_tokens"
+    }
+   },
+   {
+    "id": "p3.output_tokens_mean",
+    "label": "Output tokens per model run (mean)",
+    "value": 505.0,
+    "unit": "tokens",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/summary/usage_per_llm_run_mean/output_tokens"
+    }
+   },
+   {
+    "id": "p3.cost_total",
+    "label": "Cost, all runs (as recorded by the eval harness)",
+    "value": 1.0016,
+    "unit": "usd",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/pipeline/cost_usd/total"
+    }
+   },
+   {
+    "id": "p3.cost_per_model_run",
+    "label": "Cost per model run (as recorded by the eval harness)",
+    "value": 0.01354,
+    "unit": "usd",
+    "source": {
+     "kind": "json",
+     "path": "eval/baselines/phase3/live-v0/results.json",
+     "pointer": "/pipeline/cost_usd/per_model_run"
+    }
+   }
+  ],
+  "by_category": [
+   {
+    "category": "adversarial",
+    "metrics": [
+     {
+      "id": "p3.adversarial.behaviour",
+      "label": "Behaviour pass rate",
+      "value": 1.0,
+      "unit": "ratio",
+      "ci_low": 0.6096657120978346,
+      "ci_high": 1.0,
+      "n": 6,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/adversarial/behaviour_ci/estimate"
+      }
+     }
+    ]
+   },
+   {
+    "category": "answerable_fact",
+    "metrics": [
+     {
+      "id": "p3.answerable_fact.behaviour",
+      "label": "Behaviour pass rate",
+      "value": 1.0,
+      "unit": "ratio",
+      "ci_low": 0.916201209134296,
+      "ci_high": 0.9999999999999999,
+      "n": 42,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/answerable_fact/behaviour_ci/estimate"
+      }
+     },
+     {
+      "id": "p3.answerable_fact.gold_coverage_mean",
+      "label": "Gold evidence coverage",
+      "value": 0.952,
+      "unit": "ratio",
+      "n": 42,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/answerable_fact/gold_coverage_mean"
+      }
+     },
+     {
+      "id": "p3.answerable_fact.numeric_correct_mean",
+      "label": "Numeric correctness",
+      "value": 0.826,
+      "unit": "ratio",
+      "n": 42,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/answerable_fact/numeric_correct_mean"
+      }
+     }
+    ]
+   },
+   {
+    "category": "conflict",
+    "metrics": [
+     {
+      "id": "p3.conflict.behaviour",
+      "label": "Behaviour pass rate",
+      "value": 1.0,
+      "unit": "ratio",
+      "ci_low": 0.5655175352168251,
+      "ci_high": 1.0,
+      "n": 5,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/conflict/behaviour_ci/estimate"
+      }
+     },
+     {
+      "id": "p3.conflict.gold_coverage_mean",
+      "label": "Gold evidence coverage",
+      "value": 0.4,
+      "unit": "ratio",
+      "n": 5,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/conflict/gold_coverage_mean"
+      }
+     },
+     {
+      "id": "p3.conflict.numeric_correct_mean",
+      "label": "Numeric correctness",
+      "value": 0.875,
+      "unit": "ratio",
+      "n": 5,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/conflict/numeric_correct_mean"
+      }
+     }
+    ]
+   },
+   {
+    "category": "cross_source",
+    "metrics": [
+     {
+      "id": "p3.cross_source.behaviour",
+      "label": "Behaviour pass rate",
+      "value": 0.8571428571428571,
+      "unit": "ratio",
+      "ci_low": 0.4868721707256811,
+      "ci_high": 0.9743203756552565,
+      "n": 7,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/cross_source/behaviour_ci/estimate"
+      }
+     },
+     {
+      "id": "p3.cross_source.gold_coverage_mean",
+      "label": "Gold evidence coverage",
+      "value": 0.806,
+      "unit": "ratio",
+      "n": 7,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/cross_source/gold_coverage_mean"
+      }
+     },
+     {
+      "id": "p3.cross_source.numeric_correct_mean",
+      "label": "Numeric correctness",
+      "value": 0.875,
+      "unit": "ratio",
+      "n": 7,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/cross_source/numeric_correct_mean"
+      }
+     }
+    ]
+   },
+   {
+    "category": "empty_pack",
+    "metrics": [
+     {
+      "id": "p3.empty_pack.behaviour",
+      "label": "Behaviour pass rate",
+      "value": 1.0,
+      "unit": "ratio",
+      "ci_low": 0.34238022750665303,
+      "ci_high": 1.0,
+      "n": 2,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/empty_pack/behaviour_ci/estimate"
+      }
+     }
+    ]
+   },
+   {
+    "category": "exact_number",
+    "metrics": [
+     {
+      "id": "p3.exact_number.behaviour",
+      "label": "Behaviour pass rate",
+      "value": 1.0,
+      "unit": "ratio",
+      "ci_low": 0.6096657120978346,
+      "ci_high": 1.0,
+      "n": 6,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/exact_number/behaviour_ci/estimate"
+      }
+     },
+     {
+      "id": "p3.exact_number.gold_coverage_mean",
+      "label": "Gold evidence coverage",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 6,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/exact_number/gold_coverage_mean"
+      }
+     },
+     {
+      "id": "p3.exact_number.numeric_correct_mean",
+      "label": "Numeric correctness",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 6,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/exact_number/numeric_correct_mean"
+      }
+     }
+    ]
+   },
+   {
+    "category": "insufficient",
+    "metrics": [
+     {
+      "id": "p3.insufficient.behaviour",
+      "label": "Behaviour pass rate",
+      "value": 1.0,
+      "unit": "ratio",
+      "ci_low": 0.6755924351161198,
+      "ci_high": 1.0,
+      "n": 8,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase3/live-v0/results.json",
+       "pointer": "/summary/categories/insufficient/behaviour_ci/estimate"
+      }
+     }
+    ]
+   }
+  ],
+  "verifier": [
+   {
+    "split": "dev",
+    "before": [
+     {
+      "id": "verifier.dev.before.false_positive_rejection_rate",
+      "label": "False-positive rejection rate",
+      "value": 0.101,
+      "unit": "ratio",
+      "n": 99,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/dev-before.json",
+       "pointer": "/summary/false_positive_rejection_rate"
+      }
+     },
+     {
+      "id": "verifier.dev.before.false_negative_acceptance_rate",
+      "label": "False-negative acceptance rate",
+      "value": 0.3556,
+      "unit": "ratio",
+      "n": 45,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/dev-before.json",
+       "pointer": "/summary/false_negative_acceptance_rate"
+      }
+     },
+     {
+      "id": "verifier.dev.before.supported_retention",
+      "label": "Supported-unit retention",
+      "value": 0.899,
+      "unit": "ratio",
+      "n": 99,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/dev-before.json",
+       "pointer": "/summary/supported_retention"
+      }
+     }
+    ],
+    "after": [
+     {
+      "id": "verifier.dev.after.false_positive_rejection_rate",
+      "label": "False-positive rejection rate",
+      "value": 0.0404,
+      "unit": "ratio",
+      "n": 99,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/dev-after.json",
+       "pointer": "/summary/false_positive_rejection_rate"
+      }
+     },
+     {
+      "id": "verifier.dev.after.false_negative_acceptance_rate",
+      "label": "False-negative acceptance rate",
+      "value": 0.2444,
+      "unit": "ratio",
+      "n": 45,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/dev-after.json",
+       "pointer": "/summary/false_negative_acceptance_rate"
+      }
+     },
+     {
+      "id": "verifier.dev.after.supported_retention",
+      "label": "Supported-unit retention",
+      "value": 0.9596,
+      "unit": "ratio",
+      "n": 99,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/dev-after.json",
+       "pointer": "/summary/supported_retention"
+      }
+     }
+    ]
+   },
+   {
+    "split": "holdout",
+    "before": [
+     {
+      "id": "verifier.holdout.before.false_positive_rejection_rate",
+      "label": "False-positive rejection rate",
+      "value": 0.1304,
+      "unit": "ratio",
+      "n": 69,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/holdout-before.json",
+       "pointer": "/summary/false_positive_rejection_rate"
+      }
+     },
+     {
+      "id": "verifier.holdout.before.false_negative_acceptance_rate",
+      "label": "False-negative acceptance rate",
+      "value": 0.3043,
+      "unit": "ratio",
+      "n": 46,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/holdout-before.json",
+       "pointer": "/summary/false_negative_acceptance_rate"
+      }
+     },
+     {
+      "id": "verifier.holdout.before.supported_retention",
+      "label": "Supported-unit retention",
+      "value": 0.8696,
+      "unit": "ratio",
+      "n": 69,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/holdout-before.json",
+       "pointer": "/summary/supported_retention"
+      }
+     }
+    ],
+    "after": [
+     {
+      "id": "verifier.holdout.after.false_positive_rejection_rate",
+      "label": "False-positive rejection rate",
+      "value": 0.058,
+      "unit": "ratio",
+      "n": 69,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/holdout-after.json",
+       "pointer": "/summary/false_positive_rejection_rate"
+      }
+     },
+     {
+      "id": "verifier.holdout.after.false_negative_acceptance_rate",
+      "label": "False-negative acceptance rate",
+      "value": 0.3043,
+      "unit": "ratio",
+      "n": 46,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/holdout-after.json",
+       "pointer": "/summary/false_negative_acceptance_rate"
+      }
+     },
+     {
+      "id": "verifier.holdout.after.supported_retention",
+      "label": "Supported-unit retention",
+      "value": 0.942,
+      "unit": "ratio",
+      "n": 69,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/verifier/holdout-after.json",
+       "pointer": "/summary/supported_retention"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "research_tradeoff": [
+  {
+   "split": "dev",
+   "provenance": {
+    "path": "eval/baselines/phase4/research-v0-dev-live/results-research.json",
+    "git": "bcc4621",
+    "at": "2026-10-06T19:39:43+00:00",
+    "model": "claude-sonnet-5-5",
+    "split": "dev",
+    "config_hash": "35fc5c5a734a67e9",
+    "dataset": {
+     "name": "research-v0",
+     "version": "research-v0",
+     "sha256": "e0d55532ffd1ea9ca697a0c88541b7908e28a4936d9342f4b5c8f0647f79a966"
+    }
+   },
+   "n_pairs": 23,
+   "rows": [
+    {
+     "id": "gold_handle_recall",
+     "label": "Gold evidence retrieved",
+     "standard": {
+      "id": "p4.dev.gold_handle_recall.standard",
+      "label": "Gold evidence retrieved",
+      "value": 0.8095,
+      "unit": "ratio",
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/gold_handle_recall/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.gold_handle_recall.research",
+      "label": "Gold evidence retrieved",
+      "value": 0.8571,
+      "unit": "ratio",
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/gold_handle_recall/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.gold_handle_recall.delta",
+      "label": "Δ Gold evidence retrieved",
+      "value": 0.0476,
+      "unit": "ratio",
+      "ci_low": -0.0952,
+      "ci_high": 0.1587,
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/gold_handle_recall/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "gold_coverage",
+     "label": "Gold evidence cited",
+     "standard": {
+      "id": "p4.dev.gold_coverage.standard",
+      "label": "Gold evidence cited",
+      "value": 0.8095,
+      "unit": "ratio",
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/gold_coverage/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.gold_coverage.research",
+      "label": "Gold evidence cited",
+      "value": 0.8571,
+      "unit": "ratio",
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/gold_coverage/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.gold_coverage.delta",
+      "label": "Δ Gold evidence cited",
+      "value": 0.0476,
+      "unit": "ratio",
+      "ci_low": -0.0952,
+      "ci_high": 0.1587,
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/gold_coverage/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "answer_completeness",
+     "label": "Gold values stated",
+     "standard": {
+      "id": "p4.dev.answer_completeness.standard",
+      "label": "Gold values stated",
+      "value": 0.7619,
+      "unit": "ratio",
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/answer_completeness/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.answer_completeness.research",
+      "label": "Gold values stated",
+      "value": 0.8571,
+      "unit": "ratio",
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/answer_completeness/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.answer_completeness.delta",
+      "label": "Δ Gold values stated",
+      "value": 0.0952,
+      "unit": "ratio",
+      "ci_low": 0.0238,
+      "ci_high": 0.1746,
+      "n": 21,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/answer_completeness/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "behaviour_pass",
+     "label": "Expected behaviour",
+     "standard": {
+      "id": "p4.dev.behaviour_pass.standard",
+      "label": "Expected behaviour",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/behaviour_pass/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.behaviour_pass.research",
+      "label": "Expected behaviour",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/behaviour_pass/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.behaviour_pass.delta",
+      "label": "Δ Expected behaviour",
+      "value": 0.0,
+      "unit": "ratio",
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/behaviour_pass/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "model_calls",
+     "label": "Model calls per run",
+     "standard": {
+      "id": "p4.dev.model_calls.standard",
+      "label": "Model calls per run",
+      "value": 1.0,
+      "unit": "count",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/model_calls/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.model_calls.research",
+      "label": "Model calls per run",
+      "value": 4.2609,
+      "unit": "count",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/model_calls/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.model_calls.delta",
+      "label": "Δ Model calls per run",
+      "value": 3.2609,
+      "unit": "count",
+      "ci_low": 2.913,
+      "ci_high": 3.6087,
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/model_calls/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "tool_calls",
+     "label": "Tool calls per run",
+     "standard": {
+      "id": "p4.dev.tool_calls.standard",
+      "label": "Tool calls per run",
+      "value": 0.0,
+      "unit": "count",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/tool_calls/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.tool_calls.research",
+      "label": "Tool calls per run",
+      "value": 4.0435,
+      "unit": "count",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/tool_calls/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.tool_calls.delta",
+      "label": "Δ Tool calls per run",
+      "value": 4.0435,
+      "unit": "count",
+      "ci_low": 3.3913,
+      "ci_high": 4.7826,
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/tool_calls/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "retrieval_calls",
+     "label": "Retrieval calls per run",
+     "standard": {
+      "id": "p4.dev.retrieval_calls.standard",
+      "label": "Retrieval calls per run",
+      "value": 1.0,
+      "unit": "count",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/retrieval_calls/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.retrieval_calls.research",
+      "label": "Retrieval calls per run",
+      "value": 2.8696,
+      "unit": "count",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/retrieval_calls/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.retrieval_calls.delta",
+      "label": "Δ Retrieval calls per run",
+      "value": 1.8696,
+      "unit": "count",
+      "ci_low": 1.3478,
+      "ci_high": 2.4348,
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/retrieval_calls/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "tokens_total",
+     "label": "Tokens per run",
+     "standard": {
+      "id": "p4.dev.tokens_total.standard",
+      "label": "Tokens per run",
+      "value": 5908.7826,
+      "unit": "tokens",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/tokens_total/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.tokens_total.research",
+      "label": "Tokens per run",
+      "value": 22642.6957,
+      "unit": "tokens",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/tokens_total/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.tokens_total.delta",
+      "label": "Δ Tokens per run",
+      "value": 16733.913,
+      "unit": "tokens",
+      "ci_low": 14141.8283,
+      "ci_high": 19358.6967,
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/tokens_total/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "cost_usd",
+     "label": "Cost per run (as recorded by the eval harness)",
+     "standard": {
+      "id": "p4.dev.cost_usd.standard",
+      "label": "Cost per run (as recorded by the eval harness)",
+      "value": 0.0154,
+      "unit": "usd",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/cost_usd/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.dev.cost_usd.research",
+      "label": "Cost per run (as recorded by the eval harness)",
+      "value": 0.0417,
+      "unit": "usd",
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/cost_usd/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.dev.cost_usd.delta",
+      "label": "Δ Cost per run (as recorded by the eval harness)",
+      "value": 0.0264,
+      "unit": "usd",
+      "ci_low": 0.0216,
+      "ci_high": 0.0314,
+      "n": 23,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/compare.json",
+       "pointer": "/metrics/cost_usd/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "latency_total_p50",
+     "label": "End-to-end latency p50",
+     "standard": {
+      "id": "p4.dev.total_p50.standard",
+      "label": "End-to-end latency p50",
+      "value": 6916.9,
+      "unit": "ms",
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/results-standard.json",
+       "pointer": "/summary/latency_ms/total_p50"
+      }
+     },
+     "research": {
+      "id": "p4.dev.total_p50.research",
+      "label": "End-to-end latency p50",
+      "value": 15944.4,
+      "unit": "ms",
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/results-research.json",
+       "pointer": "/summary/latency_ms/total_p50"
+      }
+     },
+     "delta": null
+    },
+    {
+     "id": "latency_total_p95",
+     "label": "End-to-end latency p95",
+     "standard": {
+      "id": "p4.dev.total_p95.standard",
+      "label": "End-to-end latency p95",
+      "value": 10671.949999999997,
+      "unit": "ms",
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/results-standard.json",
+       "pointer": "/summary/latency_ms/total_p95"
+      }
+     },
+     "research": {
+      "id": "p4.dev.total_p95.research",
+      "label": "End-to-end latency p95",
+      "value": 23599.339999999997,
+      "unit": "ms",
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-dev-live/results-research.json",
+       "pointer": "/summary/latency_ms/total_p95"
+      }
+     },
+     "delta": null
+    }
+   ]
+  },
+  {
+   "split": "test",
+   "provenance": {
+    "path": "eval/baselines/phase4/research-v0-test-live/results-research.json",
+    "git": "8ae34ac",
+    "at": "2026-10-06T19:51:59+00:00",
+    "model": "claude-sonnet-5-5",
+    "split": "test",
+    "config_hash": "35fc5c5a734a67e9",
+    "dataset": {
+     "name": "research-v0",
+     "version": "research-v0",
+     "sha256": "e0d55532ffd1ea9ca697a0c88541b7908e28a4936d9342f4b5c8f0647f79a966"
+    }
+   },
+   "n_pairs": 34,
+   "rows": [
+    {
+     "id": "gold_handle_recall",
+     "label": "Gold evidence retrieved",
+     "standard": {
+      "id": "p4.test.gold_handle_recall.standard",
+      "label": "Gold evidence retrieved",
+      "value": 0.7944,
+      "unit": "ratio",
+      "n": 30,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/gold_handle_recall/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.gold_handle_recall.research",
+      "label": "Gold evidence retrieved",
+      "value": 0.9056,
+      "unit": "ratio",
+      "n": 30,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/gold_handle_recall/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.gold_handle_recall.delta",
+      "label": "Δ Gold evidence retrieved",
+      "value": 0.1111,
+      "unit": "ratio",
+      "ci_low": 0.0278,
+      "ci_high": 0.2167,
+      "n": 30,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/gold_handle_recall/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "gold_coverage",
+     "label": "Gold evidence cited",
+     "standard": {
+      "id": "p4.test.gold_coverage.standard",
+      "label": "Gold evidence cited",
+      "value": 0.8218,
+      "unit": "ratio",
+      "n": 29,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/gold_coverage/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.gold_coverage.research",
+      "label": "Gold evidence cited",
+      "value": 0.9368,
+      "unit": "ratio",
+      "n": 29,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/gold_coverage/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.gold_coverage.delta",
+      "label": "Δ Gold evidence cited",
+      "value": 0.1149,
+      "unit": "ratio",
+      "ci_low": 0.023,
+      "ci_high": 0.2241,
+      "n": 29,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/gold_coverage/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "answer_completeness",
+     "label": "Gold values stated",
+     "standard": {
+      "id": "p4.test.answer_completeness.standard",
+      "label": "Gold values stated",
+      "value": 0.7356,
+      "unit": "ratio",
+      "n": 29,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/answer_completeness/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.answer_completeness.research",
+      "label": "Gold values stated",
+      "value": 0.7471,
+      "unit": "ratio",
+      "n": 29,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/answer_completeness/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.answer_completeness.delta",
+      "label": "Δ Gold values stated",
+      "value": 0.0115,
+      "unit": "ratio",
+      "ci_low": 0.0,
+      "ci_high": 0.0345,
+      "n": 29,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/answer_completeness/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "behaviour_pass",
+     "label": "Expected behaviour",
+     "standard": {
+      "id": "p4.test.behaviour_pass.standard",
+      "label": "Expected behaviour",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/behaviour_pass/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.behaviour_pass.research",
+      "label": "Expected behaviour",
+      "value": 0.9706,
+      "unit": "ratio",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/behaviour_pass/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.behaviour_pass.delta",
+      "label": "Δ Expected behaviour",
+      "value": -0.0294,
+      "unit": "ratio",
+      "ci_low": -0.0882,
+      "ci_high": 0.0,
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/behaviour_pass/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "model_calls",
+     "label": "Model calls per run",
+     "standard": {
+      "id": "p4.test.model_calls.standard",
+      "label": "Model calls per run",
+      "value": 1.0,
+      "unit": "count",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/model_calls/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.model_calls.research",
+      "label": "Model calls per run",
+      "value": 3.9706,
+      "unit": "count",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/model_calls/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.model_calls.delta",
+      "label": "Δ Model calls per run",
+      "value": 2.9706,
+      "unit": "count",
+      "ci_low": 2.7353,
+      "ci_high": 3.2059,
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/model_calls/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "tool_calls",
+     "label": "Tool calls per run",
+     "standard": {
+      "id": "p4.test.tool_calls.standard",
+      "label": "Tool calls per run",
+      "value": 0.0,
+      "unit": "count",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/tool_calls/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.tool_calls.research",
+      "label": "Tool calls per run",
+      "value": 3.7353,
+      "unit": "count",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/tool_calls/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.tool_calls.delta",
+      "label": "Δ Tool calls per run",
+      "value": 3.7353,
+      "unit": "count",
+      "ci_low": 3.1471,
+      "ci_high": 4.3824,
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/tool_calls/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "retrieval_calls",
+     "label": "Retrieval calls per run",
+     "standard": {
+      "id": "p4.test.retrieval_calls.standard",
+      "label": "Retrieval calls per run",
+      "value": 1.0,
+      "unit": "count",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/retrieval_calls/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.retrieval_calls.research",
+      "label": "Retrieval calls per run",
+      "value": 2.8235,
+      "unit": "count",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/retrieval_calls/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.retrieval_calls.delta",
+      "label": "Δ Retrieval calls per run",
+      "value": 1.8235,
+      "unit": "count",
+      "ci_low": 1.3235,
+      "ci_high": 2.4118,
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/retrieval_calls/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "tokens_total",
+     "label": "Tokens per run",
+     "standard": {
+      "id": "p4.test.tokens_total.standard",
+      "label": "Tokens per run",
+      "value": 5212.0882,
+      "unit": "tokens",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/tokens_total/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.tokens_total.research",
+      "label": "Tokens per run",
+      "value": 20393.4706,
+      "unit": "tokens",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/tokens_total/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.tokens_total.delta",
+      "label": "Δ Tokens per run",
+      "value": 15181.3824,
+      "unit": "tokens",
+      "ci_low": 13328.4463,
+      "ci_high": 17080.75,
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/tokens_total/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "cost_usd",
+     "label": "Cost per run (as recorded by the eval harness)",
+     "standard": {
+      "id": "p4.test.cost_usd.standard",
+      "label": "Cost per run (as recorded by the eval harness)",
+      "value": 0.0134,
+      "unit": "usd",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/cost_usd/standard_mean"
+      }
+     },
+     "research": {
+      "id": "p4.test.cost_usd.research",
+      "label": "Cost per run (as recorded by the eval harness)",
+      "value": 0.0364,
+      "unit": "usd",
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/cost_usd/research_mean"
+      }
+     },
+     "delta": {
+      "id": "p4.test.cost_usd.delta",
+      "label": "Δ Cost per run (as recorded by the eval harness)",
+      "value": 0.0229,
+      "unit": "usd",
+      "ci_low": 0.0195,
+      "ci_high": 0.0264,
+      "n": 34,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/cost_usd/delta_mean"
+      }
+     }
+    },
+    {
+     "id": "latency_total_p50",
+     "label": "End-to-end latency p50",
+     "standard": {
+      "id": "p4.test.total_p50.standard",
+      "label": "End-to-end latency p50",
+      "value": 5782.4,
+      "unit": "ms",
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/results-standard.json",
+       "pointer": "/summary/latency_ms/total_p50"
+      }
+     },
+     "research": {
+      "id": "p4.test.total_p50.research",
+      "label": "End-to-end latency p50",
+      "value": 14401.15,
+      "unit": "ms",
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/results-research.json",
+       "pointer": "/summary/latency_ms/total_p50"
+      }
+     },
+     "delta": null
+    },
+    {
+     "id": "latency_total_p95",
+     "label": "End-to-end latency p95",
+     "standard": {
+      "id": "p4.test.total_p95.standard",
+      "label": "End-to-end latency p95",
+      "value": 9247.039999999999,
+      "unit": "ms",
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/results-standard.json",
+       "pointer": "/summary/latency_ms/total_p95"
+      }
+     },
+     "research": {
+      "id": "p4.test.total_p95.research",
+      "label": "End-to-end latency p95",
+      "value": 20279.745,
+      "unit": "ms",
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/results-research.json",
+       "pointer": "/summary/latency_ms/total_p95"
+      }
+     },
+     "delta": null
+    }
+   ]
+  }
+ ],
+ "analytics": [
+  {
+   "split": "dev",
+   "provenance": {
+    "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+    "git": "fb31765",
+    "at": "2026-10-06T22:49:28+00:00",
+    "model": "claude-sonnet-5-5",
+    "split": "dev",
+    "config_hash": null,
+    "dataset": {
+     "name": "analytics-v0",
+     "version": "analytics-v0",
+     "sha256": "fbb89127635ac33fd69646a43710124de4c9aef0eb61ec2b023063cec84c49b7"
+    }
+   },
+   "metrics": [
+    {
+     "id": "p5.dev.task_type_accuracy",
+     "label": "Task-type routing accuracy",
+     "value": 1.0,
+     "unit": "ratio",
+     "ci_low": 0.9035813714055363,
+     "ci_high": 1.0,
+     "n": 36,
+     "k": 36,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/routing/task_type_accuracy/rate"
+     }
+    },
+    {
+     "id": "p5.dev.mixed_recognition",
+     "label": "Mixed-question recognition",
+     "value": 1.0,
+     "unit": "ratio",
+     "n": 4,
+     "k": 4,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/routing/mixed_recognition/rate"
+     }
+    },
+    {
+     "id": "p5.dev.items_all_values_matched",
+     "label": "Items with every gold value matched",
+     "value": 0.9355,
+     "unit": "ratio",
+     "ci_low": 0.7928136326370188,
+     "ci_high": 0.9821252164780854,
+     "n": 31,
+     "k": 29,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/analytics/items_all_values_matched/rate"
+     }
+    },
+    {
+     "id": "p5.dev.exact_result_accuracy_mean",
+     "label": "Exact result accuracy (item mean)",
+     "value": 0.9355,
+     "unit": "ratio",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/analytics/exact_result_accuracy_mean"
+     }
+    },
+    {
+     "id": "p5.dev.exact_result_accuracy_micro",
+     "label": "Exact result accuracy (all gold values)",
+     "value": 0.9,
+     "unit": "ratio",
+     "n": 40,
+     "k": 36,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/analytics/exact_result_accuracy_micro/rate"
+     }
+    },
+    {
+     "id": "p5.dev.numeric_faithfulness",
+     "label": "Numeric faithfulness of answers",
+     "value": 1.0,
+     "unit": "ratio",
+     "n": 201,
+     "k": 201,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/answer/numeric_faithfulness/rate"
+     }
+    },
+    {
+     "id": "p5.dev.unsupported_computed_claim_rate",
+     "label": "Unsupported computed-claim rate",
+     "value": 0.0,
+     "unit": "ratio",
+     "n": 96,
+     "k": 0,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/answer/unsupported_computed_claim_rate/rate"
+     }
+    },
+    {
+     "id": "p5.dev.end_to_end_p50",
+     "label": "End-to-end latency p50",
+     "value": 11602.7,
+     "unit": "ms",
+     "n": 36,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/performance/end_to_end_ms/p50"
+     }
+    },
+    {
+     "id": "p5.dev.end_to_end_p95",
+     "label": "End-to-end latency p95",
+     "value": 16191.2,
+     "unit": "ms",
+     "n": 36,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/performance/end_to_end_ms/p95"
+     }
+    },
+    {
+     "id": "p5.dev.analytics_tool_p50",
+     "label": "Analytics tool latency p50",
+     "value": 21.0,
+     "unit": "ms",
+     "n": 105,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/performance/analytics_tool_ms/p50"
+     }
+    },
+    {
+     "id": "p5.dev.analytics_tool_p95",
+     "label": "Analytics tool latency p95",
+     "value": 60.8,
+     "unit": "ms",
+     "n": 105,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/performance/analytics_tool_ms/p95"
+     }
+    },
+    {
+     "id": "p5.dev.model_calls_per_run",
+     "label": "Model calls per run",
+     "value": 4.861,
+     "unit": "count",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/performance/model_calls_per_run"
+     }
+    },
+    {
+     "id": "p5.dev.tool_calls_per_run",
+     "label": "Tool calls per run",
+     "value": 3.417,
+     "unit": "count",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/performance/tool_calls_per_run"
+     }
+    },
+    {
+     "id": "p5.dev.tokens_per_run",
+     "label": "Tokens per run",
+     "value": 35690.2,
+     "unit": "tokens",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/performance/tokens_per_run"
+     }
+    },
+    {
+     "id": "p5.dev.cost_usd_per_run",
+     "label": "Cost per run (as recorded by the eval harness)",
+     "value": 0.032,
+     "unit": "usd",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-dev-live/results.json",
+      "pointer": "/summary/performance/cost_usd_per_run"
+     }
+    }
+   ]
+  },
+  {
+   "split": "holdout",
+   "provenance": {
+    "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+    "git": "1775244",
+    "at": "2026-10-06T23:02:22+00:00",
+    "model": "claude-sonnet-5-5",
+    "split": "holdout",
+    "config_hash": null,
+    "dataset": {
+     "name": "analytics-v0",
+     "version": "analytics-v0",
+     "sha256": "fbb89127635ac33fd69646a43710124de4c9aef0eb61ec2b023063cec84c49b7"
+    }
+   },
+   "metrics": [
+    {
+     "id": "p5.holdout.task_type_accuracy",
+     "label": "Task-type routing accuracy",
+     "value": 0.5741,
+     "unit": "ratio",
+     "ci_low": 0.4416273382599005,
+     "ci_high": 0.6966817598007073,
+     "n": 54,
+     "k": 31,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/routing/task_type_accuracy/rate"
+     }
+    },
+    {
+     "id": "p5.holdout.mixed_recognition",
+     "label": "Mixed-question recognition",
+     "value": 0.3333,
+     "unit": "ratio",
+     "n": 6,
+     "k": 2,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/routing/mixed_recognition/rate"
+     }
+    },
+    {
+     "id": "p5.holdout.items_all_values_matched",
+     "label": "Items with every gold value matched",
+     "value": 0.7174,
+     "unit": "ratio",
+     "ci_low": 0.574514387694541,
+     "ci_high": 0.8267579761812937,
+     "n": 46,
+     "k": 33,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/analytics/items_all_values_matched/rate"
+     }
+    },
+    {
+     "id": "p5.holdout.exact_result_accuracy_mean",
+     "label": "Exact result accuracy (item mean)",
+     "value": 0.7464,
+     "unit": "ratio",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/analytics/exact_result_accuracy_mean"
+     }
+    },
+    {
+     "id": "p5.holdout.exact_result_accuracy_micro",
+     "label": "Exact result accuracy (all gold values)",
+     "value": 0.7614,
+     "unit": "ratio",
+     "n": 88,
+     "k": 67,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/analytics/exact_result_accuracy_micro/rate"
+     }
+    },
+    {
+     "id": "p5.holdout.numeric_faithfulness",
+     "label": "Numeric faithfulness of answers",
+     "value": 0.9904,
+     "unit": "ratio",
+     "n": 313,
+     "k": 310,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/answer/numeric_faithfulness/rate"
+     }
+    },
+    {
+     "id": "p5.holdout.unsupported_computed_claim_rate",
+     "label": "Unsupported computed-claim rate",
+     "value": 0.0068,
+     "unit": "ratio",
+     "n": 148,
+     "k": 1,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/answer/unsupported_computed_claim_rate/rate"
+     }
+    },
+    {
+     "id": "p5.holdout.end_to_end_p50",
+     "label": "End-to-end latency p50",
+     "value": 11672.0,
+     "unit": "ms",
+     "n": 54,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/performance/end_to_end_ms/p50"
+     }
+    },
+    {
+     "id": "p5.holdout.end_to_end_p95",
+     "label": "End-to-end latency p95",
+     "value": 17408.2,
+     "unit": "ms",
+     "n": 54,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/performance/end_to_end_ms/p95"
+     }
+    },
+    {
+     "id": "p5.holdout.analytics_tool_p50",
+     "label": "Analytics tool latency p50",
+     "value": 21.0,
+     "unit": "ms",
+     "n": 117,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/performance/analytics_tool_ms/p50"
+     }
+    },
+    {
+     "id": "p5.holdout.analytics_tool_p95",
+     "label": "Analytics tool latency p95",
+     "value": 49.6,
+     "unit": "ms",
+     "n": 117,
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/performance/analytics_tool_ms/p95"
+     }
+    },
+    {
+     "id": "p5.holdout.model_calls_per_run",
+     "label": "Model calls per run",
+     "value": 3.833,
+     "unit": "count",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/performance/model_calls_per_run"
+     }
+    },
+    {
+     "id": "p5.holdout.tool_calls_per_run",
+     "label": "Tool calls per run",
+     "value": 2.648,
+     "unit": "count",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/performance/tool_calls_per_run"
+     }
+    },
+    {
+     "id": "p5.holdout.tokens_per_run",
+     "label": "Tokens per run",
+     "value": 28315.8,
+     "unit": "tokens",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/performance/tokens_per_run"
+     }
+    },
+    {
+     "id": "p5.holdout.cost_usd_per_run",
+     "label": "Cost per run (as recorded by the eval harness)",
+     "value": 0.027,
+     "unit": "usd",
+     "source": {
+      "kind": "json",
+      "path": "eval/baselines/phase5/analytics-v0-holdout-live/results.json",
+      "pointer": "/summary/performance/cost_usd_per_run"
+     }
+    }
+   ]
+  }
+ ],
+ "superseded": [
+  {
+   "path": "eval/baselines/phase5/analytics-v0-dev-live-attempt1-strict-limit/results.json",
+   "label": "Analytics dev, attempt 1 (superseded)",
+   "reason": "Strict-mode grammar limits: every agent step returned 400 and research runs fell back to standard. Fixed with non-strict analytics tools; kept for the record."
+  },
+  {
+   "path": "eval/baselines/phase5/analytics-v0-dev-live-attempt2-verifier-fp/results.json",
+   "label": "Analytics dev, attempt 2 (superseded)",
+   "reason": "Verifier false positives on computed results: correct answers fell back to evidence only. Fixed in the result re-check; kept for the record."
+  },
+  {
+   "path": "eval/baselines/phase5/research-dev-p5-summary-off/results.json",
+   "label": "Research summary-off arm, A3 (incomplete)",
+   "reason": "The A3 research-summary off/on comparison stopped when API credits ran out; the summary-on arm never ran, so no live before/after comparison exists."
+  }
+ ],
+ "failure_runs": [
+  {
+   "run_id": "p2-dev-final",
+   "label": "Retrieval, dev (06-final-dev)",
+   "item_count": 44,
+   "bucket_field": "failures['dense|hybrid']",
+   "buckets": [
+    {
+     "id": "both_miss",
+     "label": "Both dense and hybrid miss at hit@10",
+     "n": 5
+    },
+    {
+     "id": "dense_only",
+     "label": "Only dense hits at hit@10",
+     "n": 1
+    },
+    {
+     "id": "hybrid_only",
+     "label": "Only hybrid hits at hit@10",
+     "n": 2
+    }
+   ]
+  },
+  {
+   "run_id": "p2-test-c3",
+   "label": "Retrieval, test (07-test-milestone-c3)",
+   "item_count": 21,
+   "bucket_field": "failures['dense|hybrid']",
+   "buckets": [
+    {
+     "id": "both_miss",
+     "label": "Both dense and hybrid miss at hit@10",
+     "n": 5
+    },
+    {
+     "id": "hybrid_only",
+     "label": "Only hybrid hits at hit@10",
+     "n": 6
+    }
+   ]
+  },
+  {
+   "run_id": "p3-grounded-live",
+   "label": "Grounded answers, live-v0",
+   "item_count": 76,
+   "bucket_field": "failure-analysis.final_classification",
+   "buckets": [
+    {
+     "id": "mixed",
+     "label": "Mixed",
+     "n": 10
+    },
+    {
+     "id": "verifier_false_positive",
+     "label": "Verifier false positive",
+     "n": 8
+    }
+   ]
+  },
+  {
+   "run_id": "p4-research-dev",
+   "label": "Standard vs research, dev",
+   "item_count": 23,
+   "bucket_field": "behaviour_pass",
+   "buckets": []
+  },
+  {
+   "run_id": "p4-research-test",
+   "label": "Standard vs research, test",
+   "item_count": 34,
+   "bucket_field": "behaviour_pass",
+   "buckets": [
+    {
+     "id": "research_behaviour_fail",
+     "label": "Research run failed expected behaviour",
+     "n": 1
+    }
+   ]
+  },
+  {
+   "run_id": "p5-analytics-dev",
+   "label": "Analytics, dev",
+   "item_count": 36,
+   "bucket_field": "checks.all_values_matched / checks.task_type_correct",
+   "buckets": [
+    {
+     "id": "values_mismatch",
+     "label": "Not every gold value matched",
+     "n": 2
+    }
+   ]
+  },
+  {
+   "run_id": "p5-analytics-holdout",
+   "label": "Analytics, holdout",
+   "item_count": 54,
+   "bucket_field": "checks.all_values_matched / checks.task_type_correct",
+   "buckets": [
+    {
+     "id": "task_type_wrong",
+     "label": "Task type routed wrongly",
+     "n": 23
+    },
+    {
+     "id": "values_mismatch",
+     "label": "Not every gold value matched",
+     "n": 13
+    }
+   ]
+  }
+ ]
+}
