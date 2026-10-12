@@ -18,13 +18,18 @@ from redis.asyncio import Redis
 from marketsignal.agent.runtime import ResearchAgent
 from marketsignal.api.errors import install_error_handlers
 from marketsignal.api.routers import (
+    analytics,
+    capabilities,
     dev,
+    evaluation,
     evidence,
     health,
+    insights,
     results,
     runs,
     search,
     sources,
+    telemetry,
     workspaces,
 )
 from marketsignal.config import Settings, check_production_secrets, get_settings
@@ -368,8 +373,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(search.router)
     app.include_router(runs.router)
     app.include_router(results.router)
+    app.include_router(analytics.router)
+    app.include_router(insights.router)
+    app.include_router(telemetry.router)
+    app.include_router(capabilities.router)
     # Governed MCP tools over Streamable HTTP (loopback only unless mcp_public; ADR-0006).
     app.mount("/mcp", _DeferredMCP(app))
     if settings.env != "prod" and settings.dev_endpoints_enabled:
         app.include_router(dev.router)
+        app.include_router(evaluation.router)
     return app

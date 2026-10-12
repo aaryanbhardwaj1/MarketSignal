@@ -103,6 +103,7 @@ class Settings(BaseSettings):
     # ── Dense search (smoke lanes and production dense lane) ──
     hnsw_ef_search: int = Field(default=100, ge=1)
     dev_endpoints_enabled: bool = True  # forced off when env == "prod"
+    hide_test_workspaces: bool = False  # hide test-harness workspaces (codes T + 10 hex) in lists
 
     # ── Retrieval (plan §11-15, ADR-0002/0005); every value is tunable, Phase 2 measures them ──
     retrieval_lane_k: int = Field(default=100, ge=1)  # children per lane (§13)
@@ -143,6 +144,12 @@ class Settings(BaseSettings):
         default=None, validation_alias=AliasChoices("MS_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY")
     )
     llm_provider: str = "anthropic"  # anthropic | fake (tests, offline demo)
+    # Final productization phase: the offline demo runs with live generation switched off
+    # (MS_LLM_ENABLED=false); new runs are refused with 503 PROVIDER_UNAVAILABLE before any
+    # provider call. A non-retryable provider rejection (billing, auth) latches the same state
+    # for provider_latch_ttl_s, so the UI never shows a raw provider error.
+    llm_enabled: bool = True
+    provider_latch_ttl_s: int = Field(default=600, ge=0)
     llm_model: str = "claude-sonnet-5-5"  # synthesis model (plan §5)
     llm_effort: str = "low"  # output_config.effort
     llm_max_tokens: int = Field(default=8000, ge=256)
