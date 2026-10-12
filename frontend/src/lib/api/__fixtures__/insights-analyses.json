@@ -1,0 +1,1270 @@
+{
+    "fixture_version": "NORTHSTAR.v1",
+    "computed_at": "2026-10-12T20:44:28.713769+00:00",
+    "analyses": [
+        {
+            "id": "genz-top-pain-points",
+            "title": "Top pain points among Gen Z respondents",
+            "question": "What do Gen Z survey respondents name as their single top frustration?",
+            "category": "customer",
+            "status": "computed",
+            "op": "aggregate",
+            "unit": "count",
+            "presentation": "bar",
+            "denominator": {
+                "label": "Gen Z respondents",
+                "value": 400
+            },
+            "filters": [
+                {
+                    "column": "age_group",
+                    "label": "Age group",
+                    "op": "in",
+                    "values": [
+                        "18-21",
+                        "22-24",
+                        "25-27"
+                    ]
+                }
+            ],
+            "group_by": [
+                "top_pain_point"
+            ],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "top_pain_point": "fit_inconsistency"
+                    },
+                    "value": 108,
+                    "display": "108",
+                    "denominator": 108
+                },
+                {
+                    "group": {
+                        "top_pain_point": "price_vs_value"
+                    },
+                    "value": 72,
+                    "display": "72",
+                    "denominator": 72
+                },
+                {
+                    "group": {
+                        "top_pain_point": "sizing_across_categories"
+                    },
+                    "value": 56,
+                    "display": "56",
+                    "denominator": 56
+                },
+                {
+                    "group": {
+                        "top_pain_point": "knit_upper_durability"
+                    },
+                    "value": 48,
+                    "display": "48",
+                    "denominator": 48
+                },
+                {
+                    "group": {
+                        "top_pain_point": "sustainability_transparency"
+                    },
+                    "value": 36,
+                    "display": "36",
+                    "denominator": 36
+                },
+                {
+                    "group": {
+                        "top_pain_point": "delivery_speed"
+                    },
+                    "value": 32,
+                    "display": "32",
+                    "denominator": 32
+                },
+                {
+                    "group": {
+                        "top_pain_point": "lack_of_personalization"
+                    },
+                    "value": 28,
+                    "display": "28",
+                    "denominator": 28
+                },
+                {
+                    "group": {
+                        "top_pain_point": "community_social_proof"
+                    },
+                    "value": 20,
+                    "display": "20",
+                    "denominator": 20
+                }
+            ],
+            "provenance": {
+                "dataset": "SURVEY-2026:1",
+                "source_code": "SURVEY-2026",
+                "source_title": "Northstar Customer Survey 2026",
+                "version": 1,
+                "table": "Northstar Customer Survey 2026",
+                "rows_matched": 400,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [
+                "Each respondent names one top frustration; counts are out of the Gen Z respondents matched."
+            ],
+            "spec": {
+                "dataset": "SURVEY-2026:1",
+                "metrics": [
+                    {
+                        "fn": "count"
+                    }
+                ],
+                "filters": [
+                    {
+                        "column": "age_group",
+                        "op": "in",
+                        "values": [
+                            "18-21",
+                            "22-24",
+                            "25-27"
+                        ]
+                    }
+                ],
+                "group_by": [
+                    "top_pain_point"
+                ],
+                "order": {
+                    "by": "value",
+                    "direction": "desc"
+                }
+            }
+        },
+        {
+            "id": "pain-points-by-cohort",
+            "title": "Fit and personalization pain points, Gen Z vs 28+",
+            "question": "How often is fit inconsistency or lack of personalization the top frustration, for Gen Z and for customers aged 28 and older?",
+            "category": "customer",
+            "status": "computed",
+            "op": "aggregate",
+            "unit": "percent",
+            "presentation": "table",
+            "denominator": null,
+            "filters": [],
+            "group_by": [
+                "cohort",
+                "measure"
+            ],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "cohort": "Gen Z (18-27)",
+                        "measure": "Fit inconsistency"
+                    },
+                    "value": 27.0,
+                    "display": "27.0%",
+                    "numerator": 108,
+                    "denominator": 400
+                },
+                {
+                    "group": {
+                        "cohort": "Gen Z (18-27)",
+                        "measure": "Lack of personalization"
+                    },
+                    "value": 7.0,
+                    "display": "7.0%",
+                    "numerator": 28,
+                    "denominator": 400
+                },
+                {
+                    "group": {
+                        "cohort": "Aged 28+",
+                        "measure": "Fit inconsistency"
+                    },
+                    "value": 19.0,
+                    "display": "19.0%",
+                    "numerator": 38,
+                    "denominator": 200
+                },
+                {
+                    "group": {
+                        "cohort": "Aged 28+",
+                        "measure": "Lack of personalization"
+                    },
+                    "value": 4.0,
+                    "display": "4.0%",
+                    "numerator": 8,
+                    "denominator": 200
+                }
+            ],
+            "provenance": {
+                "dataset": "SURVEY-2026:1",
+                "source_code": "SURVEY-2026",
+                "source_title": "Northstar Customer Survey 2026",
+                "version": 1,
+                "table": "Northstar Customer Survey 2026",
+                "rows_matched": 600,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [],
+            "spec": [
+                {
+                    "group": {
+                        "cohort": "Gen Z (18-27)"
+                    },
+                    "spec": {
+                        "dataset": "SURVEY-2026:1",
+                        "metrics": [
+                            {
+                                "fn": "share",
+                                "condition": {
+                                    "column": "top_pain_point",
+                                    "op": "eq",
+                                    "value": "fit_inconsistency"
+                                },
+                                "label": "Fit inconsistency"
+                            },
+                            {
+                                "fn": "share",
+                                "condition": {
+                                    "column": "top_pain_point",
+                                    "op": "eq",
+                                    "value": "lack_of_personalization"
+                                },
+                                "label": "Lack of personalization"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "column": "age_group",
+                                "op": "in",
+                                "values": [
+                                    "18-21",
+                                    "22-24",
+                                    "25-27"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "group": {
+                        "cohort": "Aged 28+"
+                    },
+                    "spec": {
+                        "dataset": "SURVEY-2026:1",
+                        "metrics": [
+                            {
+                                "fn": "share",
+                                "condition": {
+                                    "column": "top_pain_point",
+                                    "op": "eq",
+                                    "value": "fit_inconsistency"
+                                },
+                                "label": "Fit inconsistency"
+                            },
+                            {
+                                "fn": "share",
+                                "condition": {
+                                    "column": "top_pain_point",
+                                    "op": "eq",
+                                    "value": "lack_of_personalization"
+                                },
+                                "label": "Lack of personalization"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "column": "age_group",
+                                "op": "not_in",
+                                "values": [
+                                    "18-21",
+                                    "22-24",
+                                    "25-27"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "nps-by-cohort",
+            "title": "Promoters and detractors, Gen Z vs 28+",
+            "question": "What share of each cohort are promoters (9-10) and detractors (0-6)?",
+            "category": "customer",
+            "status": "computed",
+            "op": "aggregate",
+            "unit": "percent",
+            "presentation": "table",
+            "denominator": null,
+            "filters": [],
+            "group_by": [
+                "cohort",
+                "measure"
+            ],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "cohort": "Gen Z (18-27)",
+                        "measure": "Promoters (9-10)"
+                    },
+                    "value": 40.0,
+                    "display": "40.0%",
+                    "numerator": 160,
+                    "denominator": 400
+                },
+                {
+                    "group": {
+                        "cohort": "Gen Z (18-27)",
+                        "measure": "Detractors (0-6)"
+                    },
+                    "value": 18.0,
+                    "display": "18.0%",
+                    "numerator": 72,
+                    "denominator": 400
+                },
+                {
+                    "group": {
+                        "cohort": "Aged 28+",
+                        "measure": "Promoters (9-10)"
+                    },
+                    "value": 58.0,
+                    "display": "58.0%",
+                    "numerator": 116,
+                    "denominator": 200
+                },
+                {
+                    "group": {
+                        "cohort": "Aged 28+",
+                        "measure": "Detractors (0-6)"
+                    },
+                    "value": 9.0,
+                    "display": "9.0%",
+                    "numerator": 18,
+                    "denominator": 200
+                }
+            ],
+            "provenance": {
+                "dataset": "SURVEY-2026:1",
+                "source_code": "SURVEY-2026",
+                "source_title": "Northstar Customer Survey 2026",
+                "version": 1,
+                "table": "Northstar Customer Survey 2026",
+                "rows_matched": 600,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [
+                "NPS is promoters minus detractors, computed from these shares."
+            ],
+            "spec": [
+                {
+                    "group": {
+                        "cohort": "Gen Z (18-27)"
+                    },
+                    "spec": {
+                        "dataset": "SURVEY-2026:1",
+                        "metrics": [
+                            {
+                                "fn": "share",
+                                "condition": {
+                                    "column": "nps",
+                                    "op": "gte",
+                                    "value": 9
+                                },
+                                "label": "Promoters (9-10)"
+                            },
+                            {
+                                "fn": "share",
+                                "condition": {
+                                    "column": "nps",
+                                    "op": "lte",
+                                    "value": 6
+                                },
+                                "label": "Detractors (0-6)"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "column": "age_group",
+                                "op": "in",
+                                "values": [
+                                    "18-21",
+                                    "22-24",
+                                    "25-27"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "group": {
+                        "cohort": "Aged 28+"
+                    },
+                    "spec": {
+                        "dataset": "SURVEY-2026:1",
+                        "metrics": [
+                            {
+                                "fn": "share",
+                                "condition": {
+                                    "column": "nps",
+                                    "op": "gte",
+                                    "value": 9
+                                },
+                                "label": "Promoters (9-10)"
+                            },
+                            {
+                                "fn": "share",
+                                "condition": {
+                                    "column": "nps",
+                                    "op": "lte",
+                                    "value": 6
+                                },
+                                "label": "Detractors (0-6)"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "column": "age_group",
+                                "op": "not_in",
+                                "values": [
+                                    "18-21",
+                                    "22-24",
+                                    "25-27"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "fit-and-personalization-by-segment",
+            "title": "Fit and personalization pain points by segment",
+            "question": "Which customer segments most often name fit inconsistency, or lack of personalization, as their top frustration?",
+            "category": "customer",
+            "status": "computed",
+            "op": "aggregate",
+            "unit": "percent",
+            "presentation": "table",
+            "denominator": {
+                "label": "respondents",
+                "value": 600
+            },
+            "filters": [],
+            "group_by": [
+                "segment",
+                "measure"
+            ],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "segment": "Value Seekers",
+                        "measure": "Fit inconsistency"
+                    },
+                    "value": 28.8,
+                    "display": "28.8%",
+                    "numerator": 30,
+                    "denominator": 104
+                },
+                {
+                    "group": {
+                        "segment": "Value Seekers",
+                        "measure": "Lack of personalization"
+                    },
+                    "value": 10.6,
+                    "display": "10.6%",
+                    "numerator": 11,
+                    "denominator": 104
+                },
+                {
+                    "group": {
+                        "segment": "Trail Starters",
+                        "measure": "Fit inconsistency"
+                    },
+                    "value": 27.6,
+                    "display": "27.6%",
+                    "numerator": 21,
+                    "denominator": 76
+                },
+                {
+                    "group": {
+                        "segment": "Trail Starters",
+                        "measure": "Lack of personalization"
+                    },
+                    "value": 7.9,
+                    "display": "7.9%",
+                    "numerator": 6,
+                    "denominator": 76
+                },
+                {
+                    "group": {
+                        "segment": "Studio Social",
+                        "measure": "Fit inconsistency"
+                    },
+                    "value": 27.4,
+                    "display": "27.4%",
+                    "numerator": 34,
+                    "denominator": 124
+                },
+                {
+                    "group": {
+                        "segment": "Studio Social",
+                        "measure": "Lack of personalization"
+                    },
+                    "value": 4.0,
+                    "display": "4.0%",
+                    "numerator": 5,
+                    "denominator": 124
+                },
+                {
+                    "group": {
+                        "segment": "Campus Competitors",
+                        "measure": "Fit inconsistency"
+                    },
+                    "value": 24.0,
+                    "display": "24.0%",
+                    "numerator": 23,
+                    "denominator": 96
+                },
+                {
+                    "group": {
+                        "segment": "Campus Competitors",
+                        "measure": "Lack of personalization"
+                    },
+                    "value": 6.2,
+                    "display": "6.2%",
+                    "numerator": 6,
+                    "denominator": 96
+                },
+                {
+                    "group": {
+                        "segment": "Established Active",
+                        "measure": "Fit inconsistency"
+                    },
+                    "value": 19.0,
+                    "display": "19.0%",
+                    "numerator": 38,
+                    "denominator": 200
+                },
+                {
+                    "group": {
+                        "segment": "Established Active",
+                        "measure": "Lack of personalization"
+                    },
+                    "value": 4.0,
+                    "display": "4.0%",
+                    "numerator": 8,
+                    "denominator": 200
+                }
+            ],
+            "provenance": {
+                "dataset": "SURVEY-2026:1",
+                "source_code": "SURVEY-2026",
+                "source_title": "Northstar Customer Survey 2026",
+                "version": 1,
+                "table": "Northstar Customer Survey 2026",
+                "rows_matched": 600,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [
+                "All survey respondents, all ages; segments differ in size."
+            ],
+            "spec": {
+                "dataset": "SURVEY-2026:1",
+                "metrics": [
+                    {
+                        "fn": "share",
+                        "condition": {
+                            "column": "top_pain_point",
+                            "op": "eq",
+                            "value": "fit_inconsistency"
+                        },
+                        "label": "Fit inconsistency"
+                    },
+                    {
+                        "fn": "share",
+                        "condition": {
+                            "column": "top_pain_point",
+                            "op": "eq",
+                            "value": "lack_of_personalization"
+                        },
+                        "label": "Lack of personalization"
+                    }
+                ],
+                "group_by": [
+                    "segment"
+                ],
+                "order": {
+                    "by": "value",
+                    "metric_index": 0,
+                    "direction": "desc"
+                }
+            }
+        },
+        {
+            "id": "price-sensitivity-by-cohort",
+            "title": "Price sensitivity, Gen Z vs 28+",
+            "question": "What is the average self-rated price sensitivity (1-5) for each cohort?",
+            "category": "pricing",
+            "status": "computed",
+            "op": "aggregate",
+            "unit": "score",
+            "presentation": "table",
+            "denominator": null,
+            "filters": [],
+            "group_by": [
+                "cohort"
+            ],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "cohort": "Gen Z (18-27)"
+                    },
+                    "value": 3.9,
+                    "display": "3.90",
+                    "denominator": 400
+                },
+                {
+                    "group": {
+                        "cohort": "Aged 28+"
+                    },
+                    "value": 3.2,
+                    "display": "3.20",
+                    "denominator": 200
+                }
+            ],
+            "provenance": {
+                "dataset": "SURVEY-2026:1",
+                "source_code": "SURVEY-2026",
+                "source_title": "Northstar Customer Survey 2026",
+                "version": 1,
+                "table": "Northstar Customer Survey 2026",
+                "rows_matched": 600,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [
+                "Stated sensitivity on a five point scale, not observed price response."
+            ],
+            "spec": [
+                {
+                    "group": {
+                        "cohort": "Gen Z (18-27)"
+                    },
+                    "spec": {
+                        "dataset": "SURVEY-2026:1",
+                        "metrics": [
+                            {
+                                "fn": "mean",
+                                "column": "price_sensitivity"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "column": "age_group",
+                                "op": "in",
+                                "values": [
+                                    "18-21",
+                                    "22-24",
+                                    "25-27"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "group": {
+                        "cohort": "Aged 28+"
+                    },
+                    "spec": {
+                        "dataset": "SURVEY-2026:1",
+                        "metrics": [
+                            {
+                                "fn": "mean",
+                                "column": "price_sensitivity"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "column": "age_group",
+                                "op": "not_in",
+                                "values": [
+                                    "18-21",
+                                    "22-24",
+                                    "25-27"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "price-sensitivity-by-segment",
+            "title": "Price sensitivity by segment",
+            "question": "Which customer segments rate themselves most price sensitive?",
+            "category": "pricing",
+            "status": "computed",
+            "op": "aggregate",
+            "unit": "score",
+            "presentation": "bar",
+            "denominator": {
+                "label": "respondents",
+                "value": 600
+            },
+            "filters": [],
+            "group_by": [
+                "segment"
+            ],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "segment": "Campus Competitors"
+                    },
+                    "value": 4.02,
+                    "display": "4.02",
+                    "denominator": 96
+                },
+                {
+                    "group": {
+                        "segment": "Trail Starters"
+                    },
+                    "value": 3.95,
+                    "display": "3.95",
+                    "denominator": 76
+                },
+                {
+                    "group": {
+                        "segment": "Value Seekers"
+                    },
+                    "value": 3.88,
+                    "display": "3.88",
+                    "denominator": 104
+                },
+                {
+                    "group": {
+                        "segment": "Studio Social"
+                    },
+                    "value": 3.79,
+                    "display": "3.79",
+                    "denominator": 124
+                },
+                {
+                    "group": {
+                        "segment": "Established Active"
+                    },
+                    "value": 3.2,
+                    "display": "3.20",
+                    "denominator": 200
+                }
+            ],
+            "provenance": {
+                "dataset": "SURVEY-2026:1",
+                "source_code": "SURVEY-2026",
+                "source_title": "Northstar Customer Survey 2026",
+                "version": 1,
+                "table": "Northstar Customer Survey 2026",
+                "rows_matched": 600,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [
+                "Stated sensitivity on a five point scale, not observed price response."
+            ],
+            "spec": {
+                "dataset": "SURVEY-2026:1",
+                "metrics": [
+                    {
+                        "fn": "mean",
+                        "column": "price_sensitivity"
+                    }
+                ],
+                "group_by": [
+                    "segment"
+                ],
+                "order": {
+                    "by": "value",
+                    "direction": "desc"
+                }
+            }
+        },
+        {
+            "id": "q3-returns-by-reason",
+            "title": "Q3 2026 returns by reason",
+            "question": "Why were products returned in Q3 2026?",
+            "category": "product",
+            "status": "computed",
+            "op": "aggregate",
+            "unit": "count",
+            "presentation": "bar",
+            "denominator": {
+                "label": "return records",
+                "value": 30
+            },
+            "filters": [
+                {
+                    "column": "quarter",
+                    "label": "Quarter",
+                    "op": "eq",
+                    "values": [
+                        "2026-Q3"
+                    ]
+                }
+            ],
+            "group_by": [
+                "reason"
+            ],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "reason": "Changed mind"
+                    },
+                    "value": 7301,
+                    "display": "7,301",
+                    "denominator": 7
+                },
+                {
+                    "group": {
+                        "reason": "Fit - runs large"
+                    },
+                    "value": 5085,
+                    "display": "5,085",
+                    "denominator": 5
+                },
+                {
+                    "group": {
+                        "reason": "Fit - runs small"
+                    },
+                    "value": 4449,
+                    "display": "4,449",
+                    "denominator": 7
+                },
+                {
+                    "group": {
+                        "reason": "Durability - upper wear"
+                    },
+                    "value": 3380,
+                    "display": "3,380",
+                    "denominator": 2
+                },
+                {
+                    "group": {
+                        "reason": "Durability - fabric or seams"
+                    },
+                    "value": 2973,
+                    "display": "2,973",
+                    "denominator": 2
+                },
+                {
+                    "group": {
+                        "reason": "Color not as shown"
+                    },
+                    "value": 1982,
+                    "display": "1,982",
+                    "denominator": 4
+                },
+                {
+                    "group": {
+                        "reason": "Arrived late"
+                    },
+                    "value": 810,
+                    "display": "810",
+                    "denominator": 3
+                }
+            ],
+            "provenance": {
+                "dataset": "PRODUCT-PERF:3",
+                "source_code": "PRODUCT-PERF",
+                "source_title": "Northstar Product Performance",
+                "version": 1,
+                "table": "Returns",
+                "rows_matched": 30,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [
+                "Return counts only: some per-product reason shares in the returns sheet do not add up, so shares are not shown."
+            ],
+            "spec": {
+                "dataset": "PRODUCT-PERF:3",
+                "metrics": [
+                    {
+                        "fn": "sum",
+                        "column": "returns_count"
+                    }
+                ],
+                "filters": [
+                    {
+                        "column": "quarter",
+                        "op": "eq",
+                        "value": "2026-Q3"
+                    }
+                ],
+                "group_by": [
+                    "reason"
+                ],
+                "order": {
+                    "by": "value",
+                    "direction": "desc"
+                }
+            }
+        },
+        {
+            "id": "highest-return-skus",
+            "title": "Products with the highest return rates",
+            "question": "Which products have the highest return rates this fiscal year to date?",
+            "category": "product",
+            "status": "computed",
+            "op": "filter_rows",
+            "unit": "percent",
+            "presentation": "table",
+            "denominator": null,
+            "filters": [],
+            "group_by": [],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "sku": "NS-KR2",
+                        "product_name": "Knit Runner 2",
+                        "return_rate_pct": "16.8",
+                        "avg_rating": "3.4",
+                        "genz_share_pct": "33"
+                    },
+                    "value": 16.8,
+                    "display": "16.8%"
+                },
+                {
+                    "group": {
+                        "sku": "NS-SWT",
+                        "product_name": "Switchback Trail",
+                        "return_rate_pct": "14.6",
+                        "avg_rating": "3.8",
+                        "genz_share_pct": "15.1"
+                    },
+                    "value": 14.6,
+                    "display": "14.6%"
+                },
+                {
+                    "group": {
+                        "sku": "NS-CRG",
+                        "product_name": "Cargo Trail Pant",
+                        "return_rate_pct": "13.8",
+                        "avg_rating": "3.9",
+                        "genz_share_pct": "39.1"
+                    },
+                    "value": 13.8,
+                    "display": "13.8%"
+                },
+                {
+                    "group": {
+                        "sku": "NS-KR1",
+                        "product_name": "Knit Runner",
+                        "return_rate_pct": "13.1",
+                        "avg_rating": "4",
+                        "genz_share_pct": "30.8"
+                    },
+                    "value": 13.1,
+                    "display": "13.1%"
+                },
+                {
+                    "group": {
+                        "sku": "NS-PFV",
+                        "product_name": "Puffer Vest",
+                        "return_rate_pct": "12.8",
+                        "avg_rating": "3.9",
+                        "genz_share_pct": "16.2"
+                    },
+                    "value": 12.8,
+                    "display": "12.8%"
+                }
+            ],
+            "provenance": {
+                "dataset": "PRODUCT-PERF:2",
+                "source_code": "PRODUCT-PERF",
+                "source_title": "Northstar Product Performance",
+                "version": 1,
+                "table": "SKU_Performance",
+                "rows_matched": 32,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [],
+            "spec": {
+                "dataset": "PRODUCT-PERF:2",
+                "columns": [
+                    "sku",
+                    "product_name",
+                    "return_rate_pct",
+                    "avg_rating",
+                    "genz_share_pct"
+                ],
+                "order_by": "return_rate_pct",
+                "direction": "desc",
+                "limit": 5
+            },
+            "columns": [
+                "sku",
+                "product_name",
+                "return_rate_pct",
+                "avg_rating",
+                "genz_share_pct"
+            ]
+        },
+        {
+            "id": "genz-channel-scorecard-sep-2026",
+            "title": "Gen Z channel scorecard, September 2026",
+            "question": "How do channels compare for Gen Z shoppers on conversion, order value and returns in September 2026?",
+            "category": "channel",
+            "status": "computed",
+            "op": "filter_rows",
+            "unit": "percent",
+            "presentation": "table",
+            "denominator": null,
+            "filters": [
+                {
+                    "column": "segment",
+                    "label": "Customer segment",
+                    "op": "eq",
+                    "values": [
+                        "Gen Z"
+                    ]
+                },
+                {
+                    "column": "month",
+                    "label": "Month",
+                    "op": "eq",
+                    "values": [
+                        "2026-09"
+                    ]
+                }
+            ],
+            "group_by": [],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "channel": "Stores",
+                        "conversion_rate_pct": "18.2",
+                        "aov_usd": "81.0",
+                        "return_rate_pct": "8.3",
+                        "net_sales_usd": "5420196"
+                    },
+                    "value": 18.2,
+                    "display": "18.2%"
+                },
+                {
+                    "group": {
+                        "channel": "Marketplace",
+                        "conversion_rate_pct": "4.0",
+                        "aov_usd": "73.6",
+                        "return_rate_pct": "15.1",
+                        "net_sales_usd": "1663581"
+                    },
+                    "value": 4.0,
+                    "display": "4.0%"
+                },
+                {
+                    "group": {
+                        "channel": "App",
+                        "conversion_rate_pct": "3.5",
+                        "aov_usd": "96.0",
+                        "return_rate_pct": "13.1",
+                        "net_sales_usd": "1619136"
+                    },
+                    "value": 3.5,
+                    "display": "3.5%"
+                },
+                {
+                    "group": {
+                        "channel": "Social Shop",
+                        "conversion_rate_pct": "3.4",
+                        "aov_usd": "61.6",
+                        "return_rate_pct": "16.5",
+                        "net_sales_usd": "714560"
+                    },
+                    "value": 3.4,
+                    "display": "3.4%"
+                },
+                {
+                    "group": {
+                        "channel": "Brand Site",
+                        "conversion_rate_pct": "2.2",
+                        "aov_usd": "87.7",
+                        "return_rate_pct": "18.6",
+                        "net_sales_usd": "1590264"
+                    },
+                    "value": 2.2,
+                    "display": "2.2%"
+                }
+            ],
+            "provenance": {
+                "dataset": "CHANNEL-PERF:1",
+                "source_code": "CHANNEL-PERF",
+                "source_title": "Northstar Channel Performance",
+                "version": 1,
+                "table": "Northstar Channel Performance",
+                "rows_matched": 5,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [
+                "A single month; monthly return rates should not be averaged across months."
+            ],
+            "spec": {
+                "dataset": "CHANNEL-PERF:1",
+                "filters": [
+                    {
+                        "column": "segment",
+                        "op": "eq",
+                        "value": "Gen Z"
+                    },
+                    {
+                        "column": "month",
+                        "op": "eq",
+                        "value": "2026-09"
+                    }
+                ],
+                "columns": [
+                    "channel",
+                    "conversion_rate_pct",
+                    "aov_usd",
+                    "return_rate_pct",
+                    "net_sales_usd"
+                ],
+                "order_by": "conversion_rate_pct",
+                "direction": "desc"
+            },
+            "columns": [
+                "channel",
+                "conversion_rate_pct",
+                "aov_usd",
+                "return_rate_pct",
+                "net_sales_usd"
+            ]
+        },
+        {
+            "id": "social-shop-sales-by-quarter",
+            "title": "Social Shop net sales, Q1 vs Q2 2026",
+            "question": "How much did Social Shop net sales grow from January-March to April-June 2026?",
+            "category": "channel",
+            "status": "computed",
+            "op": "aggregate",
+            "unit": "usd",
+            "presentation": "bar",
+            "denominator": null,
+            "filters": [
+                {
+                    "column": "channel",
+                    "label": "Channel",
+                    "op": "eq",
+                    "values": [
+                        "Social Shop"
+                    ]
+                }
+            ],
+            "group_by": [
+                "period"
+            ],
+            "value": null,
+            "display": null,
+            "rows": [
+                {
+                    "group": {
+                        "period": "Jan-Mar 2026"
+                    },
+                    "value": 886762.0,
+                    "display": "$886,762",
+                    "denominator": 6
+                },
+                {
+                    "group": {
+                        "period": "Apr-Jun 2026"
+                    },
+                    "value": 2146098.0,
+                    "display": "$2,146,098",
+                    "denominator": 6
+                }
+            ],
+            "provenance": {
+                "dataset": "CHANNEL-PERF:1",
+                "source_code": "CHANNEL-PERF",
+                "source_title": "Northstar Channel Performance",
+                "version": 1,
+                "table": "Northstar Channel Performance",
+                "rows_matched": 12,
+                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+            },
+            "caveats": [
+                "All customer segments combined."
+            ],
+            "spec": [
+                {
+                    "group": {
+                        "period": "Jan-Mar 2026"
+                    },
+                    "spec": {
+                        "dataset": "CHANNEL-PERF:1",
+                        "metrics": [
+                            {
+                                "fn": "sum",
+                                "column": "net_sales_usd"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "column": "channel",
+                                "op": "eq",
+                                "value": "Social Shop"
+                            },
+                            {
+                                "column": "month",
+                                "op": "between",
+                                "values": [
+                                    "2026-01",
+                                    "2026-03"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "group": {
+                        "period": "Apr-Jun 2026"
+                    },
+                    "spec": {
+                        "dataset": "CHANNEL-PERF:1",
+                        "metrics": [
+                            {
+                                "fn": "sum",
+                                "column": "net_sales_usd"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "column": "channel",
+                                "op": "eq",
+                                "value": "Social Shop"
+                            },
+                            {
+                                "column": "month",
+                                "op": "between",
+                                "values": [
+                                    "2026-04",
+                                    "2026-06"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

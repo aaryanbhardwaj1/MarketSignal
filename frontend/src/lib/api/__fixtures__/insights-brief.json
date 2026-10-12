@@ -1,0 +1,1252 @@
+{
+    "fixture_version": "NORTHSTAR.v1",
+    "label": "Curated analyst brief",
+    "computed_at": "2026-10-12T20:44:28.713769+00:00",
+    "corpus_check": {
+        "status": "ok",
+        "drifted_sources": []
+    },
+    "signals": [
+        {
+            "id": "fit-friction",
+            "category": "Customer friction",
+            "title": "Fit inconsistency is the top Gen Z frustration",
+            "statement": "Fit inconsistency is the most cited top frustration among Gen Z survey respondents, ahead of price, and sizing and fit questions are a large share of support contacts from customers under 28. The signal is consistent across the survey, support and the focus group.",
+            "integrity": "verified",
+            "evidence": [
+                {
+                    "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P4.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Fit inconsistency is the single most cited pain point, named by 27% of Gen Z survey respondents as their top frustration.",
+                    "char_start": 0,
+                    "char_end": 121,
+                    "child_id": "e26fcfd5-12dc-4505-a229-0c044b52fc9b",
+                    "locator_label": "Page 4, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "BRAND-STRATEGY",
+                        "title": "Northstar Athletics Brand Strategy 2026",
+                        "source_type": "pdf",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/SUPPORT-THEMES@v1:P2.B1",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Sizing and fit questions accounted for 31% of all Q3 support contacts from customers under 28.",
+                    "char_start": 0,
+                    "char_end": 94,
+                    "child_id": "e1549055-3e39-47cc-889d-90e57300347c",
+                    "locator_label": "Page 2, Block 1",
+                    "note": null,
+                    "source": {
+                        "code": "SUPPORT-THEMES",
+                        "title": "Northstar Customer Support Themes Q3 2026",
+                        "source_type": "pdf",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B1",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Seven of the ten participants said they had abandoned a cart because the size chart did not match the brand they already owned.",
+                    "char_start": 339,
+                    "char_end": 466,
+                    "child_id": "590d6d48-f3fd-4395-bb2f-a51c681e616e",
+                    "locator_label": "Section 3, Block 1",
+                    "note": null,
+                    "source": {
+                        "code": "GENZ-FOCUS-GROUP",
+                        "title": "Northstar Gen Z Focus Group Summary",
+                        "source_type": "docx",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "pain-points-by-cohort",
+                    "label": "Fit is the top frustration, Gen Z",
+                    "value": 27.0,
+                    "display": "27.0%",
+                    "unit": "percent",
+                    "denominator_label": "Gen Z respondents",
+                    "derived": null
+                },
+                {
+                    "analysis_id": "pain-points-by-cohort",
+                    "label": "Fit is the top frustration, aged 28+",
+                    "value": 19.0,
+                    "display": "19.0%",
+                    "unit": "percent",
+                    "denominator_label": "respondents aged 28+",
+                    "derived": null
+                }
+            ],
+            "caveats": [
+                "Focus group findings come from ten participants."
+            ]
+        },
+        {
+            "id": "service-speed",
+            "category": "Fulfillment and service",
+            "title": "Speed expectations are not being met on social",
+            "statement": "Median first response time on social channels is more than double the service target, while fast delivery is rated essential by many Gen Z shoppers. Delivery speed is rarely the single top frustration, so it may act as a hygiene factor rather than a differentiator.",
+            "integrity": "verified",
+            "evidence": [
+                {
+                    "handle": "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Median first response time on social channels slipped to 9.5 hours in Q3 against a service target of 4 hours.",
+                    "char_start": 81,
+                    "char_end": 190,
+                    "child_id": "0fe96251-a15b-4865-9be6-cec2f9114298",
+                    "locator_label": "Page 3, Block 3",
+                    "note": null,
+                    "source": {
+                        "code": "SUPPORT-THEMES",
+                        "title": "Northstar Customer Support Themes Q3 2026",
+                        "source_type": "pdf",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/GENZ-TRENDS@v2:P3.B4",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Delivery within three days was rated essential by 48% of Gen Z respondents, up sharply among those buying through social platforms.",
+                    "char_start": 0,
+                    "char_end": 131,
+                    "child_id": "5f48286b-2e6b-4202-8323-251f34ff59aa",
+                    "locator_label": "Page 3, Block 4",
+                    "note": null,
+                    "source": {
+                        "code": "GENZ-TRENDS",
+                        "title": "Gen Z Athletic Trends 2026",
+                        "source_type": "pdf",
+                        "source_class": "market",
+                        "version": 2
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "genz-top-pain-points",
+                    "label": "Gen Z respondents naming delivery speed as top frustration",
+                    "value": 32,
+                    "display": "32",
+                    "unit": "count",
+                    "denominator_label": "of Gen Z respondents surveyed",
+                    "derived": null
+                }
+            ],
+            "caveats": [
+                "Delivery speed is a hygiene factor rather than the top frustration."
+            ]
+        },
+        {
+            "id": "social-discovery",
+            "category": "Gen Z behavior",
+            "title": "Discovery and purchase are moving to social",
+            "statement": "Social Shop is the fastest-growing channel, and Gen Z respondents say they trust peer reviews and creator try-on videos more than brand advertising.",
+            "integrity": "verified",
+            "evidence": [
+                {
+                    "handle": "NORTHSTAR/Q3-REVIEW@v1:SL5",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Social Shop sales grew 142% quarter over quarter, the fastest of any channel.",
+                    "char_start": 336,
+                    "char_end": 413,
+                    "child_id": "0cb5e7b1-3470-4105-932e-f9a26f130b3d",
+                    "locator_label": "Slide 5",
+                    "note": null,
+                    "source": {
+                        "code": "Q3-REVIEW",
+                        "title": "Northstar Q3 Strategy Review",
+                        "source_type": "pptx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/GENZ-TRENDS@v2:P4.B1",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "57% of Gen Z respondents said they trust peer reviews and creator try on videos more than brand advertising.",
+                    "char_start": 0,
+                    "char_end": 108,
+                    "child_id": "9175c753-0dbe-4b44-b15c-70f0221c6765",
+                    "locator_label": "Page 4, Block 1",
+                    "note": null,
+                    "source": {
+                        "code": "GENZ-TRENDS",
+                        "title": "Gen Z Athletic Trends 2026",
+                        "source_type": "pdf",
+                        "source_class": "market",
+                        "version": 2
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "social-shop-sales-by-quarter",
+                    "label": "Social Shop net sales growth, Q1 to Q2 2026",
+                    "value": 142.0,
+                    "display": "+142.0%",
+                    "unit": "percent",
+                    "denominator_label": "monthly channel rows",
+                    "derived": {
+                        "op": "pct_change",
+                        "of": [
+                            "social-shop-sales-by-quarter:Jan-Mar 2026",
+                            "social-shop-sales-by-quarter:Apr-Jun 2026"
+                        ]
+                    }
+                },
+                {
+                    "analysis_id": "social-shop-sales-by-quarter",
+                    "label": "Social Shop net sales, Apr-Jun 2026",
+                    "value": 2146098.0,
+                    "display": "$2,146,098",
+                    "unit": "usd",
+                    "denominator_label": "monthly channel rows",
+                    "derived": null
+                }
+            ],
+            "caveats": [
+                "Social Shop is still small in absolute terms."
+            ]
+        },
+        {
+            "id": "premium-ceiling",
+            "category": "Willingness to pay",
+            "title": "Stated premium tolerance tops out around 15%",
+            "statement": "A meaningful minority of Gen Z respondents say they would pay a 15% premium for personalized fit, but acceptance falls steeply at 25%, and Gen Z rates itself more price sensitive than older customers.",
+            "integrity": "verified",
+            "evidence": [
+                {
+                    "handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "38% of Gen Z respondents said they would pay a 15% premium for footwear personalized to their fit.",
+                    "char_start": 0,
+                    "char_end": 98,
+                    "child_id": "2538d419-5095-4c01-b1e7-60fe3bf0adc1",
+                    "locator_label": "Page 2, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "WTP-STUDY",
+                        "title": "Personalization Willingness-to-Pay Study",
+                        "source_type": "pdf",
+                        "source_class": "market",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Stated willingness to pay drops steeply above a 15% premium, with only 12% of Gen Z respondents accepting a 25% premium.",
+                    "char_start": 250,
+                    "char_end": 370,
+                    "child_id": "2538d419-5095-4c01-b1e7-60fe3bf0adc1",
+                    "locator_label": "Page 2, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "WTP-STUDY",
+                        "title": "Personalization Willingness-to-Pay Study",
+                        "source_type": "pdf",
+                        "source_class": "market",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/Q3-REVIEW@v1:SL6",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Price sensitivity averages 3.9 on a five point scale, against 3.2 for older customers.",
+                    "char_start": 205,
+                    "char_end": 291,
+                    "child_id": "a8ec91f7-89fd-48c3-bdf7-454f6e4635b3",
+                    "locator_label": "Slide 6",
+                    "note": null,
+                    "source": {
+                        "code": "Q3-REVIEW",
+                        "title": "Northstar Q3 Strategy Review",
+                        "source_type": "pptx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "When offered a 15% premium tier for personalized fit, only 9% of pilot shoppers selected it; most chose the free monogram option.",
+                    "char_start": 0,
+                    "char_end": 129,
+                    "child_id": "4fcbf498-92dc-4521-bfa5-380da9637b9a",
+                    "locator_label": "Section 1, Block 5",
+                    "note": "In the pilot, far fewer shoppers chose the paid tier than the survey suggests.",
+                    "source": {
+                        "code": "PERSO-PILOT",
+                        "title": "Northstar Personalization Pilot Results",
+                        "source_type": "docx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "price-sensitivity-by-cohort",
+                    "label": "Average price sensitivity (1-5), Gen Z",
+                    "value": 3.9,
+                    "display": "3.90",
+                    "unit": "score",
+                    "denominator_label": "Gen Z respondents",
+                    "derived": null
+                },
+                {
+                    "analysis_id": "price-sensitivity-by-cohort",
+                    "label": "Average price sensitivity (1-5), aged 28+",
+                    "value": 3.2,
+                    "display": "3.20",
+                    "unit": "score",
+                    "denominator_label": "respondents aged 28+",
+                    "derived": null
+                }
+            ],
+            "caveats": [
+                "Willingness to pay is stated, not observed."
+            ]
+        },
+        {
+            "id": "competitor-fit-tech",
+            "category": "Competitor",
+            "title": "Rivals are investing in fit technology and customization",
+            "statement": "A made-to-order competitor is growing quickly and the premium incumbent runs in-store gait scanning, while Northstar's aided awareness among Gen Z trails that incumbent.",
+            "integrity": "verified",
+            "evidence": [
+                {
+                    "handle": "NORTHSTAR/KINETIC-AR@v1:P2.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Kinetic Lab reported net revenue of $148 million for fiscal 2025, an increase of 64% on the prior year.",
+                    "char_start": 0,
+                    "char_end": 103,
+                    "child_id": "83ffb060-d68e-4f18-ac94-c5a1ab72195f",
+                    "locator_label": "Page 2, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "KINETIC-AR",
+                        "title": "Kinetic Lab Annual Report 2025 (excerpt)",
+                        "source_type": "pdf",
+                        "source_class": "competitor",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/VANTAGE-DECK@v1:SL8.N1",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Our Fit Lab gait scanning is live in 120 flagship and partner stores and has completed more than 900,000 scans.",
+                    "char_start": 0,
+                    "char_end": 111,
+                    "child_id": "fd608b2e-422f-4b92-a3b8-454d0ebdee34",
+                    "locator_label": "Slide 8, Notes 1",
+                    "note": null,
+                    "source": {
+                        "code": "VANTAGE-DECK",
+                        "title": "Vantage Athletic Investor Day Deck",
+                        "source_type": "pptx",
+                        "source_class": "competitor",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Aided brand awareness of Northstar among Gen Z consumers stands at 46%, well behind the 71% recorded for Vantage Athletic.",
+                    "char_start": 1193,
+                    "char_end": 1315,
+                    "child_id": "bd82a466-a96d-4b1f-95b4-5cb8b0145074",
+                    "locator_label": "Page 1, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "BRAND-STRATEGY",
+                        "title": "Northstar Athletics Brand Strategy 2026",
+                        "source_type": "pdf",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                }
+            ],
+            "metrics": [],
+            "caveats": [
+                "Competitor figures are company-reported; Kinetic Lab's 6% return rate is the company's own claim, and analyst checks put it near 15%."
+            ]
+        },
+        {
+            "id": "genz-nps-gap",
+            "category": "Sentiment",
+            "title": "Gen Z NPS is about half that of older customers",
+            "statement": "Gen Z NPS fell between the first and second quarters and sits well below the NPS of customers aged 28 and older.",
+            "integrity": "verified",
+            "evidence": [
+                {
+                    "handle": "NORTHSTAR/Q3-REVIEW@v1:SL3",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Gen Z NPS fell to 22 in Q2 from 28 in Q1.",
+                    "char_start": 263,
+                    "char_end": 304,
+                    "child_id": "d38cb793-5715-44c6-b6fd-4ca04972007f",
+                    "locator_label": "Slide 3",
+                    "note": null,
+                    "source": {
+                        "code": "Q3-REVIEW",
+                        "title": "Northstar Q3 Strategy Review",
+                        "source_type": "pptx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Of the 400 Gen Z respondents, 160 were promoters, 168 passives and 72 detractors, producing an NPS of 22.",
+                    "char_start": 77,
+                    "char_end": 182,
+                    "child_id": "dba662bc-3a39-4726-9db0-a9d7bead6c67",
+                    "locator_label": "Page 4, Block 3",
+                    "note": null,
+                    "source": {
+                        "code": "BRAND-STRATEGY",
+                        "title": "Northstar Athletics Brand Strategy 2026",
+                        "source_type": "pdf",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P4.B3",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "The 200 older respondents produced 116 promoters, 66 passives and 18 detractors, an NPS of 49.",
+                    "char_start": 183,
+                    "char_end": 277,
+                    "child_id": "dba662bc-3a39-4726-9db0-a9d7bead6c67",
+                    "locator_label": "Page 4, Block 3",
+                    "note": null,
+                    "source": {
+                        "code": "BRAND-STRATEGY",
+                        "title": "Northstar Athletics Brand Strategy 2026",
+                        "source_type": "pdf",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "nps-by-cohort",
+                    "label": "NPS, Gen Z",
+                    "value": 22,
+                    "display": "22",
+                    "unit": "score",
+                    "denominator_label": "Gen Z respondents",
+                    "derived": {
+                        "op": "diff",
+                        "of": [
+                            "nps-by-cohort:Gen Z (18-27)/Promoters (9-10)",
+                            "nps-by-cohort:Gen Z (18-27)/Detractors (0-6)"
+                        ]
+                    }
+                },
+                {
+                    "analysis_id": "nps-by-cohort",
+                    "label": "NPS, aged 28+",
+                    "value": 49,
+                    "display": "49",
+                    "unit": "score",
+                    "denominator_label": "respondents aged 28+",
+                    "derived": {
+                        "op": "diff",
+                        "of": [
+                            "nps-by-cohort:Aged 28+/Promoters (9-10)",
+                            "nps-by-cohort:Aged 28+/Detractors (0-6)"
+                        ]
+                    }
+                }
+            ],
+            "caveats": []
+        }
+    ],
+    "opportunities": [
+        {
+            "id": "O1",
+            "title": "Cross-category Fit Promise",
+            "status": "supported",
+            "status_rationale": "Fit friction is the most consistent signal across survey, support, focus group and returns data; the open question is cost, not demand.",
+            "thesis": "A fit guarantee may address the top Gen Z frustration and supports the stated positioning as the dependable fit brand.",
+            "supporting": [
+                {
+                    "handle": "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "We recommend launching a cross category Fit Promise, a free exchange guarantee covering every apparel and footwear size, in Q1 FY27.",
+                    "char_start": 108,
+                    "char_end": 240,
+                    "child_id": "e664bf3e-a7d6-4369-aefc-b103c3590c4d",
+                    "locator_label": "Section 1, Block 6",
+                    "note": null,
+                    "source": {
+                        "code": "FY27-MEMO",
+                        "title": "Northstar FY27 Planning Memo",
+                        "source_type": "markdown",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Participants ranked fit guarantee, faster delivery and honest materials information ahead of personalization when asked to spend a hypothetical 100 points.",
+                    "char_start": 684,
+                    "char_end": 839,
+                    "child_id": "3ec617e4-855a-4ceb-84b9-c0a554970484",
+                    "locator_label": "Section 3, Block 6",
+                    "note": null,
+                    "source": {
+                        "code": "GENZ-FOCUS-GROUP",
+                        "title": "Northstar Gen Z Focus Group Summary",
+                        "source_type": "docx",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/INTERVIEWS@v1:S5.Q1",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "I wear a medium in your joggers but a large in your hoodies, and my shoe size changes between your running and court lines.",
+                    "char_start": 99,
+                    "char_end": 222,
+                    "child_id": "b3c450d7-900c-4d28-b9d7-8daff2bd940f",
+                    "locator_label": "Section 5, Q&A 1",
+                    "note": null,
+                    "source": {
+                        "code": "INTERVIEWS",
+                        "title": "Northstar Customer Interviews",
+                        "source_type": "docx",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P1.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Northstar intends to position itself as the dependable fit brand for active Gen Z consumers rather than competing on elite performance claims.",
+                    "char_start": 1382,
+                    "char_end": 1524,
+                    "child_id": "bd82a466-a96d-4b1f-95b4-5cb8b0145074",
+                    "locator_label": "Page 1, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "BRAND-STRATEGY",
+                        "title": "Northstar Athletics Brand Strategy 2026",
+                        "source_type": "pdf",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/PRODUCT-PERF@v1:SH3.R35",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "reason: Fit - runs small; total_sku_returns: 1421; returns_count: 583; share_of_sku_returns_pct: 41",
+                    "char_start": 93,
+                    "char_end": 192,
+                    "child_id": null,
+                    "locator_label": "Sheet 'Returns', Row 35",
+                    "note": null,
+                    "source": {
+                        "code": "PRODUCT-PERF",
+                        "title": "Northstar Product Performance",
+                        "source_type": "xlsx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                }
+            ],
+            "contradicting": [
+                {
+                    "handle": "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "Panel data show Gen Z shoppers return athletic apparel at roughly 1.5 times the rate of shoppers over 35.",
+                    "char_start": 1120,
+                    "char_end": 1225,
+                    "child_id": "096a7066-a683-4655-92eb-fa934ab0f8e6",
+                    "locator_label": "Section 1, Block 1",
+                    "note": "Higher return rates among Gen Z raise the cost of a free exchange guarantee.",
+                    "source": {
+                        "code": "ANALYST-CALL",
+                        "title": "Northstar Consumer Panel Analyst Call Notes",
+                        "source_type": "text",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/PACE-WEB@v1:S1.B5",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "Pace & Co. offers free returns within 60 days and says 70% of its range is priced under $50.",
+                    "char_start": 0,
+                    "char_end": 92,
+                    "child_id": "db55f883-473d-4b85-a724-beff5810267d",
+                    "locator_label": "Section 1, Block 5",
+                    "note": "Free returns may already be expected rather than a differentiator.",
+                    "source": {
+                        "code": "PACE-WEB",
+                        "title": "Pace & Co. Positioning (web snapshot)",
+                        "source_type": "markdown",
+                        "source_class": "competitor",
+                        "version": 1
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "pain-points-by-cohort",
+                    "label": "Fit is the top frustration, Gen Z",
+                    "value": 27.0,
+                    "display": "27.0%",
+                    "unit": "percent",
+                    "denominator_label": "Gen Z respondents",
+                    "derived": null
+                },
+                {
+                    "analysis_id": "q3-returns-by-reason",
+                    "label": "Q3 returns: fit runs large",
+                    "value": 5085,
+                    "display": "5,085",
+                    "unit": "count",
+                    "denominator_label": "return records",
+                    "derived": null
+                },
+                {
+                    "analysis_id": "q3-returns-by-reason",
+                    "label": "Q3 returns: fit runs small",
+                    "value": 4449,
+                    "display": "4,449",
+                    "unit": "count",
+                    "denominator_label": "return records",
+                    "derived": null
+                }
+            ],
+            "gaps": [
+                "No estimate of exchange cost or margin impact.",
+                "No split between exchanges and refunds."
+            ],
+            "next_step": "Model the cost of the guarantee from the returns data, and size the work to fix the size charts.",
+            "caveats": [
+                "Interview quotes are single people (n=1).",
+                "Panel figures from the analyst call are estimates, and the call notes are a thin source."
+            ],
+            "integrity": "verified"
+        },
+        {
+            "id": "O2",
+            "title": "Personalization as a premium tier",
+            "status": "mixed_evidence",
+            "status_rationale": "Stated interest is real, but what customers did in the pilot did not confirm it.",
+            "thesis": "Personalization draws stated interest, but pilot behavior did not confirm it. Lead time looks like the binding constraint, not price alone.",
+            "supporting": [
+                {
+                    "handle": "NORTHSTAR/WTP-STUDY@v1:P2.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "38% of Gen Z respondents said they would pay a 15% premium for footwear personalized to their fit.",
+                    "char_start": 0,
+                    "char_end": 98,
+                    "child_id": "2538d419-5095-4c01-b1e7-60fe3bf0adc1",
+                    "locator_label": "Page 2, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "WTP-STUDY",
+                        "title": "Personalization Willingness-to-Pay Study",
+                        "source_type": "pdf",
+                        "source_class": "market",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/Q3-REVIEW@v1:SL12",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Custom colorway emails drove a 2.3x click through rate versus standard creative.",
+                    "char_start": 313,
+                    "char_end": 393,
+                    "child_id": "3065261f-7216-4ecf-ae20-350a10b97db2",
+                    "locator_label": "Slide 12",
+                    "note": null,
+                    "source": {
+                        "code": "Q3-REVIEW",
+                        "title": "Northstar Q3 Strategy Review",
+                        "source_type": "pptx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B6",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Personalized items in the pilot were returned at 11%, versus 16% for comparable standard items.",
+                    "char_start": 0,
+                    "char_end": 95,
+                    "child_id": "0e614ec2-eaa0-4152-b442-2f0ffd2fb17d",
+                    "locator_label": "Section 1, Block 6",
+                    "note": null,
+                    "source": {
+                        "code": "PERSO-PILOT",
+                        "title": "Northstar Personalization Pilot Results",
+                        "source_type": "docx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/KINETIC-AR@v1:P2.B4",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Customers who order a second pair within twelve months make up 31% of the Kinetic Lab customer base.",
+                    "char_start": 306,
+                    "char_end": 406,
+                    "child_id": "3d4aa2fe-fa1e-44d3-b1cd-3f3f9c3745ba",
+                    "locator_label": "Page 2, Block 4",
+                    "note": null,
+                    "source": {
+                        "code": "KINETIC-AR",
+                        "title": "Kinetic Lab Annual Report 2025 (excerpt)",
+                        "source_type": "pdf",
+                        "source_class": "competitor",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/CATEGORY-SIZING@v1:SH1.R17",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "value_usd_bn: 1.1; yoy_growth_pct: 22.2; basis: Estimate",
+                    "char_start": 114,
+                    "char_end": 170,
+                    "child_id": null,
+                    "locator_label": "Sheet 'Market_Sizing', Row 17",
+                    "note": "Market size is an estimate.",
+                    "source": {
+                        "code": "CATEGORY-SIZING",
+                        "title": "US Athletic Category Sizing",
+                        "source_type": "xlsx",
+                        "source_class": "market",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/SURVEY-2026@v1:R389",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "I would happily pay a bit more for shoes made to my foot, maybe 15% more, but only if they arrive as fast as normal ones.",
+                    "char_start": 245,
+                    "char_end": 366,
+                    "child_id": "940c1c56-9253-4c79-8827-848c42e730ae",
+                    "locator_label": "Row 389",
+                    "note": "A single respondent; a hypothesis only.",
+                    "source": {
+                        "code": "SURVEY-2026",
+                        "title": "Northstar Customer Survey 2026",
+                        "source_type": "csv",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                }
+            ],
+            "contradicting": [
+                {
+                    "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B5",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "When offered a 15% premium tier for personalized fit, only 9% of pilot shoppers selected it; most chose the free monogram option.",
+                    "char_start": 0,
+                    "char_end": 129,
+                    "child_id": "4fcbf498-92dc-4521-bfa5-380da9637b9a",
+                    "locator_label": "Section 1, Block 5",
+                    "note": null,
+                    "source": {
+                        "code": "PERSO-PILOT",
+                        "title": "Northstar Personalization Pilot Results",
+                        "source_type": "docx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B4",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "Across the 90 day observation window, pilot customers who bought a personalized product repurchased at 18%, compared with 24% for the matched control group.",
+                    "char_start": 348,
+                    "char_end": 504,
+                    "child_id": "d310ae17-244c-477f-9052-b970c643bc1a",
+                    "locator_label": "Section 1, Block 4",
+                    "note": null,
+                    "source": {
+                        "code": "PERSO-PILOT",
+                        "title": "Northstar Personalization Pilot Results",
+                        "source_type": "docx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B7",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "Average lead time for personalized pairs was 12 days, and 41% of pilot exit survey respondents named the wait as their main reason not to order again.",
+                    "char_start": 0,
+                    "char_end": 150,
+                    "child_id": "990815c9-ec94-41f5-a79f-8c242787620b",
+                    "locator_label": "Section 1, Block 7",
+                    "note": null,
+                    "source": {
+                        "code": "PERSO-PILOT",
+                        "title": "Northstar Personalization Pilot Results",
+                        "source_type": "docx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "Personalized orders were 2.4 times more likely than standard orders to generate a where is my order ticket.",
+                    "char_start": 207,
+                    "char_end": 314,
+                    "child_id": "9e817af3-d983-4148-bef5-1e353a7d583a",
+                    "locator_label": "Page 2, Block 3",
+                    "note": null,
+                    "source": {
+                        "code": "SUPPORT-THEMES",
+                        "title": "Northstar Customer Support Themes Q3 2026",
+                        "source_type": "pdf",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "The analyst expects personalization to remain below 5% of US athletic footwear units through 2028.",
+                    "char_start": 202,
+                    "char_end": 300,
+                    "child_id": "e2e2a1ef-8b00-40d7-8c88-034a94d9f9f4",
+                    "locator_label": "Section 1, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "ANALYST-CALL",
+                        "title": "Northstar Consumer Panel Analyst Call Notes",
+                        "source_type": "text",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/FY27-MEMO@v1:S1.B6",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "Personalization should stay a limited test in FY27 rather than a national launch until repeat purchase beats the control group.",
+                    "char_start": 610,
+                    "char_end": 737,
+                    "child_id": "e664bf3e-a7d6-4369-aefc-b103c3590c4d",
+                    "locator_label": "Section 1, Block 6",
+                    "note": "Leadership direction: keep personalization a limited test.",
+                    "source": {
+                        "code": "FY27-MEMO",
+                        "title": "Northstar FY27 Planning Memo",
+                        "source_type": "markdown",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "Leadership agreed to pause any national rollout of personalization until the full pilot readout in October.",
+                    "char_start": 0,
+                    "char_end": 107,
+                    "child_id": "aa800081-8bc0-486f-a350-29e765b18a1e",
+                    "locator_label": "Slide 14, Notes 1",
+                    "note": "National rollout is paused.",
+                    "source": {
+                        "code": "Q3-REVIEW",
+                        "title": "Northstar Q3 Strategy Review",
+                        "source_type": "pptx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "pain-points-by-cohort",
+                    "label": "Lack of personalization is the top frustration, Gen Z",
+                    "value": 7.0,
+                    "display": "7.0%",
+                    "unit": "percent",
+                    "denominator_label": "Gen Z respondents",
+                    "derived": null
+                },
+                {
+                    "analysis_id": "pain-points-by-cohort",
+                    "label": "Lack of personalization is the top frustration, aged 28+",
+                    "value": 4.0,
+                    "display": "4.0%",
+                    "unit": "percent",
+                    "denominator_label": "respondents aged 28+",
+                    "derived": null
+                },
+                {
+                    "analysis_id": "fit-and-personalization-by-segment",
+                    "label": "Lack of personalization is the top frustration, Value Seekers",
+                    "value": 10.6,
+                    "display": "10.6%",
+                    "unit": "percent",
+                    "denominator_label": "respondents",
+                    "derived": null
+                }
+            ],
+            "gaps": [
+                "Pilot data exists only as prose, with no cohort dataset.",
+                "No unit economics."
+            ],
+            "next_step": "Test personalization at standard lead time, within a limited test while the national rollout stays paused.",
+            "caveats": [
+                "The $1.1B market size is an estimate.",
+                "Survey verbatims are single respondents (n=1).",
+                "Kinetic Lab's 6% return rate is the company's own claim; analyst checks put it near 15%."
+            ],
+            "integrity": "verified"
+        },
+        {
+            "id": "O3",
+            "title": "Social commerce and creator-led discovery",
+            "status": "emerging",
+            "status_rationale": "Growth is clear; the economics are unproven.",
+            "thesis": "Social Shop is growing fastest and creator and peer discovery matter to Gen Z, but the channel is still small and shows lower order values and higher returns than stores.",
+            "supporting": [
+                {
+                    "handle": "NORTHSTAR/Q3-REVIEW@v1:SL5",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Social Shop sales grew 142% quarter over quarter, the fastest of any channel.",
+                    "char_start": 336,
+                    "char_end": 413,
+                    "child_id": "0cb5e7b1-3470-4105-932e-f9a26f130b3d",
+                    "locator_label": "Slide 5",
+                    "note": null,
+                    "source": {
+                        "code": "Q3-REVIEW",
+                        "title": "Northstar Q3 Strategy Review",
+                        "source_type": "pptx",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/GENZ-TRENDS@v2:P2.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Social commerce platforms now account for 26% of Gen Z athletic footwear purchases, according to our 2026 panel.",
+                    "char_start": 0,
+                    "char_end": 112,
+                    "child_id": "79c846f4-23b6-47ec-9fd6-1ed268455378",
+                    "locator_label": "Page 2, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "GENZ-TRENDS",
+                        "title": "Gen Z Athletic Trends 2026",
+                        "source_type": "pdf",
+                        "source_class": "market",
+                        "version": 2
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/CHANNEL-SHIFT@v1:S1.B2",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Marketplace and social commerce together took 34% of Gen Z athletic spend in 2026, compared with 22% for brand owned sites.",
+                    "char_start": 397,
+                    "char_end": 520,
+                    "child_id": "920ec17e-0242-4a24-865f-1f4829793e65",
+                    "locator_label": "Section 1, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "CHANNEL-SHIFT",
+                        "title": "Retail Channel Shift Note",
+                        "source_type": "markdown",
+                        "source_class": "market",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/INTERVIEWS@v1:S13.Q1",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "I found my last three pairs through my run club group chat, not from ads.",
+                    "char_start": 43,
+                    "char_end": 116,
+                    "child_id": "26c4aeda-6a28-415c-8cab-99a51737dd6c",
+                    "locator_label": "Section 13, Q&A 1",
+                    "note": null,
+                    "source": {
+                        "code": "INTERVIEWS",
+                        "title": "Northstar Customer Interviews",
+                        "source_type": "docx",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/FY27-MEMO@v1:S1.B7",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "We propose a FY27 Gen Z marketing budget of $24 million, of which 40% would shift to creator and community programs.",
+                    "char_start": 0,
+                    "char_end": 116,
+                    "child_id": "0a60e753-82a4-446f-bd1f-d2fdcc1c5ea8",
+                    "locator_label": "Section 1, Block 7",
+                    "note": null,
+                    "source": {
+                        "code": "FY27-MEMO",
+                        "title": "Northstar FY27 Planning Memo",
+                        "source_type": "markdown",
+                        "source_class": "internal",
+                        "version": 1
+                    }
+                }
+            ],
+            "contradicting": [
+                {
+                    "handle": "NORTHSTAR/SUPPORT-THEMES@v1:P3.B3",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "Median first response time on social channels slipped to 9.5 hours in Q3 against a service target of 4 hours.",
+                    "char_start": 81,
+                    "char_end": 190,
+                    "child_id": "0fe96251-a15b-4865-9be6-cec2f9114298",
+                    "locator_label": "Page 3, Block 3",
+                    "note": "Service on social channels lags the target.",
+                    "source": {
+                        "code": "SUPPORT-THEMES",
+                        "title": "Northstar Customer Support Themes Q3 2026",
+                        "source_type": "pdf",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "social-shop-sales-by-quarter",
+                    "label": "Social Shop net sales growth, Q1 to Q2 2026",
+                    "value": 142.0,
+                    "display": "+142.0%",
+                    "unit": "percent",
+                    "denominator_label": "monthly channel rows",
+                    "derived": {
+                        "op": "pct_change",
+                        "of": [
+                            "social-shop-sales-by-quarter:Jan-Mar 2026",
+                            "social-shop-sales-by-quarter:Apr-Jun 2026"
+                        ]
+                    }
+                },
+                {
+                    "analysis_id": "genz-channel-scorecard-sep-2026",
+                    "label": "Social Shop average order value, Gen Z, Sep 2026",
+                    "value": 61.6,
+                    "display": "$61.60",
+                    "unit": "usd",
+                    "denominator_label": null,
+                    "derived": null
+                },
+                {
+                    "analysis_id": "genz-channel-scorecard-sep-2026",
+                    "label": "Social Shop return rate, Gen Z, Sep 2026",
+                    "value": 16.5,
+                    "display": "16.5%",
+                    "unit": "percent",
+                    "denominator_label": null,
+                    "derived": null
+                },
+                {
+                    "analysis_id": "genz-channel-scorecard-sep-2026",
+                    "label": "Stores return rate, Gen Z, Sep 2026",
+                    "value": 8.3,
+                    "display": "8.3%",
+                    "unit": "percent",
+                    "denominator_label": null,
+                    "derived": null
+                },
+                {
+                    "analysis_id": "genz-channel-scorecard-sep-2026",
+                    "label": "Social Shop net sales, Gen Z, Sep 2026",
+                    "value": 714560,
+                    "display": "$714,560",
+                    "unit": "usd",
+                    "denominator_label": null,
+                    "derived": null
+                },
+                {
+                    "analysis_id": "genz-channel-scorecard-sep-2026",
+                    "label": "Stores net sales, Gen Z, Sep 2026",
+                    "value": 5420196,
+                    "display": "$5,420,196",
+                    "unit": "usd",
+                    "denominator_label": null,
+                    "derived": null
+                }
+            ],
+            "gaps": [
+                "No channel margin or customer acquisition cost data."
+            ],
+            "next_step": "Build a channel contribution-margin view.",
+            "caveats": [
+                "Monthly return rates should not be averaged across months; the scorecard shows a single month.",
+                "Interview quotes are single people (n=1)."
+            ],
+            "integrity": "verified"
+        },
+        {
+            "id": "O4",
+            "title": "Materials and sustainability transparency",
+            "status": "needs_research",
+            "status_rationale": "Qualitative demand for proof is clear, but it is rarely the top frustration and the influence of sustainability claims is falling.",
+            "thesis": "Specific materials and origin information may build trust with Gen Z shoppers who discount generic green claims, but the commercial effect is untested.",
+            "supporting": [
+                {
+                    "handle": "NORTHSTAR/INTERVIEWS@v1:S11.Q1",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "If a brand cannot tell me where the shoe was made and what is recycled in it, I just assume the green claims are marketing.",
+                    "char_start": 58,
+                    "char_end": 181,
+                    "child_id": "3e4b4a5e-6419-4fa8-b511-933c80941b9e",
+                    "locator_label": "Section 11, Q&A 1",
+                    "note": null,
+                    "source": {
+                        "code": "INTERVIEWS",
+                        "title": "Northstar Customer Interviews",
+                        "source_type": "docx",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/SURVEY-2026@v1:R63",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Put the recycled content percentage and the factory country right on the product page.",
+                    "char_start": 235,
+                    "char_end": 321,
+                    "child_id": "69dfb009-8f01-4e8b-b929-96cea5bd7974",
+                    "locator_label": "Row 63",
+                    "note": null,
+                    "source": {
+                        "code": "SURVEY-2026",
+                        "title": "Northstar Customer Survey 2026",
+                        "source_type": "csv",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                },
+                {
+                    "handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S3.B6",
+                    "integrity": "verified",
+                    "role": "support",
+                    "quote": "Participants ranked fit guarantee, faster delivery and honest materials information ahead of personalization when asked to spend a hypothetical 100 points.",
+                    "char_start": 684,
+                    "char_end": 839,
+                    "child_id": "3ec617e4-855a-4ceb-84b9-c0a554970484",
+                    "locator_label": "Section 3, Block 6",
+                    "note": null,
+                    "source": {
+                        "code": "GENZ-FOCUS-GROUP",
+                        "title": "Northstar Gen Z Focus Group Summary",
+                        "source_type": "docx",
+                        "source_class": "customer",
+                        "version": 1
+                    }
+                }
+            ],
+            "contradicting": [
+                {
+                    "handle": "NORTHSTAR/GENZ-TRENDS@v2:P3.B2",
+                    "integrity": "verified",
+                    "role": "contradict",
+                    "quote": "The share of Gen Z respondents who say sustainability claims sway their brand choice has fallen to 54%.",
+                    "char_start": 0,
+                    "char_end": 103,
+                    "child_id": "e6eca90c-6e48-4002-9b6f-dd12ea675e54",
+                    "locator_label": "Page 3, Block 2",
+                    "note": null,
+                    "source": {
+                        "code": "GENZ-TRENDS",
+                        "title": "Gen Z Athletic Trends 2026",
+                        "source_type": "pdf",
+                        "source_class": "market",
+                        "version": 2
+                    }
+                }
+            ],
+            "metrics": [
+                {
+                    "analysis_id": "genz-top-pain-points",
+                    "label": "Gen Z respondents naming sustainability transparency as top frustration",
+                    "value": 36,
+                    "display": "36",
+                    "unit": "count",
+                    "denominator_label": "of Gen Z respondents surveyed",
+                    "derived": null
+                }
+            ],
+            "gaps": [
+                "No data on conversion or willingness to pay for transparency."
+            ],
+            "next_step": "A/B test product-page disclosures.",
+            "caveats": [
+                "Interview and survey verbatims are single people (n=1)."
+            ],
+            "integrity": "verified"
+        }
+    ]
+}
