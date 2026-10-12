@@ -11,12 +11,15 @@ export function HighlightedText({ text, span }: { text: string; span: ActiveSpan
     segments.valid && span?.expectedText != null && span.expectedText !== segments.mark;
 
   useEffect(() => {
-    markRef.current?.scrollIntoView?.({ block: "nearest", behavior: "smooth" });
+    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    markRef.current?.scrollIntoView?.({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
   }, [span?.childId, span?.charStart, span?.charEnd]);
 
   return (
     <div className="flex flex-col gap-2">
       <div
+        role="region"
+        tabIndex={0}
         aria-label="Evidence passage text"
         className="max-h-96 overflow-y-auto whitespace-pre-wrap break-words rounded-md border border-border bg-surface-muted px-4 py-3 text-base leading-relaxed text-primary"
       >

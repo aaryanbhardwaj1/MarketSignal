@@ -7,7 +7,10 @@ const WIDTHS = {
   wide: "max-w-wide",
 } as const;
 
-/** Centred page column with the standard gutter (24px, 16px under 768px). */
+/**
+ * Page column with the standard gutter (24px, 16px under 768px). Left-anchored, so the page
+ * title and left edge stay put across sections whatever the column width.
+ */
 export function PageContainer({
   width = "content",
   className,
@@ -18,7 +21,7 @@ export function PageContainer({
   children: ReactNode;
 }) {
   return (
-    <div className={cx("mx-auto w-full px-4 py-6 md:px-6 md:py-8", WIDTHS[width], className)}>
+    <div className={cx("w-full px-4 py-6 md:px-6 md:py-8", WIDTHS[width], className)}>
       {children}
     </div>
   );

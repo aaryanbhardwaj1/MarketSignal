@@ -2,133 +2,117 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import {
-  buildResultTable,
-  denominatorText,
-  describeFilters,
-  describeGrouping,
-  describeMetrics,
-  formatMetricValue,
-  type ResultTableModel,
-} from "@/lib/analytics";
+import type { ResultTableModel, TableRow } from "@/lib/analytics";
 import { getResult } from "@/lib/api/endpoints";
+import { useDatasets } from "@/lib/api/hooks/core";
 import { queryKeys } from "@/lib/api/query-keys";
-import type { AnalyticsResult, MetricValue } from "@/lib/api/types";
-import { describeError } from "@/lib/api/errors";
-import { humanize } from "@/lib/format";
+import type { AnalyticsResult } from "@/lib/api/types";
+import { formatNumber, tableLabel } from "@/lib/format";
 import { evidenceViewerHref } from "@/lib/handles";
-import { errorMessage } from "@/lib/labels";
 import { DevDetails } from "../ui/disclosure";
+import { KeyValueList } from "../ui/key-value";
+import { ResultPanel } from "../ui/result-panel";
 import { ErrorState, LoadingRegion } from "../ui/states";
+import { Table, type Column } from "../ui/table";
 import { useOptionalEvidenceDrawer } from "./drawer-context";
+import { describeResult, plainMetrics, plainResultTable } from "./result-display";
 
 /** Every value below is rendered as a React text node: never as Markdown or HTML. */
 
-function MetricList({ metrics }: { metrics: readonly MetricValue[] }) {
+type IndexedRow = TableRow & { index: number };
+
+function RowLink({ ws, handle, text }: { ws: string; handle: string; text: string }) {
+  const drawer = useOptionalEvidenceDrawer();
   return (
-    <ul className="grid gap-2">
-      {metrics.map((metric, i) => (
-        <li key={`${metric.key}-${i}`} className="rounded-md border border-border bg-surface px-3 py-2">
-          <p className="text-lg font-semibold tabular-nums text-primary">{formatMetricValue(metric)}</p>
-          <p className="text-xs text-muted">{denominatorText(metric)}</p>
-        </li>
-      ))}
-    </ul>
+    <Link
+      href={evidenceViewerHref(ws, handle)}
+      onClick={(event) => {
+        if (!drawer) return;
+        event.preventDefault();
+        drawer.openEvidence({ handle });
+      }}
+      className="text-accent-text hover:underline"
+    >
+      {text}
+    </Link>
   );
 }
 
 function ResultTable({ ws, table }: { ws: string; table: ResultTableModel }) {
-  const drawer = useOptionalEvidenceDrawer();
-  return (
-    <div className="overflow-x-auto rounded-md border border-border bg-surface">
-      <table className="min-w-full text-left text-xs">
-        <thead className="bg-surface-muted text-secondary">
-          <tr>
-            {table.headers.map((header, i) => (
-              <th key={`${header}-${i}`} scope="col" className="px-2 py-1.5 font-semibold">
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {table.rows.map((row, r) => (
-            <tr
-              key={r}
-              className={`border-t border-border ${row.emphasis === "difference" ? "bg-surface-muted font-semibold" : ""}`}
-            >
-              {row.cells.map((cell, c) => (
-                <td key={c} className="px-2 py-1.5 align-top text-primary">
-                  {c === 0 && row.handle ? (
-                    <Link
-                      href={evidenceViewerHref(ws, row.handle)}
-                      onClick={(event) => {
-                        if (!drawer || !row.handle) return;
-                        event.preventDefault();
-                        drawer.openEvidence({ handle: row.handle });
-                      }}
-                      className="text-accent-text hover:underline"
-                    >
-                      {cell.text}
-                    </Link>
-                  ) : (
-                    cell.text
-                  )}
-                  {cell.detail && <span className="ml-1 text-xs font-normal text-muted">({cell.detail})</span>}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  const rows: IndexedRow[] = table.rows.map((row, index) => ({ ...row, index }));
+  const columns: Column<IndexedRow>[] = table.headers.map((header, c) => ({
+    key: `${c}`,
+    header,
+    align: c > 0 && rows.some((r) => r.cells[c]?.detail) ? "right" : "left",
+    cell: (row) => {
+      const cell = row.cells[c];
+      if (!cell) return "-";
+      const text = c === 0 && row.handle ? <RowLink ws={ws} handle={row.handle} text={cell.text} /> : cell.text;
+      return (
+        <span className={row.emphasis === "difference" ? "font-semibold" : undefined}>
+          {text}
+          {cell.detail && <span className="block text-xs font-normal text-muted">{cell.detail}</span>}
+        </span>
+      );
+    },
+  }));
+  return <Table caption="Computed result table" columns={columns} rows={rows} rowKey={(r) => `${r.index}`} density="compact" />;
 }
 
-function Fact({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-wrap gap-x-2">
-      <dt className="font-medium text-muted">{label}</dt>
-      <dd className="text-secondary">{children}</dd>
-    </div>
-  );
-}
-
-/** Presentational card for a fetched analytics result. */
-export function ResultCardView({ ws, result }: { ws: string; result: AnalyticsResult }) {
-  const filters = describeFilters(result.spec);
-  const grouping = describeGrouping(result.spec);
-  const requested = describeMetrics(result.spec);
-  const table = buildResultTable(result);
-  const metrics = result.rows[0]?.metrics ?? [];
+/**
+ * Presentational view of a fetched analytics result, rendered through `ResultPanel`. Business
+ * text only: dataset ids, source codes, the operation and the rounding policy are kept for
+ * "Technical details". `sourceTitle` is the dataset title from the workspace dataset list.
+ */
+export function ResultCardView({ ws, result, sourceTitle }: { ws: string; result: AnalyticsResult; sourceTitle?: string | null }) {
+  const view = describeResult(result);
+  const table = plainResultTable(result);
+  const title = sourceTitle ?? tableLabel(result.table);
+  const details = [
+    // A single figure already states its base; tables and listings state the match here.
+    ...(view.value === undefined
+      ? [{ label: "Records matched", value: `${formatNumber(result.rows_matched)} of ${formatNumber(result.rows_scanned)}` }]
+      : []),
+    ...(view.notes.length > 0 ? [{ label: "Calculation notes", value: view.notes.join("; ") }] : []),
+  ];
+  const computed = plainMetrics(result.spec);
   return (
     <div className="flex flex-col gap-3 text-sm">
-      <p className="text-xs font-medium text-cite-result">
-        Computed result — deterministic calculation, not a quoted source
-      </p>
-      {result.rows.length === 0 ? (
-        <p className="text-secondary">No rows matched, so nothing was computed.</p>
-      ) : table ? (
-        <ResultTable ws={ws} table={table} />
-      ) : (
-        <MetricList metrics={metrics} />
-      )}
-      <dl className="grid gap-1 text-xs">
-        {requested.length > 0 && <Fact label="Computed">{requested.join("; ")}</Fact>}
-        <Fact label="Filters">{filters.length > 0 ? filters.join("; ") : "No filters"}</Fact>
-        {grouping.length > 0 && <Fact label="Grouped by">{grouping.join(", ")}</Fact>}
-        <Fact label="Rows">
-          {result.rows_matched.toLocaleString("en-US")} of {result.rows_scanned.toLocaleString("en-US")} matched
-        </Fact>
-        <Fact label="Dataset">
-          {result.dataset} · source {result.source_code} v{result.source_version} · table {result.table}
-        </Fact>
-        <Fact label="Rounding">{result.rounding}</Fact>
-        {result.warnings.length > 0 && (
-          <Fact label="Notes">{result.warnings.map((w) => humanize(w)).join("; ")}</Fact>
+      <p className="text-xs text-muted">Computed from a workspace dataset, not a quoted source.</p>
+      <ResultPanel
+        title={view.title}
+        value={view.value}
+        unit=""
+        denominator={view.value !== undefined ? { label: "Base", value: view.base } : undefined}
+        filters={view.filters.length > 0 ? view.filters : ["No filters"]}
+        groupBy={view.groupBy}
+        provenance={{ sourceTitle: title, sourceCode: result.source_code, version: result.source_version, table: result.table }}
+      >
+        {result.rows.length === 0 ? (
+          <p className="text-secondary">No records matched, so nothing was computed.</p>
+        ) : (
+          table && <ResultTable ws={ws} table={table} />
         )}
-      </dl>
-      <DevDetails data={{ result_id: result.result_id, operation: result.operation, metrics: metrics.map((m) => m.key), spec: result.spec }} />
+        {(computed.length > 1 || details.length > 0) && (
+          <div className={table || result.rows.length === 0 ? "mt-3" : undefined}>
+            <KeyValueList items={[...(computed.length > 1 ? [{ label: "Computed", value: computed.join("; ") }] : []), ...details]} columns={2} />
+          </div>
+        )}
+      </ResultPanel>
+      <DevDetails
+        data={{
+          result_id: result.result_id,
+          dataset: result.dataset,
+          source_code: result.source_code,
+          source_version: result.source_version,
+          table: result.table,
+          operation: result.operation,
+          rounding: result.rounding,
+          warnings: result.warnings,
+          metrics: (result.rows[0]?.metrics ?? []).map((m) => m.key),
+          spec: result.spec,
+        }}
+      />
     </div>
   );
 }
@@ -140,17 +124,12 @@ export function ResultCard({ ws, resultId }: { ws: string; resultId: string }) {
     queryFn: ({ signal }) => getResult(ws, resultId, signal),
     staleTime: Infinity, // a stored result is immutable
   });
+  const datasets = useDatasets(ws);
   if (query.isPending) return <LoadingRegion label="Loading computed result" lines={5} />;
   if (query.isError) {
-    const { code } = describeError(query.error);
-    return (
-      <ErrorState
-        title="Could not load this computed result"
-        description={errorMessage(code).label}
-        retry={() => void query.refetch()}
-        devDetail={code}
-      />
-    );
+    return <ErrorState title="Could not load this computed result" error={query.error} retry={() => void query.refetch()} />;
   }
-  return <ResultCardView ws={ws} result={query.data.result} />;
+  const result = query.data.result;
+  const sourceTitle = datasets.data?.datasets.find((d) => d.dataset === result.dataset)?.title ?? null;
+  return <ResultCardView ws={ws} result={result} sourceTitle={sourceTitle} />;
 }

@@ -9,6 +9,15 @@ export interface Column<T> {
   width?: string;
 }
 
+const INNER_CONTROLS = "a, button, input, select, textarea, summary, [role='button']";
+
+/** True when the event started on an interactive element inside the row (not the row itself). */
+function fromInnerControl(target: EventTarget, row: Element): boolean {
+  if (!(target instanceof Element)) return false;
+  const control = target.closest(INNER_CONTROLS);
+  return control !== null && control !== row && row.contains(control);
+}
+
 /**
  * Data table with a caption (visually hidden unless `showCaption`), sticky-free header and
  * optional row activation. Rows with `onRowClick` are also reachable by keyboard (Enter/Space).
@@ -63,10 +72,19 @@ export function Table<T>({
               <tr
                 key={rowKey(row)}
                 tabIndex={onRowClick ? 0 : undefined}
-                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                onClick={
+                  onRowClick
+                    ? (event) => {
+                        if (fromInnerControl(event.target, event.currentTarget)) return;
+                        onRowClick(row);
+                      }
+                    : undefined
+                }
                 onKeyDown={
                   onRowClick
                     ? (event) => {
+                        // Keys pressed on a link or button inside the row keep their own behaviour.
+                        if (event.target !== event.currentTarget) return;
                         if (event.key === "Enter" || event.key === " ") {
                           event.preventDefault();
                           onRowClick(row);
@@ -76,7 +94,7 @@ export function Table<T>({
                 }
                 className={cx(
                   "border-b border-border last:border-b-0",
-                  onRowClick && "cursor-pointer hover:bg-surface-muted/60",
+                  onRowClick && "cursor-pointer hover:bg-surface-muted/60 focus-visible:outline-offset-[-2px]",
                 )}
               >
                 {columns.map((col) => (

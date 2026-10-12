@@ -77,16 +77,16 @@ export function DevMetric({
             <dd className="tabular-nums">{formatNumber(k)}</dd>
           </div>
         )}
-        {sourceText && (
-          <div>
-            <Tooltip content={<span className="font-mono">{sourceText}</span>}>
-              <button type="button" className="rounded-sm text-xs text-accent-text underline decoration-dotted underline-offset-2">
-                Source
-              </button>
-            </Tooltip>
-          </div>
-        )}
       </dl>
+      {sourceText && (
+        <div className="mt-1 text-xs">
+          <Tooltip content={<span className="font-mono">{sourceText}</span>}>
+            <button type="button" className="rounded-sm text-xs text-accent-text underline decoration-dotted underline-offset-2">
+              Source
+            </button>
+          </Tooltip>
+        </div>
+      )}
     </div>
   );
 }

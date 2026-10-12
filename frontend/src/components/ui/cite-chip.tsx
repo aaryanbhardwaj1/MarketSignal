@@ -51,11 +51,17 @@ export function CiteChip({
   );
 }
 
+export const INFERENCE_DESCRIPTION = "A conclusion drawn from the cited evidence, not stated directly in a source";
+
 /** Marks a sentence as the assistant's inference rather than a cited fact. */
 export function InferenceTag() {
   return (
-    <span className="mx-0.5 inline-flex items-center rounded-sm border border-dashed border-border-strong px-1 align-baseline text-xs text-cite-inference">
+    <span
+      title={INFERENCE_DESCRIPTION}
+      className="mx-0.5 inline-flex items-center rounded-sm border border-dashed border-border-strong px-1 align-baseline text-xs text-cite-inference"
+    >
       Inference
+      <span className="sr-only">: {INFERENCE_DESCRIPTION.toLowerCase()}</span>
     </span>
   );
 }

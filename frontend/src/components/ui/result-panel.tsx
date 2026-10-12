@@ -1,9 +1,19 @@
 import type { ReactNode } from "react";
+import { tableLabel } from "@/lib/format";
 import { KeyValueList } from "./key-value";
+
+/** "From <title> · Version N · <table in words>", omitting a table that repeats the title or is unknown. */
+export function provenanceLine({ sourceTitle, version, table }: { sourceTitle: string; version: string | number; table: string }): string {
+  const plain = /^[-–\s]*$/.test(table) ? "" : tableLabel(table);
+  const repeats = plain !== "" && sourceTitle.toLowerCase().includes(plain.toLowerCase());
+  return [`From ${sourceTitle}`, `Version ${version}`, plain && !repeats ? plain : null].filter(Boolean).join(" · ");
+}
 
 /**
  * A computed analytics result. Teal left rule plus a "Computed" label, so it never reads as an
- * evidence passage. Provenance names the dataset, version and table the figure came from.
+ * evidence passage. Provenance names the dataset, version and table the figure came from; the
+ * stored table name is shown in words. `denominator` should state the base with its total
+ * ("68 of 600 records"), so a figure never appears without one.
  */
 export function ResultPanel({
   title,
@@ -45,8 +55,8 @@ export function ResultPanel({
         </div>
       )}
       {children && <div className="mt-3">{children}</div>}
-      <p className="mt-3 border-t border-border pt-2 text-xs text-muted" data-source-code={provenance.sourceCode}>
-        From {provenance.sourceTitle} · Version {provenance.version} · Table {provenance.table}
+      <p className="mt-3 border-t border-border pt-2 text-xs text-muted">
+        {provenanceLine(provenance)}
       </p>
     </section>
   );

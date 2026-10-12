@@ -19,8 +19,6 @@ export function PageHeader({
   actions?: ReactNode;
   meta?: ReactNode;
   breadcrumb?: Crumb[];
-  /** @deprecated Raw eyebrows (workspace codes) are no longer shown. Accepted and ignored. */
-  eyebrow?: ReactNode;
 }) {
   return (
     <header className="flex flex-col gap-3 border-b border-border pb-5">

@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useWorkspaces } from "@/lib/api/hooks/core";
 import type { Workspace } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
+import { splitWorkspaceName } from "@/lib/format";
 import { Skeleton } from "../ui/states";
 import { isTestWorkspace, switchWorkspaceHref } from "./nav";
 
@@ -19,6 +20,16 @@ const CHEVRON = (
     <path d="m4.5 6.5 3.5 3.5 3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
+
+function WorkspaceName({ full }: { full: string }) {
+  const { name, detail } = splitWorkspaceName(full);
+  return (
+    <>
+      <span className="block">{name}</span>
+      {detail && <span className="block text-xs font-normal text-muted">{detail}</span>}
+    </>
+  );
+}
 
 /**
  * Shows the current workspace by name; a small popover switches among the visible ones.
@@ -64,25 +75,34 @@ export function WorkspaceControl({ ws }: { ws: string }) {
     );
   }
 
-  const name = current?.name ?? (workspaces.isError ? "Workspace unavailable" : "Unknown workspace");
+  const full = current?.name ?? (workspaces.isError ? "Workspace unavailable" : "Unknown workspace");
+  const { name, detail } = splitWorkspaceName(full);
 
   return (
-    <div ref={wrapper} className="relative">
+    <div
+      ref={wrapper}
+      className="relative"
+      onBlur={(event) => {
+        // Disclosure pattern: close when focus leaves the control and its list.
+        // A null relatedTarget (pointer outside, or Safari not focusing a clicked link) is left to
+        // the pointerdown handler, so a click on a list link is never swallowed.
+        const next = event.relatedTarget as Node | null;
+        if (open && next && !event.currentTarget.contains(next)) setOpen(false);
+      }}
+    >
       <button
         ref={trigger}
         type="button"
-        aria-haspopup="true"
-        aria-expanded={open}
+        aria-expanded={others.length > 0 ? open : undefined}
         aria-controls={open ? menuId : undefined}
         disabled={others.length === 0}
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-start justify-between gap-2 rounded-md border border-border bg-surface-muted px-2.5 py-2 text-left hover:border-border-strong disabled:cursor-default disabled:hover:border-border"
       >
-        <span className="min-w-0">
+        <span className="min-w-0" title={current?.name}>
           <span className="sr-only">Current workspace: </span>
-          <span className="line-clamp-2 text-sm font-medium text-primary" title={current?.name}>
-            {name}
-          </span>
+          <span className="block truncate text-sm font-medium text-primary">{name}</span>
+          {detail && <span className="block truncate text-xs text-muted">{detail}</span>}
         </span>
         {others.length > 0 && <span className="mt-1">{CHEVRON}</span>}
       </button>
@@ -106,7 +126,7 @@ export function WorkspaceControl({ ws }: { ws: string }) {
                       isCurrent ? "bg-accent-subtle font-medium text-accent-text" : "text-primary hover:bg-surface-muted",
                     )}
                   >
-                    {w.name}
+                    <WorkspaceName full={w.name} />
                     {isCurrent && <span className="sr-only"> (current)</span>}
                   </Link>
                 </li>

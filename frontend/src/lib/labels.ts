@@ -12,6 +12,11 @@ export interface LabelEntry {
   label: string;
   description?: string;
   tone?: StatusTone;
+  /**
+   * Implementation detail with no business meaning. Business pages (Research details, run
+   * notices) skip it; Telemetry and "Technical details" still show it.
+   */
+  internal?: boolean;
 }
 
 export interface Humanized extends LabelEntry {
@@ -42,19 +47,19 @@ export const DEGRADATION_FLAGS: Dict = {
   RETRIEVAL_TIMEOUT: { label: "Search timed out", description: "The evidence search reached its time limit.", tone: "warn" },
   RETRIEVAL_LEXICAL_FALLBACK: { label: "Keyword search only", description: "Meaning-based search was unavailable, so keyword search was used.", tone: "warn" },
   RETRIEVAL_DENSE_UNAVAILABLE: { label: "Meaning-based search unavailable", description: "Only keyword matching was available for this search.", tone: "warn" },
-  RERANKER_UNAVAILABLE: { label: "Result re-ranking unavailable", description: "Results were ordered without the re-ranking step.", tone: "info" },
-  CONVERSATION_STATE_NOT_UPDATED: { label: "Conversation summary not saved", description: "The answer was saved, but the conversation summary was not updated.", tone: "info" },
+  RERANKER_UNAVAILABLE: { label: "Result re-ranking unavailable", description: "Results were ordered without the re-ranking step.", tone: "info", internal: true },
+  CONVERSATION_STATE_NOT_UPDATED: { label: "Conversation summary not saved", description: "The answer was saved, but the conversation summary was not updated.", tone: "info", internal: true },
   RESEARCH_UNAVAILABLE: { label: "Deep research unavailable", description: "Deep research was requested but not available; a standard answer was produced.", tone: "warn" },
   AGENT_STEP_BUDGET_EXHAUSTED: { label: "Research step limit reached", description: "Research stopped after the maximum number of steps.", tone: "warn" },
-  AGENT_TOKEN_BUDGET_EXHAUSTED: { label: "Research budget reached", description: "Research stopped after using its token budget.", tone: "warn" },
+  AGENT_TOKEN_BUDGET_EXHAUSTED: { label: "Research budget reached", description: "Research stopped after reaching its processing budget.", tone: "warn" },
   AGENT_CONTEXT_LIMIT: { label: "Research context limit reached", description: "Research stopped because it gathered as much context as it can hold.", tone: "warn" },
   GATHER_TIMEOUT: { label: "Research timed out", description: "Evidence gathering reached its time limit.", tone: "warn" },
-  AGENT_REPEAT_CALL_STOPPED: { label: "Repeated research step stopped", description: "Research stopped a step that repeated an earlier one.", tone: "info" },
+  AGENT_REPEAT_CALL_STOPPED: { label: "Repeated research step stopped", description: "Research stopped a step that repeated an earlier one.", tone: "info", internal: true },
   TOOL_CIRCUIT_OPEN: { label: "Research tools failing", description: "Research stopped after several research steps failed.", tone: "warn" },
   PLANNER_UNAVAILABLE_FALLBACK: { label: "Research planning unavailable", description: "The live model could not plan research steps, so a standard evidence search was used.", tone: "warn" },
   PLANNER_NO_TOOL_FALLBACK: { label: "No research steps succeeded", description: "No research search succeeded, so a standard evidence search was used.", tone: "warn" },
   AGENT_LLM_UNAVAILABLE: { label: "Live model unavailable for research", description: "Research planning could not reach the live model.", tone: "warn" },
-  TOOLS_TRANSPORT_FALLBACK: { label: "Research tools ran locally", description: "Research tools ran in-process instead of through the tool service.", tone: "info" },
+  TOOLS_TRANSPORT_FALLBACK: { label: "Research tools ran locally", description: "Research tools ran in-process instead of through the tool service.", tone: "info", internal: true },
 };
 
 /** Run termination states (migration 0004 CHECK constraint, runs/flags.py PRECEDENCE). */
@@ -82,7 +87,7 @@ export const RUN_STATUSES: Dict = {
 
 /** Verification dispositions (contracts `Disposition`). */
 export const VERIFICATION_DISPOSITIONS: Dict = {
-  accepted: { label: "Verified", description: "Every citation was checked against the evidence.", tone: "success" },
+  accepted: { label: "Citations verified", description: "Every citation was checked against the evidence.", tone: "success" },
   repaired: { label: "Verified after corrections", description: "Unsupported statements or citations were removed before the answer was shown.", tone: "success" },
   regenerate: { label: "Rewritten after checks", description: "The first draft failed citation checks and was rewritten.", tone: "warn" },
   rejected: { label: "Did not pass checks", description: "The draft failed citation checks.", tone: "danger" },
@@ -237,6 +242,14 @@ export const GENERATION_UNAVAILABLE_REASONS: Dict = {
   PROVIDER_REJECTED: { label: "Live model provider unavailable" },
 };
 
+/** Notes recorded with a computed result (tools/analytics_contracts.py warnings). */
+export const RESULT_WARNINGS: Dict = {
+  EMPTY_SELECTION: { label: "No records matched the filters" },
+  ZERO_DENOMINATOR: { label: "No eligible records, so the figure could not be computed" },
+  NULLS_EXCLUDED: { label: "Empty cells were left out of the calculation" },
+  GROUPS_TRUNCATED: { label: "Only the largest groups are shown" },
+};
+
 export const degradationFlag = (code: string | null | undefined) => lookup(DEGRADATION_FLAGS, code);
 export const terminationState = (code: string | null | undefined) => lookup(TERMINATION_STATES, code);
 export const runStatus = (code: string | null | undefined) => lookup(RUN_STATUSES, code);
@@ -250,6 +263,19 @@ export const runMode = (code: string | null | undefined) => lookup(RUN_MODES, co
 export const stopReason = (code: string | null | undefined) => lookup(STOP_REASONS, code);
 export const opportunityStatus = (code: string | null | undefined) => lookup(OPPORTUNITY_STATUSES, code);
 export const integrity = (code: string | null | undefined) => lookup(INTEGRITY, code);
+/** Spreadsheet and CSV sources, by code ("csv", "xlsx") or by their display label. */
+export function isTabularSource(typeOrLabel: string | null | undefined): boolean {
+  if (!typeOrLabel) return false;
+  return ["csv", "xlsx"].some((code) => typeOrLabel === code || typeOrLabel === SOURCE_TYPES[code].label);
+}
+
+export const resultWarning = (code: string | null | undefined) => lookup(RESULT_WARNINGS, code);
+
+/** Degradation flags worth showing on business pages (drops `internal` and unknown codes). */
+export function userFacingFlags(codes: readonly string[] | null | undefined): Humanized[] {
+  return (codes ?? []).map(degradationFlag).filter((f) => f.known && !f.internal);
+}
+
 export const generationUnavailableReason = (code: string | null | undefined) =>
   lookup(GENERATION_UNAVAILABLE_REASONS, code);
 

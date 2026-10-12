@@ -57,11 +57,13 @@ function TabList({ tabs, value, onChange, label, idPrefix }: TabListProps) {
             role="tab"
             id={tabDomId(prefix, tab.id)}
             aria-selected={selected}
-            aria-controls={panelDomId(prefix, tab.id)}
+            // Only the selected panel is rendered, so only it can be referenced.
+            aria-controls={selected ? panelDomId(prefix, tab.id) : undefined}
             tabIndex={selected ? 0 : -1}
             onClick={() => onChange?.(tab.id)}
             className={cx(
-              "-mb-px inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-base font-medium transition-colors",
+              // Inset focus ring: the scrolling tab list would clip an outset one.
+              "-mb-px inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-base font-medium transition-colors focus-visible:outline-offset-[-2px]",
               selected ? "border-accent text-primary" : "border-transparent text-muted hover:text-primary",
             )}
           >

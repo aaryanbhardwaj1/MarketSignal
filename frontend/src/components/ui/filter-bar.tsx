@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 import { Button } from "./button";
-import { CONTROL_CLASS } from "./control-class";
-import { cx } from "@/lib/cx";
-import type { SelectOption } from "./form-controls";
+import { Select, type SelectOption } from "./form-controls";
 
 /** Horizontal row of filters with an optional reset. */
 export function FilterBar({ children, onReset }: { children: ReactNode; onReset?: () => void }) {
@@ -36,13 +34,7 @@ export function FilterSelect({
       <label htmlFor={id} className="text-sm font-medium text-secondary">
         {label}
       </label>
-      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className={cx(CONTROL_CLASS, "h-8 text-sm")}>
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
+      <Select id={id} value={value} onChange={(e) => onChange(e.target.value)} options={options} controlSize="sm" />
     </div>
   );
 }

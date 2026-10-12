@@ -42,7 +42,8 @@ export function SidebarNav({ ws, onNavigate }: { ws: string; onNavigate?: () => 
                       aria-current={isActive ? "page" : undefined}
                       onClick={onNavigate}
                       className={cx(
-                        "flex h-8 items-center rounded-md px-2 text-base",
+                        // Inset focus ring: the scrolling nav column would clip an outset one.
+                        "flex h-8 items-center rounded-md px-2 text-base focus-visible:outline-offset-[-2px]",
                         isActive
                           ? "bg-accent-subtle font-medium text-accent-text"
                           : "text-secondary hover:bg-surface-muted hover:text-primary",

@@ -66,6 +66,7 @@ describe("Tabs", () => {
     expect(first.tabIndex).toBe(0);
     expect(second.tabIndex).toBe(-1);
     expect(first.getAttribute("aria-controls")).toBe("t-panel-overview");
+    expect(second.hasAttribute("aria-controls")).toBe(false);
     expect(document.getElementById("t-panel-overview")?.getAttribute("aria-labelledby")).toBe("t-tab-overview");
     expect(second.textContent).toContain("12");
   });

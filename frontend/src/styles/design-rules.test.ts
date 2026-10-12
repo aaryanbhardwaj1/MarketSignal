@@ -4,17 +4,12 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 /**
- * Banned-class guard (plan §2.1 "Enforcement"). Scope grows wave by wave: Wave 1 covers the
- * design-system folders; Wave 2 folders join when their restyle lands.
+ * Banned-class guard (plan §2.1 "Enforcement"). Scans every source file under `src/`: class
+ * strings live in `.ts` helpers (control-class.ts, tone.ts, labels.ts) as well as `.tsx`.
+ * Tests (and fixtures) are excluded, since they spell banned patterns on purpose.
  */
 const SRC = fileURLToPath(new URL("..", import.meta.url));
-const SCOPED_DIRS = ["components/ui", "components/shell", "components/evidence"];
-
-/**
- * Legacy evidence views awaiting the W-DS evidence-drawer restyle (part 2). Remove each entry
- * as its file is restyled or deleted; do not add new entries.
- */
-const PENDING_RESTYLE = new Set<string>([]);
+const SKIP_DIRS = new Set(["node_modules", "__fixtures__"]);
 
 const BANNED: Array<[string, RegExp]> = [
   ["arbitrary text size", /\btext-\[/],
@@ -25,12 +20,12 @@ const BANNED: Array<[string, RegExp]> = [
   ["raw palette colour", /\b(?:indigo|amber|teal|violet|emerald|sky|slate)-\d/],
 ];
 
-function tsxFiles(dir: string): string[] {
+function sourceFiles(dir: string): string[] {
   if (!existsSync(dir)) return [];
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
-    if (statSync(path).isDirectory()) return tsxFiles(path);
-    return name.endsWith(".tsx") && !name.endsWith(".test.tsx") ? [path] : [];
+    if (statSync(path).isDirectory()) return SKIP_DIRS.has(name) ? [] : sourceFiles(path);
+    return /\.tsx?$/.test(name) && !/\.test\.tsx?$/.test(name) && !name.endsWith(".d.ts") ? [path] : [];
   });
 }
 
@@ -58,13 +53,15 @@ describe("design rules", () => {
     expect(violations('className="rounded-md shadow-overlay text-sm bg-accent text-muted"')).toEqual([]);
   });
 
-  const files = SCOPED_DIRS.flatMap((d) => tsxFiles(join(SRC, d))).map((p) => relative(SRC, p));
+  const files = sourceFiles(SRC).map((p) => relative(SRC, p));
 
-  it("scans at least the design-system primitives", () => {
+  it("scans at least the design-system primitives, pages and .ts class helpers", () => {
     expect(files.some((f) => f.startsWith("components/ui/"))).toBe(true);
+    expect(files.some((f) => f.startsWith("app/"))).toBe(true);
+    expect(files).toContain("components/ui/control-class.ts");
   });
 
-  it.each(files.filter((f) => !PENDING_RESTYLE.has(f)))("%s uses only design tokens", (file) => {
+  it.each(files)("%s uses only design tokens", (file) => {
     expect(violations(readFileSync(join(SRC, file), "utf8"))).toEqual([]);
   });
 });

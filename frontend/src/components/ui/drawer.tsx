@@ -53,7 +53,8 @@ function CloseButton({ onClose }: { onClose: () => void }) {
   );
 }
 
-const DRAWER_WIDTH = { md: "max-w-drawer", lg: "max-w-content" } as const;
+/** Full width below 1024px (laptop-first layout); a fixed side panel from `lg` up. */
+const DRAWER_WIDTH = { md: "max-w-none lg:max-w-drawer", lg: "max-w-none lg:max-w-content" } as const;
 
 /** Right-hand side panel (evidence, result detail). */
 export function Drawer({

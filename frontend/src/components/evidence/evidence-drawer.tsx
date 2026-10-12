@@ -6,11 +6,12 @@ import { getEvidence } from "@/lib/api/endpoints";
 import { describeError, isApiError } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { Evidence, Tombstone } from "@/lib/api/types";
-import { formatDate } from "@/lib/format";
+import { businessLocator, formatDate, parseRowPassage } from "@/lib/format";
 import { isUuid } from "@/lib/handles";
-import { resolveActiveSpan, type ActiveSpan } from "@/lib/highlight";
-import { errorMessage, sourceClass, sourceType } from "@/lib/labels";
+import { resolveActiveSpan, segmentHighlight, type ActiveSpan } from "@/lib/highlight";
+import { errorMessage, isTabularSource, sourceClass, sourceType } from "@/lib/labels";
 import { Badge } from "../ui/badge";
+import { RowFields } from "../ui/row-fields";
 import { Callout } from "../ui/callout";
 import { DevDetails, Disclosure } from "../ui/disclosure";
 import { ErrorState, LoadingRegion } from "../ui/states";
@@ -97,15 +98,23 @@ function PassageError({ error, handle, onRetry }: { error: unknown; handle: stri
 
 function SourceSummary({ evidence }: { evidence: Evidence }) {
   const s = evidence.source;
-  const superseded = !s.is_latest;
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-secondary">
       <Badge tone="neutral">{sourceClass(s.source_class).known ? sourceClass(s.source_class).label : "Source"}</Badge>
       {sourceType(s.source_type).known && <span>{sourceType(s.source_type).label}</span>}
-      <span>
-        Version {s.version}
-        {superseded ? " (superseded)" : " (current)"}
-      </span>
+      {!s.is_latest && <span>Earlier version of this source</span>}
+    </div>
+  );
+}
+
+/** Spreadsheet and CSV rows as labelled fields; other passages as text with the cited span marked. */
+function PassageBody({ evidence, span }: { evidence: Evidence; span: ActiveSpan | null }) {
+  const fields = isTabularSource(evidence.source.source_type) ? parseRowPassage(evidence.text) : null;
+  if (!fields) return <HighlightedText text={evidence.text} span={span} />;
+  const valid = span ? segmentHighlight(evidence.text, span.charStart, span.charEnd).valid : false;
+  return (
+    <div role="region" aria-label="Evidence passage" className="rounded-md border border-border bg-surface-muted px-4 py-3">
+      <RowFields fields={fields} highlight={valid && span ? { start: span.charStart, end: span.charEnd } : null} />
     </div>
   );
 }
@@ -131,17 +140,17 @@ export function EvidencePassageView({
       <section aria-labelledby="evidence-passage-label" className="flex flex-col gap-2">
         <div>
           <h3 id="evidence-passage-label" className="text-base font-semibold text-primary">
-            {evidence.locator_label}
+            {businessLocator(evidence.locator_label) || "Passage"}
           </h3>
           {headings.length > 0 && <p className="text-sm text-muted">{headings.join(" / ")}</p>}
         </div>
-        <HighlightedText text={evidence.text} span={span} />
+        <PassageBody evidence={evidence} span={span} />
       </section>
 
       <ContextExcerpts previous={evidence.context.previous_excerpt} next={evidence.context.next_excerpt} />
 
       {onSelectChild && evidence.children.length > 1 && (
-        <Disclosure summary={`Indexed segments (${evidence.children.length})`}>
+        <Disclosure variant="plain" summary={`Parts of this passage (${evidence.children.length})`}>
           <ChildSpanList
             text={evidence.text}
             spans={evidence.children}
@@ -158,6 +167,8 @@ export function EvidencePassageView({
           span: span ? [span.charStart, span.charEnd] : null,
           content_hash: evidence.content_hash,
           locator: evidence.locator,
+          locator_label: evidence.locator_label,
+          source_version: evidence.source.version,
           source_id: evidence.source.source_id,
           source_code: evidence.source.source_code,
           version_status: evidence.source.version_status,

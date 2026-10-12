@@ -6,16 +6,32 @@ const CHEVRON = (
   </svg>
 );
 
-/** Native details/summary disclosure (keyboard and screen-reader support built in). */
+/**
+ * Native details/summary disclosure (keyboard and screen-reader support built in).
+ * `variant="plain"` matches the quiet "Technical details" style, for use beside it.
+ */
 export function Disclosure({
   summary,
   defaultOpen = false,
+  variant = "card",
   children,
 }: {
   summary: ReactNode;
   defaultOpen?: boolean;
+  variant?: "card" | "plain";
   children: ReactNode;
 }) {
+  if (variant === "plain") {
+    return (
+      <details open={defaultOpen} className="group text-sm">
+        <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-sm text-muted hover:text-primary [&::-webkit-details-marker]:hidden">
+          {CHEVRON}
+          {summary}
+        </summary>
+        <div className="mt-2">{children}</div>
+      </details>
+    );
+  }
   return (
     <details open={defaultOpen} className="group rounded-lg border border-border bg-surface">
       <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg px-4 py-2.5 text-base font-medium text-primary hover:bg-surface-muted/60 [&::-webkit-details-marker]:hidden">

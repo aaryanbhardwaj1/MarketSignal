@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import { describeError } from "@/lib/api/errors";
 import { cx } from "@/lib/cx";
+import { errorMessage } from "@/lib/labels";
 import { DevDetails } from "./disclosure";
 
 export function EmptyState({
@@ -20,38 +22,45 @@ export function EmptyState({
   );
 }
 
-/** Plain-language failure with an optional retry; any code goes only in "Technical details". */
+/**
+ * Plain-language failure with an optional retry; any code goes only in "Technical details".
+ * Pass `error` (a query error) to derive the message and code consistently on every page;
+ * an explicit `description` or `devDetail` overrides the derived one.
+ */
 export function ErrorState({
   title,
   description,
+  error,
   retry,
   devDetail,
 }: {
   title: string;
-  description: ReactNode;
+  description?: ReactNode;
+  error?: unknown;
   retry?: () => void;
   devDetail?: string;
 }) {
+  const code = error !== undefined ? describeError(error).code : null;
+  const body = description ?? (code ? errorMessage(code).label : null);
+  const detail = devDetail ?? code ?? undefined;
   return (
     <div role="alert" className="rounded-lg border border-danger/25 bg-danger-subtle px-4 py-3.5">
       <p className="text-base font-semibold text-danger">{title}</p>
-      <div className="mt-0.5 text-base text-primary">{description}</div>
-      {(retry || devDetail) && (
+      {body && <div className="mt-0.5 text-base text-primary">{body}</div>}
+      {retry && (
         <div className="mt-3 flex flex-wrap items-center gap-3">
-          {retry && (
-            <button
-              type="button"
-              onClick={retry}
-              className="inline-flex h-7 items-center rounded-md border border-border-strong bg-surface px-2.5 text-sm font-medium text-primary hover:bg-surface-muted"
-            >
-              Try again
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={retry}
+            className="inline-flex h-7 items-center rounded-md border border-border-strong bg-surface px-2.5 text-sm font-medium text-primary hover:bg-surface-muted"
+          >
+            Try again
+          </button>
         </div>
       )}
-      {devDetail && (
+      {detail && (
         <div className="mt-2">
-          <DevDetails>{devDetail}</DevDetails>
+          <DevDetails>{detail}</DevDetails>
         </div>
       )}
     </div>

@@ -36,24 +36,46 @@ const base: AnalyticsResult = {
   warnings: ["NULLS_EXCLUDED"],
 };
 
-const render = (result: AnalyticsResult) => renderToStaticMarkup(<ResultCardView ws="NORTHSTAR" result={result} />);
+const render = (result: AnalyticsResult, sourceTitle: string | null = "Northstar Customer Survey 2026") =>
+  renderToStaticMarkup(<ResultCardView ws="NORTHSTAR" result={result} sourceTitle={sourceTitle} />);
+/** The business-facing part of the markup: everything outside the "Technical details" disclosure. */
+const visible = (html: string) => html.replace(/<details[\s\S]*<\/details>/g, "");
 
 describe("ResultCardView", () => {
-  it("labels the result as a deterministic calculation, not a source", () => {
-    expect(render(base)).toContain("Computed result — deterministic calculation, not a quoted source");
+  it("labels the result as computed from a dataset, not a quoted source", () => {
+    expect(render(base)).toContain("Computed from a workspace dataset, not a quoted source.");
   });
 
-  it("shows value, unit, denominator, filters and provenance for a single metric", () => {
+  it("shows value, base, plain filters and dataset title; ids and rounding only in Technical details", () => {
     const html = render(base);
-    expect(html).toContain("38.2%");
-    expect(html).toContain("113 of 296");
-    expect(html).toContain("region = West");
+    const shown = visible(html);
+    expect(shown).toContain("38.2%");
+    expect(shown).toContain("113 of 296 records");
+    expect(shown).toContain("Region: West");
+    expect(shown).toContain("Share with top pain point: Delivery speed");
+    expect(shown).toContain("From Northstar Customer Survey 2026 · Version 1");
+    expect(shown).toContain("Empty cells were left out of the calculation");
+    for (const raw of ["SURVEY-2026", "half_even", "NULLS_EXCLUDED", "region =", "top_pain_point", "deterministic"]) {
+      expect(shown).not.toContain(raw);
+    }
     expect(html).toContain("SURVEY-2026:1");
-    expect(html).toContain("SURVEY-2026");
-    expect(html).toContain("v1");
     expect(html).toContain("half_even; percent 1dp; currency 2dp");
-    expect(html).toContain("296 of 600");
-    expect(html).toContain("NULLS EXCLUDED");
+  });
+
+  it("titles a filtered count from its filters and states matched of total as the base", () => {
+    const html = visible(
+      render({
+        ...base,
+        spec: { filters: [{ column: "top_pain_point", op: "eq", operands: ["knit_upper_durability"] }], metrics: [{ fn: "count", key: "count" }] },
+        rows: [{ group: {}, metrics: [metric({ key: "count", fn: "count", column: null, unit: "count", value: 68, numerator: null, denominator: 68 })] }],
+        rows_matched: 68,
+        warnings: [],
+      }),
+    );
+    expect(html).toContain("Number of records where top pain point is knit upper durability");
+    expect(html).toContain("68 of 600 records");
+    expect(html).toContain("Top pain point: Knit upper durability");
+    expect(html).not.toContain("n = 68");
   });
 
   it("states scaled currency in words", () => {
@@ -62,7 +84,7 @@ describe("ResultCardView", () => {
       rows: [{ group: {}, metrics: [metric({ key: "sum(value_usd_bn)", fn: "sum", unit: "currency_usd", scale: "billion", value: 15.1, numerator: null })] }],
     });
     expect(html).toContain("$15.1 billion");
-    expect(html).toContain("n = 296");
+    expect(html).toContain("Based on 296 of 600 records");
   });
 
   it("renders a grouped table", () => {
@@ -126,6 +148,6 @@ describe("ResultCardView", () => {
 
   it("explains an empty selection", () => {
     const html = render({ ...base, rows: [], rows_matched: 0, warnings: ["EMPTY_SELECTION"] });
-    expect(html).toContain("EMPTY SELECTION");
+    expect(html).toContain("No records matched the filters");
   });
 });

@@ -20,8 +20,9 @@ export function ModelStatus() {
   if (generation?.available) return <StatusIndicator tone="success" label={MODEL_AVAILABLE} />;
   const reason = generation?.reason ? generationUnavailableReason(generation.reason) : null;
   return (
-    <span title={reason?.known ? reason.label : undefined}>
+    <div className="flex flex-col gap-0.5">
       <StatusIndicator tone="neutral" label={MODEL_UNAVAILABLE} />
-    </span>
+      {reason?.known && <p className="pl-3.5 text-xs text-muted">{reason.label}</p>}
+    </div>
   );
 }

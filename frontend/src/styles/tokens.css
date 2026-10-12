@@ -14,11 +14,13 @@
   --color-surface-sunken: #ecece8;
   --color-border: #e3e3de;
   --color-border-strong: #cfcfc8;
+  /* form-control boundaries: at least 3:1 on surface and canvas (WCAG 1.4.11) */
+  --color-border-control: #8c8c84;
 
   /* text */
   --color-text: #1b1c1e;
   --color-text-secondary: #4a4d52;
-  --color-text-muted: #6b6f76;
+  --color-text-muted: #63676e; /* >= 4.5:1 on every surface and subtle tint */
   --color-text-disabled: #9a9ea5;
   --text-color-primary: var(--color-text);
   --text-color-secondary: var(--color-text-secondary);

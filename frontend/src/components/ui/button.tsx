@@ -45,6 +45,7 @@ export function Button({
   children,
   disabled,
   type = "button",
+  onClick,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
@@ -56,8 +57,18 @@ export function Button({
     <button
       type={type}
       {...rest}
-      disabled={disabled || loading}
+      // While loading the button stays focusable (aria-disabled), so keyboard and screen-reader
+      // users keep their place; activation is ignored. Only `disabled` uses the native attribute.
+      disabled={disabled}
+      aria-disabled={loading && !disabled ? true : rest["aria-disabled"]}
       aria-busy={loading || undefined}
+      onClick={(event) => {
+        if (loading) {
+          event.preventDefault();
+          return;
+        }
+        onClick?.(event);
+      }}
       className={cx(buttonClass(variant, size), className)}
     >
       {loading ? <Spinner /> : iconLeft}

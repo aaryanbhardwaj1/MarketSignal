@@ -128,6 +128,28 @@ afterEach(() => {
 });
 
 describe("EvidencePassageView", () => {
+  it("shows a spreadsheet or CSV row as labelled fields, marking the cited field", () => {
+    const row = "reason: Fit - runs small; total_sku_returns: 1421; share_of_sku_returns_pct: 41";
+    const csv: Evidence = {
+      ...EVIDENCE,
+      text: row,
+      locator_label: "Row 43",
+      source: { ...EVIDENCE.source, source_type: "csv" as Evidence["source"]["source_type"] },
+      children: [],
+    };
+    act(() =>
+      root.render(
+        withClient(<EvidencePassageView ws="NORTHSTAR" evidence={csv} span={{ childId: "", charStart: 8, charEnd: 24, expectedText: null }} />),
+      ),
+    );
+    const visible = visibleText(host);
+    expect(visible).toContain("Total SKU returns");
+    expect(visible).toContain("1,421");
+    expect(visible).toContain("41%");
+    expect(visible).not.toContain("total_sku_returns");
+    expect(host.querySelector("dd.evidence-mark")?.textContent).toContain("Fit - runs small");
+  });
+
   it("highlights the cited span and keeps the handle inside Technical details only", () => {
     act(() =>
       root.render(
@@ -143,11 +165,12 @@ describe("EvidencePassageView", () => {
     );
     const mark = host.querySelector("mark.evidence-mark");
     expect(mark?.textContent).toContain("Delivery speed decides the basket.");
-    expect(host.textContent).toContain("Page 4, block 2");
+    expect(host.querySelector("#evidence-passage-label")?.textContent).toBe("Page 4");
     expect(host.textContent).toContain("Internal");
-    expect(host.textContent).toContain("Version 1 (current)");
 
     const visible = visibleText(host);
+    expect(visible).not.toContain("block 2");
+    expect(visible).not.toContain("Version 1");
     for (const technical of [HANDLE, CHILD, "sha256-abc123", "BRAND-STRATEGY"]) {
       expect(visible).not.toContain(technical);
     }
@@ -162,7 +185,7 @@ describe("EvidencePassageView", () => {
     getEvidence.mockReturnValue(new Promise(() => {}));
     act(() => root.render(withClient(<EvidencePassageView ws="NORTHSTAR" evidence={old} span={null} />)));
     expect(host.textContent).toContain("Superseded: this passage is from version 1; version 2 is current");
-    expect(host.textContent).toContain("Version 1 (superseded)");
+    expect(host.textContent).toContain("Earlier version of this source");
   });
 });
 

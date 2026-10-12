@@ -4,15 +4,12 @@ import { ApiError } from "@/lib/api/errors";
 import { Badge } from "./badge";
 import { BarList } from "./bar-list";
 import { Callout } from "./callout";
-import { Card } from "./card";
 import { CiteChip, InferenceTag } from "./cite-chip";
 import { DevDetails } from "./disclosure";
-import { ErrorPanel, InlineError } from "./error-panel";
-import { buttonClass } from "./form-controls";
-import { Loading } from "./loading";
-import { PageHeader } from "./page-header";
+import { Button } from "./button";
+import { Select } from "./form-controls";
+import { ResultPanel } from "./result-panel";
 import { ErrorState, EmptyState } from "./states";
-import { StatusBadge } from "./status-badge";
 import { StatusIndicator } from "./status-indicator";
 import { normalizeTone } from "./tone";
 
@@ -41,11 +38,6 @@ describe("status is never colour alone", () => {
     expect(out).toContain('aria-hidden="true"');
   });
 
-  it("StatusBadge shim renders a readable label", () => {
-    expect(html(<StatusBadge status="ready_degraded" />)).toContain("Ready degraded");
-    expect(html(<StatusBadge status={null} />)).toContain("No version");
-  });
-
   it("Callout names its tone for assistive tech", () => {
     const out = html(<Callout tone="warn" title="Live model unavailable" />);
     expect(out).toContain('<span class="sr-only">Warning: </span>');
@@ -69,24 +61,20 @@ describe("CiteChip", () => {
   });
 });
 
-describe("states and shims", () => {
-  it("ErrorPanel shows a plain message and keeps the code inside Technical details", () => {
-    const out = html(<ErrorPanel error={new ApiError(404, "RUN_NOT_FOUND", "run x not found")} />);
+describe("states", () => {
+  it("ErrorState derives a plain message from an error and keeps the code inside Technical details", () => {
+    const out = html(<ErrorState title="Could not load the run" error={new ApiError(404, "RUN_NOT_FOUND", "run x not found")} />);
     expect(out).toContain("That research run could not be found.");
     const summaryAt = out.indexOf("Technical details");
     expect(summaryAt).toBeGreaterThan(-1);
     expect(out.indexOf("RUN_NOT_FOUND")).toBeGreaterThan(summaryAt);
+    expect(out).not.toContain("run x not found");
   });
 
-  it("InlineError never prints the code", () => {
-    const out = html(<InlineError error={new ApiError(422, "VALIDATION_ERROR", "bad")} />);
-    expect(out).not.toContain("VALIDATION_ERROR");
-  });
-
-  it("Loading shim is a polite status region", () => {
-    const out = html(<Loading label="Loading sources" />);
-    expect(out).toContain('role="status"');
-    expect(out).toContain("Loading sources");
+  it("ErrorState renders no empty action row without a retry", () => {
+    const out = html(<ErrorState title="x" description="y" devDetail="CODE" />);
+    expect(out).not.toContain("mt-3 flex");
+    expect(out).not.toContain("Try again");
   });
 
   it("EmptyState and ErrorState render their copy", () => {
@@ -101,14 +89,34 @@ describe("states and shims", () => {
     expect(out).toContain("Technical details");
     expect(out).toContain("&quot;handle&quot;: &quot;NORTHSTAR/X@v1:P1&quot;");
   });
+});
 
-  it("Card keeps the legacy title shorthand; PageHeader drops the raw eyebrow", () => {
-    expect(html(<Card title="Source">body</Card>)).toContain("Source");
-    expect(html(<PageHeader eyebrow="NORTHSTAR" title="Overview" />)).not.toContain("NORTHSTAR");
+describe("controls", () => {
+  it("a loading Button stays focusable (aria-disabled), while `disabled` is native", () => {
+    const loading = html(<Button loading>Load more</Button>);
+    expect(loading).toContain('aria-disabled="true"');
+    expect(loading).not.toMatch(/\sdisabled=""/);
+    expect(html(<Button disabled>Ask</Button>)).toMatch(/\sdisabled=""/);
   });
 
-  it("buttonClass is still exported from form-controls", () => {
-    expect(buttonClass("secondary", "sm")).toContain("h-7");
+  it("Select draws its own chevron instead of the native one", () => {
+    const out = html(<Select id="s" options={[{ value: "a", label: "A" }]} />);
+    expect(out).toContain("appearance-none");
+    expect(out).toContain("<svg");
+  });
+
+  it("InferenceTag explains itself", () => {
+    expect(html(<InferenceTag />)).toContain("not stated directly in a source");
+  });
+});
+
+describe("ResultPanel", () => {
+  it("shows the table in words and skips one that repeats the source title", () => {
+    const panel = (table: string, sourceTitle = "Northstar Product Performance") =>
+      html(<ResultPanel title="t" unit="" provenance={{ sourceTitle, sourceCode: "PP", version: 2, table }} />);
+    expect(panel("SKU_Performance")).toContain("From Northstar Product Performance · Version 2 · SKU performance");
+    expect(panel("SKU_Performance")).not.toContain("SKU_Performance");
+    expect(panel("Product_Performance")).not.toContain("· Product performance");
   });
 });
 

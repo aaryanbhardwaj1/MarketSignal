@@ -7,9 +7,6 @@ import type {
 import { cx } from "@/lib/cx";
 import { CONTROL_CLASS } from "./control-class";
 
-/** @deprecated Import `buttonClass` from `./button`. Re-exported for older components. */
-export { buttonClass } from "./button";
-
 export { CONTROL_CLASS };
 
 /** Label + control + hint/error. `id` must match the child control's id. */
@@ -53,9 +50,6 @@ export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   return <input {...props} className={cx(CONTROL_CLASS, "h-9", className)} />;
 }
 
-/** @deprecated Use `Input`. */
-export const TextInput = Input;
-
 export function Textarea({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return <textarea {...props} className={cx(CONTROL_CLASS, "min-h-20 py-2", className)} />;
 }
@@ -65,23 +59,47 @@ export interface SelectOption {
   label: string;
 }
 
-/** Native select. Pass `options`, or `<option>` children for older call sites. */
+const SELECT_CHEVRON = (
+  <svg
+    aria-hidden
+    viewBox="0 0 16 16"
+    className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="m4.5 6.5 3.5 3.5 3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/**
+ * Native select styled like the other controls (own chevron, same border, height and focus
+ * ring as `SearchInput`). Pass `options`, or `<option>` children. `className` sizes the
+ * wrapper (for example `min-w-72`); `size="sm"` is the compact filter-bar height.
+ */
 export function Select({
   options,
   className,
   children,
+  controlSize = "md",
   ...props
-}: SelectHTMLAttributes<HTMLSelectElement> & { options?: SelectOption[] }) {
+}: SelectHTMLAttributes<HTMLSelectElement> & { options?: SelectOption[]; controlSize?: "sm" | "md" }) {
   return (
-    <select {...props} className={cx(CONTROL_CLASS, "h-9 pr-8", className)}>
-      {options
-        ? options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))
-        : children}
-    </select>
+    <span className={cx("relative block", className)}>
+      <select
+        {...props}
+        className={cx(CONTROL_CLASS, "appearance-none pr-8", controlSize === "sm" ? "h-8 text-sm" : "h-9")}
+      >
+        {options
+          ? options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))
+          : children}
+      </select>
+      {SELECT_CHEVRON}
+    </span>
   );
 }
 

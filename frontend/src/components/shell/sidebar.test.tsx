@@ -71,7 +71,8 @@ describe("Sidebar", () => {
 
   it("shows the workspace name, never the code", () => {
     act(() => root.render(<Sidebar ws="NORTHSTAR" />));
-    expect(host.textContent).toContain("Northstar Athletics - Gen Z Growth Engagement");
+    expect(host.textContent).toContain("Northstar Athletics");
+    expect(host.textContent).toContain("Gen Z Growth Engagement");
     expect(host.textContent).not.toContain("NORTHSTAR");
   });
 
@@ -98,15 +99,17 @@ describe("WorkspaceControl", () => {
   it("lists only visible workspaces by name, keeping the current section", () => {
     state.pathname = "/w/NORTHSTAR/ask/abc";
     act(() => root.render(<WorkspaceControl ws="NORTHSTAR" />));
-    const trigger = host.querySelector<HTMLButtonElement>("button[aria-haspopup]")!;
+    const trigger = host.querySelector<HTMLButtonElement>("button[aria-expanded]")!;
     expect(trigger.getAttribute("aria-expanded")).toBe("false");
     act(() => trigger.click());
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
     const items = Array.from(host.querySelectorAll<HTMLAnchorElement>("li a"));
-    expect(items.map((a) => a.textContent?.replace(" (current)", ""))).toEqual([
-      "Northstar Athletics - Gen Z Growth Engagement",
-      "Southpeak Outdoor",
+    expect(items.map((a) => Array.from(a.querySelectorAll("span.block")).map((s) => s.textContent))).toEqual([
+      ["Northstar Athletics", "Gen Z Growth Engagement"],
+      ["Southpeak Outdoor"],
     ]);
+    const lines = Array.from(trigger.querySelectorAll("span.block")).map((s) => s.textContent);
+    expect(lines).toEqual(["Northstar Athletics", "Gen Z Growth Engagement"]);
     expect(items[1].getAttribute("href")).toBe("/w/SOUTHPEAK/ask");
     expect(host.textContent).not.toContain("Harness workspace");
     expect(host.textContent).not.toMatch(/T[0-9A-F]{10}/);
@@ -114,7 +117,7 @@ describe("WorkspaceControl", () => {
 
   it("closes the popover on Escape and returns focus to the trigger", () => {
     act(() => root.render(<WorkspaceControl ws="NORTHSTAR" />));
-    const trigger = host.querySelector<HTMLButtonElement>("button[aria-haspopup]")!;
+    const trigger = host.querySelector<HTMLButtonElement>("button[aria-expanded]")!;
     act(() => trigger.click());
     act(() => {
       document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
@@ -127,6 +130,6 @@ describe("WorkspaceControl", () => {
     state.workspaces = { isPending: false, isError: true, data: undefined };
     act(() => root.render(<WorkspaceControl ws="NORTHSTAR" />));
     expect(host.textContent).toContain("Workspace unavailable");
-    expect(host.querySelector<HTMLButtonElement>("button[aria-haspopup]")!.disabled).toBe(true);
+    expect(host.querySelector<HTMLButtonElement>("button")!.disabled).toBe(true);
   });
 });

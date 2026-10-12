@@ -1,7 +1,10 @@
 "use client";
 
 import { PageContainer } from "@/components/ui/page-container";
+import { PageHeader } from "@/components/ui/page-header";
 import { ErrorState } from "@/components/ui/states";
+
+const TITLE = "This page could not be shown";
 
 export default function WorkspaceError({
   error,
@@ -12,12 +15,16 @@ export default function WorkspaceError({
 }) {
   return (
     <PageContainer>
-      <ErrorState
-        title="This page could not be shown"
-        description="Something went wrong while loading this page. Try again, or choose another page from the navigation."
-        retry={retry}
-        devDetail={error.digest ? `digest ${error.digest}` : undefined}
-      />
+      <title>{`${TITLE} · MarketSignal`}</title>
+      <PageHeader title={TITLE} description="Something went wrong while loading this page." />
+      <div className="mt-6">
+        <ErrorState
+          title="Loading failed"
+          description="Try again, or choose another page from the navigation."
+          retry={retry}
+          devDetail={error.digest ? `digest ${error.digest}` : undefined}
+        />
+      </div>
     </PageContainer>
   );
 }

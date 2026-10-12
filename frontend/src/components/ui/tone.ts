@@ -22,15 +22,6 @@ export function normalizeTone(tone: StatusTone | LegacyTone | undefined): Status
   return tone in LEGACY ? LEGACY[tone as LegacyTone] : (tone as StatusTone);
 }
 
-/** Text colour per tone. */
-export const TONE_TEXT: Record<StatusTone, string> = {
-  success: "text-success",
-  warn: "text-warn",
-  danger: "text-danger",
-  info: "text-info",
-  neutral: "text-secondary",
-};
-
 /** Subtle background plus border colour per tone. */
 export const TONE_SURFACE: Record<StatusTone, string> = {
   success: "bg-success-subtle border-success/25",
