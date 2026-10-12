@@ -32,9 +32,9 @@ PRECEDENCE = (
 STATUS = {
     "planning": "Planning the research",
     "searching": "Searching workspace evidence",
-    "analyzing": "Assembling the evidence pack",
-    "synthesizing": "Writing a grounded answer",
-    "verifying": "Verifying citations and numbers",
+    "analyzing": "Selecting the strongest evidence",
+    "synthesizing": "Writing the answer",
+    "verifying": "Checking citations and figures",
 }
 
 

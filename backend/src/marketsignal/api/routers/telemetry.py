@@ -7,6 +7,10 @@ answer content.
 * ``GET /runs/{run_id}`` - ``TelemetryRunDetail``; another workspace's run, an unknown id and a
   missing one all look the same: 404 ``RUN_NOT_FOUND``.
 
+Mounted only when ``env != "prod"`` and ``dev_endpoints_enabled`` (like the evaluation router):
+it returns raw tool arguments, route cues, model names, token usage and cost estimates, and no
+role check exists yet (ADR-0014 principals), so it is a developer tool, not a product endpoint.
+
 Test-harness runs (``fake-llm``) are excluded unless ``include_test_runs=true``; the run detail
 serves any run of the workspace. Shapes: ``frontend/src/lib/api/contracts.ts`` (E10).
 """

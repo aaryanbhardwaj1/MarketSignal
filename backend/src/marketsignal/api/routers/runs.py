@@ -17,8 +17,9 @@
   ``featured`` list; harness runs hidden unless ``include_test_runs``), and
   ``GET /runs/{rid}/verification`` summarizes the verification attempts without rejected spans
   (final productization phase).
-* ``POST …/runs`` refuses with ``503 PROVIDER_UNAVAILABLE`` *before* creating any row when live
-  generation is unavailable (``providers.llm.availability``); no provider text is returned.
+* ``POST …/runs`` and ``POST …/conversations`` refuse with ``503 PROVIDER_UNAVAILABLE`` *before*
+  creating any row when live generation is unavailable (``providers.llm.availability``); no
+  provider text is returned.
 * Modes (ADR-0015): the deterministic router (``runs.router``) decides ``standard`` or
   ``research`` from the request mode, the conversation's persona default and the cue rules; the
   decision is stored in ``query_runs.route`` and sent in ``run_started``.
@@ -85,10 +86,27 @@ class RunIn(BaseModel):
     source_classes: list[SourceClass] = Field(default_factory=list, max_length=5)
 
 
+def require_generation(request: Request) -> None:
+    """``503 PROVIDER_UNAVAILABLE`` when live generation is unavailable; called before any row
+    is written, so a refused request leaves nothing behind."""
+    availability = current_generation_status(request)
+    if not availability.available:
+        raise AppError(
+            503,
+            "PROVIDER_UNAVAILABLE",
+            PROVIDER_UNAVAILABLE_MESSAGE,
+            reason=availability.reason,
+            retryable=False,
+        )
+
+
 @router.post("/conversations", status_code=201)
 async def create_conversation(
-    scope: Scope, factory: Factory, body: ConversationIn
+    request: Request, scope: Scope, factory: Factory, body: ConversationIn
 ) -> dict[str, Any]:
+    # A conversation exists only to hold runs: refuse it up front when no run could start, so
+    # the offline demo never gains empty conversations (and the API never writes there).
+    require_generation(request)
     conversation_id = await store.create_conversation(
         factory, scope, persona=body.persona, title=body.title
     )
@@ -144,15 +162,7 @@ async def start_run(
     state = await store.conversation_state(factory, scope, conversation_id)
     if state is None:
         raise AppError(404, "CONVERSATION_NOT_FOUND", "conversation not found")
-    availability = current_generation_status(request)
-    if not availability.available:  # before create_run: a refused run leaves no rows
-        raise AppError(
-            503,
-            "PROVIDER_UNAVAILABLE",
-            PROVIDER_UNAVAILABLE_MESSAGE,
-            reason=availability.reason,
-            retryable=False,
-        )
+    require_generation(request)  # before create_run: a refused run leaves no rows
     question = body.question.strip()
     decision = route(
         question,
@@ -333,36 +343,47 @@ def like_pattern(q: str | None) -> str | None:
 
 
 _CONVERSATIONS = f"""
-SELECT c.id, c.title, c.created_at, c.updated_at, fq.content AS first_question,
+WITH page AS (
+    -- Filter, order and limit first (index conversations_ws_updated); only the page's rows
+    -- are then joined to their first question, message count and latest run.
+    SELECT c.id, c.workspace_id, c.title, c.created_at, c.updated_at
+    FROM conversations c
+    WHERE c.workspace_id = :ws
+      AND (CAST(:include_test AS boolean) OR NOT EXISTS (
+            SELECT 1 FROM query_runs t
+            WHERE t.workspace_id = c.workspace_id AND t.conversation_id = c.id
+              AND NOT ({NOT_TEST_RUN_SQL})))
+      AND (CAST(:q AS text) IS NULL
+           OR c.title ILIKE CAST(:q AS text) ESCAPE '\\'
+           OR (SELECT m.content FROM messages m
+                WHERE m.workspace_id = c.workspace_id AND m.conversation_id = c.id
+                  AND m.role = 'user'
+                ORDER BY m.created_at, m.id LIMIT 1) ILIKE CAST(:q AS text) ESCAPE '\\')
+      AND (CAST(:ids AS uuid[]) IS NULL OR c.id = ANY(CAST(:ids AS uuid[])))
+      AND (CAST(:c_at AS timestamptz) IS NULL
+           OR (c.updated_at, c.id) < (CAST(:c_at AS timestamptz), CAST(:c_id AS uuid)))
+    ORDER BY c.updated_at DESC, c.id DESC
+    LIMIT :limit
+)
+SELECT p.id, p.title, p.created_at, p.updated_at, fq.content AS first_question,
        (SELECT count(*) FROM messages m
-         WHERE m.workspace_id = c.workspace_id AND m.conversation_id = c.id) AS message_count,
+         WHERE m.workspace_id = p.workspace_id AND m.conversation_id = p.id) AS message_count,
        lr.id AS run_id, lr.mode, lr.status, lr.termination_state, lr.degradation_flags,
        lr.created_at AS run_created_at, lr.finished_at
-FROM conversations c
+FROM page p
 LEFT JOIN LATERAL (
     SELECT content FROM messages m
-    WHERE m.workspace_id = c.workspace_id AND m.conversation_id = c.id AND m.role = 'user'
+    WHERE m.workspace_id = p.workspace_id AND m.conversation_id = p.id AND m.role = 'user'
     ORDER BY m.created_at, m.id LIMIT 1
 ) fq ON true
 LEFT JOIN LATERAL (
+    -- index query_runs_ws_conversation
     SELECT id, mode, status, termination_state, degradation_flags, created_at, finished_at
     FROM query_runs r
-    WHERE r.workspace_id = c.workspace_id AND r.conversation_id = c.id
+    WHERE r.workspace_id = p.workspace_id AND r.conversation_id = p.id
     ORDER BY r.created_at DESC, r.id DESC LIMIT 1
 ) lr ON true
-WHERE c.workspace_id = :ws
-  AND (CAST(:include_test AS boolean) OR NOT EXISTS (
-        SELECT 1 FROM query_runs t
-        WHERE t.workspace_id = c.workspace_id AND t.conversation_id = c.id
-          AND NOT ({NOT_TEST_RUN_SQL})))
-  AND (CAST(:q AS text) IS NULL
-       OR c.title ILIKE CAST(:q AS text) ESCAPE '\\'
-       OR fq.content ILIKE CAST(:q AS text) ESCAPE '\\')
-  AND (CAST(:ids AS uuid[]) IS NULL OR c.id = ANY(CAST(:ids AS uuid[])))
-  AND (CAST(:c_at AS timestamptz) IS NULL
-       OR (c.updated_at, c.id) < (CAST(:c_at AS timestamptz), CAST(:c_id AS uuid)))
-ORDER BY c.updated_at DESC, c.id DESC
-LIMIT :limit
+ORDER BY p.updated_at DESC, p.id DESC
 """  # noqa: S608 - the only interpolation is the NOT_TEST_RUN_SQL constant
 
 

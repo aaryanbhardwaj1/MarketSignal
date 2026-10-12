@@ -172,7 +172,7 @@
     "overview",
     "grounded"
    ],
-   "text": "The verifier-v1 holdout was run twice: at the end of development and once more after the review safety fixes. No rule was tuned to holdout scores."
+   "text": "The citation verifier's holdout split was scored twice: at the end of development and again after safety fixes. No rule was tuned to holdout scores."
   },
   {
    "id": "a3-not-run",
@@ -181,7 +181,7 @@
     "analytics",
     "research_tradeoff"
    ],
-   "text": "The Phase 5 A3 research-summary on/off comparison was not run live because API credits ran out. The summary hand-off is implemented and tested offline only."
+   "text": "The research-summary ablation was not measured live; the summary hand-off is tested offline only."
   },
   {
    "id": "p5-holdout-routing",
@@ -4035,8 +4035,8 @@
   },
   {
    "path": "eval/baselines/phase5/research-dev-p5-summary-off/results.json",
-   "label": "Research summary-off arm, A3 (incomplete)",
-   "reason": "The A3 research-summary off/on comparison stopped when API credits ran out; the summary-on arm never ran, so no live before/after comparison exists."
+   "label": "Research summary-off arm (incomplete)",
+   "reason": "The research-summary off/on comparison was stopped before the summary-on arm ran, so no live before/after comparison exists."
   }
  ],
  "failure_runs": [

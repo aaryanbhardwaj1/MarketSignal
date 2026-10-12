@@ -172,8 +172,17 @@ async def test_export_delete_import_round_trip_and_drift_abort(
         await demo_import.import_snapshot(owner_engine, copy.deepcopy(snapshot))
     assert all(not rows for rows in (await _dump(owner_engine, ws, convs, runs)).values())
 
+    # A second workspace's rows must survive the reset of the first (explicit workspace filters).
+    bystander = await harness.create_workspace()
+    await _seed(harness, bystander, FACT, OTHER)
+    async with owner_engine.connect() as conn:
+        bystander_id = await common.workspace_id(conn, bystander)
+    bystander_before = await demo_reset.counts(owner_engine, bystander_id)
+    assert bystander_before["sources"] > 0
+
     dropped = await demo_reset.reset(owner_engine, only=[ws], yes=True, dry_run=False)
     assert dropped == [ws]
+    assert await demo_reset.counts(owner_engine, bystander_id) == bystander_before
     async with owner_engine.connect() as conn:
         gone = await conn.execute(
             text("SELECT count(*) FROM workspaces WHERE code = :c"), {"c": ws}

@@ -1,7 +1,8 @@
 """Workspaces: create, list, and the dashboard summary (the product overview).
 
 With ``settings.hide_test_workspaces`` the list omits test-harness workspaces (codes ``T`` + 10
-hex digits). Overview run counts exclude test-harness (FakeLLM) runs.
+hex digits); that code shape is reserved, so outside ``env == "test"`` it cannot be created.
+Overview run counts exclude test-harness (FakeLLM) runs.
 """
 
 from __future__ import annotations
@@ -36,8 +37,22 @@ class WorkspaceCreate(BaseModel):
 
 @router.post("", status_code=201)
 async def create_workspace(
-    body: WorkspaceCreate, factory: Factory, principal: Principal
+    body: WorkspaceCreate, factory: Factory, principal: Principal, settings: SettingsDep
 ) -> dict[str, Any]:
+    if TEST_WORKSPACE_CODE.match(body.code) and settings.env != "test":
+        # Reserved for the test harness: such a workspace would be hidden from the list
+        # (hide_test_workspaces) and purged by scripts/demo_reset.py.
+        raise AppError(
+            422,
+            "VALIDATION_ERROR",
+            "request validation failed",
+            fields=[
+                {
+                    "location": "body.code",
+                    "message": "codes of the form T + 10 hex digits are reserved for tests",
+                }
+            ],
+        )
     async with unscoped_session(factory) as session:
         try:
             workspace_id = (

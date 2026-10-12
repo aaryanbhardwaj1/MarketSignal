@@ -96,12 +96,12 @@ def _assert_refused(response: httpx.Response, reason: str) -> None:
 async def test_disabled_refuses_runs_before_any_row(
     harness: Harness, app_engine: AsyncEngine
 ) -> None:
+    ws = await harness.create_workspace()
+    conversation = await _conversation(harness, ws)  # created while generation was available
     _configure(harness, llm_enabled=False)
     assert await _capabilities(harness) == {
         "generation": {"available": False, "reason": "DISABLED"}
     }
-    ws = await harness.create_workspace()
-    conversation = await _conversation(harness, ws)
     _assert_refused(await _post_run(harness, ws, conversation), "DISABLED")
     assert await _run_rows(app_engine, ws) == 0
     async with app_engine.connect() as conn:
@@ -112,21 +112,36 @@ async def test_disabled_refuses_runs_before_any_row(
 
 async def test_disabled_wins_even_over_a_scripted_provider(harness: Harness) -> None:
     _install(harness, FakeLLM([GOOD]))
-    _configure(harness, llm_enabled=False)
     ws = await harness.create_workspace()
     conversation = await _conversation(harness, ws)
+    _configure(harness, llm_enabled=False)
     _assert_refused(await _post_run(harness, ws, conversation), "DISABLED")
 
 
 async def test_missing_key_refuses_runs(harness: Harness, app_engine: AsyncEngine) -> None:
+    ws = await harness.create_workspace()
+    conversation = await _conversation(harness, ws)
     _configure(harness, llm_provider="anthropic", anthropic_api_key=None)
     assert await _capabilities(harness) == {
         "generation": {"available": False, "reason": "NOT_CONFIGURED"}
     }
-    ws = await harness.create_workspace()
-    conversation = await _conversation(harness, ws)
     _assert_refused(await _post_run(harness, ws, conversation), "NOT_CONFIGURED")
     assert await _run_rows(app_engine, ws) == 0
+
+
+async def test_disabled_refuses_new_conversations_before_any_row(
+    harness: Harness, app_engine: AsyncEngine
+) -> None:
+    ws = await harness.create_workspace()
+    _configure(harness, llm_enabled=False)
+    response = await harness.client.post(
+        f"/api/workspaces/{ws}/conversations", json={"title": "What frustrates Gen Z buyers?"}
+    )
+    _assert_refused(response, "DISABLED")
+    async with app_engine.connect() as conn:
+        await _scoped(conn, ws)
+        count = (await conn.execute(text("SELECT count(*) FROM conversations"))).scalar_one()
+    assert count == 0  # no empty conversation is left behind
 
 
 async def test_unknown_conversation_is_still_404(harness: Harness) -> None:
@@ -150,6 +165,8 @@ async def test_classified_rejection_latches_until_ttl(
     clock = [1000.0]
     monkeypatch.setattr(availability, "_now", lambda: clock[0])
     assert await _capabilities(harness) == {"generation": {"available": True, "reason": None}}
+    ws = await harness.create_workspace()
+    conversation = await _conversation(harness, ws)
 
     classified = _classify(_rejection("billing_error"))
     assert isinstance(classified, LLMUnavailableError)
@@ -157,8 +174,6 @@ async def test_classified_rejection_latches_until_ttl(
 
     body = await _capabilities(harness)
     assert body == {"generation": {"available": False, "reason": "PROVIDER_REJECTED"}}
-    ws = await harness.create_workspace()
-    conversation = await _conversation(harness, ws)
     _assert_refused(await _post_run(harness, ws, conversation), "PROVIDER_REJECTED")
     assert await _run_rows(app_engine, ws) == 0
 
@@ -173,7 +188,7 @@ async def test_classified_rejection_latches_until_ttl(
     [
         ("authentication_error", 401, True),
         ("permission_error", 403, True),
-        ("invalid_request_error", 400, True),
+        ("invalid_request_error", 400, True),  # the canary message names the credit balance
         ("not_found_error", 404, False),
         ("overloaded_error", 529, False),  # retryable: never latched
     ],
@@ -181,6 +196,26 @@ async def test_classified_rejection_latches_until_ttl(
 def test_latch_types(error_type: str, status: int, latched: bool) -> None:
     _classify(_rejection(error_type, status))
     assert (availability.PROVIDER_LATCH.error_type() == error_type) is latched
+
+
+@pytest.mark.parametrize(
+    ("message", "latched"),
+    [
+        ("prompt is too long: 210000 tokens > 200000 maximum", False),
+        ("messages.3: tool_use ids were found without tool_result blocks", False),
+        ("Your credit balance is too low to access the Anthropic API.", True),
+    ],
+)
+def test_invalid_request_latches_only_for_account_level_messages(
+    message: str, latched: bool
+) -> None:
+    request = httpx.Request("POST", "https://provider.invalid/v1/messages")
+    response = httpx.Response(400, request=request)
+    body = {"type": "error", "error": {"type": "invalid_request_error", "message": message}}
+    _classify(anthropic.BadRequestError(message, response=response, body=body))
+    state = availability.PROVIDER_LATCH._state
+    assert (state is not None) is latched
+    assert message not in repr(state)  # the message is never stored
 
 
 def test_latch_keeps_only_the_error_type() -> None:

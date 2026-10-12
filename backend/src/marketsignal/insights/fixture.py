@@ -10,6 +10,7 @@ value the fixture does not pin, is a :class:`FixtureError`.
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Callable
 from functools import cache
 from pathlib import Path
@@ -233,14 +234,26 @@ def _load_file(path: Path) -> Fixture:
     return parse_fixture(json.loads(path.read_text(encoding="utf-8")))
 
 
+def newest_fixture_path(workspace_code: str, directory: Path | None = None) -> Path | None:
+    """``<CODE>.v<N>.json`` with the highest integer ``N`` (so v10 beats v2); names that do not
+    match exactly are ignored."""
+    pattern = re.compile(rf"{re.escape(workspace_code)}\.v([1-9][0-9]*)\.json")
+    versions = [
+        (int(match.group(1)), path)
+        for path in (directory or FIXTURE_DIR).glob(f"{workspace_code}.v*.json")
+        if (match := pattern.fullmatch(path.name)) is not None
+    ]
+    return max(versions)[1] if versions else None
+
+
 def load_fixture(workspace_code: str) -> Fixture | None:
     """The newest fixture for ``workspace_code``, or ``None`` when it has no curated brief."""
-    candidates = sorted(FIXTURE_DIR.glob(f"{workspace_code}.v*.json"))
-    if not candidates:
+    path = newest_fixture_path(workspace_code)
+    if path is None:
         return None
-    fixture = _load_file(candidates[-1])
+    fixture = _load_file(path)
     if fixture.workspace != workspace_code:
-        raise FixtureError(f"{candidates[-1].name}: workspace mismatch")
+        raise FixtureError(f"{path.name}: workspace mismatch")
     return fixture
 
 

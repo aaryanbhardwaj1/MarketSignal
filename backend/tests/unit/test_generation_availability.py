@@ -55,6 +55,8 @@ def test_latch_and_ttl(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_only_non_retryable_types_latch() -> None:
     for error_type in ("rate_limit_error", "overloaded_error", "api_error", None, ""):
         assert availability.latch(error_type) is False
+    assert availability.latch("invalid_request_error") is False
+    assert availability.latch("invalid_request_error", "prompt is too long") is False
     assert availability.PROVIDER_LATCH.error_type() is None
 
 

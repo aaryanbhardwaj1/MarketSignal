@@ -186,8 +186,8 @@ async def test_progress_events_are_deterministic_and_follow_the_contract() -> No
     ]
     assert [e["summary"] for e in started[:4]] == [
         'Searching customer and competitor evidence for "fit complaints"',
-        'Checking exact identifiers: "RV-00412"',
-        "Opening 3 evidence items",
+        'Searching for exact mentions of "RV-00412"',
+        "Opening 3 evidence passages",
         "Listing customer sources",
     ]
     quoted = started[4]["summary"].split('"')[1]

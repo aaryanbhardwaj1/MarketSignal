@@ -99,12 +99,14 @@ def _lazy_query_embedder(settings: Settings) -> Callable[[], Embedder]:
 
 
 def _lazy_llm(settings: Settings) -> Callable[[], LLMProvider]:
-    """Build the synthesis provider on first use (never at import or startup)."""
+    """Build the synthesis provider on first use (never at import or startup). With
+    ``llm_enabled`` false (the offline demo) the provider is the same "unavailable" stand-in as
+    ``llm_provider="fake"``, so no code path can reach the network, not only ``POST …/runs``."""
     provider: list[LLMProvider] = []
 
     def get() -> LLMProvider:
         if not provider:
-            if settings.llm_provider == "fake":
+            if settings.llm_provider == "fake" or not settings.llm_enabled:
                 from marketsignal.providers.llm.base import LLMUnavailableError
                 from marketsignal.providers.llm.fake import FakeLLM, ScriptedResponse
 
@@ -375,11 +377,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(results.router)
     app.include_router(analytics.router)
     app.include_router(insights.router)
-    app.include_router(telemetry.router)
     app.include_router(capabilities.router)
     # Governed MCP tools over Streamable HTTP (loopback only unless mcp_public; ADR-0006).
     app.mount("/mcp", _DeferredMCP(app))
+    # Developer Tools (telemetry exposes tool arguments, model names, usage and cost estimates;
+    # evaluation exposes eval artifacts) are dev-only until role checks exist (ADR-0014).
     if settings.env != "prod" and settings.dev_endpoints_enabled:
         app.include_router(dev.router)
+        app.include_router(telemetry.router)
         app.include_router(evaluation.router)
     return app

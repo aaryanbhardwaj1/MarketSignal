@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
 
@@ -106,3 +107,38 @@ def test_short_dev_or_shared_mcp_keys_are_refused() -> None:
                 mcp_token_key=SecretStr("dev-only-insecure-mcp-capability-key-00001"),
             )
         )
+
+
+def test_developer_tools_are_not_mounted_in_prod() -> None:
+    with TestClient(create_app(_settings(env="prod"))) as client:
+        telemetry = client.get("/api/workspaces/NORTHSTAR/telemetry/summary")
+        evaluation = client.get("/api/dev/eval/catalog")
+    assert telemetry.status_code == 404
+    assert evaluation.status_code == 404
+
+
+def test_llm_disabled_never_builds_the_anthropic_provider(monkeypatch: pytest.MonkeyPatch) -> None:
+    from marketsignal.providers.llm import anthropic as anthropic_provider
+    from marketsignal.providers.llm.fake import FakeAgentLLM, FakeLLM
+
+    def boom(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("AnthropicProvider must not be built when llm_enabled is false")
+
+    monkeypatch.setattr(anthropic_provider, "AnthropicProvider", boom)
+    app = create_app(
+        _settings(
+            llm_enabled=False,
+            llm_provider="anthropic",
+            anthropic_api_key=SecretStr("not-a-real-key"),
+        )
+    )
+    assert isinstance(app.state.llm_provider(), FakeLLM)
+    assert isinstance(app.state.agent_llm_provider(), FakeAgentLLM)
+
+
+@pytest.mark.parametrize("env", ["dev", "prod"])
+def test_test_workspace_codes_are_reserved_outside_tests(env: str) -> None:
+    with TestClient(create_app(_settings(env=env))) as client:
+        response = client.post("/api/workspaces", json={"code": "TABCDEF0123", "name": "Real"})
+    assert response.status_code == 422
+    assert response.json()["error"]["fields"][0]["location"] == "body.code"

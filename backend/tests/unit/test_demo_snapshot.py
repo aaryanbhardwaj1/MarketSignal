@@ -170,7 +170,7 @@ def test_rows_by_table_flattens_in_fk_order() -> None:
     assert [len(rows[t]) for t in demo_import.INSERT_ORDER] == [1, 1, 1, 1, 0, 0, 0, 1]
 
 
-def test_version_guard_accepts_ready_and_superseded_only() -> None:
+def test_version_guard_accepts_live_statuses_only() -> None:
     rows = demo_import.rows_by_table(_snapshot())
     wanted = demo_import.version_keys(rows)
     assert wanted == {("INTERVIEWS", 1), ("GENZ-TRENDS", 1), ("SURVEY-2026", 1)}
@@ -180,6 +180,8 @@ def test_version_guard_accepts_ready_and_superseded_only() -> None:
         ("SURVEY-2026", 1): "ready",
     }
     assert demo_import.drifted_versions(wanted, live) == []
+    degraded = {**live, ("SURVEY-2026", 1): "ready_degraded"}
+    assert demo_import.drifted_versions(wanted, degraded) == []
     purged = {**live, ("GENZ-TRENDS", 1): "purged"}
     assert demo_import.drifted_versions(wanted, purged) == ["GENZ-TRENDS@v1:purged"]
     missing = {k: v for k, v in live.items() if k[0] != "SURVEY-2026"}
@@ -215,3 +217,37 @@ def test_reset_only_ever_targets_test_codes() -> None:
 def test_featured_list_is_six_distinct_conversations() -> None:
     assert len(set(common.FEATURED_NORTHSTAR)) == 6
     assert all(common.UUID_RE.fullmatch(c) for c in common.FEATURED_NORTHSTAR)
+
+
+def test_rls_preflight_refuses_privileged_roles() -> None:
+    class _Result:
+        def __init__(self, value: object) -> None:
+            self.value = value
+
+        def scalar_one_or_none(self) -> object:
+            return self.value
+
+    class _Conn:
+        def __init__(self, value: object) -> None:
+            self.value = value
+            self.statements: list[str] = []
+
+        async def execute(self, statement: Any, params: Any = None) -> _Result:
+            self.statements.append(str(statement))
+            return _Result(self.value)
+
+    import asyncio
+
+    for privileged in (False, None):
+        conn = _Conn(privileged)
+        with pytest.raises(common.SnapshotError, match="BYPASSRLS"):
+            asyncio.run(common.scope_to(conn, str(uuid.uuid4())))  # type: ignore[arg-type]
+        assert len(conn.statements) == 1  # never scoped, never ran anything else
+    ok = _Conn(True)
+    asyncio.run(common.scope_to(ok, str(uuid.uuid4())))  # type: ignore[arg-type]
+    assert "rolbypassrls" in ok.statements[0]
+    assert "set_config" in ok.statements[1]
+
+
+def test_reset_statements_are_all_workspace_filtered() -> None:
+    assert all(s.endswith("WHERE workspace_id = CAST(:ws AS uuid)") for s in demo_reset.PURGE_ORDER)

@@ -124,7 +124,8 @@ async def _version_statuses(conn: AsyncConnection, codes: set[str]) -> dict[tupl
     rows = await conn.execute(
         text(
             "SELECT s.source_code, v.version, v.status FROM sources s "
-            "JOIN source_versions v ON v.source_id = s.id WHERE s.source_code = ANY(:codes)"
+            "JOIN source_versions v ON v.source_id = s.id WHERE s.source_code = ANY(:codes) "
+            "AND s.workspace_id = CAST(current_setting('app.workspace_id', true) AS uuid)"
         ),
         {"codes": sorted(codes)},
     )
@@ -133,7 +134,10 @@ async def _version_statuses(conn: AsyncConnection, codes: set[str]) -> dict[tupl
 
 async def _parent_hashes(conn: AsyncConnection, handles: set[str]) -> dict[str, str]:
     rows = await conn.execute(
-        text("SELECT handle, content_hash FROM parent_chunks WHERE handle = ANY(:h)"),
+        text(
+            "SELECT handle, content_hash FROM parent_chunks WHERE handle = ANY(:h) "
+            "AND workspace_id = CAST(current_setting('app.workspace_id', true) AS uuid)"
+        ),
         {"h": sorted(handles)},
     )
     return {str(h): str(ch).strip() for h, ch in rows.all()}
@@ -145,7 +149,8 @@ async def _dataset_ids(conn: AsyncConnection, ref: dict[str, Any]) -> tuple[str,
             "SELECT v.id::text, d.id::text FROM sources s "
             "JOIN source_versions v ON v.source_id = s.id "
             "JOIN dataset_tables d ON d.source_version_id = v.id "
-            "WHERE s.source_code = :c AND v.version = :v AND d.sheet_ordinal = :o AND d.name = :n"
+            "WHERE s.source_code = :c AND v.version = :v AND d.sheet_ordinal = :o AND d.name = :n "
+            "AND s.workspace_id = CAST(current_setting('app.workspace_id', true) AS uuid)"
         ),
         {
             "c": ref["source_code"],

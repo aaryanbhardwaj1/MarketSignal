@@ -1,14 +1,16 @@
 """Deterministic progress events for research mode (plan §21; the Phase 4 SSE contract).
 
 Events are built only from validated tool arguments and tool status, never from model prose
-or thinking. Model-supplied text (queries, terms, filter values, compared levels) appears only
-as quoted plain text, collapsed to one line and truncated to :data:`QUOTE_MAX_CHARS`; column
-names appear unquoted but printable, quote-free and truncated to :data:`NAME_MAX_CHARS`; a
-dataset id appears as is only when it is well-formed (``CODE:N``), otherwise quoted.
+or thinking. Summaries are shown verbatim on the Ask page, so they use plain business words:
+model-supplied text (queries, terms, filter values, compared levels) appears only as quoted
+plain text, collapsed to one line and truncated to :data:`QUOTE_MAX_CHARS`; column names appear
+unquoted but printable, quote-free, de-snake-cased and truncated to :data:`NAME_MAX_CHARS`;
+dataset ids, function-call syntax and tool names never appear.
 
-Analytics templates (kind ``analytics``): "Describing datasets", "Describing dataset
-SURVEY-2026:1", "Computing mean(nps) by region on SURVEY-2026:1", 'Comparing mean(nps) between
-"Gen Z" and "Millennial" on SURVEY-2026:1', "Listing up to 5 matching rows on SURVEY-2026:1".
+Analytics templates (kind ``analytics``): "Reviewing datasets", "Reviewing a dataset's
+columns", "Computing the average NPS, by region, in a workspace dataset", 'Comparing the
+average NPS between "Gen Z" and "Millennial" in a workspace dataset', "Listing up to 5
+matching records in a workspace dataset".
 """
 
 from __future__ import annotations
@@ -17,7 +19,6 @@ from typing import Any, Literal
 
 from pydantic import ValidationError
 
-from marketsignal.analytics.schema import parse_dataset_id
 from marketsignal.tools.contracts import INPUT_MODELS, TOOL_NAMES
 
 QUOTE_MAX_CHARS = 80
@@ -35,7 +36,25 @@ KINDS: dict[str, ToolKind] = {
     "group_compare": "analytics",
     "filter_rows": "analytics",
 }
-_SYMBOLS = {"eq": "=", "ne": "!=", "gt": ">", "gte": ">=", "lt": "<", "lte": "<="}
+_OP_WORDS = {
+    "eq": "is",
+    "ne": "is not",
+    "gt": "is above",
+    "gte": "is at least",
+    "lt": "is below",
+    "lte": "is at most",
+}
+_FN_WORDS = {
+    "count_distinct": "number of distinct",
+    "sum": "total",
+    "mean": "average",
+    "median": "median",
+    "min": "lowest",
+    "max": "highest",
+}
+_ACRONYMS = frozenset({"nps", "csat", "aov", "sku", "roi", "ltv", "cac", "arr", "mrr", "id"})
+_IN_DATASET = "in a workspace dataset"
+INVALID_STEP = "A research step could not run"
 _SHOWN_VALUES = 3
 
 STATUS_PLANNING = {"phase": "planning", "message": "Planning the research"}
@@ -100,52 +119,60 @@ def _name(text: Any) -> str:
     return flat if len(flat) <= NAME_MAX_CHARS else flat[: NAME_MAX_CHARS - 1].rstrip() + "…"
 
 
-def _dataset(value: Any) -> str:
-    """A well-formed dataset id as is (``CODE:N`` has no spaces or quotes); anything else
-    quoted."""
-    text = str(value)
-    return text if parse_dataset_id(text) is not None else quote(text)
+def _column(text: Any) -> str:
+    """A column name in plain words (``age_group`` -> ``age group``, ``nps`` -> ``NPS``)."""
+    words = _name(str(text).replace("_", " ")).split(" ")
+    return " ".join(w.upper() if w.lower() in _ACRONYMS else w for w in words)
 
 
 def _condition(cond: dict[str, Any]) -> str:
-    col, op = _name(cond.get("column", "")), str(cond.get("op", ""))
-    if op in _SYMBOLS:
-        return f"{col} {_SYMBOLS[op]} {quote(str(cond.get('value')))}"
+    col, op = _column(cond.get("column", "")), str(cond.get("op", ""))
+    if op in _OP_WORDS:
+        return f"{col} {_OP_WORDS[op]} {quote(str(cond.get('value')))}"
     if op in ("is_null", "not_null"):
-        return f"{col} {'is null' if op == 'is_null' else 'is not null'}"
+        return f"{col} {'is blank' if op == 'is_null' else 'is not blank'}"
     values = [quote(str(v)) for v in (cond.get("values") or [])]
+    if op == "between" and len(values) == 2:
+        return f"{col} is between {values[0]} and {values[1]}"
     shown = ", ".join(values[:_SHOWN_VALUES]) + (", …" if len(values) > _SHOWN_VALUES else "")
-    return f"{col} {op.replace('_', ' ')} [{shown}]"
+    return f"{col} {'is not one of' if op == 'not_in' else 'is one of'} {shown}"
 
 
 def _metric(metric: dict[str, Any]) -> str:
     fn = str(metric.get("fn", ""))
     if metric.get("condition"):
-        return f"{fn}({_condition(metric['condition'])})"
-    return f"{fn}({_name(metric['column'])})" if metric.get("column") else fn
+        return f"the share where {_condition(metric['condition'])}"
+    if fn == "count":
+        return "the number of records"
+    word = _FN_WORDS.get(fn, fn)
+    return f"the {word} {_column(metric['column'])}" if metric.get("column") else f"the {word}"
+
+
+def _joined(parts: list[str]) -> str:
+    return parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
 
 
 def _analytics(name: str, args: dict[str, Any]) -> str:
     if name == "describe_dataset":
-        ds = args.get("dataset")
-        return f"Describing dataset {_dataset(ds)}" if ds else "Describing datasets"
-    on = f" on {_dataset(args['dataset'])}"
+        return "Reviewing a dataset's columns" if args.get("dataset") else "Reviewing datasets"
     if name == "aggregate":
-        metrics = ", ".join(_metric(m) for m in args["metrics"])
-        groups = ", ".join(_name(g) for g in args.get("group_by") or [])
-        return f"Computing {metrics}{' by ' + groups if groups else ''}{on}"
+        metrics = _joined([_metric(m) for m in args["metrics"]])
+        groups = [_column(g) for g in args.get("group_by") or []]
+        by = f", by {_joined(groups)}," if groups else ""
+        return f"Computing {metrics}{by} {_IN_DATASET}"
     if name == "group_compare":
         a, b = quote(str(args["group_a"])), quote(str(args["group_b"]))
-        return f"Comparing {_metric(args['metric'])} between {a} and {b}{on}"
+        return f"Comparing {_metric(args['metric'])} between {a} and {b} {_IN_DATASET}"
     limit = args.get("limit")
-    return f"Listing up to {limit} matching rows{on}" if limit else f"Listing matching rows{on}"
+    rows = f"up to {limit} matching records" if limit else "matching records"
+    return f"Listing {rows} {_IN_DATASET}"
 
 
 def summarize(name: str, arguments: dict[str, Any]) -> str:
-    """A fixed-template, human-readable summary of one call."""
+    """A fixed-template, plain-language summary of one call (shown on the Ask page)."""
     args = validated_args(name, arguments)
     if args is None:
-        return "Running a tool call with invalid arguments"
+        return INVALID_STEP
     if KINDS.get(name) == "analytics":
         return _analytics(name, args)
     if name == "search_evidence":
@@ -154,10 +181,10 @@ def summarize(name: str, arguments: dict[str, Any]) -> str:
         )
     if name == "search_evidence_keyword":
         terms = ", ".join(quote(t) for t in args["terms"])
-        return f"Checking exact identifiers: {terms}"
+        return f"Searching for exact mentions of {terms}"
     if name == "get_evidence":
         count = len(args["handles"])
-        return f"Opening {count} evidence item{'s' if count != 1 else ''}"
+        return f"Opening {count} evidence passage{'s' if count != 1 else ''}"
     return f"Listing {_classes(args.get('source_classes'))} sources"
 
 

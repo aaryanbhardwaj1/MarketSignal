@@ -7,16 +7,21 @@
 2. ``llm_provider == "fake"``, or the app's provider seam was replaced (tests, offline stand-ins):
    always available; nothing here can reach a network.
 3. ``NOT_CONFIGURED``: the Anthropic provider is configured without an API key.
-4. ``PROVIDER_REJECTED``: the Anthropic provider recently rejected a request with a
-   non-retryable error type (billing, authentication, permission, invalid request), latched for
+4. ``PROVIDER_REJECTED``: the Anthropic provider recently rejected a request for an
+   account-level reason (billing, authentication, permission, or an ``invalid_request_error``
+   whose message says the credit balance is too low), latched for
    ``settings.provider_latch_ttl_s`` seconds.
 
-The latch is process-local and stores only the provider error *type* and a monotonic timestamp:
-never the message, the request id or anything else the provider returned.
+The latch is process-global (it applies to every workspace), so it fires only on account-level
+rejections. A request-specific ``invalid_request_error`` (for example "prompt is too long", or a
+malformed tool-result pairing from our own bug) fails that one run and never refuses everyone
+else's. The provider message is inspected in memory only; the latch stores just the error *type*
+and a monotonic timestamp: never the message, the request id or anything else returned.
 """
 
 from __future__ import annotations
 
+import re
 import threading
 import time
 from dataclasses import dataclass
@@ -27,8 +32,11 @@ from marketsignal.config import Settings
 Reason = Literal["DISABLED", "NOT_CONFIGURED", "PROVIDER_REJECTED"]
 
 LATCHED_ERROR_TYPES: Final = frozenset(
-    {"invalid_request_error", "billing_error", "authentication_error", "permission_error"}
+    {"billing_error", "authentication_error", "permission_error"}
 )
+# ``invalid_request_error`` is account-level only when the provider says so (low credit balance).
+ACCOUNT_LEVEL_INVALID_REQUEST: Final = "invalid_request_error"
+_ACCOUNT_MESSAGE = re.compile(r"credit|billing|balance", re.IGNORECASE)
 
 
 def _now() -> float:
@@ -82,10 +90,22 @@ class ProviderLatch:
 PROVIDER_LATCH: Final = ProviderLatch()
 
 
-def latch(error_type: str | None) -> bool:
-    """Record a provider rejection if its type is one that cannot recover on retry. Returns
-    whether the latch was set. Only the type string is kept."""
-    if error_type not in LATCHED_ERROR_TYPES:
+def is_account_level(error_type: str | None, message: str | None = None) -> bool:
+    """Whether a rejection is about the account (it would fail every request), not this one."""
+    if error_type in LATCHED_ERROR_TYPES:
+        return True
+    return (
+        error_type == ACCOUNT_LEVEL_INVALID_REQUEST
+        and isinstance(message, str)
+        and _ACCOUNT_MESSAGE.search(message) is not None
+    )
+
+
+def latch(error_type: str | None, message: str | None = None) -> bool:
+    """Record a provider rejection if it is account-level (see :func:`is_account_level`).
+    Returns whether the latch was set. Only the type string is kept; ``message`` is read here
+    and never stored or logged."""
+    if error_type is None or not is_account_level(error_type, message):
         return False
     PROVIDER_LATCH.set(error_type)
     return True

@@ -103,8 +103,13 @@ async def test_agent_computes_then_searches_and_hands_results_over(
     assert "AGENT-PROSE" not in raw
     started = [e["data"] for e in events if e["event"] == "tool_started"]
     assert [(s["tool"], s["kind"], s["summary"]) for s in started] == [
-        ("describe_dataset", "analytics", "Describing datasets"),
-        ("aggregate", "analytics", "Computing mean(nps), count by region on SURV:1"),
+        ("describe_dataset", "analytics", "Reviewing datasets"),
+        (
+            "aggregate",
+            "analytics",
+            "Computing the average NPS and the number of records, by region, "
+            "in a workspace dataset",
+        ),
         ("search_evidence", "search", 'Searching all evidence for "fit inconsistency"'),
     ]
     completed = [e["data"] for e in events if e["event"] == "tool_completed"]

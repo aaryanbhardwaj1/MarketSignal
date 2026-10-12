@@ -370,13 +370,22 @@ def _classify(exc: BaseException) -> Exception:
             or _body_error_type(exc.body) in (RETRYABLE_ERROR_TYPES)
         ):
             return _Retryable(reason)
-        # Non-retryable rejection (billing, auth, ...): latch "generation unavailable" so new
-        # runs are refused up front. Only the error type is kept, never the message or id.
-        availability.latch(_body_error_type(exc.body))
+        # Account-level rejection (billing, auth, low credit): latch "generation unavailable" so
+        # new runs are refused up front. A request-specific 400 (prompt too long, ...) does not
+        # latch. Only the error type is kept; the message is checked in memory, never stored.
+        availability.latch(_body_error_type(exc.body), _body_error_message(exc.body))
         return LLMUnavailableError(f"Anthropic request rejected ({reason})")
     if isinstance(exc, anthropic.APIConnectionError):  # includes APITimeoutError
         return _Retryable(type(exc).__name__)
     return LLMUnavailableError(f"Anthropic call failed ({type(exc).__name__})")
+
+
+def _body_error_message(body: object) -> str | None:
+    if isinstance(body, dict):
+        error = body.get("error")
+        if isinstance(error, dict) and isinstance(error.get("message"), str):
+            return cast(str, error["message"])
+    return None
 
 
 def _body_error_type(body: object) -> str | None:

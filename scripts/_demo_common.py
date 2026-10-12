@@ -25,6 +25,8 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncConnection
 
+from marketsignal.demo.featured import featured_ids
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SNAPSHOT = REPO_ROOT / "seed_data" / "demo" / "northstar-demo-snapshot.json"
 DENYLIST_FILE = REPO_ROOT / "scripts" / "safety-denylist.local"
@@ -32,21 +34,16 @@ DENYLIST_FILE = REPO_ROOT / "scripts" / "safety-denylist.local"
 SNAPSHOT_FORMAT = "marketsignal.demo-snapshot"
 SNAPSHOT_FORMAT_VERSION = 1
 
-# Featured NORTHSTAR conversations, in display order (one saved run each).
-FEATURED_NORTHSTAR: tuple[str, ...] = (
-    "0ec3ca8c-5a3d-41c4-aca2-6f0967dacb51",  # research, analytics result + evidence
-    "42719cd8-909b-4997-a25e-2b08508a029e",  # research, Gen Z friction
-    "97c28be3-392b-46b3-aa5d-4cf86bcc45da",  # research twin of 7c8c6da4
-    "7c8c6da4-1551-4a53-bbcd-9018de5957ba",  # standard twin of 97c28be3
-    "75577600-577c-4ae7-aaa2-964175d647f6",  # standard, accepted without repairs
-    "008b11b4-4e48-495f-abca-9e5490fe112d",  # research, two analytics results
-)
+# Featured NORTHSTAR conversations, in display order (one saved run each). Read from the API's
+# own featured.v1.json so the export and the featured list can never diverge.
+FEATURED_NORTHSTAR: tuple[str, ...] = tuple(str(i) for i in featured_ids("NORTHSTAR"))
 
 # Test-harness workspace codes (tests/integration/conftest.py: "T" + 10 upper-case hex).
 TEST_WORKSPACE_CODE = re.compile(r"^T[0-9A-F]{10}$")
 
-# Corpus states an imported run may point at. ``purged`` (or anything else) means drift.
-LIVE_VERSION_STATUSES = frozenset({"ready", "superseded"})
+# Corpus states an imported run may point at (the API also treats ``ready_degraded`` as ready);
+# ``purged`` (or anything else) means drift.
+LIVE_VERSION_STATUSES = frozenset({"ready", "ready_degraded", "superseded"})
 
 # Patterns that must never appear in a committed snapshot. Mixed case on purpose: env-var names
 # are matched exactly, everything else case-insensitively.
@@ -246,7 +243,22 @@ async def workspace_id(conn: AsyncConnection, code: str) -> str:
     return str(found)
 
 
+async def assert_rls_applies(conn: AsyncConnection) -> None:
+    """Refuse to run as a superuser or BYPASSRLS role: under such a role FORCE RLS is ignored
+    and an unscoped statement would reach every workspace."""
+    row = await conn.execute(
+        text("SELECT NOT rolsuper AND NOT rolbypassrls FROM pg_roles WHERE rolname = current_user")
+    )
+    if row.scalar_one_or_none() is not True:
+        raise SnapshotError(
+            "refusing to run as a superuser or BYPASSRLS role: workspace isolation relies on "
+            "row-level security (use the schema-owner role from MS_MIGRATIONS_DATABASE_URL)"
+        )
+
+
 async def scope_to(conn: AsyncConnection, ws_id: str) -> None:
+    """Check the role is subject to RLS, then scope the transaction to one workspace."""
+    await assert_rls_applies(conn)
     await conn.execute(text("SELECT set_config('app.workspace_id', :ws, true)"), {"ws": ws_id})
 
 
@@ -258,7 +270,8 @@ async def child_lookup(conn: AsyncConnection, refs: Iterable[str]) -> dict[str, 
     rows = await conn.execute(
         text(
             "SELECT p.handle, c.char_start, c.char_end, c.id::text FROM parent_chunks p "
-            "JOIN child_chunks c ON c.parent_id = p.id WHERE p.handle = ANY(:handles)"
+            "JOIN child_chunks c ON c.parent_id = p.id WHERE p.handle = ANY(:handles) "
+            "AND p.workspace_id = CAST(current_setting('app.workspace_id', true) AS uuid)"
         ),
         {"handles": sorted({handle for handle, _, _ in wanted.values()})},
     )

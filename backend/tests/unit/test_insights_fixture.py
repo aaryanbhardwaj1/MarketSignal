@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import re
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -197,3 +198,14 @@ def test_derived_metrics() -> None:
 )
 def test_display_formatting(value: Any, unit: str, kwargs: dict[str, Any], expected: Any) -> None:
     assert format_value(value, unit, **kwargs) == expected
+
+
+def test_newest_fixture_compares_versions_numerically(tmp_path: Path) -> None:
+    from marketsignal.insights.fixture import newest_fixture_path
+
+    for name in ("ACME.v2.json", "ACME.v10.json", "ACME.v9.json", "ACME.vX.json", "ACME.v3.bak"):
+        (tmp_path / name).write_text("{}", encoding="utf-8")
+    newest = newest_fixture_path("ACME", tmp_path)
+    assert newest is not None
+    assert newest.name == "ACME.v10.json"
+    assert newest_fixture_path("OTHER", tmp_path) is None

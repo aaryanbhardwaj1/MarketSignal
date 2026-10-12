@@ -5,8 +5,10 @@
 
 Only codes matching ``^T[0-9A-F]{10}$`` are ever touched; ``--code`` narrows the set further
 and is refused for any other code. Deletes run per workspace as the schema owner, inside that
-workspace's RLS scope: run tables first, then the source chain (the integration-test purge
-order), then the workspace row. Without ``--yes`` nothing is deleted.
+workspace's RLS scope, with every statement also filtered on ``workspace_id`` and the role
+checked to be subject to RLS (never a superuser or BYPASSRLS role): run tables first, then the
+source chain (the integration-test purge order), then the workspace row. Without ``--yes``
+nothing is deleted.
 """
 
 from __future__ import annotations
@@ -18,30 +20,32 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from _demo_common import TEST_WORKSPACE_CODE, is_test_workspace_code, scope_to
+from _demo_common import TEST_WORKSPACE_CODE, SnapshotError, is_test_workspace_code, scope_to
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 # Run tables (children first), then tests/integration/conftest.py `_PURGE_ORDER`.
+# Every statement is filtered on workspace_id explicitly, so isolation never depends on RLS
+# alone (scope_to also refuses superuser/BYPASSRLS roles).
 PURGE_ORDER: tuple[str, ...] = (
-    "DELETE FROM run_events",
-    "DELETE FROM tool_runs",
-    "DELETE FROM verification_attempts",
-    "DELETE FROM analytics_results",
-    "DELETE FROM retrieval_traces",
-    "DELETE FROM messages",
-    "DELETE FROM query_runs",
-    "DELETE FROM conversations",
-    "DELETE FROM chunk_embeddings",
-    "DELETE FROM child_chunks",
-    "DELETE FROM parent_chunks",
-    "DELETE FROM dataset_tables",
-    "DELETE FROM source_blobs",
-    "UPDATE sources SET current_version_id = NULL",
-    "DELETE FROM source_versions",
-    "DELETE FROM sources",
-    "DELETE FROM audit_events",
-    "DELETE FROM workspace_corpus_state",
+    "DELETE FROM run_events WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM tool_runs WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM verification_attempts WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM analytics_results WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM retrieval_traces WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM messages WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM query_runs WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM conversations WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM chunk_embeddings WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM child_chunks WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM parent_chunks WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM dataset_tables WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM source_blobs WHERE workspace_id = CAST(:ws AS uuid)",
+    "UPDATE sources SET current_version_id = NULL WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM source_versions WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM sources WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM audit_events WHERE workspace_id = CAST(:ws AS uuid)",
+    "DELETE FROM workspace_corpus_state WHERE workspace_id = CAST(:ws AS uuid)",
 )
 COUNTED = ("sources", "conversations", "query_runs")
 
@@ -64,12 +68,18 @@ async def list_test_workspaces(engine: AsyncEngine) -> list[tuple[str, str]]:
         return [(str(c), str(i)) for c, i in rows.all()]
 
 
+_COUNT_SQL = {
+    table: f"SELECT count(*) FROM {table} WHERE workspace_id = CAST(:ws AS uuid)"  # noqa: S608
+    for table in COUNTED
+}
+
+
 async def counts(engine: AsyncEngine, ws_id: str) -> dict[str, int]:
     async with engine.connect() as conn, conn.begin():
         await scope_to(conn, ws_id)
         return {
-            table: int((await conn.execute(text(f"SELECT count(*) FROM {table}"))).scalar_one())  # noqa: S608
-            for table in COUNTED
+            table: int((await conn.execute(text(sql), {"ws": ws_id})).scalar_one())
+            for table, sql in _COUNT_SQL.items()
         }
 
 
@@ -79,7 +89,7 @@ async def drop_workspace(engine: AsyncEngine, code: str, ws_id: str) -> None:
     async with engine.begin() as conn:
         await scope_to(conn, ws_id)
         for statement in PURGE_ORDER:
-            await conn.execute(text(statement))
+            await conn.execute(text(statement), {"ws": ws_id})
         await conn.execute(
             text("DELETE FROM workspaces WHERE id = CAST(:id AS uuid) AND code = :c"),
             {"id": ws_id, "c": code},
@@ -125,7 +135,7 @@ def main() -> int:
         return 2
     try:
         return asyncio.run(_main(args))
-    except ValueError as exc:
+    except (ValueError, SnapshotError) as exc:
         print(f"reset refused: {exc}", file=sys.stderr)
         return 2
 
