@@ -10,10 +10,12 @@ Do this 10 minutes before.
 
 1. `make up`: Postgres and Redis are healthy.
 2. `make api-demo`: API on `:8000` with the live model off and test workspaces hidden. Check that `curl -s localhost:8000/readyz` reports `"status":"ready"`.
-3. `pnpm --dir frontend dev`: frontend on `:3000`.
+3. Frontend on `:3000`. **Recommended for the interview:** run a production build with
+   `pnpm --dir frontend build && pnpm --dir frontend start`. It has no compile pauses
+   and no development badge over the sidebar. `pnpm --dir frontend dev` also works.
 4. **Fresh database only:** `make worker`, `make seed` and `make demo-seed`. An existing local database already holds the corpus and the saved runs.
 5. Optional: `make demo-verify` re-verifies every curated insight number and citation against the corpus.
-6. **Warm the caches.** The dev server compiles each route on first visit, so open every URL in the table below once, in order.
+6. **Warm the caches.** Open every URL in the table below once, in order. This matters most with the dev server, which compiles each route on first visit.
 7. Check the sidebar footer: it says **Live model unavailable**. That is by design, not a fault. Say so if anyone asks.
 8. Browser at 1440 px or wider, zoom 100%, one tab per step if you want instant switching.
 
