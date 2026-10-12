@@ -1,0 +1,367 @@
+{
+    "run": {
+        "id": "41eb18bd-3fcd-40fe-b73a-1def152169b3",
+        "conversation_id": "6c40ffdf-99df-4d99-82a9-14d9a6ae1ce1",
+        "created_at": "2026-10-06T23:06:18.177398+00:00",
+        "question": "Northstar is sizing a paid fit-personalization tier at a 15% markup. What uptake should it plan for: the stated acceptance in the external study, or the take-up actually observed when pilot shoppers were offered that tier?",
+        "mode": "research",
+        "status": "completed",
+        "termination_state": "completed",
+        "flags": [],
+        "route_reason": "explicit_request",
+        "task_type": "analytics",
+        "model": "claude-sonnet-5-5",
+        "total_ms": 18051.0,
+        "tool_calls": 4,
+        "model_calls": 4,
+        "tokens_in": 12728,
+        "tokens_out": 1325,
+        "est_cost_usd": 0.042954,
+        "evidence_count": 12,
+        "cited_count": 9,
+        "verification_disposition": "repaired",
+        "regenerated": false,
+        "result_count": 0,
+        "timings": {
+            "pack_ms": 8.2,
+            "agent_ms": 7725.4,
+            "attempts": 1,
+            "total_ms": 18051.0,
+            "verify_ms_1": 29.92,
+            "first_token_ms": 4359.6,
+            "synthesis_ms_1": 10113.6
+        },
+        "usage": {
+            "input_tokens": 4868,
+            "llm_attempts": 1,
+            "output_tokens": 842,
+            "cache_read_input_tokens": 837,
+            "cache_creation_input_tokens": 0
+        },
+        "route": {
+            "requested": "research",
+            "persona_default": "auto",
+            "decided": "research",
+            "reason": "explicit_request",
+            "cues": [],
+            "task_type": "analytics"
+        },
+        "models": {
+            "synthesis": "claude-sonnet-5-5"
+        }
+    },
+    "agent": {
+        "stop_reason": "finish_research",
+        "steps": 3,
+        "tool_calls": 4,
+        "tool_errors": 0,
+        "pool_size": 14,
+        "sufficient": true,
+        "gap_count": 0,
+        "duration_ms": 7725.4,
+        "flags": [],
+        "usage": {
+            "input_tokens": 7860,
+            "llm_attempts": 3,
+            "output_tokens": 483,
+            "cache_read_input_tokens": 20403,
+            "cache_creation_input_tokens": 0
+        },
+        "states": [
+            "INIT",
+            "AGENT_STEP",
+            "EXECUTE",
+            "OBSERVE",
+            "AGENT_STEP",
+            "EXECUTE",
+            "OBSERVE",
+            "AGENT_STEP",
+            "DONE"
+        ]
+    },
+    "timeline": [
+        {
+            "t_ms": 0.6,
+            "kind": "run_started",
+            "label": "Run started",
+            "detail": {
+                "mode": "research",
+                "persona": "generalist"
+            }
+        },
+        {
+            "t_ms": 17.6,
+            "kind": "status",
+            "label": "Planning the research",
+            "detail": {
+                "phase": "planning"
+            }
+        },
+        {
+            "t_ms": 2682.6,
+            "kind": "status",
+            "label": "Searching workspace evidence",
+            "detail": {
+                "phase": "searching"
+            }
+        },
+        {
+            "t_ms": 2699.6,
+            "kind": "tool_started",
+            "label": "Listing all sources",
+            "detail": {
+                "step": 1,
+                "call_index": 0,
+                "tool": "list_sources",
+                "kind": "catalog"
+            }
+        },
+        {
+            "t_ms": 2706.6,
+            "kind": "tool_started",
+            "label": "Describing datasets",
+            "detail": {
+                "step": 1,
+                "call_index": 1,
+                "tool": "describe_dataset",
+                "kind": "analytics"
+            }
+        },
+        {
+            "t_ms": 2758.6,
+            "kind": "tool_completed",
+            "label": "list_sources ok",
+            "detail": {
+                "step": 1,
+                "call_index": 0,
+                "tool": "list_sources",
+                "status": "ok",
+                "duration_ms": 34,
+                "result_count": 23
+            }
+        },
+        {
+            "t_ms": 2765.6,
+            "kind": "tool_completed",
+            "label": "describe_dataset ok",
+            "detail": {
+                "step": 1,
+                "call_index": 1,
+                "tool": "describe_dataset",
+                "status": "ok",
+                "duration_ms": 33,
+                "result_count": 9
+            }
+        },
+        {
+            "t_ms": 5523.6,
+            "kind": "tool_started",
+            "label": "Searching all evidence for \"acceptance of 15% price premium for personalized fit\"",
+            "detail": {
+                "step": 2,
+                "call_index": 0,
+                "tool": "search_evidence",
+                "kind": "search"
+            }
+        },
+        {
+            "t_ms": 5541.6,
+            "kind": "tool_started",
+            "label": "Searching all evidence for \"pilot take-up of paid personalization tier offered to shoppers\"",
+            "detail": {
+                "step": 2,
+                "call_index": 1,
+                "tool": "search_evidence",
+                "kind": "search"
+            }
+        },
+        {
+            "t_ms": 5639.6,
+            "kind": "tool_completed",
+            "label": "search_evidence ok",
+            "detail": {
+                "step": 2,
+                "call_index": 0,
+                "tool": "search_evidence",
+                "status": "ok",
+                "duration_ms": 81,
+                "result_count": 6
+            }
+        },
+        {
+            "t_ms": 5643.6,
+            "kind": "tool_completed",
+            "label": "search_evidence ok",
+            "detail": {
+                "step": 2,
+                "call_index": 1,
+                "tool": "search_evidence",
+                "status": "ok",
+                "duration_ms": 79,
+                "result_count": 8
+            }
+        },
+        {
+            "t_ms": 7771.6,
+            "kind": "status",
+            "label": "Assembling the evidence pack",
+            "detail": {
+                "phase": "analyzing"
+            }
+        },
+        {
+            "t_ms": 7807.6,
+            "kind": "evidence",
+            "label": "Evidence pack: 12 passages",
+            "detail": {
+                "item_count": 12,
+                "truncated": false,
+                "classes": [
+                    "internal",
+                    "market"
+                ]
+            }
+        },
+        {
+            "t_ms": 7818.6,
+            "kind": "status",
+            "label": "Writing a grounded answer",
+            "detail": {
+                "phase": "synthesizing"
+            }
+        },
+        {
+            "t_ms": 12189.6,
+            "kind": "tokens",
+            "label": "Streamed 26 chunks",
+            "detail": {
+                "count": 26,
+                "citations": 9,
+                "attempt": 1,
+                "last_t_ms": 17943.6
+            }
+        },
+        {
+            "t_ms": 17957.6,
+            "kind": "status",
+            "label": "Verifying citations and numbers",
+            "detail": {
+                "phase": "verifying"
+            }
+        },
+        {
+            "t_ms": 18023.6,
+            "kind": "final",
+            "label": "Answer finalized",
+            "detail": {
+                "citations": 9,
+                "passed": true
+            }
+        },
+        {
+            "t_ms": 18051.6,
+            "kind": "done",
+            "label": "Done: completed",
+            "detail": {
+                "termination_state": "completed",
+                "flags": []
+            }
+        }
+    ],
+    "tools": [
+        {
+            "step": 1,
+            "call_index": 0,
+            "tool": "list_sources",
+            "status": "ok",
+            "error_code": null,
+            "result_count": 23,
+            "total_matches": null,
+            "truncated": false,
+            "warnings": [],
+            "duration_ms": 34.5,
+            "transport": "inprocess",
+            "args": {},
+            "redacted": false
+        },
+        {
+            "step": 1,
+            "call_index": 1,
+            "tool": "describe_dataset",
+            "status": "ok",
+            "error_code": null,
+            "result_count": 0,
+            "total_matches": null,
+            "truncated": false,
+            "warnings": [],
+            "duration_ms": 33.0,
+            "transport": "inprocess",
+            "args": {},
+            "redacted": false
+        },
+        {
+            "step": 2,
+            "call_index": 0,
+            "tool": "search_evidence",
+            "status": "ok",
+            "error_code": null,
+            "result_count": 6,
+            "total_matches": null,
+            "truncated": false,
+            "warnings": [],
+            "duration_ms": 80.5,
+            "transport": "inprocess",
+            "args": {
+                "query": "acceptance of 15% price premium for personalized fit",
+                "top_k": 6,
+                "source_codes": [
+                    "WTP-STUDY"
+                ]
+            },
+            "redacted": false
+        },
+        {
+            "step": 2,
+            "call_index": 1,
+            "tool": "search_evidence",
+            "status": "ok",
+            "error_code": null,
+            "result_count": 8,
+            "total_matches": null,
+            "truncated": false,
+            "warnings": [],
+            "duration_ms": 79.1,
+            "transport": "inprocess",
+            "args": {
+                "query": "pilot take-up of paid personalization tier offered to shoppers",
+                "top_k": 8,
+                "source_codes": [
+                    "PERSO-PILOT"
+                ]
+            },
+            "redacted": false
+        }
+    ],
+    "verification": [
+        {
+            "attempt": 1,
+            "disposition": "repaired",
+            "passed": true,
+            "citations": 17,
+            "failure_categories": [
+                "numbers_in_gaps"
+            ],
+            "repairs_n": 3,
+            "rejected": [
+                {
+                    "reason": "numbers_in_gaps",
+                    "section": "Gaps & unknowns",
+                    "aliases": []
+                }
+            ],
+            "result_ids": []
+        }
+    ],
+    "retrieval": null,
+    "analytics_result_ids": []
+}

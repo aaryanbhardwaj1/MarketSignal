@@ -1,0 +1,305 @@
+{
+    "run": {
+        "id": "288b6e18-8682-4d67-b35d-2a62edd76bb5",
+        "conversation_id": "e67eadc9-486f-47a9-af6e-ab4ae6dd6e45",
+        "created_at": "2026-10-06T23:06:49.612827+00:00",
+        "question": "Which shopper personas does Northstar's Gen Z segmentation define?",
+        "mode": "research",
+        "status": "completed",
+        "termination_state": "generation_unavailable",
+        "flags": [
+            "PLANNER_UNAVAILABLE_FALLBACK",
+            "LLM_SYNTHESIS_UNAVAILABLE"
+        ],
+        "route_reason": "explicit_request",
+        "task_type": "retrieval",
+        "model": null,
+        "total_ms": 647.7,
+        "tool_calls": 0,
+        "model_calls": 2,
+        "tokens_in": 0,
+        "tokens_out": 0,
+        "est_cost_usd": 0.0,
+        "evidence_count": 12,
+        "cited_count": 8,
+        "verification_disposition": null,
+        "regenerated": false,
+        "result_count": 0,
+        "timings": {
+            "pack_ms": 2.4,
+            "agent_ms": 196.3,
+            "total_ms": 647.7,
+            "retrieval_ms": 116.2,
+            "research_summary_chars": 610
+        },
+        "usage": {
+            "llm_attempts": 1,
+            "llm_failures": 1
+        },
+        "route": {
+            "requested": "research",
+            "persona_default": "auto",
+            "decided": "research",
+            "reason": "explicit_request",
+            "cues": [],
+            "task_type": "retrieval"
+        },
+        "models": {}
+    },
+    "agent": {
+        "stop_reason": "planner_unavailable",
+        "steps": 1,
+        "tool_calls": 0,
+        "tool_errors": 0,
+        "pool_size": 0,
+        "sufficient": null,
+        "gap_count": 0,
+        "duration_ms": 196.3,
+        "flags": [
+            "PLANNER_UNAVAILABLE_FALLBACK"
+        ],
+        "usage": {
+            "input_tokens": 0,
+            "llm_attempts": 1,
+            "output_tokens": 0,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 0
+        },
+        "states": [
+            "INIT",
+            "AGENT_STEP",
+            "DONE"
+        ]
+    },
+    "timeline": [
+        {
+            "t_ms": -1.8,
+            "kind": "run_started",
+            "label": "Run started",
+            "detail": {
+                "mode": "research",
+                "persona": "generalist"
+            }
+        },
+        {
+            "t_ms": 21.2,
+            "kind": "status",
+            "label": "Planning the research",
+            "detail": {
+                "phase": "planning"
+            }
+        },
+        {
+            "t_ms": 236.2,
+            "kind": "status",
+            "label": "Searching workspace evidence",
+            "detail": {
+                "phase": "searching"
+            }
+        },
+        {
+            "t_ms": 248.2,
+            "kind": "tool_started",
+            "label": "hybrid search",
+            "detail": {
+                "step": 2,
+                "tool": "search_evidence",
+                "kind": "search"
+            }
+        },
+        {
+            "t_ms": 374.2,
+            "kind": "tool_completed",
+            "label": "search_evidence ok",
+            "detail": {
+                "step": 2,
+                "tool": "search_evidence",
+                "status": "ok",
+                "duration_ms": 116.2,
+                "result_count": 174
+            }
+        },
+        {
+            "t_ms": 379.2,
+            "kind": "status",
+            "label": "Assembling the evidence pack",
+            "detail": {
+                "phase": "analyzing"
+            }
+        },
+        {
+            "t_ms": 391.2,
+            "kind": "evidence",
+            "label": "Evidence pack: 12 passages",
+            "detail": {
+                "item_count": 12,
+                "truncated": false,
+                "classes": [
+                    "customer",
+                    "financial",
+                    "internal"
+                ]
+            }
+        },
+        {
+            "t_ms": 395.2,
+            "kind": "status",
+            "label": "Writing a grounded answer",
+            "detail": {
+                "phase": "synthesizing"
+            }
+        },
+        {
+            "t_ms": 572.2,
+            "kind": "warning",
+            "label": "LLM_SYNTHESIS_UNAVAILABLE",
+            "detail": {
+                "code": "LLM_SYNTHESIS_UNAVAILABLE"
+            }
+        },
+        {
+            "t_ms": 613.2,
+            "kind": "final",
+            "label": "Answer finalized",
+            "detail": {
+                "citations": 8,
+                "passed": null
+            }
+        },
+        {
+            "t_ms": 645.2,
+            "kind": "done",
+            "label": "Done: generation_unavailable",
+            "detail": {
+                "termination_state": "generation_unavailable",
+                "flags": [
+                    "PLANNER_UNAVAILABLE_FALLBACK",
+                    "LLM_SYNTHESIS_UNAVAILABLE"
+                ]
+            }
+        }
+    ],
+    "tools": [],
+    "verification": [],
+    "retrieval": {
+        "timings": {
+            "dense_ms": 26.85,
+            "embed_ms": 44.59,
+            "total_ms": 105.57,
+            "fusion_ms": 0.7,
+            "lexical_ms": 22.39,
+            "lexical_prep_ms": 0.94
+        },
+        "lanes": {
+            "lexical": 100,
+            "dense": 100,
+            "fused": 40,
+            "final": 24
+        },
+        "embedding_cache_hit": false,
+        "active_versions": 23,
+        "top_final": [
+            {
+                "rank": 1,
+                "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P3.B1",
+                "source": "BRAND-STRATEGY",
+                "lanes": {
+                    "dense": 4,
+                    "lexical": 2
+                },
+                "rrf": 0.031754
+            },
+            {
+                "rank": 2,
+                "handle": "NORTHSTAR/GENZ-FOCUS-GROUP@v1:S2.B1",
+                "source": "GENZ-FOCUS-GROUP",
+                "lanes": {
+                    "dense": 1,
+                    "lexical": 10
+                },
+                "rrf": 0.030679
+            },
+            {
+                "rank": 3,
+                "handle": "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+                "source": "ANALYST-CALL",
+                "lanes": {
+                    "dense": 6,
+                    "lexical": 11
+                },
+                "rrf": 0.029236
+            },
+            {
+                "rank": 4,
+                "handle": "NORTHSTAR/FIN-SUMMARY-FY26@v1:SH2.R2",
+                "source": "FIN-SUMMARY-FY26",
+                "lanes": {
+                    "dense": 3,
+                    "lexical": 21
+                },
+                "rrf": 0.028219
+            },
+            {
+                "rank": 5,
+                "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P5.B1",
+                "source": "BRAND-STRATEGY",
+                "lanes": {
+                    "dense": 30,
+                    "lexical": 1
+                },
+                "rrf": 0.027505
+            },
+            {
+                "rank": 6,
+                "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+                "source": "PERSO-PILOT",
+                "lanes": {
+                    "dense": 2,
+                    "lexical": 43
+                },
+                "rrf": 0.025838
+            },
+            {
+                "rank": 7,
+                "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B11",
+                "source": "PERSO-PILOT",
+                "lanes": {
+                    "dense": 8,
+                    "lexical": 31
+                },
+                "rrf": 0.025695
+            },
+            {
+                "rank": 8,
+                "handle": "NORTHSTAR/INTERVIEWS@v1:S2.B1",
+                "source": "INTERVIEWS",
+                "lanes": {
+                    "dense": 12,
+                    "lexical": 25
+                },
+                "rrf": 0.025654
+            },
+            {
+                "rank": 9,
+                "handle": "NORTHSTAR/BRAND-STRATEGY@v1:P3.B2",
+                "source": "BRAND-STRATEGY",
+                "lanes": {
+                    "dense": 13,
+                    "lexical": 27
+                },
+                "rrf": 0.025193
+            },
+            {
+                "rank": 10,
+                "handle": "NORTHSTAR/FY27-MEMO@v1:S1.B4",
+                "source": "FY27-MEMO",
+                "lanes": {
+                    "dense": 7,
+                    "lexical": 38
+                },
+                "rrf": 0.025129
+            }
+        ]
+    },
+    "analytics_result_ids": []
+}

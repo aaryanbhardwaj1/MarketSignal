@@ -1,0 +1,393 @@
+{
+    "window": {
+        "since": null,
+        "until": null
+    },
+    "runs": {
+        "total": 407,
+        "by_mode": {
+            "research": 192,
+            "standard": 215
+        },
+        "by_status": {
+            "completed": 407
+        },
+        "by_termination_state": {
+            "generation_unavailable": 26,
+            "completed": 381
+        }
+    },
+    "latency_ms": {
+        "total_by_mode": {
+            "research": {
+                "p50": 12704.9,
+                "p95": 19146.5,
+                "n": 192
+            },
+            "standard": {
+                "p50": 5411.9,
+                "p95": 9532.0,
+                "n": 215
+            }
+        },
+        "stages": {
+            "retrieval": {
+                "p50": 106.3,
+                "p95": 179.3,
+                "n": 256
+            },
+            "agent": {
+                "p50": 7701.1,
+                "p95": 12199.2,
+                "n": 192
+            },
+            "pack": {
+                "p50": 2.5,
+                "p95": 8.3,
+                "n": 407
+            },
+            "synthesis": {
+                "p50": 5142.3,
+                "p95": 9135.1,
+                "n": 393
+            },
+            "verification": {
+                "p50": 16.1,
+                "p95": 29.9,
+                "n": 393
+            },
+            "first_token": {
+                "p50": 1147.0,
+                "p95": 4510.8,
+                "n": 393
+            }
+        }
+    },
+    "tokens": {
+        "input": 2619649,
+        "output": 299124,
+        "cache_read": 3202000,
+        "cache_write": 22180,
+        "per_run_mean": {
+            "input": 6436.48,
+            "output": 734.95
+        },
+        "by_source": {
+            "synthesis": {
+                "input": 1462177,
+                "output": 209416,
+                "cache_read": 320550,
+                "cache_write": 4033
+            },
+            "agent": {
+                "input": 1157472,
+                "output": 89708,
+                "cache_read": 2881450,
+                "cache_write": 18147
+            }
+        }
+    },
+    "model_calls": {
+        "total": 1015,
+        "per_run_mean": 2.49,
+        "n_runs_missing": 0
+    },
+    "tool_calls": {
+        "total": 568,
+        "per_run_mean": 1.4,
+        "by_tool": [
+            {
+                "tool": "describe_dataset",
+                "n": 176,
+                "ok": 176,
+                "truncated": 0,
+                "error": 0,
+                "denied": 0,
+                "timeout": 0,
+                "p50_ms": 18.8,
+                "p95_ms": 34.7
+            },
+            {
+                "tool": "search_evidence",
+                "n": 146,
+                "ok": 146,
+                "truncated": 0,
+                "error": 0,
+                "denied": 0,
+                "timeout": 0,
+                "p50_ms": 98.0,
+                "p95_ms": 155.5
+            },
+            {
+                "tool": "aggregate",
+                "n": 60,
+                "ok": 60,
+                "truncated": 0,
+                "error": 0,
+                "denied": 0,
+                "timeout": 0,
+                "p50_ms": 41.1,
+                "p95_ms": 68.6
+            },
+            {
+                "tool": "search_evidence_keyword",
+                "n": 57,
+                "ok": 57,
+                "truncated": 0,
+                "error": 0,
+                "denied": 0,
+                "timeout": 0,
+                "p50_ms": 68.7,
+                "p95_ms": 139.5
+            },
+            {
+                "tool": "get_evidence",
+                "n": 52,
+                "ok": 39,
+                "truncated": 13,
+                "error": 0,
+                "denied": 0,
+                "timeout": 0,
+                "p50_ms": 25.3,
+                "p95_ms": 49.9
+            },
+            {
+                "tool": "list_sources",
+                "n": 45,
+                "ok": 45,
+                "truncated": 0,
+                "error": 0,
+                "denied": 0,
+                "timeout": 0,
+                "p50_ms": 26.3,
+                "p95_ms": 40.5
+            },
+            {
+                "tool": "filter_rows",
+                "n": 28,
+                "ok": 28,
+                "truncated": 0,
+                "error": 0,
+                "denied": 0,
+                "timeout": 0,
+                "p50_ms": 34.6,
+                "p95_ms": 97.8
+            },
+            {
+                "tool": "group_compare",
+                "n": 4,
+                "ok": 4,
+                "truncated": 0,
+                "error": 0,
+                "denied": 0,
+                "timeout": 0,
+                "p50_ms": 41.3,
+                "p95_ms": 46.0
+            }
+        ]
+    },
+    "cost": {
+        "total_usd": 8.926388,
+        "per_run_usd": 0.021932,
+        "n_runs_with_usage": 407,
+        "prices_per_mtok": {
+            "input": 2.0,
+            "output": 10.0,
+            "cache_write": 2.5,
+            "cache_read": 0.2
+        },
+        "basis": "list_prices_from_persisted_usage"
+    },
+    "rates": {
+        "regeneration": 0.0688,
+        "verification_fallback": 0.0295,
+        "planner_fallback": 0.1007,
+        "degraded": 0.1794
+    },
+    "flags": [
+        {
+            "code": "PLANNER_UNAVAILABLE_FALLBACK",
+            "n": 41
+        },
+        {
+            "code": "AGENT_STEP_BUDGET_EXHAUSTED",
+            "n": 20
+        },
+        {
+            "code": "LLM_SYNTHESIS_UNAVAILABLE",
+            "n": 14
+        },
+        {
+            "code": "CITATION_VERIFICATION_FAILED",
+            "n": 12
+        }
+    ],
+    "route_reasons": [
+        {
+            "reason": "explicit_request",
+            "n": 208
+        },
+        {
+            "reason": "analytics_task",
+            "n": 104
+        },
+        {
+            "reason": "auto_no_cue",
+            "n": 15
+        },
+        {
+            "reason": "auto_cues",
+            "n": 9
+        }
+    ],
+    "verification": {
+        "dispositions": [
+            {
+                "disposition": "repaired",
+                "attempt": 1,
+                "n": 289
+            },
+            {
+                "disposition": "regenerate",
+                "attempt": 1,
+                "n": 21
+            },
+            {
+                "disposition": "accepted",
+                "attempt": 1,
+                "n": 12
+            },
+            {
+                "disposition": "fallback",
+                "attempt": 2,
+                "n": 11
+            },
+            {
+                "disposition": "repaired",
+                "attempt": 2,
+                "n": 10
+            }
+        ],
+        "failure_categories": [
+            {
+                "category": "numbers_in_gaps",
+                "n": 128
+            },
+            {
+                "category": "numbers_not_in_cited_evidence",
+                "n": 91
+            },
+            {
+                "category": "answer_missing",
+                "n": 27
+            },
+            {
+                "category": "uncited_claim",
+                "n": 22
+            },
+            {
+                "category": "numbers_not_in_pack",
+                "n": 15
+            },
+            {
+                "category": "unsupported_clause_removed",
+                "n": 11
+            },
+            {
+                "category": "uncited_numbers_not_in_pack",
+                "n": 7
+            },
+            {
+                "category": "dangling_reference",
+                "n": 6
+            },
+            {
+                "category": "too_many_citations",
+                "n": 5
+            },
+            {
+                "category": "leak",
+                "n": 1
+            },
+            {
+                "category": "no_citations",
+                "n": 1
+            }
+        ]
+    },
+    "retrieval": {
+        "n": 256,
+        "timings": {
+            "embed_ms": {
+                "p50": 34.4,
+                "p95": 72.1,
+                "n": 256
+            },
+            "lexical_prep_ms": {
+                "p50": 1.0,
+                "p95": 5.0,
+                "n": 256
+            },
+            "lexical_ms": {
+                "p50": 27.0,
+                "p95": 56.8,
+                "n": 256
+            },
+            "dense_ms": {
+                "p50": 23.1,
+                "p95": 33.9,
+                "n": 256
+            },
+            "fusion_ms": {
+                "p50": 0.8,
+                "p95": 1.4,
+                "n": 256
+            },
+            "total_ms": {
+                "p50": 96.0,
+                "p95": 168.4,
+                "n": 256
+            }
+        },
+        "candidates": {
+            "lexical": {
+                "p50": 100.0,
+                "p95": 100.0,
+                "n": 256
+            },
+            "dense": {
+                "p50": 100.0,
+                "p95": 100.0,
+                "n": 256
+            },
+            "fused": {
+                "p50": 40.0,
+                "p95": 40.0,
+                "n": 256
+            },
+            "final": {
+                "p50": 24.0,
+                "p95": 24.0,
+                "n": 256
+            }
+        },
+        "embedding_cache_hit_rate": 0.0
+    },
+    "governance": {
+        "tool_status": {
+            "ok": 555,
+            "truncated": 13,
+            "error": 0,
+            "denied": 0,
+            "timeout": 0
+        },
+        "redacted_tool_args": 0,
+        "redacted_messages": 0
+    },
+    "coverage": {
+        "runs_with_route": 336,
+        "runs_with_agent": 192,
+        "runs_with_verification": 322
+    },
+    "test_runs_excluded": 342
+}

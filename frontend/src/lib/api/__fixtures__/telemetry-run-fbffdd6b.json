@@ -1,0 +1,294 @@
+{
+    "run": {
+        "id": "fbffdd6b-9522-4b46-8095-cc9e042938cb",
+        "conversation_id": "75577600-577c-4ae7-aaa2-964175d647f6",
+        "created_at": "2026-10-06T19:33:44.425283+00:00",
+        "question": "What made a shopper who loved the custom colorway tool give up on ordering, and what did Northstar leadership decide about personalization at the Q3 strategy review?",
+        "mode": "standard",
+        "status": "completed",
+        "termination_state": "completed",
+        "flags": [],
+        "route_reason": "explicit_request",
+        "task_type": null,
+        "model": "claude-sonnet-5-5",
+        "total_ms": 6371.2,
+        "tool_calls": 0,
+        "model_calls": 1,
+        "tokens_in": 5373,
+        "tokens_out": 565,
+        "est_cost_usd": 0.016548,
+        "evidence_count": 12,
+        "cited_count": 6,
+        "verification_disposition": "accepted",
+        "regenerated": false,
+        "result_count": 0,
+        "timings": {
+            "pack_ms": 3.3,
+            "attempts": 1,
+            "total_ms": 6371.2,
+            "verify_ms_1": 23.09,
+            "retrieval_ms": 188.1,
+            "first_token_ms": 2378.6,
+            "synthesis_ms_1": 5986.6
+        },
+        "usage": {
+            "input_tokens": 5373,
+            "llm_attempts": 1,
+            "output_tokens": 565,
+            "cache_read_input_tokens": 761,
+            "cache_creation_input_tokens": 0
+        },
+        "route": {
+            "requested": "standard",
+            "persona_default": "auto",
+            "decided": "standard",
+            "reason": "explicit_request",
+            "cues": []
+        },
+        "models": {
+            "synthesis": "claude-sonnet-5-5"
+        }
+    },
+    "agent": null,
+    "timeline": [
+        {
+            "t_ms": 5.7,
+            "kind": "run_started",
+            "label": "Run started",
+            "detail": {
+                "mode": "standard",
+                "persona": "generalist"
+            }
+        },
+        {
+            "t_ms": 24.7,
+            "kind": "status",
+            "label": "Searching workspace evidence",
+            "detail": {
+                "phase": "searching"
+            }
+        },
+        {
+            "t_ms": 44.7,
+            "kind": "tool_started",
+            "label": "hybrid search",
+            "detail": {
+                "step": 1,
+                "tool": "search_evidence",
+                "kind": "search"
+            }
+        },
+        {
+            "t_ms": 240.7,
+            "kind": "tool_completed",
+            "label": "search_evidence ok",
+            "detail": {
+                "step": 1,
+                "tool": "search_evidence",
+                "status": "ok",
+                "duration_ms": 188.1,
+                "result_count": 156
+            }
+        },
+        {
+            "t_ms": 247.7,
+            "kind": "status",
+            "label": "Assembling the evidence pack",
+            "detail": {
+                "phase": "analyzing"
+            }
+        },
+        {
+            "t_ms": 263.7,
+            "kind": "evidence",
+            "label": "Evidence pack: 12 passages",
+            "detail": {
+                "item_count": 12,
+                "truncated": false,
+                "classes": [
+                    "customer",
+                    "internal"
+                ]
+            }
+        },
+        {
+            "t_ms": 269.7,
+            "kind": "status",
+            "label": "Writing a grounded answer",
+            "detail": {
+                "phase": "synthesizing"
+            }
+        },
+        {
+            "t_ms": 2653.7,
+            "kind": "tokens",
+            "label": "Streamed 26 chunks",
+            "detail": {
+                "count": 26,
+                "citations": 6,
+                "attempt": 1,
+                "last_t_ms": 6261.7
+            }
+        },
+        {
+            "t_ms": 6275.7,
+            "kind": "status",
+            "label": "Verifying citations and numbers",
+            "detail": {
+                "phase": "verifying"
+            }
+        },
+        {
+            "t_ms": 6346.7,
+            "kind": "final",
+            "label": "Answer finalized",
+            "detail": {
+                "citations": 6,
+                "passed": true
+            }
+        },
+        {
+            "t_ms": 6377.7,
+            "kind": "done",
+            "label": "Done: completed",
+            "detail": {
+                "termination_state": "completed",
+                "flags": []
+            }
+        }
+    ],
+    "tools": [],
+    "verification": [
+        {
+            "attempt": 1,
+            "disposition": "accepted",
+            "passed": true,
+            "citations": 10,
+            "failure_categories": [],
+            "repairs_n": 0,
+            "rejected": [],
+            "result_ids": []
+        }
+    ],
+    "retrieval": {
+        "timings": {
+            "dense_ms": 34.66,
+            "embed_ms": 81.62,
+            "total_ms": 170.08,
+            "fusion_ms": 0.86,
+            "lexical_ms": 42.45,
+            "lexical_prep_ms": 1.18
+        },
+        "lanes": {
+            "lexical": 100,
+            "dense": 100,
+            "fused": 40,
+            "final": 24
+        },
+        "embedding_cache_hit": false,
+        "active_versions": 23,
+        "top_final": [
+            {
+                "rank": 1,
+                "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B8",
+                "source": "PERSO-PILOT",
+                "lanes": {
+                    "dense": 1,
+                    "lexical": 1
+                },
+                "rrf": 0.032787
+            },
+            {
+                "rank": 2,
+                "handle": "NORTHSTAR/INTERVIEWS@v1:S14.Q1",
+                "source": "INTERVIEWS",
+                "lanes": {
+                    "dense": 2,
+                    "lexical": 6
+                },
+                "rrf": 0.031281
+            },
+            {
+                "rank": 3,
+                "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B3",
+                "source": "PERSO-PILOT",
+                "lanes": {
+                    "dense": 3,
+                    "lexical": 10
+                },
+                "rrf": 0.030159
+            },
+            {
+                "rank": 4,
+                "handle": "NORTHSTAR/SUPPORT-THEMES@v1:P4.B2",
+                "source": "SUPPORT-THEMES",
+                "lanes": {
+                    "dense": 12,
+                    "lexical": 4
+                },
+                "rrf": 0.029514
+            },
+            {
+                "rank": 5,
+                "handle": "NORTHSTAR/PERSO-PILOT@v1:S1.B2",
+                "source": "PERSO-PILOT",
+                "lanes": {
+                    "dense": 11,
+                    "lexical": 5
+                },
+                "rrf": 0.029469
+            },
+            {
+                "rank": 6,
+                "handle": "NORTHSTAR/SUPPORT-THEMES@v1:P2.B3",
+                "source": "SUPPORT-THEMES",
+                "lanes": {
+                    "dense": 15,
+                    "lexical": 12
+                },
+                "rrf": 0.027222
+            },
+            {
+                "rank": 7,
+                "handle": "NORTHSTAR/ANALYST-CALL@v1:S1.B2",
+                "source": "ANALYST-CALL",
+                "lanes": {
+                    "dense": 23,
+                    "lexical": 9
+                },
+                "rrf": 0.026541
+            },
+            {
+                "rank": 8,
+                "handle": "NORTHSTAR/FY27-MEMO@v1:S1.B3",
+                "source": "FY27-MEMO",
+                "lanes": {
+                    "dense": 10,
+                    "lexical": 27
+                },
+                "rrf": 0.02578
+            },
+            {
+                "rank": 9,
+                "handle": "NORTHSTAR/ANALYST-CALL@v1:S1.B1",
+                "source": "ANALYST-CALL",
+                "lanes": {
+                    "dense": 21,
+                    "lexical": 18
+                },
+                "rrf": 0.025166
+            },
+            {
+                "rank": 10,
+                "handle": "NORTHSTAR/Q3-REVIEW@v1:SL14.N1",
+                "source": "Q3-REVIEW",
+                "lanes": {
+                    "dense": 8,
+                    "lexical": 40
+                },
+                "rrf": 0.024706
+            }
+        ]
+    },
+    "analytics_result_ids": []
+}
