@@ -59,8 +59,9 @@ if [ -f "$denylist_file" ]; then
   fi
 fi
 
-# Files allowed to contain the content patterns above (this script documents them).
-content_allowlist='^scripts/check_repo_safety\.sh$'
+# Files allowed to contain the content patterns above: this script documents them, and the demo
+# snapshot exporter (and its unit test) is itself a denylist scanner for the same patterns.
+content_allowlist='^(scripts/check_repo_safety\.sh|scripts/_demo_common\.py|backend/tests/unit/test_demo_snapshot\.py)$'
 
 fail=0
 while IFS= read -r f; do

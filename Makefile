@@ -89,3 +89,41 @@ safety: ## Public-repository safety check over tracked files
 
 .PHONY: check
 check: safety lint typecheck test ## Everything CI runs for the backend
+
+# ── offline demo (no live model: MS_LLM_ENABLED=false) ───────────────────────────────────────
+
+.PHONY: demo
+demo: ## Print the offline demo sequence
+	@echo "Offline demo (no live model calls):"
+	@echo "  1. make up            # postgres + redis"
+	@echo "  2. make migrate       # schema"
+	@echo "  3. make api-demo      # API on :8000 with MS_LLM_ENABLED=false MS_HIDE_TEST_WORKSPACES=true"
+	@echo "  4. make worker        # ingestion worker (separate terminal)"
+	@echo "  5. make seed          # synthetic corpus (fresh DB: make reset-db first)"
+	@echo "  6. make demo-seed     # saved featured conversations from seed_data/demo"
+	@echo "  7. pnpm --dir frontend dev   # web on :3000"
+	@echo "  Pre-demo checks: make demo-verify; make demo-clean (dry run of test-workspace cleanup)"
+
+.PHONY: api-demo
+api-demo: ## Run the API on :8000 for the offline demo (live model off, test workspaces hidden)
+	MS_LLM_ENABLED=false MS_HIDE_TEST_WORKSPACES=true $(UV) run uvicorn marketsignal.api.app:create_app --factory --port 8000
+
+.PHONY: demo-export
+demo-export: ## Re-export featured NORTHSTAR conversations to seed_data/demo (read-only)
+	$(UV) run python ../scripts/demo_export.py
+
+.PHONY: demo-seed
+demo-seed: ## Import the demo snapshot after `make seed` (idempotent; aborts on corpus drift)
+	$(UV) run python ../scripts/demo_import.py
+
+.PHONY: demo-clean
+demo-clean: ## Preview removal of test-harness workspaces; CONFIRM=yes deletes them
+	$(UV) run python ../scripts/demo_reset.py --drop-test-workspaces $(if $(filter yes,$(CONFIRM)),--yes,--dry-run)
+
+.PHONY: demo-verify
+demo-verify: ## Re-verify curated insight numbers and citations against the corpus
+	$(UV) run python ../scripts/verify_insights.py
+
+.PHONY: eval-catalog
+eval-catalog: ## Rebuild the evaluation catalog from committed eval artifacts
+	$(UV) run python ../scripts/build_eval_catalog.py
