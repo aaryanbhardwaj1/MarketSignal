@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { runMode } from "@/lib/labels";
 import { QuestionForm } from "./question-form";
 
 const html = renderToStaticMarkup(<QuestionForm disabled={false} busy={false} onSubmit={async () => true} />);
@@ -16,17 +17,25 @@ describe("QuestionForm mode selector", () => {
   });
 
   it("describes each mode", () => {
-    expect(html).toContain("Auto");
-    expect(html).toContain("Standard");
-    expect(html).toContain("Research");
+    for (const code of ["auto", "standard", "research"]) expect(html).toContain(runMode(code).label);
     expect(html).toContain("Fast answer from the current evidence base.");
     expect(html).toContain("Searches across multiple sources and analysis tools before answering.");
-    expect(html).toContain("questions that need calculations go to Research");
+    expect(html).toContain(`questions that need calculations get ${runMode("research").label}`);
     expect(html).toMatch(/aria-describedby="[^"]+"/);
   });
 
   it("keeps the question box and submit button", () => {
     expect(html).toContain('id="chat-question"');
     expect(html).toContain(">Ask<");
+  });
+});
+
+describe("QuestionForm while a question is being answered", () => {
+  const locked = renderToStaticMarkup(<QuestionForm disabled={false} locked busy={false} onSubmit={async () => true} />);
+  it("keeps the box focusable (read-only, aria-disabled) instead of disabling it", () => {
+    const box = locked.match(/<textarea[^>]*>/)?.[0] ?? "";
+    expect(box.toLowerCase()).toContain("readonly");
+    expect(box).toContain('aria-disabled="true"');
+    expect(box).not.toMatch(/ disabled=""/);
   });
 });

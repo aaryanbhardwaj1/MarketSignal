@@ -447,23 +447,3 @@ export function reduceRunEvent(state: RunStreamState, event: RunEvent): RunStrea
   if (state.done || event.seq <= state.lastSeq) return state;
   return { ...applyEvent(state, event), lastSeq: event.seq };
 }
-
-export function foldRunEvents(events: readonly RunEvent[], state = initialRunStreamState): RunStreamState {
-  return events.reduce(reduceRunEvent, state);
-}
-
-export const TERMINATION_LABELS: Readonly<Record<string, string>> = {
-  completed: "Completed",
-  completed_with_limited_evidence: "Completed with limited evidence",
-  retrieval_degraded: "Retrieval degraded",
-  generation_unavailable: "Answer generation unavailable",
-  no_relevant_evidence: "No relevant evidence",
-  tool_failure: "A retrieval step failed",
-  timeout: "Timed out",
-  cancelled: "Cancelled",
-  interrupted: "Interrupted",
-};
-
-export function terminationLabel(state: string): string {
-  return TERMINATION_LABELS[state] ?? state.replace(/_/g, " ");
-}

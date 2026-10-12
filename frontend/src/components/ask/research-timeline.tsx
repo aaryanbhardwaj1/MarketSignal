@@ -1,21 +1,12 @@
 import { formatMs } from "@/lib/format";
-import { toolSummaryText } from "@/lib/run-mode";
+import { PHASE_LABELS, toolSummaryText } from "@/lib/run-mode";
 import type { RunPhase, ToolStatus, ToolStep } from "@/lib/run-stream";
-
-const PHASE_LABELS: Record<RunPhase, string> = {
-  routing: "Choosing a mode",
-  planning: "Planning",
-  searching: "Searching",
-  analyzing: "Analyzing",
-  synthesizing: "Writing",
-  verifying: "Verifying",
-};
 
 const STATUS_VIEW: Record<ToolStatus, { label: string; className: string } | null> = {
   running: { label: "In progress", className: "text-info" },
   ok: null,
   error: { label: "Failed", className: "font-medium text-danger" },
-  denied: { label: "Denied", className: "font-medium text-warn" },
+  denied: { label: "Not allowed", className: "font-medium text-warn" },
   timeout: { label: "Timed out", className: "font-medium text-warn" },
 };
 
@@ -43,7 +34,7 @@ function TimelineItem({ tool }: { tool: ToolStep }) {
           title="A calculation over a workspace dataset"
           className="rounded-sm border border-cite-result/20 bg-cite-result-bg px-1.5 text-xs font-medium text-cite-result"
         >
-          Analytics
+          Calculation
         </span>
       )}
       <span className="text-primary">{toolSummaryText(tool)}</span>
@@ -54,7 +45,7 @@ function TimelineItem({ tool }: { tool: ToolStep }) {
         </span>
       ))}
       {status && (
-        <span className={status.className} title={failed && tool.errorCode ? tool.errorCode : undefined}>
+        <span className={status.className}>
           <span aria-hidden>· </span>
           {status.label}
         </span>

@@ -3,6 +3,7 @@ import { DevDetails } from "@/components/ui/disclosure";
 import { degradationFlag, terminationState } from "@/lib/labels";
 import { isModelUnavailable } from "@/lib/model-availability";
 import type { RunDone, RunError, RunWarning } from "@/lib/run-stream";
+import { MODEL_UNAVAILABLE_BODY } from "./model-unavailable";
 
 /**
  * Plain-language notices for a live run: errors, an unusual ending and degradation flags.
@@ -24,7 +25,12 @@ export function RunNotices({
   const unavailable = isModelUnavailable({ warnings, terminationState: termination, flags });
   const ending = termination ? terminationState(termination) : null;
   const flagLabels = [
-    ...new Set(flags.map((f) => degradationFlag(f)).map((l) => (l.known ? l.label : "A processing notice was recorded"))),
+    ...new Set(
+      flags
+        .map((f) => degradationFlag(f))
+        .filter((l) => !l.internal)
+        .map((l) => (l.known ? l.label : "A processing notice was recorded")),
+    ),
   ];
   const technical = {
     error: error ? { code: error.code, message: error.message } : undefined,
@@ -42,7 +48,7 @@ export function RunNotices({
       )}
       {unavailable && (
         <Callout tone="warn" title="Live model unavailable">
-          Existing workspace insights, saved research and evaluation data remain available.
+          {MODEL_UNAVAILABLE_BODY}
         </Callout>
       )}
       {!unavailable && ending && termination !== "cancelled" && (

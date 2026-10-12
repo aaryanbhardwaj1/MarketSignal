@@ -7,7 +7,7 @@ import type { SavedRunView } from "@/lib/saved-run";
 import { telemetryRunHref } from "./ask-routes";
 
 function Summary({ view }: { view: SavedRunView }) {
-  const parts = [`${view.mode} mode`, view.durationMs !== null ? formatMs(view.durationMs) : null, view.verification?.label];
+  const parts = [view.mode, view.durationMs !== null ? formatMs(view.durationMs) : null, view.verification?.summary];
   return (
     <span className="flex min-w-0 flex-wrap items-baseline gap-x-2">
       Research details
@@ -23,7 +23,17 @@ export function ResearchDetails({ ws, view }: { ws: string; view: SavedRunView }
     ...(view.modeReason ? [{ label: "How the mode was chosen", value: view.modeReason }] : []),
     ...(view.durationMs !== null ? [{ label: "Duration", value: formatMs(view.durationMs) }] : []),
     ...(view.verification
-      ? [{ label: "Verification", value: <Badge tone={view.verification.tone}>{view.verification.label}</Badge> }]
+      ? [
+          {
+            label: "Citation checks",
+            value: (
+              <span className="flex flex-wrap items-center gap-2">
+                <Badge tone={view.verification.tone}>{view.verification.label}</Badge>
+                <span className="text-sm text-muted">{view.verification.summary}</span>
+              </span>
+            ),
+          },
+        ]
       : []),
   ];
   return (
@@ -60,11 +70,15 @@ export function ResearchDetails({ ws, view }: { ws: string; view: SavedRunView }
             </ul>
           </div>
         )}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-          <Link href={telemetryRunHref(ws, view.technical.runId)} className="rounded-sm text-sm font-medium text-accent-text hover:underline">
-            Open in Telemetry
-          </Link>
-          <DevDetails data={view.technical} />
+        <div className="border-t border-border pt-3">
+          <DevDetails data={view.technical}>
+            <Link
+              href={telemetryRunHref(ws, view.technical.runId)}
+              className="rounded-sm font-sans text-sm font-medium text-accent-text hover:underline"
+            >
+              Open this run in Telemetry (Developer tools)
+            </Link>
+          </DevDetails>
         </div>
       </div>
     </Disclosure>

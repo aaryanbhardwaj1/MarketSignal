@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import type { CitationContext } from "@/lib/citations";
-import { humanize } from "@/lib/format";
 import type { RunStreamState } from "@/lib/run-stream";
 import { Button } from "../ui/button";
 import { AnswerView } from "./answer-view";
@@ -18,7 +17,7 @@ function StatusLine({ state, connection }: { state: RunStreamState; connection: 
       ? "Connection interrupted, reconnecting…"
       : (state.statusMessage ?? "Starting…");
   return (
-    <div role="status" aria-live="polite" className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-secondary">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-secondary">
       <span className="flex items-center gap-2">
         <span
           aria-hidden
@@ -43,7 +42,7 @@ function DraftPanel({ ws, state }: { ws: string; state: RunStreamState }) {
   if (!state.draft) {
     if (!state.draftResetReason) return null;
     return (
-      <p className="text-sm text-muted" title={humanize(state.draftResetReason)}>
+      <p className="text-sm text-muted">
         The first draft was discarded and is being rewritten.
       </p>
     );

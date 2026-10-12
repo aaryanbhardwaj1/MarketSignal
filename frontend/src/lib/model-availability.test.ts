@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ApiError } from "./api/errors";
-import { isModelUnavailable, isProviderUnavailableError } from "./model-availability";
+import { isCitationFallback, isModelUnavailable, isProviderUnavailableError } from "./model-availability";
 
 describe("isModelUnavailable", () => {
   it("is false with no signals", () => {
@@ -17,6 +17,15 @@ describe("isModelUnavailable", () => {
 
   it("detects the generation_unavailable termination", () => {
     expect(isModelUnavailable({ terminationState: "generation_unavailable" })).toBe(true);
+  });
+
+  it("does not treat a citation-check fallback as a model outage", () => {
+    const flags = ["CITATION_VERIFICATION_FAILED"];
+    expect(isModelUnavailable({ terminationState: "generation_unavailable", flags })).toBe(false);
+    expect(isModelUnavailable({ terminationState: "generation_unavailable", flags: [...flags, "LLM_SYNTHESIS_UNAVAILABLE"] })).toBe(true);
+    expect(isCitationFallback({ flags })).toBe(true);
+    expect(isCitationFallback({ disposition: "fallback" })).toBe(true);
+    expect(isCitationFallback({ flags: [], disposition: "accepted" })).toBe(false);
   });
 
   it("detects the planner fallback flag", () => {

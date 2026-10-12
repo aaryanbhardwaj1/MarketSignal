@@ -6,7 +6,9 @@ import {
   describeFilters,
   describeGrouping,
   describeMetrics,
+  datasetTerms,
   formatDifference,
+  humanizeDatasetTerms,
   formatMetricValue,
 } from "./analytics";
 
@@ -85,19 +87,25 @@ describe("spec descriptions", () => {
 
   it("describes filters in plain text", () => {
     expect(describeFilters(spec)).toEqual([
-      "region = West",
-      "age_group in 18-24, 25-34",
-      "nps between 5 and 9",
-      "gender is empty",
-      "nps ≥ 7",
+      "Region: West",
+      "Age group: 18-24, 25-34",
+      "NPS: 5 to 9",
+      "Gender: not recorded",
+      "NPS: at least 7",
     ]);
   });
 
   it("describes grouping and metrics", () => {
-    expect(describeGrouping(spec)).toEqual(["region", "segment"]);
-    expect(describeMetrics(spec)).toEqual([
-      "mean of nps",
-      "share where top_pain_point = delivery",
+    expect(describeGrouping(spec)).toEqual(["Region", "Segment"]);
+    expect(describeMetrics(spec)).toEqual(["Average NPS", "Share with top pain point: delivery"]);
+  });
+
+  it("never shows raw column names or metric keys", () => {
+    const text = [...describeFilters(spec), ...describeGrouping(spec), ...describeMetrics(spec)].join(" | ");
+    expect(text).not.toMatch(/[a-z]+_[a-z]+|\(|≥/);
+    expect(describeMetrics({ metrics: [{ fn: "count" }] })).toEqual(["Number of records"]);
+    expect(describeMetrics({ metric: { fn: "share", condition: { column: "rating", op: "gte", operands: [4] } } })).toEqual([
+      "Share with rating at least 4",
     ]);
   });
 
@@ -141,7 +149,7 @@ describe("buildResultTable", () => {
       ],
     };
     const table = buildResultTable(result);
-    expect(table?.headers).toEqual(["region", "mean(nps)"]);
+    expect(table?.headers).toEqual(["Region", "Average NPS"]);
     expect(table?.rows.map((r) => r.cells.map((c) => c.text))).toEqual([
       ["West", "40"],
       ["East", "35.5"],
@@ -163,7 +171,7 @@ describe("buildResultTable", () => {
       difference: pct(5, 220),
     };
     const table = buildResultTable(result);
-    expect(table?.headers).toEqual(["region", "share(x)"]);
+    expect(table?.headers).toEqual(["Region", "Share of x"]);
     expect(table?.rows.map((r) => r.cells.map((c) => c.text))).toEqual([
       ["A: West", "40.0%"],
       ["B: East", "35.0%"],
@@ -182,10 +190,28 @@ describe("buildResultTable", () => {
       ],
     };
     const table = buildResultTable(result);
-    expect(table?.headers).toEqual(["Row", "region", "nps"]);
+    expect(table?.headers).toEqual(["Row", "Region", "NPS"]);
     expect(table?.rows[0].handle).toBe("NORTHSTAR/SURVEY-2026@v1:R185");
     expect(table?.rows[0].cells.map((c) => c.text)).toEqual(["Row 185", "West", "9"]);
     expect(table?.rows[1].handle).toBeNull();
     expect(table?.rows[1].cells.map((c) => c.text)).toEqual(["Row 186", "East", "-"]);
+  });
+});
+
+describe("dataset terms in answer prose", () => {
+  const terms = datasetTerms(["aggregate ; count(*) ; filters: top_pain_point eq knit_upper_durability ; 68 of 600 rows"]);
+
+  it("maps snake_case codes named by the cited result", () => {
+    expect(terms.get("knit_upper_durability")).toBe("knit upper durability");
+    expect(terms.get("top_pain_point")).toBe("top pain point");
+    expect(datasetTerms(["aggregate ; count_distinct(region)"]).has("count_distinct")).toBe(false);
+  });
+
+  it("rewrites prose but keeps citation markers and unknown codes", () => {
+    const text = "68 respondents have knit_upper_durability as their top pain point [[result:knit_upper_durability]] and other_code.";
+    expect(humanizeDatasetTerms(text, terms)).toBe(
+      "68 respondents have knit upper durability as their top pain point [[result:knit_upper_durability]] and other_code.",
+    );
+    expect(humanizeDatasetTerms(text, new Map())).toBe(text);
   });
 });

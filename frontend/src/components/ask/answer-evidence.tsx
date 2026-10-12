@@ -13,64 +13,131 @@ import {
   describeMetrics,
   formatMetricValue,
 } from "@/lib/analytics";
-import { getResult } from "@/lib/api/endpoints";
+import { getEvidence, getResult } from "@/lib/api/endpoints";
 import { queryKeys } from "@/lib/api/query-keys";
-import type { CitationCard, ResultCitationCard } from "@/lib/api/types";
+import type { CitationCard, Evidence, ResultCitationCard } from "@/lib/api/types";
+import { businessLocator, parseRowPassage } from "@/lib/format";
 import { evidenceViewerHref } from "@/lib/handles";
 import { sourceClass, sourceType } from "@/lib/labels";
 
-/** Consolidated evidence list; numbers match the inline citation chips. */
-export function SupportingEvidenceList({ ws, cards }: { ws: string; cards: readonly CitationCard[] }) {
+const EXCERPT_FIELDS = 4;
+
+/** One line of the cited passage: the highlighted quote, a few row fields, or the opening text. */
+export function passageExcerpt(evidence: Evidence, card: Pick<CitationCard, "char_start" | "char_end">): string {
+  if (evidence.highlight?.text) return evidence.highlight.text.trim();
+  const { char_start: start, char_end: end } = card;
+  const cited = typeof start === "number" && typeof end === "number" && end > start ? evidence.text.slice(start, end) : evidence.text;
+  const fields = parseRowPassage(cited);
+  if (fields) return fields.slice(0, EXCERPT_FIELDS).map((f) => `${f.label}: ${f.value}`).join(" · ");
+  return cited.trim();
+}
+
+function Excerpt({ ws, card }: { ws: string; card: CitationCard }) {
+  const query = useQuery({
+    queryKey: queryKeys.evidence(ws, card.handle, card.anchor_child_id),
+    queryFn: ({ signal }) => getEvidence(ws, card.handle, card.anchor_child_id, signal),
+    staleTime: Infinity,
+  });
+  if (query.isPending) return <Skeleton lines={1} className="mt-1 max-w-sm" />;
+  if (query.isError) return null;
+  const text = passageExcerpt(query.data, card);
+  if (!text) return null;
+  return <p className="mt-0.5 line-clamp-2 text-sm text-secondary">“{text}”</p>;
+}
+
+function OpenPassage({ ws, card }: { ws: string; card: CitationCard }) {
   const drawer = useOptionalEvidenceDrawer();
+  const label = `Open passage: ${card.source_title} · ${businessLocator(card.locator_label) || card.locator_label}`;
+  const className = "shrink-0 rounded-sm text-sm font-medium text-accent-text hover:underline";
+  if (!drawer) {
+    return (
+      <Link href={evidenceViewerHref(ws, card.handle, card.anchor_child_id)} aria-label={label} className={className}>
+        Open passage
+      </Link>
+    );
+  }
   return (
-    <ol className="divide-y divide-border rounded-lg border border-border bg-surface">
-      {cards.map((card, i) => {
-        const meta = [sourceClass(card.source_class), sourceType(card.source_type)]
-          .filter((l) => l.known)
-          .map((l) => l.label);
-        const label = `${card.source_title} · ${card.locator_label}`;
-        return (
-          <li key={card.handle} className="flex items-start gap-3 px-3 py-2.5">
-            <span
-              aria-hidden
-              className="mt-0.5 inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-sm border border-cite-evidence/20 bg-cite-evidence-bg px-1 text-xs font-medium tabular-nums text-cite-evidence"
-            >
-              {i + 1}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-base font-medium text-primary">
-                <span className="sr-only">Evidence {i + 1}: </span>
-                {card.source_title}
-              </p>
-              <p className="text-sm text-muted">{[...meta, card.locator_label].join(" · ")}</p>
-            </div>
-            {drawer ? (
-              <button
-                type="button"
-                aria-label={`Open passage: ${label}`}
-                onClick={() =>
-                  drawer.openEvidence({
-                    handle: card.handle,
-                    childId: card.anchor_child_id,
-                    charStart: card.char_start ?? undefined,
-                    charEnd: card.char_end ?? undefined,
-                  })
-                }
-                className="shrink-0 rounded-sm text-sm font-medium text-accent-text hover:underline"
-              >
-                Open passage
-              </button>
-            ) : (
-              <Link href={evidenceViewerHref(ws, card.handle, card.anchor_child_id)} className="shrink-0 text-sm font-medium text-accent-text hover:underline">
-                Open passage
-              </Link>
-            )}
-          </li>
-        );
-      })}
-    </ol>
+    <button
+      type="button"
+      aria-label={label}
+      onClick={() =>
+        drawer.openEvidence({
+          handle: card.handle,
+          childId: card.anchor_child_id,
+          charStart: card.char_start ?? undefined,
+          charEnd: card.char_end ?? undefined,
+        })
+      }
+      className={className}
+    >
+      Open passage
+    </button>
   );
 }
+
+interface SourceGroup {
+  sourceCode: string;
+  title: string;
+  meta: string;
+  items: { card: CitationCard; number: number }[];
+}
+
+/** Citations grouped by source in order of first citation; each keeps its answer-wide number. */
+export function groupBySource(cards: readonly CitationCard[]): SourceGroup[] {
+  const groups = new Map<string, SourceGroup>();
+  cards.forEach((card, i) => {
+    const key = card.source_code || card.source_title;
+    let group = groups.get(key);
+    if (!group) {
+      const meta = [sourceClass(card.source_class), sourceType(card.source_type)].filter((l) => l.known).map((l) => l.label);
+      group = { sourceCode: key, title: card.source_title, meta: meta.join(" · "), items: [] };
+      groups.set(key, group);
+    }
+    group.items.push({ card, number: i + 1 });
+  });
+  return [...groups.values()];
+}
+
+/** Consolidated evidence list, grouped by source with a one-line excerpt per citation; numbers match the inline chips. */
+export function SupportingEvidenceList({ ws, cards }: { ws: string; cards: readonly CitationCard[] }) {
+  return (
+    <div className="flex flex-col gap-3">
+      {groupBySource(cards).map((group) => (
+        <section key={group.sourceCode} aria-label={group.title} className="rounded-lg border border-border bg-surface">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 border-b border-border px-3 py-2">
+            <p className="min-w-0 text-base font-medium text-primary">{group.title}</p>
+            <p className="text-sm text-muted">
+              {[group.meta, `${group.items.length} cited`].filter(Boolean).join(" · ")}
+            </p>
+          </div>
+          <ol className="divide-y divide-border">
+            {group.items.map(({ card, number }) => (
+              <li key={card.handle} className="flex items-start gap-3 px-3 py-2.5">
+                <span
+                  aria-hidden
+                  className="mt-0.5 inline-flex h-5 w-7 shrink-0 items-center justify-center rounded-sm border border-cite-evidence/20 bg-cite-evidence-bg text-xs font-medium tabular-nums text-cite-evidence"
+                >
+                  {number}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-primary">
+                    <span className="sr-only">Evidence {number}: {group.title}, </span>
+                    {businessLocator(card.locator_label) || card.locator_label}
+                  </p>
+                  <Excerpt ws={ws} card={card} />
+                </div>
+                <OpenPassage ws={ws} card={card} />
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+/** Name for one computed result, used by the inline chip, the panel and the drawer. */
+export const COMPUTED_FIGURE = "Computed figure";
 
 /** One computed result cited by the answer, as a ResultPanel (never shaped like evidence). */
 function AnalyticsResultPanel({
@@ -95,7 +162,7 @@ function AnalyticsResultPanel({
   if (query.isError) {
     return (
       <ResultPanel
-        title={`Computed result ${number}`}
+        title={`${COMPUTED_FIGURE} ${number}`}
         unit=""
         provenance={{ sourceTitle, sourceCode: card.source_code, version: card.source_version ?? "–", table: card.table ?? "–" }}
       >
@@ -107,10 +174,10 @@ function AnalyticsResultPanel({
   const metrics = describeMetrics(result.spec);
   const table = buildResultTable(result);
   const single = !table && result.rows.length === 1 && result.rows[0].metrics.length === 1 ? result.rows[0].metrics[0] : null;
-  const title = metrics.length > 0 ? metrics.join("; ") : "Computed figure";
+  const title = metrics.length > 0 ? metrics.join("; ") : COMPUTED_FIGURE;
   return (
     <ResultPanel
-      title={`${number}. ${title.charAt(0).toUpperCase()}${title.slice(1)}`}
+      title={`${number}. ${title}`}
       value={single ? formatMetricValue(single) : undefined}
       unit=""
       denominator={single ? { label: "Base", value: denominatorText(single) } : undefined}

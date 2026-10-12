@@ -5,13 +5,27 @@
  */
 import type { StatusTone } from "@/components/ui/tone";
 import type { AgentTraceStep, ConversationSummary, RunRecord, RunVerification } from "./api/contracts";
-import { degradationFlag, routeReason, toolStep } from "./labels";
-import { isModelUnavailable } from "./model-availability";
+import {
+  degradationFlag,
+  runStatus,
+  terminationState,
+  toolStep,
+  verificationDisposition,
+  type Humanized,
+} from "./labels";
+import { isCitationFallback, isModelUnavailable } from "./model-availability";
+import { describeModeDecision, modeCode, modeLabel } from "./run-mode";
+import type { RouteMode } from "./run-stream";
 
-export type ModeLabel = "Standard" | "Research";
+export { describeModeDecision, modeLabel } from "./run-mode";
+
 export interface Labelled {
   label: string;
   tone: StatusTone;
+}
+export interface VerificationView extends Labelled {
+  /** Plain-language account for business readers, e.g. "Citations checked; 2 corrections made before saving". */
+  summary: string;
 }
 export interface ResearchStepView {
   key: string;
@@ -25,11 +39,13 @@ export interface RunNotice {
   description: string | null;
 }
 export interface SavedRunView {
-  mode: ModeLabel;
-  /** Plain-language reason for the mode, e.g. "Auto chose Research: the question needed computed figures." */
+  /** Display name of the mode that answered (labels.ts `runMode`). */
+  mode: string;
+  modeCode: RouteMode;
+  /** Plain-language reason for the mode, e.g. "Automatic mode chose Research: the question needed computed figures." */
   modeReason: string | null;
   durationMs: number | null;
-  verification: Labelled | null;
+  verification: VerificationView | null;
   steps: ResearchStepView[];
   notices: RunNotice[];
   modelUnavailable: boolean;
@@ -45,41 +61,48 @@ export interface SavedRunView {
   };
 }
 
-const MODE: Record<string, ModeLabel> = { standard: "Standard", research: "Research" };
 const ANALYTICS_TOOLS = new Set(["aggregate", "filter_rows", "group_compare", "describe_dataset"]);
 const FAILED_TERMINATIONS = new Set(["error", "tool_failure", "timeout"]);
 
-export function modeLabel(mode: string | null | undefined): ModeLabel {
-  return MODE[mode ?? ""] ?? "Standard";
+function labelled(entry: Humanized, fallbackTone: StatusTone = "neutral"): Labelled {
+  return { label: entry.label, tone: entry.tone ?? fallbackTone };
 }
 
-function sentence(text: string): string {
-  return text ? text.charAt(0).toLowerCase() + text.slice(1) : text;
+function corrections(v: RunVerification | null): number {
+  const last = v?.attempts[v.attempts.length - 1];
+  return last?.repairs_n ?? 0;
 }
 
-/** The mode decision in plain words (never a reason code). */
-export function describeModeDecision(route: RunRecord["route"], mode: string): string | null {
-  const used = modeLabel(route.decided ?? mode);
-  const requested = route.requested;
-  if (requested === "standard" || requested === "research") return `You chose ${modeLabel(requested)}.`;
-  if (requested !== "auto") return null;
-  const reason = routeReason(route.reason);
-  return reason.known ? `Auto chose ${used}: ${sentence(reason.label)}.` : `Auto chose ${used}.`;
-}
+const DISPOSITION_SUMMARY: Readonly<Record<string, string>> = {
+  accepted: "Citations checked",
+  regenerate: "Citations checked; the first draft was rewritten",
+  rejected: "Did not pass citation checks",
+  fallback: "Citation checks failed; evidence shown instead",
+};
 
-/** Verification outcome: "Verified", "Verified with repairs" or the evidence-only fallback. */
-export function verificationLabel(run: RunRecord, v: RunVerification | null): Labelled | null {
-  const unavailable = isModelUnavailable({ terminationState: run.termination_state, flags: run.degradation_flags });
+/**
+ * Verification outcome, worded from labels.ts: "Verified", "Verified after corrections",
+ * "Rewritten after checks", the citation-check "Fallback answer", or the model-unavailable state.
+ */
+export function verificationLabel(run: RunRecord, v: RunVerification | null): VerificationView | null {
   const disposition = v?.final_disposition ?? null;
-  if (unavailable || disposition === "fallback") {
-    return { label: "Evidence only – model unavailable", tone: "warn" };
+  const flags = run.degradation_flags;
+  const unavailable = isModelUnavailable({ terminationState: run.termination_state, flags });
+  if (!unavailable && isCitationFallback({ flags, disposition })) {
+    return { ...labelled(verificationDisposition("fallback"), "warn"), summary: DISPOSITION_SUMMARY.fallback };
   }
-  if (disposition === "accepted") return { label: "Verified", tone: "success" };
-  if (disposition === "repaired" || disposition === "regenerate") {
-    return { label: "Verified with repairs", tone: "success" };
+  if (unavailable) {
+    return { ...labelled(terminationState("generation_unavailable"), "warn"), summary: "Evidence only; the live model was unavailable" };
   }
-  if (disposition === "rejected") return { label: "Did not pass checks", tone: "danger" };
-  return null;
+  if (!disposition) return null;
+  const entry = verificationDisposition(disposition);
+  if (!entry.known) return null;
+  if (disposition === "repaired") {
+    const n = corrections(v);
+    const summary = n > 0 ? `Citations checked; ${n} ${n === 1 ? "correction" : "corrections"} made before saving` : "Citations checked; corrections made before saving";
+    return { ...labelled(entry), summary };
+  }
+  return { ...labelled(entry), summary: DISPOSITION_SUMMARY[disposition] ?? entry.label };
 }
 
 /** "SURVEY-2026:1" → "SURVEY-2026"; dataset ids carry the source version after the colon. */
@@ -115,6 +138,7 @@ function notices(flags: readonly string[]): RunNotice[] {
   const out: RunNotice[] = [];
   for (const flag of flags) {
     const entry = degradationFlag(flag);
+    if (entry.internal) continue; // implementation detail; Technical details still lists it
     const label = entry.known ? entry.label : "A processing notice was recorded";
     if (seen.has(label)) continue;
     seen.add(label);
@@ -137,6 +161,7 @@ export function toSavedRunView(
   const total = run.timings.total_ms;
   return {
     mode: modeLabel(run.mode),
+    modeCode: modeCode(run.mode),
     modeReason: describeModeDecision(run.route, run.mode),
     durationMs: typeof total === "number" ? total : null,
     verification: verificationLabel(run, v),
@@ -156,17 +181,41 @@ export function toSavedRunView(
   };
 }
 
-/** Outcome indicator for a conversation row, from its last run only. */
-export function conversationOutcome(row: ConversationSummary): Labelled | null {
+export type OutcomeKind =
+  | "answered"
+  | "limited"
+  | "running"
+  | "fallback"
+  | "evidence_only"
+  | "no_evidence"
+  | "failed"
+  | "cancelled";
+
+export interface ConversationOutcome extends Labelled {
+  kind: OutcomeKind;
+}
+
+const ANSWERED_KINDS: ReadonlySet<OutcomeKind> = new Set(["answered", "limited", "running"]);
+
+/** Outcome indicator for a conversation row, from its last run only (labels.ts vocabulary). */
+export function conversationOutcome(row: ConversationSummary): ConversationOutcome | null {
   const run = row.last_run;
   if (!run) return null;
-  if (run.status === "cancelled" || run.termination_state === "cancelled") return { label: "Cancelled", tone: "neutral" };
-  if (run.status === "failed" || FAILED_TERMINATIONS.has(run.termination_state ?? "")) return { label: "Failed", tone: "danger" };
-  if (isModelUnavailable({ terminationState: run.termination_state, flags: run.degradation_flags })) {
-    return { label: "Evidence only", tone: "warn" };
-  }
-  if (run.termination_state === "no_relevant_evidence") return { label: "Not enough evidence", tone: "neutral" };
-  if (run.status === "running" || run.status === "queued") return { label: "In progress", tone: "info" };
-  if (run.termination_state === "completed_with_limited_evidence") return { label: "Limited evidence", tone: "warn" };
-  return { label: "Answered", tone: "success" };
+  const state = run.termination_state ?? "";
+  const flags = run.degradation_flags;
+  if (run.status === "cancelled" || state === "cancelled") return { kind: "cancelled", ...labelled(terminationState("cancelled")) };
+  if (run.status === "failed" || FAILED_TERMINATIONS.has(state)) return { kind: "failed", ...labelled(runStatus("failed"), "danger") };
+  const unavailable = isModelUnavailable({ terminationState: state, flags });
+  if (!unavailable && isCitationFallback({ flags })) return { kind: "fallback", ...labelled(verificationDisposition("fallback"), "warn") };
+  if (unavailable) return { kind: "evidence_only", ...labelled(terminationState("generation_unavailable"), "warn") };
+  if (state === "no_relevant_evidence") return { kind: "no_evidence", ...labelled(terminationState(state)) };
+  if (run.status === "running" || run.status === "queued") return { kind: "running", ...labelled(runStatus("running"), "info") };
+  if (state === "completed_with_limited_evidence") return { kind: "limited", ...labelled(terminationState(state), "warn") };
+  return { kind: "answered", label: "Answered", tone: "success" };
+}
+
+/** Whether a conversation row counts as answered for the "Answered" list filter. */
+export function isAnsweredConversation(row: ConversationSummary): boolean {
+  const outcome = conversationOutcome(row);
+  return outcome !== null && ANSWERED_KINDS.has(outcome.kind);
 }

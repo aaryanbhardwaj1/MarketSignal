@@ -1,12 +1,7 @@
 import { describe, expect, it } from "vitest";
-import {
-  foldRunEvents,
-  initialRunStreamState,
-  parseRunEvent,
-  reduceRunEvent,
-  terminationLabel,
-  type RunEvent,
-} from "./run-stream";
+import { initialRunStreamState, parseRunEvent, reduceRunEvent, type RunEvent } from "./run-stream";
+
+const foldRunEvents = (events: readonly RunEvent[], state = initialRunStreamState) => events.reduce(reduceRunEvent, state);
 
 const CARD = {
   handle: "NORTHSTAR/SURVEY-2026@v1:R185",
@@ -273,13 +268,6 @@ describe("parseRunEvent", () => {
     expect(parseRunEvent("token", "[1,2]")).toBeNull();
     expect(parseRunEvent("token", '{"text": "x"}')).toBeNull();
     expect(parseRunEvent("token", '{"seq": 0}')).toBeNull();
-  });
-});
-
-describe("terminationLabel", () => {
-  it("labels known states and humanizes unknown ones", () => {
-    expect(terminationLabel("no_relevant_evidence")).toBe("No relevant evidence");
-    expect(terminationLabel("brand_new_state")).toBe("brand new state");
   });
 });
 

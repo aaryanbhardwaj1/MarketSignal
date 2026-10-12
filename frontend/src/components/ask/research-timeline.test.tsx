@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { runMode } from "@/lib/labels";
 import type { ToolStep } from "@/lib/run-stream";
 import { ResearchTimeline } from "./research-timeline";
 import { RouteBadge } from "./route-badge";
@@ -44,9 +45,9 @@ describe("ResearchTimeline", () => {
         resultCount: 5,
       }),
     ]);
-    expect(html).toContain("Analytics");
+    expect(html).toContain("Calculation");
     expect(html).toContain("Computing mean(nps) by region on SURVEY-2026:1 &lt;b&gt;x&lt;/b&gt;");
-    expect(render([step()])).not.toContain("Analytics");
+    expect(render([step()])).not.toContain("Calculation");
   });
 
   it("uses singular result and in-progress marker", () => {
@@ -56,18 +57,16 @@ describe("ResearchTimeline", () => {
     expect(render([step({ resultCount: 1 })])).toContain("1 result<");
   });
 
-  it("visibly marks error, denied and timeout calls with the error code", () => {
+  it("visibly marks error, denied and timeout calls without exposing the error code", () => {
     const html = render([
       step({ callIndex: 0, status: "error", errorCode: "TOOL_FAILED", resultCount: null }),
       step({ callIndex: 1, status: "denied", errorCode: "POLICY_DENIED", resultCount: null }),
       step({ callIndex: 2, status: "timeout", errorCode: "TOOL_TIMEOUT", resultCount: null }),
     ]);
     expect(html).toContain("Failed");
-    expect(html).toContain("Denied");
+    expect(html).toContain("Not allowed");
+    expect(html).not.toMatch(/TOOL_FAILED|POLICY_DENIED|TOOL_TIMEOUT/);
     expect(html).toContain("Timed out");
-    expect(html).toContain("TOOL_FAILED");
-    expect(html).toContain("POLICY_DENIED");
-    expect(html).toContain("TOOL_TIMEOUT");
   });
 
   it("renders the summary as plain text, never markdown or HTML", () => {
@@ -82,8 +81,8 @@ describe("ResearchTimeline", () => {
   });
 
   it("shows the current phase while running only", () => {
-    expect(render([step()], true, "analyzing")).toContain("Analyzing");
-    expect(render([step()], false, "analyzing")).not.toContain("Analyzing");
+    expect(render([step()], true, "analyzing")).toContain("Selecting evidence");
+    expect(render([step()], false, "analyzing")).not.toContain("Selecting evidence");
   });
 
   it("is open while running and collapsed after the run", () => {
@@ -103,15 +102,15 @@ describe("RouteBadge", () => {
 
   it("shows the auto-routed badge", () => {
     const html = renderToStaticMarkup(<RouteBadge route={route} />);
-    expect(html).toContain("Research mode · auto-routed: multi source cue");
-    expect(html).toContain("compare");
+    expect(html).toContain(`${runMode("auto").label} mode chose ${runMode("research").label}.`);
+    expect(html).not.toMatch(/compare|multi_source_cue|cues/);
   });
 
   it("shows the user choice", () => {
     const html = renderToStaticMarkup(
       <RouteBadge route={{ ...route, requested: "standard", decided: "standard", cues: [] }} />,
     );
-    expect(html).toContain("Standard mode · chosen by you");
+    expect(html).toContain(`You chose ${runMode("standard").label}.`);
   });
 
   it("renders nothing without a route", () => {

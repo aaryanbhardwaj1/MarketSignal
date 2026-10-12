@@ -2,8 +2,15 @@
  * Plain-text formatting of computed (analytics) results. Every function returns strings that the
  * UI renders as text nodes only: values, column names and filter operands come from documents and
  * are never interpreted as Markdown or HTML.
+ *
+ * Column names, metric keys and categorical values are worded with the shared humanizers
+ * (`humanizeColumn` / `humanizeValue` in lib/format.ts) and the Analytics page's
+ * `describeMetricKey` / `describeFilterClause`, so one computed result reads the same in Ask, the result drawer and
+ * Analytics. Raw spec keys stay in the result's Technical details.
  */
+import { describeFilterClause, describeMetricKey } from "@/components/analytics/result-summary";
 import type { AnalyticsResult, AnalyticsScale, MetricValue, ResultRow } from "./api/types";
+import { humanizeColumn, humanizeValue } from "./format";
 
 const NOT_COMPUTABLE = "not computable";
 const EMPTY_CELL = "-";
@@ -78,76 +85,94 @@ export function denominatorText(metric: Pick<MetricValue, "fn" | "numerator" | "
 }
 
 function scalarText(value: unknown): string {
-  if (value === null || value === undefined) return "null";
+  if (value === null || value === undefined) return "empty";
   return String(value);
 }
 
-const OP_SYMBOLS: Readonly<Record<string, string>> = {
-  eq: "=",
-  ne: "≠",
-  gt: ">",
-  gte: "≥",
-  lt: "<",
-  lte: "≤",
-};
+const COMPARATOR_SYMBOLS: Readonly<Record<string, string>> = { gt: ">", gte: ">=", lt: "<", lte: "<=" };
 
-function describeFilter(raw: unknown): string | null {
-  if (!isRecord(raw) || typeof raw.column !== "string" || typeof raw.op !== "string") return null;
-  const operands = Array.isArray(raw.operands) ? raw.operands : [];
-  const column = raw.column;
-  const list = operands.map(scalarText).join(", ");
-  switch (raw.op) {
-    case "in":
-      return `${column} in ${list}`;
-    case "not_in":
-      return `${column} not in ${list}`;
-    case "between":
-      return `${column} between ${scalarText(operands[0])} and ${scalarText(operands[1])}`;
-    case "is_null":
-      return `${column} is empty`;
-    case "not_null":
-      return `${column} is not empty`;
-    default:
-      return `${column} ${OP_SYMBOLS[raw.op] ?? raw.op} ${scalarText(operands[0])}`;
-  }
+interface FilterSpec {
+  column: string;
+  op: string;
+  operands: unknown[];
 }
 
-/** Plain-text filters from a normalized spec, e.g. "region = West". */
+function filterSpec(raw: unknown): FilterSpec | null {
+  if (!isRecord(raw) || typeof raw.column !== "string" || typeof raw.op !== "string") return null;
+  return { column: raw.column, op: raw.op, operands: Array.isArray(raw.operands) ? raw.operands : [] };
+}
+
+/** "Region: West", "Age group: 18-24, 25-34", "NPS: at least 7" (the Analytics page wording). */
+function describeFilter(raw: unknown): string | null {
+  const f = filterSpec(raw);
+  if (!f) return null;
+  if (f.op === "is_null" || f.op === "not_null") return describeFilterClause(`${f.column} ${f.op}`);
+  return describeFilterClause(`${f.column} ${f.op} ${f.operands.map(scalarText).join(", ")}`);
+}
+
+/** Plain-text filters from a normalized spec, e.g. "Region: West". */
 export function describeFilters(spec: Record<string, unknown>): string[] {
   if (!Array.isArray(spec.filters)) return [];
   return spec.filters.map(describeFilter).filter((text): text is string => text !== null);
 }
 
+/** Grouping columns in plain words, e.g. "Age group". */
 export function describeGrouping(spec: Record<string, unknown>): string[] {
   if (!Array.isArray(spec.group_by)) return [];
-  return spec.group_by.filter((g): g is string => typeof g === "string");
+  return spec.group_by.filter((g): g is string => typeof g === "string").map(humanizeColumn);
 }
 
-const FN_PHRASES: Readonly<Record<string, string>> = {
-  count: "count of",
-  count_distinct: "distinct count of",
-  sum: "sum of",
-  mean: "mean of",
-  median: "median of",
-  min: "minimum of",
-  max: "maximum of",
-};
+function describeShare(condition: unknown, column: string | null): string {
+  const f = filterSpec(condition);
+  if (!f) return describeMetricKey(column ? `share(${column})` : "share()");
+  const first = scalarText(f.operands[0]);
+  if (f.op === "eq") return describeMetricKey(`share(${f.column}=${first})`);
+  const symbol = COMPARATOR_SYMBOLS[f.op];
+  if (symbol) return describeMetricKey(`share(${f.column}${symbol}${first})`);
+  const clause = describeFilter(condition);
+  return clause ? `Share with ${clause.charAt(0).toLowerCase()}${clause.slice(1)}` : "Share";
+}
 
 function describeMetric(raw: unknown): string | null {
   if (!isRecord(raw) || typeof raw.fn !== "string") return null;
   const column = typeof raw.column === "string" ? raw.column : null;
-  if (raw.fn === "share") {
-    const condition = describeFilter(raw.condition);
-    return condition ? `share where ${condition}` : column ? `share of ${column}` : "share";
-  }
-  const phrase = FN_PHRASES[raw.fn] ?? raw.fn;
-  return `${phrase} ${column ?? "rows"}`;
+  if (raw.fn === "share") return describeShare(raw.condition, column);
+  return describeMetricKey(`${raw.fn}(${column ?? "*"})`);
 }
 
-/** The metric(s) requested (aggregate: `metrics`, group_compare: `metric`). */
+/** The metric(s) requested (aggregate: `metrics`, group_compare: `metric`), e.g. "Average NPS". */
 export function describeMetrics(spec: Record<string, unknown>): string[] {
   const raw = Array.isArray(spec.metrics) ? spec.metrics : spec.metric !== undefined ? [spec.metric] : [];
   return raw.map(describeMetric).filter((text): text is string => text !== null);
+}
+
+const SNAKE_TOKEN = /\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/g;
+
+/**
+ * Raw dataset codes (snake_case columns and categorical values) named by the cited results'
+ * summaries, mapped to plain words: `knit_upper_durability` -> "knit upper durability". Used to
+ * clean answer prose that quotes a dataset value verbatim; only codes the results name are mapped.
+ */
+export function datasetTerms(summaries: readonly string[]): ReadonlyMap<string, string> {
+  const terms = new Map<string, string>();
+  for (const summary of summaries) {
+    for (const match of summary.matchAll(SNAKE_TOKEN)) {
+      const token = match[0];
+      const end = (match.index ?? 0) + token.length;
+      if (summary[end] === "(") continue; // a function name such as count_distinct(...)
+      terms.set(token, token.replace(/_/g, " "));
+    }
+  }
+  return terms;
+}
+
+/** Replaces known dataset codes in prose, leaving citation markers (`[...]`) untouched. */
+export function humanizeDatasetTerms(text: string, terms: ReadonlyMap<string, string>): string {
+  if (terms.size === 0) return text;
+  return text
+    .split(/(\[[^\]]*\])/)
+    .map((part) => (part.startsWith("[") ? part : part.replace(SNAKE_TOKEN, (token) => terms.get(token) ?? token)))
+    .join("");
 }
 
 export interface TableCell {
@@ -170,7 +195,7 @@ export interface ResultTableModel {
 
 function cellText(value: Scalar): string {
   if (value === null || value === undefined || value === "") return EMPTY_CELL;
-  return String(value);
+  return typeof value === "string" ? humanizeValue(value) : String(value);
 }
 
 function metricCell(metric: MetricValue, difference = false): TableCell {
@@ -197,7 +222,7 @@ function groupColumns(result: AnalyticsResult): string[] {
 function compareTable(result: AnalyticsResult): ResultTableModel {
   const column = typeof result.spec.compare_column === "string" ? result.spec.compare_column : null;
   const first = result.rows[0]?.metrics[0];
-  const headers = [column ?? "Group", first?.key ?? "value"];
+  const headers = [column ? humanizeColumn(column) : "Group", first ? describeMetricKey(first.key) : "Value"];
   const rows: TableRow[] = result.rows.map((row, i) => {
     const label = column ? row.group[column] : Object.values(row.group ?? {})[0];
     const metric = row.metrics[0];
@@ -226,7 +251,7 @@ function listingTable(result: AnalyticsResult): ResultTableModel {
     ],
     handle: row.handle ?? null,
   }));
-  return { headers: ["Row", ...columns], rows };
+  return { headers: ["Row", ...columns.map(humanizeColumn)], rows };
 }
 
 function groupedTable(result: AnalyticsResult): ResultTableModel {
@@ -239,7 +264,7 @@ function groupedTable(result: AnalyticsResult): ResultTableModel {
     ],
     handle: null,
   }));
-  return { headers: [...groups, ...keys], rows };
+  return { headers: [...groups.map(humanizeColumn), ...keys.map(describeMetricKey)], rows };
 }
 
 /**

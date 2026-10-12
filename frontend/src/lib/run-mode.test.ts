@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { RUN_MODE_OPTIONS, describeRoute, toolSummaryText } from "./run-mode";
+import { runMode } from "./labels";
+import { RUN_MODE_OPTIONS, describeRoute, modeLabel, toolSummaryText } from "./run-mode";
 import type { RunRoute, ToolStep } from "./run-stream";
 
 const route = (over: Partial<RunRoute> = {}): RunRoute => ({
@@ -18,31 +19,43 @@ describe("RUN_MODE_OPTIONS", () => {
   });
 });
 
+const label = (mode: string) => runMode(mode).label;
+
 describe("describeRoute", () => {
-  it("labels an auto-routed research run with the reason", () => {
-    expect(describeRoute(route())).toEqual({
-      label: "Research mode · auto-routed: multi source cue",
+  it("explains an auto-routed run with the plain-language reason, never the code or cues", () => {
+    const d = describeRoute(route({ reason: "analytics_task", cues: ["numeric", "multi_class"] }));
+    expect(d).toEqual({
+      mode: label("research"),
+      reason: `${label("auto")} mode chose ${label("research")}: the question needed computed figures.`,
       tone: "info",
     });
+    expect(JSON.stringify(d)).not.toMatch(/analytics_task|multi_class|numeric/);
   });
 
-  it("labels an auto-routed standard run", () => {
-    expect(describeRoute(route({ decided: "standard", reason: "short_factual" }))?.label).toBe(
-      "Standard mode · auto-routed: short factual",
+  it("omits an unknown reason code", () => {
+    expect(describeRoute(route({ decided: "standard", reason: "short_factual" }))?.reason).toBe(
+      `${label("auto")} mode chose ${label("standard")}.`,
     );
   });
 
-  it("says chosen by you when the user picked the mode", () => {
+  it("says the user chose the mode", () => {
     expect(describeRoute(route({ requested: "standard", decided: "standard" }))).toEqual({
-      label: "Standard mode · chosen by you",
+      mode: label("standard"),
+      reason: `You chose ${label("standard")}.`,
       tone: "neutral",
     });
-    expect(describeRoute(route({ requested: "research" }))?.label).toBe("Research mode · chosen by you");
   });
 
-  it("omits an empty reason and returns null without a route", () => {
-    expect(describeRoute(route({ reason: "" }))?.label).toBe("Research mode · auto-routed");
+  it("returns null without a route", () => {
     expect(describeRoute(null)).toBeNull();
+  });
+});
+
+describe("mode vocabulary", () => {
+  it("uses the labels.ts names everywhere", () => {
+    expect(RUN_MODE_OPTIONS.map((o) => o.label)).toEqual([label("auto"), label("standard"), label("research")]);
+    expect(modeLabel("research")).toBe(label("research"));
+    expect(modeLabel("something_else")).toBe(label("standard"));
   });
 });
 
@@ -62,14 +75,12 @@ describe("toolSummaryText", () => {
 
   it("prefers the server summary", () => {
     expect(toolSummaryText(step({ summary: 'Searching for "fit"' }))).toBe('Searching for "fit"');
-    expect(toolSummaryText(step({ kind: "analytics", tool: "aggregate" }))).toBe("Computing analytics");
   });
 
-  it("falls back to a fixed label per kind", () => {
-    expect(toolSummaryText(step({ kind: "keyword" }))).toBe("Checking exact identifiers");
-    expect(toolSummaryText(step({ kind: "lookup" }))).toBe("Opening evidence items");
-    expect(toolSummaryText(step({ kind: "catalog" }))).toBe("Listing sources");
-    expect(toolSummaryText(step({ kind: "search" }))).toBe("Searching evidence");
-    expect(toolSummaryText(step({ kind: "other", tool: "x_tool" }))).toBe("x tool");
+  it("falls back to the plain step label, then a label per kind, never the tool code", () => {
+    expect(toolSummaryText(step({ kind: "analytics", tool: "aggregate" }))).toBe("Computed a figure");
+    expect(toolSummaryText(step({ kind: "keyword", tool: "search_evidence_keyword" }))).toBe("Searched for exact terms");
+    expect(toolSummaryText(step({ kind: "lookup", tool: "new_lookup" }))).toBe("Reading evidence passages");
+    expect(toolSummaryText(step({ kind: "other", tool: "x_tool" }))).toBe("Research step");
   });
 });

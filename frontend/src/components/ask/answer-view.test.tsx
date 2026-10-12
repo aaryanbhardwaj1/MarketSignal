@@ -87,8 +87,7 @@ describe("AnswerView", () => {
       "",
       [RESULT, CARD],
     );
-    expect(html).toContain("computed");
-    expect(html).toContain("mean(nps) by region");
+    expect(html).toContain("Computed figure");
     expect(html).toContain("Consumer survey · Row 185");
     expect(html).not.toContain("[[result:");
     expect(html).not.toContain(RID);
@@ -113,6 +112,20 @@ describe("AnswerView", () => {
   it("renders result chips in the evidence-only fallback", () => {
     const html = render({ evidence_only: [`**Computed result** (SURVEY-2026:1): 41 [[result:${RID}]]`] }, "", [RESULT]);
     expect(html).toContain("No verified answer");
-    expect(html).toContain("computed");
+    expect(html).toContain("Computed figure");
+  });
+
+  it("titles the computed results section and words dataset codes named by the cited result", () => {
+    const counted = { ...RESULT, summary: "aggregate ; count(*) ; filters: top_pain_point eq knit_upper_durability ; 68 of 600 rows" };
+    const html = render(
+      { answer: [`68 respondents have knit_upper_durability as their top pain point [[result:${RID}]].`] },
+      "",
+      [counted],
+    );
+    expect(html).toContain("Computed figures");
+    expect(html).toContain("Calculated from workspace datasets");
+    expect(html).toContain("68 respondents have knit upper durability as their top pain point");
+    expect(html).not.toContain("knit_upper_durability");
+    expect(html).not.toMatch(/>Analytics</);
   });
 });

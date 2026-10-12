@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/states";
 import { useConversations } from "@/lib/api/hooks/core";
+import { modeLabel } from "@/lib/run-mode";
 import { askHref } from "./ask-routes";
 import { useAskSession } from "./ask-session";
 import { Composer } from "./composer";
@@ -33,8 +34,10 @@ export function AskIntro({ ws }: { ws: string }) {
   const { fillComposer } = useAskSession();
   const featured = useConversations(ws, { featured: true });
   const rows = featured.data?.pages.flatMap((p) => p.items) ?? [];
-  // Featured lists can hold the same question asked in two modes; show each question once.
+  // Featured lists can hold the same question asked in two modes; show each question once and
+  // say that a second answer exists for comparison.
   const saved = rows.filter((row, i) => rows.findIndex((r) => r.title === row.title) === i).slice(0, EXAMPLE_COUNT);
+  const answers = (title: string) => rows.filter((r) => r.title === title).length;
 
   return (
     <div className="flex flex-col gap-6">
@@ -61,7 +64,14 @@ export function AskIntro({ ws }: { ws: string }) {
                   <li key={row.conversation_id}>
                     <Link href={askHref(ws, row.conversation_id)} className={ITEM}>
                       <Arrow />
-                      <span className="min-w-0">{row.title}</span>
+                      <span className="min-w-0">
+                        {row.title}
+                        {answers(row.title) > 1 && (
+                          <span className="mt-0.5 block text-sm text-muted">
+                            Two saved answers to compare: {modeLabel("research")} and {modeLabel("standard")}
+                          </span>
+                        )}
+                      </span>
                     </Link>
                   </li>
                 ))

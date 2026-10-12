@@ -10,21 +10,21 @@ const ref: ResultCitationCard = {
   source_code: "SURVEY-2026",
   dataset: "SURVEY-2026:1",
   op: "aggregate",
-  summary: "mean(nps) by region",
+  summary: "aggregate ; mean(nps) ; by region ; 296 of 600 rows",
 };
 
 describe("result chip", () => {
-  it("is a closed button labelled as computed, distinct from evidence chips", () => {
+  it("outside a workspace page is plain text in business words, distinct from evidence chips", () => {
     const html = renderToStaticMarkup(<CitationChip ws="NORTHSTAR" token={{ kind: "result", resultId: RID, ref }} />);
-    expect(html).toContain("<button");
-    expect(html).toContain("computed");
-    expect(html).toContain("mean(nps) by region");
+    expect(html).not.toContain("<button");
+    expect(html).toContain("Computed figure: Average NPS by region");
+    expect(html).not.toMatch(/mean\(nps\)|aggregate ;/);
     expect(html).not.toContain("href=");
     expect(html).not.toContain('role="dialog"');
   });
 
   it("still renders when no card is known", () => {
     const html = renderToStaticMarkup(<CitationChip ws="NORTHSTAR" token={{ kind: "result", resultId: RID, ref: null }} />);
-    expect(html).toContain("computed");
+    expect(html).toContain("Computed figure");
   });
 });

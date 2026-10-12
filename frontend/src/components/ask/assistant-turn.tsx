@@ -7,11 +7,12 @@ import { ErrorState, Skeleton } from "@/components/ui/states";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { useRun, useRunVerification } from "@/lib/api/hooks/core";
 import { isResultCard, type AnyCitationCard, type ChatMessage } from "@/lib/api/types";
+import { modeLabel } from "@/lib/run-mode";
 import { toSavedRunView, type SavedRunView } from "@/lib/saved-run";
 import { AnswerView } from "./answer-view";
-import { evidenceLibraryHref, telemetryRunHref } from "./ask-routes";
+import { evidenceLibraryHref } from "./ask-routes";
 import { useAskSession } from "./ask-session";
-import { useGenerationAvailable } from "./composer";
+import { useGenerationAvailable } from "./model-unavailable";
 import { ResearchDetails } from "./research-details";
 
 const LINK = "rounded-sm text-sm font-medium text-accent-text hover:underline";
@@ -34,17 +35,10 @@ function NextSteps({ ws, question, citations, view }: { ws: string; question: st
           </Link>
         </li>
       )}
-      {view && (
-        <li>
-          <Link href={telemetryRunHref(ws, view.technical.runId)} className={LINK}>
-            Open this run in Telemetry
-          </Link>
-        </li>
-      )}
-      {view?.mode === "Standard" && question && (
+      {view?.modeCode === "standard" && question && (
         <li className="flex flex-wrap items-center gap-2">
           <Button variant="secondary" size="sm" disabled={!available} onClick={() => fillComposer(question, "research")}>
-            Ask again in Research mode
+            Ask again using {modeLabel("research")}
           </Button>
           {!available && <span className="text-sm text-muted">Available when the live model is on.</span>}
         </li>
