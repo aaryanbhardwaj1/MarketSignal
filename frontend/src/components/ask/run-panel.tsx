@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { CitationContext } from "@/lib/citations";
 import { humanize } from "@/lib/format";
 import type { RunStreamState } from "@/lib/run-stream";
-import { buttonClass } from "../ui/form-controls";
+import { Button } from "../ui/button";
 import { AnswerView } from "./answer-view";
 import { ResearchTimeline } from "./research-timeline";
 import { RouteBadge } from "./route-badge";
@@ -15,22 +15,20 @@ import type { StreamConnection } from "./use-run-stream";
 function StatusLine({ state, connection }: { state: RunStreamState; connection: StreamConnection }) {
   const message =
     connection === "reconnecting"
-      ? "Connection lost — reconnecting…"
+      ? "Connection interrupted, reconnecting…"
       : (state.statusMessage ?? "Starting…");
   return (
-    <div role="status" aria-live="polite" className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-600">
+    <div role="status" aria-live="polite" className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-secondary">
       <span className="flex items-center gap-2">
         <span
           aria-hidden
-          className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-indigo-600"
+          className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-border-strong border-t-accent motion-reduce:animate-none"
         />
         {message}
       </span>
       {state.evidence && (
-        <span className="text-xs text-slate-500">
-          {state.evidence.itemCount} evidence item{state.evidence.itemCount === 1 ? "" : "s"}
-          {state.evidence.classes.length > 0 && ` · ${state.evidence.classes.join(", ")}`}
-          {state.evidence.truncated && " · truncated"}
+        <span className="text-xs text-muted">
+          {state.evidence.itemCount} evidence passage{state.evidence.itemCount === 1 ? "" : "s"} found
         </span>
       )}
     </div>
@@ -45,15 +43,15 @@ function DraftPanel({ ws, state }: { ws: string; state: RunStreamState }) {
   if (!state.draft) {
     if (!state.draftResetReason) return null;
     return (
-      <p className="text-xs text-slate-500">
-        Draft discarded ({humanize(state.draftResetReason)}).
+      <p className="text-sm text-muted" title={humanize(state.draftResetReason)}>
+        The first draft was discarded and is being rewritten.
       </p>
     );
   }
   return (
-    <section aria-label="Unverified draft" className="rounded-lg border border-dashed border-slate-300 bg-slate-50/70 p-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Draft — verifying…</p>
-      <SafeMarkdown text={state.draft} ws={ws} citations={citations} className="text-slate-600" />
+    <section aria-label="Unverified draft" className="rounded-lg border border-dashed border-border-strong bg-surface-muted p-3">
+      <p className="text-xs font-medium text-muted">Draft, not yet verified</p>
+      <SafeMarkdown text={state.draft} ws={ws} citations={citations} className="text-secondary" />
     </section>
   );
 }
@@ -77,14 +75,9 @@ export function RunPanel({ ws, state, connection, onCancel, cancelling }: RunPan
       {running && (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <StatusLine state={state} connection={connection} />
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={cancelling}
-            className={buttonClass("secondary", "sm")}
-          >
+          <Button variant="secondary" size="sm" onClick={onCancel} loading={cancelling}>
             {cancelling ? "Cancelling…" : "Cancel"}
-          </button>
+          </Button>
         </div>
       )}
       <ResearchTimeline tools={state.tools} phase={state.phase} running={running} />
@@ -99,9 +92,9 @@ export function RunPanel({ ws, state, connection, onCancel, cancelling }: RunPan
         running && <DraftPanel ws={ws} state={state} />
       )}
       {lost && (
-        <p role="alert" className="text-sm text-amber-800">
-          Lost connection to the run stream. The run continues on the server; reload this
-          conversation to see the stored answer.
+        <p role="alert" className="text-sm text-warn">
+          Lost the live connection. The answer is still being prepared; reload this conversation
+          to see it once it is saved.
         </p>
       )}
       <RunNotices warnings={state.warnings} done={state.done} error={state.error} />

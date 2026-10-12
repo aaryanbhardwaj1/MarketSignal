@@ -8,18 +8,9 @@ export function RouteBadge({ route }: { route: RunRoute | null }) {
   if (!route || !description) return null;
   const cues = route.cues.slice(0, 6);
   return (
-    <p className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+    <p className="flex flex-wrap items-center gap-1.5 text-xs text-muted">
       <Badge tone={description.tone}>{description.label}</Badge>
-      {cues.length > 0 && (
-        <span>
-          cues:{" "}
-          {cues.map((cue, i) => (
-            <code key={`${cue}-${i}`} className="mr-1 rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px] text-slate-700">
-              {cue}
-            </code>
-          ))}
-        </span>
-      )}
+      {cues.length > 0 && <span>cues: {cues.join(", ")}</span>}
     </p>
   );
 }

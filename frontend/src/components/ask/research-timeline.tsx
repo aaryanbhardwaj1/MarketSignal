@@ -3,20 +3,20 @@ import { toolSummaryText } from "@/lib/run-mode";
 import type { RunPhase, ToolStatus, ToolStep } from "@/lib/run-stream";
 
 const PHASE_LABELS: Record<RunPhase, string> = {
-  routing: "Routing",
+  routing: "Choosing a mode",
   planning: "Planning",
   searching: "Searching",
   analyzing: "Analyzing",
-  synthesizing: "Synthesizing",
+  synthesizing: "Writing",
   verifying: "Verifying",
 };
 
 const STATUS_VIEW: Record<ToolStatus, { label: string; className: string } | null> = {
-  running: { label: "In progress", className: "text-sky-700" },
+  running: { label: "In progress", className: "text-info" },
   ok: null,
-  error: { label: "Failed", className: "font-semibold text-red-700" },
-  denied: { label: "Denied", className: "font-semibold text-amber-800" },
-  timeout: { label: "Timed out", className: "font-semibold text-amber-800" },
+  error: { label: "Failed", className: "font-medium text-danger" },
+  denied: { label: "Denied", className: "font-medium text-warn" },
+  timeout: { label: "Timed out", className: "font-medium text-warn" },
 };
 
 function resultText(count: number): string {
@@ -31,36 +31,33 @@ function TimelineItem({ tool }: { tool: ToolStep }) {
   if (tool.durationMs !== null) parts.push(formatMs(tool.durationMs));
   return (
     <li
-      className={`flex flex-wrap items-baseline gap-x-1.5 rounded px-2 py-1 ${
-        failed ? "border border-amber-200 bg-amber-50/70" : ""
+      className={`flex flex-wrap items-baseline gap-x-1.5 rounded-sm px-2 py-1 ${
+        failed ? "border border-warn/25 bg-warn-subtle" : ""
       }`}
     >
-      <span className="font-medium text-slate-500">Step {tool.step}</span>
+      <span className="font-medium text-muted">Step {tool.step}</span>
       <span aria-hidden>·</span>
       {/* Plain text only: the summary may quote model-supplied text and is never parsed as markup. */}
       {tool.kind === "analytics" && (
         <span
-          title="Deterministic calculation over a structured table"
-          className="rounded bg-teal-50 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-teal-800 ring-1 ring-inset ring-teal-600/20"
+          title="A calculation over a workspace dataset"
+          className="rounded-sm border border-cite-result/20 bg-cite-result-bg px-1.5 text-xs font-medium text-cite-result"
         >
           Analytics
         </span>
       )}
-      <span className="text-slate-800">{toolSummaryText(tool)}</span>
+      <span className="text-primary">{toolSummaryText(tool)}</span>
       {parts.map((part) => (
-        <span key={part} className="text-slate-500">
+        <span key={part} className="text-muted">
           <span aria-hidden>· </span>
           {part}
         </span>
       ))}
       {status && (
-        <span className={status.className}>
+        <span className={status.className} title={failed && tool.errorCode ? tool.errorCode : undefined}>
           <span aria-hidden>· </span>
           {status.label}
         </span>
-      )}
-      {tool.errorCode && failed && (
-        <code className="rounded bg-white px-1 py-0.5 font-mono text-[11px] text-slate-700">{tool.errorCode}</code>
       )}
     </li>
   );
@@ -78,14 +75,14 @@ export function ResearchTimeline({
 }) {
   if (tools.length === 0) return null;
   return (
-    <details open={running} className="rounded-md border border-slate-200 bg-slate-50/60 text-xs">
-      <summary className="cursor-pointer select-none px-2.5 py-1.5 font-semibold text-slate-600">
+    <details open={running} className="rounded-md border border-border bg-surface-muted text-sm">
+      <summary className="cursor-pointer select-none rounded-md px-3 py-2 font-medium text-secondary">
         Research steps ({tools.length})
         {running && phase && (
-          <span className="ml-2 font-normal text-slate-500">Phase: {PHASE_LABELS[phase]}</span>
+          <span className="ml-2 font-normal text-muted">Now: {PHASE_LABELS[phase]}</span>
         )}
       </summary>
-      <ol aria-label="Research steps" className="flex flex-col gap-0.5 px-1.5 pb-2">
+      <ol aria-label="Research steps" className="flex flex-col gap-0.5 px-2 pb-2">
         {tools.map((tool) => (
           <TimelineItem key={`${tool.step}:${tool.callIndex}`} tool={tool} />
         ))}

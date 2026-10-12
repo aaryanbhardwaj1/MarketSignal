@@ -72,7 +72,7 @@ describe("SafeMarkdown", () => {
 
   it("renders a marker without a card as an inert unverified chip", () => {
     const html = render("Claim [[NORTHSTAR/GONE@v1:p1]].", { citations: { cards: [CARD] } });
-    expect(html).toContain("unverified");
+    expect(html).toContain("not verified");
     expect(html).not.toContain("NORTHSTAR/GONE");
     expect(html).not.toMatch(/<a[\s>]/);
   });

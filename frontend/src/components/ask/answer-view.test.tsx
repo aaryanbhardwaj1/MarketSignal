@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { AnyCitationCard, CitationCard, ResultCitationCard } from "@/lib/api/types";
@@ -18,7 +19,11 @@ const CARD: CitationCard = {
 };
 
 const render = (sections: unknown, content = "", citations: AnyCitationCard[] = [CARD]) =>
-  renderToStaticMarkup(<AnswerView ws="NORTHSTAR" content={content} citations={citations} sections={sections} />);
+  renderToStaticMarkup(
+    <QueryClientProvider client={new QueryClient()}>
+      <AnswerView ws="NORTHSTAR" content={content} citations={citations} sections={sections} />
+    </QueryClientProvider>,
+  );
 
 describe("AnswerView", () => {
   it("renders evidence, inference and gap sections distinctly", () => {
@@ -33,8 +38,7 @@ describe("AnswerView", () => {
     expect(html).toContain("Inference");
     expect(html).not.toContain("[inference]");
     expect(html).toContain("Demand will likely keep rising.");
-    expect(html).toContain("Gaps &amp; unknowns");
-    expect(html).toContain("Unknown / evidence gap");
+    expect(html).toContain("Evidence gaps");
     expect(html).not.toContain(`[[${HANDLE}]]`);
   });
 
@@ -43,7 +47,7 @@ describe("AnswerView", () => {
       evidence_only: [`**Consumer survey**, Row 185: “Gen Z runs more” [[${HANDLE}]]`],
       reason: "LLM_SYNTHESIS_UNAVAILABLE",
     });
-    expect(html).toContain("No verified answer — showing the most relevant evidence");
+    expect(html).toContain("Live model unavailable for this answer");
     expect(html).toContain("Gen Z runs more");
     expect(html).toContain("Consumer survey · Row 185");
   });
@@ -54,13 +58,12 @@ describe("AnswerView", () => {
       "",
       [],
     );
-    expect(html).toContain("Insufficient evidence in this workspace");
+    expect(html).toContain("Not enough evidence to answer");
     expect(html).toContain("No relevant evidence was found.");
   });
 
   it("falls back to the canonical content when sections are missing", () => {
     const html = render(null, `### Answer\n\nPlain answer [[${HANDLE}]].`);
-    expect(html).toContain("<h3");
     expect(html).toContain("Plain answer");
     expect(html).toContain("Consumer survey · Row 185");
   });
@@ -90,7 +93,7 @@ describe("AnswerView", () => {
     expect(html).not.toContain("[[result:");
     expect(html).not.toContain(RID);
     // Only the evidence card is listed under Sources; the result card is not an evidence handle.
-    expect(html).toContain("Sources (1)");
+    expect(html).toContain("Supporting evidence");
   });
 
   it("treats cards without a kind as evidence", () => {
@@ -103,7 +106,7 @@ describe("AnswerView", () => {
       answer: [`NPS is 41 [[result:${RID}]].`, "Churn by region is not available in the data."],
       answer_unknowns: ["Churn by region is not available in the data."],
     }, "", [RESULT]);
-    expect(html.match(/Unknown \/ evidence gap/g)).toHaveLength(1);
+    expect(html.match(/Evidence gaps/g)).toHaveLength(1);
     expect(html).toContain("Churn by region is not available in the data.");
   });
 

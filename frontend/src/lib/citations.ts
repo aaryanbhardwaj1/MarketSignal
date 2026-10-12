@@ -181,3 +181,94 @@ export function stripInference(unit: string): UnitInference {
   // together with its leading whitespace leaves "x.".
   return { text: unit.replace(INFERENCE_RE, "").trim(), inferred: true };
 }
+
+/* ── Consolidation for the Ask answer view (additive) ─────────────────────────────────────── */
+
+export interface CitationNumbering {
+  /** Evidence cards de-duplicated by handle, in order of first inline citation. */
+  evidence: CitationCard[];
+  /** Computed-result cards de-duplicated by id, in order of first inline citation. */
+  results: ResultCitationCard[];
+  evidenceNumber: ReadonlyMap<string, number>;
+  resultNumber: ReadonlyMap<string, number>;
+}
+
+/**
+ * Numbers citations by first appearance across `texts` (in display order), so inline chips and
+ * the consolidated "Supporting evidence" list share one numbering. Cards never cited inline are
+ * appended after the cited ones, in card order.
+ */
+export function numberCitations(
+  texts: readonly string[],
+  cards: readonly AnyCitationCard[],
+): CitationNumbering {
+  const index = indexCards(cards);
+  const evidence = new Map<string, CitationCard>();
+  const results = new Map<string, ResultCitationCard>();
+  for (const text of texts) {
+    for (const seg of tokenizeMarkers(text, { cards })) {
+      if (seg.kind === "handle" && seg.card && !evidence.has(seg.handle)) evidence.set(seg.handle, seg.card);
+      if (seg.kind === "result") {
+        const card = index.results.get(seg.resultId);
+        if (card && !results.has(card.result_id)) results.set(card.result_id, card);
+      }
+    }
+  }
+  for (const [handle, card] of index.evidence) if (!evidence.has(handle)) evidence.set(handle, card);
+  for (const [id, card] of index.results) if (!results.has(id)) results.set(id, card);
+  const number = (keys: Iterable<string>) => new Map([...keys].map((k, i) => [k, i + 1] as [string, number]));
+  return {
+    evidence: [...evidence.values()],
+    results: [...results.values()],
+    evidenceNumber: number(evidence.keys()),
+    resultNumber: number(results.keys()),
+  };
+}
+
+/** Identity of a chip's target; equal keys point at the same passage or result. */
+export function chipKey(token: ChipToken): string {
+  switch (token.kind) {
+    case "alias":
+      return `e:${token.citation.handle}`;
+    case "handle":
+      return `e:${token.handle}`;
+    case "result":
+      return `r:${token.resultId}`;
+    default:
+      return "inference";
+  }
+}
+
+export type GroupedPart = { kind: "text"; text: string } | { kind: "chips"; indices: number[] };
+
+/**
+ * Merges chips separated only by whitespace into one group, so "[[A]] [[B]] [[A]]" renders as a
+ * single chip group. Indices stay in order; de-duplication happens at render time by `chipKey`.
+ */
+export function groupPlaceholders(parts: readonly PlaceholderPart[]): GroupedPart[] {
+  const out: GroupedPart[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    const prev = out.at(-1);
+    if (part.kind === "chip") {
+      if (prev?.kind === "chips") prev.indices.push(part.index);
+      else out.push({ kind: "chips", indices: [part.index] });
+      continue;
+    }
+    const next = parts[i + 1];
+    if (prev?.kind === "chips" && next?.kind === "chip" && part.text.trim() === "") continue;
+    out.push({ kind: "text", text: part.text });
+  }
+  return out;
+}
+
+/** Drops repeated targets within one chip group, keeping first-appearance order. */
+export function dedupeChips(tokens: readonly ChipToken[]): ChipToken[] {
+  const seen = new Set<string>();
+  return tokens.filter((t) => {
+    const key = chipKey(t);
+    if (t.kind !== "inference" && seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}

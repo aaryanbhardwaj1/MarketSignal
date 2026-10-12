@@ -10,9 +10,17 @@ export interface RunModeOption {
 
 /** Mode choices on the question form. The user's explicit choice always wins over the router. */
 export const RUN_MODE_OPTIONS: readonly RunModeOption[] = [
-  { value: "auto", label: "Auto", help: "Deterministic routing picks the mode." },
-  { value: "standard", label: "Standard", help: "One evidence search. Fastest." },
-  { value: "research", label: "Research", help: "Multi-step agent with tool calls. Slower." },
+  {
+    value: "auto",
+    label: "Auto",
+    help: "Chooses Standard or Research from the question; questions that need calculations go to Research.",
+  },
+  { value: "standard", label: "Standard", help: "Fast answer from the current evidence base." },
+  {
+    value: "research",
+    label: "Research",
+    help: "Searches across multiple sources and analysis tools before answering.",
+  },
 ];
 
 export interface RouteDescription {

@@ -19,9 +19,9 @@ describe("QuestionForm mode selector", () => {
     expect(html).toContain("Auto");
     expect(html).toContain("Standard");
     expect(html).toContain("Research");
-    expect(html).toContain("One evidence search");
-    expect(html).toContain("Multi-step agent with tool calls");
-    expect(html).toContain("Deterministic routing");
+    expect(html).toContain("Fast answer from the current evidence base.");
+    expect(html).toContain("Searches across multiple sources and analysis tools before answering.");
+    expect(html).toContain("questions that need calculations go to Research");
     expect(html).toMatch(/aria-describedby="[^"]+"/);
   });
 

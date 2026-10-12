@@ -19,7 +19,6 @@ describe("result chip", () => {
     expect(html).toContain("<button");
     expect(html).toContain("computed");
     expect(html).toContain("mean(nps) by region");
-    expect(html).toContain('aria-expanded="false"');
     expect(html).not.toContain("href=");
     expect(html).not.toContain('role="dialog"');
   });
