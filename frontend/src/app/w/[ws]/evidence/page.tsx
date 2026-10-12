@@ -1,6 +1,12 @@
-import { PagePlaceholder } from "@/components/shell/page-placeholder";
+import { Suspense } from "react";
+import { LibraryView } from "@/components/library/library-view";
 
 /** `?ev=` (and the legacy `?h=`) with `&child=` open the evidence drawer from the workspace layout. */
-export default function EvidenceLibraryPage() {
-  return <PagePlaceholder title="Evidence Library" />;
+export default async function EvidenceLibraryPage({ params }: PageProps<"/w/[ws]/evidence">) {
+  const { ws } = await params;
+  return (
+    <Suspense>
+      <LibraryView ws={ws} />
+    </Suspense>
+  );
 }

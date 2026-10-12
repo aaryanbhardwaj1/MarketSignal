@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   buildSearchQuery,
+  evidenceSearchHref,
+  groupSearchResults,
   flagMessage,
   formatStageLine,
   formatTimings,
@@ -96,5 +98,39 @@ describe("formatTimings", () => {
       "total 30 ms · embed 12.3 ms · dense 5 ms",
     );
     expect(formatTimings({})).toBe("");
+  });
+});
+
+describe("evidenceSearchHref", () => {
+  it("links to the library search, or the library itself for a blank query", () => {
+    expect(evidenceSearchHref("NORTHSTAR", "  fit inconsistency ")).toBe("/w/NORTHSTAR/evidence?q=fit+inconsistency");
+    expect(evidenceSearchHref("NORTHSTAR", "   ")).toBe("/w/NORTHSTAR/evidence");
+  });
+});
+
+describe("groupSearchResults", () => {
+  const item = (rank: number, code: string) =>
+    ({
+      rank,
+      handle: `h${rank}`,
+      locator_label: `p. ${rank}`,
+      source_code: code,
+      source_title: `Title ${code}`,
+      source_type: "pdf",
+      source_class: "market",
+      anchor: { child_id: `c${rank}`, lane: "dense", char_start: 0, char_end: 1 },
+      snippet: { text: "x", mark_start: 0, mark_end: 1, truncated_left: false, truncated_right: false },
+      scores: { rrf: 0.1, rerank: null, fused_rank: rank, lanes: {} },
+    }) as const;
+
+  it("groups by source in first-appearance order, keeping rank order inside each group", () => {
+    const groups = groupSearchResults([item(3, "A"), item(1, "B"), item(2, "A")]);
+    expect(groups.map((g) => g.sourceCode)).toEqual(["B", "A"]);
+    expect(groups[1].items.map((i) => i.rank)).toEqual([2, 3]);
+    expect(groups[0]).toMatchObject({ title: "Title B", sourceClass: "market", sourceType: "pdf" });
+  });
+
+  it("returns no groups for no results", () => {
+    expect(groupSearchResults([])).toEqual([]);
   });
 });

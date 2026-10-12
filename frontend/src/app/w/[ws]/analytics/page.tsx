@@ -1,5 +1,6 @@
-import { PagePlaceholder } from "@/components/shell/page-placeholder";
+import { AnalyticsView } from "@/components/analytics/analytics-view";
 
-export default function AnalyticsPage() {
-  return <PagePlaceholder title="Analytics" />;
+export default async function AnalyticsPage({ params }: PageProps<"/w/[ws]/analytics">) {
+  const { ws } = await params;
+  return <AnalyticsView ws={ws} />;
 }

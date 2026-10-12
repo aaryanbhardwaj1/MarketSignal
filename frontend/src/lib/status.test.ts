@@ -4,6 +4,9 @@ import {
   hasInFlightSources,
   isNonTerminalStatus,
   isTerminalStatus,
+  libraryStatus,
+  libraryStatusLabel,
+  versionStatusLabel,
   retryable,
   statusTone,
 } from "./status";
@@ -61,5 +64,23 @@ describe("hasInFlightSources", () => {
     expect(hasInFlightSources([source("ready"), source("embedding")])).toBe(true);
     expect(hasInFlightSources([source("queued", true)])).toBe(false);
     expect(hasInFlightSources([source(null)])).toBe(false);
+  });
+});
+
+describe("library status buckets", () => {
+  it("collapses pipeline stages into plain buckets", () => {
+    for (const status of NON_TERMINAL) expect(libraryStatus(status)).toBe("processing");
+    expect(libraryStatus("ready")).toBe("ready");
+    expect(libraryStatus("ready_degraded")).toBe("ready");
+    expect(libraryStatus("failed")).toBe("failed");
+    expect(libraryStatus("superseded")).toBe("superseded");
+    expect(libraryStatus("purged")).toBe("removed");
+    expect(libraryStatus("ready", true)).toBe("removed");
+  });
+
+  it("labels buckets in business words with a tone", () => {
+    expect(libraryStatusLabel("processing")).toEqual({ label: "Processing", tone: "info" });
+    expect(versionStatusLabel("ready_degraded")).toEqual({ label: "Ready with warnings", tone: "warn" });
+    expect(versionStatusLabel("superseded").label).toBe("Superseded");
   });
 });

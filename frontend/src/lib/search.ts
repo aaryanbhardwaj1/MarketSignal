@@ -3,6 +3,7 @@ import {
   SOURCE_CLASSES,
   type SearchMode,
   type SearchParams,
+  type SearchItem,
   type SearchScores,
   type SourceClass,
 } from "./api/types";
@@ -90,4 +91,42 @@ export function formatTimings(timings: Record<string, number>): string {
   if (total) parts.push(`total ${formatMs(total[1])}`);
   for (const [key, value] of stages) parts.push(`${key.replace(/_ms$/, "")} ${formatMs(value)}`);
   return parts.join(" · ");
+}
+
+/** In-app URL of an Evidence Library search (`/evidence?q=`). */
+export function evidenceSearchHref(ws: string, q: string): string {
+  const base = `/w/${encodeURIComponent(ws)}/evidence`;
+  const trimmed = q.trim();
+  return trimmed ? `${base}?${new URLSearchParams({ q: trimmed }).toString()}` : base;
+}
+
+export interface SearchGroup {
+  sourceCode: string;
+  title: string;
+  sourceClass: string;
+  sourceType: string;
+  items: SearchItem[];
+}
+
+/**
+ * Groups ranked results by source, keeping the order in which each source first appears and the
+ * rank order inside each group. Scores are dropped from the business view entirely.
+ */
+export function groupSearchResults(items: readonly SearchItem[]): SearchGroup[] {
+  const groups = new Map<string, SearchGroup>();
+  for (const item of [...items].sort((a, b) => a.rank - b.rank)) {
+    const existing = groups.get(item.source_code);
+    if (existing) {
+      existing.items.push(item);
+    } else {
+      groups.set(item.source_code, {
+        sourceCode: item.source_code,
+        title: item.source_title,
+        sourceClass: item.source_class,
+        sourceType: item.source_type,
+        items: [item],
+      });
+    }
+  }
+  return [...groups.values()];
 }
