@@ -11,7 +11,7 @@ import { queryKeys } from "@/lib/api/query-keys";
 import type { ChatMessage } from "@/lib/api/types";
 import { formatDateTime } from "@/lib/format";
 import { isUuid } from "@/lib/handles";
-import { askHref } from "./ask-routes";
+import { askHref } from "@/lib/routes";
 import { useAskSession } from "./ask-session";
 import { AssistantTurn } from "./assistant-turn";
 import { Composer } from "./composer";
@@ -151,7 +151,7 @@ export function ConversationView({ ws, conversationId }: { ws: string; conversat
         title="This conversation could not be loaded"
         description="Check your connection and try again."
         retry={() => void history.refetch()}
-        devDetail={history.error instanceof ApiError ? history.error.code : undefined}
+        error={history.error}
       />
     );
   }

@@ -11,7 +11,7 @@ import type {
   TimelineEntry,
 } from "@/lib/api/contracts";
 import type { TelemetryRunFilters, TelemetrySummaryFilters } from "@/lib/api/hooks/telemetry";
-import { formatPercent } from "@/lib/format";
+import { formatCount, formatPercent } from "@/lib/format";
 import { degradationFlag } from "@/lib/labels";
 
 // ── window + filters (URL state) ─────────────────────────────────────────────────────────────
@@ -249,10 +249,6 @@ function toolKey(d: Record<string, unknown>): string {
   return `${num(d.step) ?? "?"}:${num(d.call_index) ?? "-"}:${str(d.tool) ?? "?"}`;
 }
 
-function plural(n: number, one: string, many = `${one}s`): string {
-  return `${n.toLocaleString("en-US")} ${n === 1 ? one : many}`;
-}
-
 function toolStep(
   start: TimelineEntry,
   end: TimelineEntry | undefined,
@@ -272,7 +268,7 @@ function toolStep(
       ? `Analytics executed${step != null ? ` (step ${step})` : ""}`
       : `Research step ${step ?? "?"}: ${tool ?? "tool"} called`;
   const count = num(e.result_count);
-  const parts = [start.label, count != null ? plural(count, "result") : null].filter(Boolean);
+  const parts = [start.label, count != null ? formatCount(count, "result") : null].filter(Boolean);
   return {
     id: `tool-${index}`,
     t_ms: start.t_ms,
@@ -303,7 +299,7 @@ function simpleStep(entry: TimelineEntry, index: number, runMode: string): Timel
     case "evidence": {
       const items = num(d.item_count);
       const results = num(d.result_count);
-      const detail = [items != null ? plural(items, "passage") : null, results ? plural(results, "computed result") : null]
+      const detail = [items != null ? formatCount(items, "passage") : null, results ? formatCount(results, "computed result") : null]
         .filter(Boolean)
         .join(" · ");
       return { ...base, kind: "evidence", title: "Evidence pack created", detail: detail || null };
@@ -313,8 +309,8 @@ function simpleStep(entry: TimelineEntry, index: number, runMode: string): Timel
       const cites = num(d.citations);
       const attempt = num(d.attempt);
       const detail = [
-        chunks != null ? `${plural(chunks, "chunk")} streamed` : null,
-        cites != null ? plural(cites, "citation marker") : null,
+        chunks != null ? `${formatCount(chunks, "chunk")} streamed` : null,
+        cites != null ? formatCount(cites, "citation marker") : null,
         attempt != null ? `attempt ${attempt}` : null,
       ]
         .filter(Boolean)
@@ -330,7 +326,7 @@ function simpleStep(entry: TimelineEntry, index: number, runMode: string): Timel
         ...base,
         kind: "final",
         title: "Final answer persisted",
-        detail: cites != null ? `${plural(cites, "citation marker")} in the answer` : null,
+        detail: cites != null ? `${formatCount(cites, "citation marker")} in the answer` : null,
       };
     }
     case "warning": {

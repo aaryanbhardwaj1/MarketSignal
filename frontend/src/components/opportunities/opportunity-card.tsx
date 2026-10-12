@@ -1,16 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { workspaceBase } from "@/components/shell/nav";
 import type { Opportunity } from "@/lib/api/contracts";
 import { cx } from "@/lib/cx";
-import { evidenceBalance, numbersAllowed, plural, topMetric, type AnalysisIndex } from "@/lib/insights-view";
+import { formatCount } from "@/lib/format";
+import { evidenceBalance, numbersAllowed, topMetric, type AnalysisIndex } from "@/lib/insights-view";
 import { Card } from "@/components/ui/card";
 import { ItemIntegrityIndicator, MetricFigure, OpportunityStatusBadge } from "./brief-parts";
-
-export function opportunityHref(ws: string, id: string): string {
-  return `${workspaceBase(ws)}/opportunities/${encodeURIComponent(id)}`;
-}
+import { opportunityHref } from "@/lib/routes";
 
 /** Evidence balance as text, so it never depends on colour: "5 supporting · 2 contradicting · 2 gaps". */
 export function EvidenceBalanceLine({ opportunity, compact = false }: { opportunity: Opportunity; compact?: boolean }) {
@@ -29,13 +26,13 @@ export function EvidenceBalanceLine({ opportunity, compact = false }: { opportun
       <span aria-hidden className="text-disabled">
         ·
       </span>
-      <span>{plural(b.gaps, "evidence gap")}</span>
+      <span>{formatCount(b.gaps, "evidence gap")}</span>
       {b.notCurrent > 0 && (
         <>
           <span aria-hidden className="text-disabled">
             ·
           </span>
-          <span className="text-warn">{plural(b.notCurrent, "passage")} not current</span>
+          <span className="text-warn">{formatCount(b.notCurrent, "passage")} not current</span>
         </>
       )}
     </p>

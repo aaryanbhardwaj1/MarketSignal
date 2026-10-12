@@ -4,10 +4,7 @@ import { formatNumber } from "@/lib/format";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
 import { analysisHeadline, analysisState, categoryLabel, coverageLine, scopeLine } from "./analysis-format";
-
-export function analysisHref(ws: string, id: string): string {
-  return `/w/${encodeURIComponent(ws)}/analytics/${encodeURIComponent(id)}`;
-}
+import { analysisHref } from "@/lib/routes";
 
 /** Summary card for one named analysis; the headline figure only appears when recomputed. */
 export function AnalysisCard({ ws, analysis }: { ws: string; analysis: Analysis }) {

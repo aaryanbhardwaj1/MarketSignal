@@ -22,7 +22,8 @@ import {
 import { formatMs, formatNumber } from "@/lib/format";
 import { Caveats } from "./caveats";
 import { MetricGlossary } from "./metric-glossary";
-import { DeltaCell, MetricCell, MetricSource, Segmented, SourceRef } from "./metric-bits";
+import { Segmented } from "@/components/ui/segmented";
+import { DeltaCell, MetricCell, MetricSource, SourceRef } from "./metric-bits";
 
 type RetrievalRun = EvalCatalog["retrieval"]["runs"][number];
 type Arm = RetrievalRun["arms"][number];

@@ -21,8 +21,9 @@ import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { ResultPanel } from "@/components/ui/result-panel";
 import { SearchInput } from "@/components/ui/search-input";
+import { Segmented } from "@/components/ui/segmented";
 import { Section } from "@/components/ui/section";
-import { EmptyState, ErrorState, LoadingRegion, Skeleton } from "@/components/ui/states";
+import { CardGridSkeleton, EmptyState, ErrorState, LoadingRegion, Skeleton } from "@/components/ui/states";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { Table, type Column } from "@/components/ui/table";
 import { TabPanel, Tabs } from "@/components/ui/tabs";
@@ -238,6 +239,13 @@ export function Gallery({ initialOverlay }: { initialOverlay?: "drawer" | "dialo
               orientation="horizontal"
               options={[{ value: "auto", label: "Automatic" }, { value: "standard", label: "Standard" }, { value: "research", label: "Research" }]}
             />
+            <Segmented
+              label="Answer mode (segmented)"
+              visibleLabel="Mode"
+              value={mode}
+              onChange={setMode}
+              options={[{ value: "auto", label: "Automatic" }, { value: "standard", label: "Standard" }, { value: "research", label: "Research" }]}
+            />
             <Checkbox id="g-cb" label="Include archived sources" />
           </div>
         </Card>
@@ -339,6 +347,9 @@ export function Gallery({ initialOverlay }: { initialOverlay?: "drawer" | "dialo
             <Skeleton height="96px" />
           </Card>
         </Grid>
+        <div className="mt-4">
+          <CardGridSkeleton label="Loading summary cards" count={3} columns="md:grid-cols-3" />
+        </div>
       </Section>
 
       <Section title="Callouts">

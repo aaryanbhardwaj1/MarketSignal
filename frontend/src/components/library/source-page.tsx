@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getSource } from "@/lib/api/endpoints";
-import { describeError, isApiError } from "@/lib/api/errors";
+import { isNotFoundError } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { SourceDetail, SourceVersion } from "@/lib/api/types";
 import { formatDate, formatNumber, humanize } from "@/lib/format";
@@ -11,7 +11,7 @@ function confidentialityLabel(value: string): string {
   const text = humanize(value);
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
-import { errorMessage, sourceClass, sourceType } from "@/lib/labels";
+import { sourceClass, sourceType } from "@/lib/labels";
 import { versionHistory, type VersionHistoryEntry } from "@/lib/library-filters";
 import { isNonTerminalStatus, libraryStatusLabel, versionStatusLabel } from "@/lib/status";
 import { LinkButton } from "../ui/button";
@@ -19,19 +19,16 @@ import { Callout } from "../ui/callout";
 import { DevDetails } from "../ui/disclosure";
 import { Card } from "../ui/card";
 import { KeyValueList } from "../ui/key-value";
-import { useDocumentTitle } from "../overview/use-document-title";
+import { useDocumentTitle } from "@/lib/use-document-title";
 import { SourceCitations } from "./source-citations";
 import { PageContainer } from "../ui/page-container";
 import { PageHeader } from "../ui/page-header";
 import { Section } from "../ui/section";
 import { EmptyState, ErrorState, LoadingRegion } from "../ui/states";
 import { StatusIndicator } from "../ui/status-indicator";
+import { evidenceLibraryHref } from "@/lib/routes";
 
 const POLL_INTERVAL_MS = 3_000;
-
-function libraryHref(ws: string): string {
-  return `/w/${encodeURIComponent(ws)}/evidence`;
-}
 
 function countText(n: number | null): string {
   return n == null ? "Not yet available" : formatNumber(n);
@@ -143,7 +140,7 @@ export function SourcePage({ ws, sourceId }: { ws: string; sourceId: string }) {
     refetchInterval: (q) => (q.state.data?.versions.some((v) => isNonTerminalStatus(v.status)) ? POLL_INTERVAL_MS : false),
   });
   useDocumentTitle(query.data?.title, "Evidence Library");
-  const crumbs = [{ label: "Evidence Library", href: libraryHref(ws) }];
+  const crumbs = [{ label: "Evidence Library", href: evidenceLibraryHref(ws) }];
   if (query.isPending) {
     return (
       <PageContainer width="content">
@@ -156,8 +153,7 @@ export function SourcePage({ ws, sourceId }: { ws: string; sourceId: string }) {
   }
 
   if (query.isError) {
-    const status = isApiError(query.error) ? query.error.status : 0;
-    const notFound = status === 404 || status === 422;
+    const notFound = isNotFoundError(query.error);
     return (
       <PageContainer width="content">
         <PageHeader title={notFound ? "Source not found" : "Source"} breadcrumb={crumbs} />
@@ -166,12 +162,12 @@ export function SourcePage({ ws, sourceId }: { ws: string; sourceId: string }) {
             <EmptyState
               title="This source is not in the library"
               description="The link may be out of date, or the source belongs to another workspace."
-              action={<LinkButton href={libraryHref(ws)} variant="secondary">Back to the Evidence Library</LinkButton>}
+              action={<LinkButton href={evidenceLibraryHref(ws)} variant="secondary">Back to the Evidence Library</LinkButton>}
             />
           ) : (
             <ErrorState
               title="The source could not be loaded"
-              description={errorMessage(describeError(query.error).code).label}
+              error={query.error}
               retry={() => void query.refetch()}
             />
           )}

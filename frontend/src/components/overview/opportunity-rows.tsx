@@ -1,8 +1,9 @@
 "use client";
 
-import { EvidenceBalanceLine, OpportunityTitle, opportunityHref } from "@/components/opportunities/opportunity-card";
+import { EvidenceBalanceLine, OpportunityTitle } from "@/components/opportunities/opportunity-card";
 import { Card } from "@/components/ui/card";
 import type { Opportunity } from "@/lib/api/contracts";
+import { opportunityHref } from "@/lib/routes";
 
 /** Compact opportunity rows for the Overview: title with status, one-line thesis and evidence balance. */
 export function OpportunityRows({ ws, opportunities }: { ws: string; opportunities: Opportunity[] }) {

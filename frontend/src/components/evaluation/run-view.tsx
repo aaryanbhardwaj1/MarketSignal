@@ -105,6 +105,7 @@ function ItemListPanel({
           <ErrorState
             title="Items could not be loaded"
             description="The items for this run were not returned."
+            error={items.error}
             retry={() => void items.refetch()}
             devDetail={items.error instanceof Error ? items.error.message : undefined}
           />

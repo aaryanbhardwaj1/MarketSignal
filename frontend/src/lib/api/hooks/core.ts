@@ -51,6 +51,8 @@ export const coreKeys = {
   capabilities: ["capabilities"] as const,
   workspaces: ["workspaces"] as const,
   overview: (ws: string) => ["workspace", ws, "overview"] as const,
+  /** Prefix shared by every conversation-list query (any filters); use it to invalidate them all. */
+  conversationLists: (ws: string) => ["workspace", ws, "conversations", "list"] as const,
   conversations: (ws: string, filters: ConversationFilters) =>
     ["workspace", ws, "conversations", "list", filters] as const,
   run: (ws: string, runId: string) => ["workspace", ws, "runs", runId] as const,

@@ -1,5 +1,5 @@
 import type { Analysis } from "@/lib/api/contracts";
-import { formatDateTime, formatNumber } from "@/lib/format";
+import { formatDateTime, formatNumber, humanizeColumn, tableLabel } from "@/lib/format";
 import { BarList } from "../ui/bar-list";
 import { Callout } from "../ui/callout";
 import { DevDetails } from "../ui/disclosure";
@@ -11,9 +11,7 @@ import {
   categoryLabel,
   describeFilter,
   formatListingCell,
-  humanizeKey,
   isNumericColumn,
-  tableLabel,
   rowBase,
   rowLabel,
   unitLabel,
@@ -31,7 +29,7 @@ function ResultBody({ analysis }: { analysis: Analysis }) {
   if (analysis.op === "filter_rows" && analysis.columns && analysis.columns.length > 0) {
     const columns: Column<IndexedRow>[] = analysis.columns.map((col) => ({
       key: col,
-      header: humanizeKey(col),
+      header: humanizeColumn(col),
       align: isNumericColumn(analysis.rows, col) ? "right" : "left",
       cell: ({ row }) => formatListingCell(col, row.group[col]),
     }));
@@ -43,7 +41,7 @@ function ResultBody({ analysis }: { analysis: Analysis }) {
   const columns: Column<IndexedRow>[] = [
     ...groupKeys.map((key) => ({
       key: `g-${key}`,
-      header: humanizeKey(key),
+      header: humanizeColumn(key),
       cell: ({ row }: IndexedRow) => rowLabel(row, [key]),
     })),
     {
@@ -95,7 +93,7 @@ export function AnalysisDetailView({ analysis }: { analysis: Analysis }) {
     },
     {
       label: "Grouped by",
-      value: analysis.group_by.length > 0 ? analysis.group_by.map(humanizeKey).join(", ") : listing ? "Not grouped: one row per record" : "Not grouped",
+      value: analysis.group_by.length > 0 ? analysis.group_by.map((k) => humanizeColumn(k)).join(", ") : listing ? "Not grouped: one row per record" : "Not grouped",
     },
     { label: "Base", value: base },
     { label: "Unit", value: listing ? "As labelled in each column" : unitLabel(analysis.unit) },

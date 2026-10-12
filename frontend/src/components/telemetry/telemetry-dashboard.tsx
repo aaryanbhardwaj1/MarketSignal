@@ -30,6 +30,7 @@ import { MetricGlossary } from "@/components/evaluation/metric-glossary";
 import { ApiReadiness } from "./api-readiness";
 import { RunsTable } from "./runs-table";
 import { Auditability, CostNote, CoverageNote, RetrievalSummary, StageLatencyTable, SummaryMetrics, ToolTable } from "./summary-panels";
+import { telemetryRunHref } from "@/lib/routes";
 
 function useViewState(): [TelemetryViewState, (patch: Partial<TelemetryViewState>) => void] {
   const params = useSearchParams();
@@ -101,7 +102,7 @@ function RunsSection({ ws, state, update, since, summary }: { ws: string; state:
   const runs = useTelemetryRuns(ws, runFilters(state, since));
   const rows = useMemo(() => runs.data?.pages.flatMap((p) => p.items) ?? [], [runs.data]);
   const filtered = state.mode || state.outcome || state.degraded || state.disposition;
-  const runHref = (row: TelemetryRunRow) => `/w/${encodeURIComponent(ws)}/dev/telemetry/runs/${encodeURIComponent(row.id)}`;
+  const runHref = (row: TelemetryRunRow) => telemetryRunHref(ws, row.id);
   return (
     <Section title="Runs" description="Every persisted run in the window, newest first. Open a run for its timeline, tool calls and checks.">
       <div className="mb-3">
@@ -143,7 +144,7 @@ function RunsSection({ ws, state, update, since, summary }: { ws: string; state:
           <Skeleton height="16rem" />
         </LoadingRegion>
       ) : runs.isError ? (
-        <ErrorState title="Runs could not be loaded" description="The telemetry service did not respond. Try again." retry={() => void runs.refetch()} />
+        <ErrorState title="Runs could not be loaded" description="The telemetry service did not respond. Try again." error={runs.error} retry={() => void runs.refetch()} />
       ) : (
         <>
           <RunsTable rows={rows} runHref={runHref} />
@@ -217,7 +218,7 @@ export function TelemetryDashboard({ ws }: { ws: string }) {
             </div>
           </LoadingRegion>
         ) : summary.isError ? (
-          <ErrorState title="Telemetry could not be loaded" description="The telemetry service did not respond. Try again." retry={() => void summary.refetch()} />
+          <ErrorState title="Telemetry could not be loaded" description="The telemetry service did not respond. Try again." error={summary.error} retry={() => void summary.refetch()} />
         ) : data && data.runs.total === 0 ? (
           <EmptyState
             title="No runs in this window"

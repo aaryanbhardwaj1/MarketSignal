@@ -1,6 +1,5 @@
 "use client";
 
-import { workspaceBase } from "@/components/shell/nav";
 import { LinkButton } from "@/components/ui/button";
 import { Callout } from "@/components/ui/callout";
 import { Card } from "@/components/ui/card";
@@ -15,7 +14,8 @@ import { formatNumber } from "@/lib/format";
 import { indexAnalyses, metricViews, numbersAllowed, type AnalysisIndex, type MetricView } from "@/lib/insights-view";
 import { BriefMeta, DriftCallout, ItemIntegrityIndicator, MetricFigure, NoBriefState, OpportunityStatusBadge, useOpenEvidence } from "./brief-parts";
 import { EvidenceItem } from "./evidence-item";
-import { useDocumentTitle } from "@/components/overview/use-document-title";
+import { useDocumentTitle } from "@/lib/use-document-title";
+import { opportunitiesHref } from "@/lib/routes";
 
 function EvidenceColumn({
   title,
@@ -95,7 +95,7 @@ export function OpportunityDetailView({
   return (
     <>
       <PageHeader
-        breadcrumb={[{ label: "Growth Opportunities", href: `${workspaceBase(ws)}/opportunities` }]}
+        breadcrumb={[{ label: "Growth Opportunities", href: opportunitiesHref(ws) }]}
         title={
           <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
             <span>{opportunity.title}</span>
@@ -216,7 +216,7 @@ export function OpportunityDetail({ ws, opportunityId }: { ws: string; opportuni
   const onOpen = useOpenEvidence() ?? undefined;
   useDocumentTitle(brief.data?.opportunities.find((o) => o.id === opportunityId)?.title, "Growth Opportunities");
   const back = (
-    <LinkButton href={`${workspaceBase(ws)}/opportunities`}>Back to Growth Opportunities</LinkButton>
+    <LinkButton href={opportunitiesHref(ws)}>Back to Growth Opportunities</LinkButton>
   );
 
   if (brief.isPending) {

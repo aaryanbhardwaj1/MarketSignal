@@ -13,6 +13,7 @@ import type {
 } from "@/lib/api/contracts";
 import { ApiError } from "@/lib/api/errors";
 import { formatMs, formatNumber, formatUsd } from "@/lib/format";
+import { evaluationHref } from "@/lib/routes";
 
 export const MINUS = "−";
 const EMPTY = "-";
@@ -373,7 +374,7 @@ export const EVAL_TABS = [
 export type EvalTabId = (typeof EVAL_TABS)[number]["id"];
 
 export function evalHref(ws: string, tab?: EvalTabId): string {
-  const base = `/w/${encodeURIComponent(ws)}/dev/evaluation`;
+  const base = evaluationHref(ws);
   return tab ? `${base}?tab=${tab}` : base;
 }
 

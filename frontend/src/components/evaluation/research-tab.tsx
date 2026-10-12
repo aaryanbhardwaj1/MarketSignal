@@ -8,7 +8,8 @@ import type { EvalCatalog } from "@/lib/api/contracts";
 import { caveatsFor, isResourceRow } from "@/lib/eval-view";
 import { formatNumber } from "@/lib/format";
 import { Caveats, ProvenanceTable } from "./caveats";
-import { DeltaCell, MetricCell, Segmented } from "./metric-bits";
+import { Segmented } from "@/components/ui/segmented";
+import { DeltaCell, MetricCell } from "./metric-bits";
 
 type Tradeoff = EvalCatalog["research_tradeoff"][number];
 type Row = Tradeoff["rows"][number];

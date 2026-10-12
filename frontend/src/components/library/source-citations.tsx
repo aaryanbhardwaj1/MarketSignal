@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useOpenEvidence } from "@/components/opportunities/brief-parts";
-import { opportunityHref } from "@/components/opportunities/opportunity-card";
-import { workspaceBase } from "@/components/shell/nav";
 import { Card } from "@/components/ui/card";
 import { EmptyState, LoadingRegion } from "@/components/ui/states";
 import type { EvidenceRef, InsightsBrief } from "@/lib/api/contracts";
 import { useInsights } from "@/lib/api/hooks/insights";
-import { businessLocator } from "@/lib/format";
-import { evidenceView, plural } from "@/lib/insights-view";
+import { businessLocator, formatCount } from "@/lib/format";
+import { evidenceView } from "@/lib/insights-view";
+import { opportunityHref, overviewHref } from "@/lib/routes";
 
 export interface SourceCitation {
   key: string;
@@ -23,7 +22,7 @@ export interface SourceCitation {
 /** Every passage of this source that the curated brief cites, in brief order. */
 export function citationsOf(brief: InsightsBrief, sourceCode: string, ws: string): SourceCitation[] {
   const out: SourceCitation[] = [];
-  const overview = `${workspaceBase(ws)}/overview`;
+  const overview = overviewHref(ws);
   for (const s of brief.signals) {
     s.evidence.forEach((ref, i) => {
       if (ref.source.code === sourceCode) out.push({ key: `s-${s.id}-${i}`, kind: "Key signal", itemTitle: s.title, href: overview, ref });
@@ -92,7 +91,7 @@ export function SourceCitations({ ws, sourceCode }: { ws: string; sourceCode: st
   }
   return (
     <Card padding="none">
-      <p className="border-b border-border px-5 py-2.5 text-sm text-muted">{plural(citations.length, "cited passage")}</p>
+      <p className="border-b border-border px-5 py-2.5 text-sm text-muted">{formatCount(citations.length, "cited passage")}</p>
       <ul className="divide-y divide-border">
         {citations.map((c) => (
           <CitationRow key={c.key} citation={c} onOpen={onOpen} />

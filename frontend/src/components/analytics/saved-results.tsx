@@ -5,13 +5,13 @@ import { useMemo, useState } from "react";
 import type { AnalyticsResultSummary, DatasetInfo } from "@/lib/api/contracts";
 import { useAnalyticsResults } from "@/lib/api/hooks/core";
 import { useEvidenceDrawer } from "../evidence/drawer-context";
-import { formatDate } from "@/lib/format";
+import { formatDate, tableLabel } from "@/lib/format";
 import { EmptyState, ErrorState, LoadingRegion } from "../ui/states";
 import { LoadMore } from "../ui/load-more";
 import { Section } from "../ui/section";
 import { Table, type Column } from "../ui/table";
-import { tableLabel } from "./analysis-format";
-import { collapseRepeats, describeResult, resultTitle } from "./result-summary";
+import { collapseRepeats, describeResult, resultTitle } from "@/lib/result-summary";
+import { askHref } from "@/lib/routes";
 
 const FIRST_ROWS = 10;
 const MORE_ROWS = 20;
@@ -82,7 +82,7 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
       cell: (r) =>
         r.conversation_id ? (
           <Link
-            href={`/w/${encodeURIComponent(ws)}/ask/${encodeURIComponent(r.conversation_id)}`}
+            href={askHref(ws, r.conversation_id)}
             onClick={(e) => e.stopPropagation()}
             aria-label="Open the conversation this result came from"
             className="whitespace-nowrap rounded-sm text-sm font-medium text-accent-text hover:underline"
@@ -104,7 +104,7 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
       {query.isPending ? (
         <LoadingRegion label="Loading saved results" lines={4} />
       ) : query.isError ? (
-        <ErrorState title="Saved results could not be loaded" description="Try again in a moment." retry={() => void query.refetch()} />
+        <ErrorState title="Saved results could not be loaded" description="Try again in a moment." error={query.error} retry={() => void query.refetch()} />
       ) : loaded.length === 0 ? (
         <EmptyState title="No saved results yet" description="Computed figures appear here once a research question has used a dataset." />
       ) : (

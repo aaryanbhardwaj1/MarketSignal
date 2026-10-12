@@ -4,6 +4,8 @@
  * percent-encoded as a single path segment or query value.
  */
 
+import { evidenceLibraryHref } from "@/lib/routes";
+
 const HANDLE_PATTERN =
   /^([A-Z][A-Z0-9]{1,15})\/([A-Z0-9]{1,12}(?:-[A-Z0-9]{1,12}){0,5})@v(\d+):(\S+)$/;
 
@@ -42,7 +44,7 @@ export function evidenceApiPath(workspace: string, handle: string): string {
 export function evidenceViewerHref(workspace: string, handle: string, childId?: string | null): string {
   const params = new URLSearchParams({ h: handle });
   if (childId) params.set("child", childId);
-  return `/w/${encodeURIComponent(workspace)}/evidence?${params.toString()}`;
+  return evidenceLibraryHref(workspace, params);
 }
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

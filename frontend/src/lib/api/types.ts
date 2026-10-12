@@ -32,12 +32,6 @@ export interface WorkspaceDetail extends Omit<Workspace, "created_at"> {
   child_count: number;
 }
 
-export interface CreateWorkspaceInput {
-  code: string;
-  name: string;
-  description?: string;
-}
-
 export interface VersionTimings {
   parse_ms?: number;
   chunk_ms?: number;
@@ -91,32 +85,6 @@ export interface SourceSummary {
 
 export interface SourceDetail extends Omit<SourceSummary, "latest"> {
   versions: SourceVersion[];
-}
-
-export interface UploadSourceInput {
-  file: File;
-  source_class: SourceClass;
-  confidentiality: Confidentiality;
-  title?: string;
-  source_code?: string;
-}
-
-export interface UploadSourceResult {
-  source_id: string;
-  source_code: string;
-  version_id: string;
-  version: number;
-  status: VersionStatus;
-  created: boolean;
-  duplicate_of: string | null;
-  status_url: string;
-}
-
-export interface DeleteSourceResult {
-  source_code: string;
-  versions_purged: number;
-  corpus_version: number;
-  status: "purged";
 }
 
 export interface EvidenceChild {

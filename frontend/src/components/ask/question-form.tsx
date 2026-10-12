@@ -5,6 +5,7 @@ import type { RunMode } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
 import { RUN_MODE_OPTIONS } from "@/lib/run-mode";
 import { Button } from "../ui/button";
+import { Segmented } from "../ui/segmented";
 
 export const MAX_QUESTION_LENGTH = 2000;
 
@@ -96,34 +97,19 @@ export function QuestionForm({
         className="block w-full resize-none rounded-t-lg bg-transparent px-3 py-2.5 text-base text-primary placeholder:text-muted focus:outline-none disabled:cursor-not-allowed aria-disabled:cursor-not-allowed aria-disabled:text-secondary"
       />
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-3 py-2">
-        <fieldset className="flex min-w-0 flex-wrap items-center gap-2" disabled={busy || inactive}>
-          <legend className="sr-only">Answer mode</legend>
-          <span aria-hidden className="text-sm text-muted">
-            Mode
-          </span>
-          <div className="inline-flex rounded-md border border-border bg-surface-muted p-0.5">
-            {RUN_MODE_OPTIONS.map((option) => (
-              <label
-                key={option.value}
-                className={cx(
-                  "relative cursor-pointer rounded-sm px-2.5 py-1 text-sm font-medium has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
-                  mode === option.value ? "bg-surface text-primary shadow-sm" : "text-secondary hover:text-primary",
-                )}
-              >
-                <input
-                  type="radio"
-                  name={`${groupId}-mode`}
-                  value={option.value}
-                  checked={mode === option.value}
-                  onChange={() => setMode(option.value)}
-                  aria-describedby={`${groupId}-help-${option.value}`}
-                  className="sr-only"
-                />
-                {option.label}
-              </label>
-            ))}
-          </div>
-        </fieldset>
+        <Segmented
+          label="Answer mode"
+          visibleLabel="Mode"
+          name={`${groupId}-mode`}
+          value={mode}
+          options={RUN_MODE_OPTIONS.map((option) => ({
+            value: option.value,
+            label: option.label,
+            describedBy: `${groupId}-help-${option.value}`,
+          }))}
+          onChange={setMode}
+          disabled={busy || inactive}
+        />
         <div className="flex items-center gap-3">
           <span className="text-xs tabular-nums text-muted">
             {text.length}/{MAX_QUESTION_LENGTH}

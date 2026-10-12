@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { workspaceBase } from "@/components/shell/nav";
 import { Card, CardHeader } from "@/components/ui/card";
 import { LoadingRegion } from "@/components/ui/states";
 import type { ConversationSummary } from "@/lib/api/contracts";
@@ -10,7 +9,8 @@ import { useAnalyticsResults, useConversations, useDatasets } from "@/lib/api/ho
 import { formatRelativeDate } from "@/lib/format";
 import { rowsMatchedText } from "@/lib/insights-view";
 import { runMode } from "@/lib/labels";
-import { collapseRepeats, describeResult, resultTitle } from "@/components/analytics/result-summary";
+import { collapseRepeats, describeResult, resultTitle } from "@/lib/result-summary";
+import { askHref } from "@/lib/routes";
 
 const LIMIT = 5;
 /** Fetch a few extra so collapsing repeats still fills the list. */
@@ -96,7 +96,7 @@ function SavedResearch({ ws }: { ws: string }) {
           {items.map((c) => (
             <Row
               key={c.conversation_id}
-              href={`${workspaceBase(ws)}/ask/${encodeURIComponent(c.conversation_id)}`}
+              href={askHref(ws, c.conversation_id)}
               title={c.title}
               meta={conversationMeta(c)}
             />
@@ -125,7 +125,7 @@ function RecentAnalyses({ ws }: { ws: string }) {
           {items.map((r) => (
             <Row
               key={r.result_id}
-              href={r.conversation_id ? `${workspaceBase(ws)}/ask/${encodeURIComponent(r.conversation_id)}` : null}
+              href={r.conversation_id ? askHref(ws, r.conversation_id) : null}
               title={resultTitle(r, info.get(r.dataset))}
               meta={[describeResult(r).filters.join(", ") || info.get(r.dataset)?.title, rowsMatchedText(r), formatRelativeDate(r.created_at)]
                 .filter(Boolean)

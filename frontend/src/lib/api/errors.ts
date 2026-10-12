@@ -74,3 +74,8 @@ export function describeError(error: unknown): { code: string; message: string }
   if (error instanceof Error) return { code: UNKNOWN_ERROR, message: error.message };
   return { code: UNKNOWN_ERROR, message: String(error) };
 }
+
+/** True when a request failed because the resource does not exist (404) or the id is malformed (422). */
+export function isNotFoundError(error: unknown): boolean {
+  return isApiError(error) && (error.status === 404 || error.status === 422);
+}

@@ -15,7 +15,7 @@ import { cx } from "@/lib/cx";
 import { formatRelativeDate } from "@/lib/format";
 import { modeLabel } from "@/lib/run-mode";
 import { conversationOutcome, isAnsweredConversation } from "@/lib/saved-run";
-import { askHref } from "./ask-routes";
+import { askHref } from "@/lib/routes";
 
 type OutcomeFilter = "answered" | "all";
 const OUTCOME_OPTIONS = [

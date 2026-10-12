@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Pct, TelemetrySummary } from "@/lib/api/contracts";
-import type { BarItem } from "@/components/ui/bar-list";
+import { BarList, type BarItem } from "@/components/ui/bar-list";
 import { Callout } from "@/components/ui/callout";
 import { Table, type Column } from "@/components/ui/table";
 import { formatMs, formatNumber, formatPercent, formatUsd } from "@/lib/format";
@@ -13,7 +13,6 @@ import {
 } from "@/lib/labels";
 import { glossaryTitle } from "@/lib/eval-view";
 import { STAGE_ROWS, ofTotal, sumValues, toolStatusLabel } from "@/lib/telemetry-view";
-import { StackedBarList } from "./stacked-bars";
 import { NotRecorded, Panel, StatTile } from "./stat-tile";
 
 type Summary = TelemetrySummary;
@@ -209,7 +208,7 @@ function bars(items: { label: string; n: number }[], denom: number): BarItem[] {
 function BarPanel({ title, meta, items, empty }: { title: string; meta: string; items: BarItem[]; empty: string }) {
   return (
     <Panel title={title} meta={meta}>
-      {items.length === 0 ? <NotRecorded>{empty}</NotRecorded> : <StackedBarList ariaLabel={title} items={items} />}
+      {items.length === 0 ? <NotRecorded>{empty}</NotRecorded> : <BarList layout="stacked" ariaLabel={title} items={items} />}
     </Panel>
   );
 }
@@ -238,7 +237,7 @@ export function Auditability({ summary }: { summary: Summary }) {
           {toolTotal === 0 ? (
             <NotRecorded>No tool calls in this window.</NotRecorded>
           ) : (
-            <StackedBarList ariaLabel="Tool call outcomes" items={bars(status, toolTotal)} />
+            <BarList layout="stacked" ariaLabel="Tool call outcomes" items={bars(status, toolTotal)} />
           )}
           <dl className="grid content-start gap-3 text-sm md:border-l md:border-border md:pl-4">
             <div>

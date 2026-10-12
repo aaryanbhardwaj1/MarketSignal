@@ -5,10 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { listSources } from "@/lib/api/endpoints";
-import { describeError } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/api/query-keys";
-import { formatNumber } from "@/lib/format";
-import { errorMessage } from "@/lib/labels";
+import { formatCount, formatNumber } from "@/lib/format";
 import {
   DEFAULT_LIBRARY_FILTERS,
   filterLibraryRows,
@@ -32,14 +30,11 @@ import { LibraryFilterBar } from "./library-filter-bar";
 import { LibraryTable } from "./library-table";
 import { LibrarySearchResults } from "./search-results";
 import { useSupersededRows } from "./use-superseded-rows";
+import { analyticsHref } from "@/lib/routes";
 
 const SEARCH_INPUT_ID = "library-search";
 
 const POLL_INTERVAL_MS = 3_000;
-
-function plural(n: number, one: string, many: string): string {
-  return `${formatNumber(n)} ${n === 1 ? one : many}`;
-}
 
 /**
  * The search box keeps its element (and focus) across searches; it is only remounted when a clear
@@ -85,8 +80,8 @@ export function LibraryView({ ws }: { ws: string }) {
   const onSummary = useCallback((text: string) => setSearchText(text), []);
   const filterText = sources.data
     ? isFiltered(filters)
-      ? `Showing ${formatNumber(shownCount)} of ${plural(rows.length, "source", "sources")}`
-      : `${plural(shownCount, "source", "sources")}`
+      ? `Showing ${formatNumber(shownCount)} of ${formatCount(rows.length, "source", "sources")}`
+      : `${formatCount(shownCount, "source", "sources")}`
     : "";
   const announcement = [q ? searchText : null, filterText].filter(Boolean).join(". ");
 
@@ -112,11 +107,11 @@ export function LibraryView({ ws }: { ws: string }) {
 
   const meta = sources.data ? (
     <span className="flex flex-wrap gap-x-3 gap-y-1">
-      <span>{plural(counts.sources, "source", "sources")}</span>
+      <span>{formatCount(counts.sources, "source", "sources")}</span>
       <span>{formatNumber(counts.ready)} ready</span>
       {counts.processing > 0 && <span>{formatNumber(counts.processing)} processing</span>}
       {counts.failed > 0 && <span>{formatNumber(counts.failed)} failed</span>}
-      <span>{plural(counts.passages, "evidence passage", "evidence passages")}</span>
+      <span>{formatCount(counts.passages, "evidence passage", "evidence passages")}</span>
     </span>
   ) : undefined;
 
@@ -164,7 +159,7 @@ export function LibraryView({ ws }: { ws: string }) {
           ) : sources.isError ? (
             <ErrorState
               title="The library could not be loaded"
-              description={errorMessage(describeError(sources.error).code).label}
+              error={sources.error}
               retry={() => void sources.refetch()}
             />
           ) : (
@@ -180,14 +175,14 @@ export function LibraryView({ ws }: { ws: string }) {
                     </Button>
                   }
                 >
-                  {`Superseded versions of ${plural(history.failed, "source", "sources")} are missing from this list.`}
+                  {`Superseded versions of ${formatCount(history.failed, "source", "sources")} are missing from this list.`}
                 </Callout>
               )}
               {history.loading && <p className="text-sm text-muted">Loading earlier versions…</p>}
               <LibraryTable ws={ws} rows={rows} filters={filters} onClearFilters={clearFilters} empty={list.length === 0} />
               {counts.processing > 0 && (
                 <p role="status" className="text-sm text-muted">
-                  {plural(counts.processing, "source is", "sources are")} still being processed. This list refreshes automatically.
+                  {formatCount(counts.processing, "source is", "sources are")} still being processed. This list refreshes automatically.
                 </p>
               )}
             </div>
@@ -196,7 +191,7 @@ export function LibraryView({ ws }: { ws: string }) {
 
         <p className="mt-6 text-sm text-muted">
           Structured datasets behind computed figures are listed in{" "}
-          <Link href={`/w/${encodeURIComponent(ws)}/analytics`} className="rounded-sm font-medium text-accent-text hover:underline">
+          <Link href={analyticsHref(ws)} className="rounded-sm font-medium text-accent-text hover:underline">
             Analytics
           </Link>
           .

@@ -1,8 +1,7 @@
 "use client";
 
 import { useAnalysis } from "@/lib/api/hooks/insights";
-import { describeError, isApiError } from "@/lib/api/errors";
-import { errorMessage } from "@/lib/labels";
+import { isNotFoundError } from "@/lib/api/errors";
 import { Badge } from "../ui/badge";
 import { LinkButton } from "../ui/button";
 import { PageContainer } from "../ui/page-container";
@@ -10,11 +9,8 @@ import { PageHeader } from "../ui/page-header";
 import { EmptyState, ErrorState, LoadingRegion } from "../ui/states";
 import { AnalysisDetailView } from "./analysis-detail";
 import { analysisState, categoryLabel, scopeLine } from "./analysis-format";
-import { useDocumentTitle } from "../overview/use-document-title";
-
-function analyticsHref(ws: string): string {
-  return `/w/${encodeURIComponent(ws)}/analytics`;
-}
+import { useDocumentTitle } from "@/lib/use-document-title";
+import { analyticsHref } from "@/lib/routes";
 
 /** Route container for one named analysis: loading, not found and error states around the detail view. */
 export function AnalysisPage({ ws, analysisId }: { ws: string; analysisId: string }) {
@@ -34,7 +30,7 @@ export function AnalysisPage({ ws, analysisId }: { ws: string; analysisId: strin
   }
 
   if (query.isError) {
-    const notFound = isApiError(query.error) && query.error.status === 404;
+    const notFound = isNotFoundError(query.error);
     return (
       <PageContainer width="content">
         <PageHeader title={notFound ? "Analysis not found" : "Analysis"} breadcrumb={crumbs} />
@@ -48,7 +44,7 @@ export function AnalysisPage({ ws, analysisId }: { ws: string; analysisId: strin
           ) : (
             <ErrorState
               title="The analysis could not be loaded"
-              description={errorMessage(describeError(query.error).code).label}
+              error={query.error}
               retry={() => void query.refetch()}
             />
           )}

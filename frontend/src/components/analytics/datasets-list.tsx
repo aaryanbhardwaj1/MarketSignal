@@ -3,12 +3,12 @@
 import { useId, useState } from "react";
 import type { DatasetColumn, DatasetInfo } from "@/lib/api/contracts";
 import { useDataset } from "@/lib/api/hooks/core";
-import { formatNumber } from "@/lib/format";
+import { formatNumber, humanizeColumn, tableLabel } from "@/lib/format";
 import { sourceClass } from "@/lib/labels";
 import { Card } from "../ui/card";
 import { ErrorState, LoadingRegion } from "../ui/states";
 import { Table, type Column } from "../ui/table";
-import { columnUnitLabel, humanizeKey, tableLabel } from "./analysis-format";
+import { columnUnitLabel } from "./analysis-format";
 
 const TYPE_LABELS: Record<string, string> = {
   categorical: "Category",
@@ -21,10 +21,10 @@ const TYPE_LABELS: Record<string, string> = {
 function DatasetColumns({ ws, dataset }: { ws: string; dataset: string }) {
   const query = useDataset(ws, dataset);
   if (query.isPending) return <LoadingRegion label="Loading columns" lines={4} />;
-  if (query.isError) return <ErrorState title="Columns could not be loaded" description="Try again in a moment." retry={() => void query.refetch()} />;
+  if (query.isError) return <ErrorState title="Columns could not be loaded" description="Try again in a moment." error={query.error} retry={() => void query.refetch()} />;
   const columns: Column<DatasetColumn>[] = [
-    { key: "name", header: "Column", cell: (c) => humanizeKey(c.name) },
-    { key: "type", header: "Type", cell: (c) => TYPE_LABELS[c.type] ?? humanizeKey(c.type) },
+    { key: "name", header: "Column", cell: (c) => humanizeColumn(c.name) },
+    { key: "type", header: "Type", cell: (c) => TYPE_LABELS[c.type] ?? humanizeColumn(c.type) },
     { key: "unit", header: "Unit", cell: (c) => columnUnitLabel(c.unit) },
     {
       key: "levels",

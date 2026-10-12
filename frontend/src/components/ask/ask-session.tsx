@@ -10,7 +10,7 @@ import { queryKeys } from "@/lib/api/query-keys";
 import type { RunMode } from "@/lib/api/types";
 import { isProviderUnavailableError } from "@/lib/model-availability";
 import type { RunStreamState } from "@/lib/run-stream";
-import { askHref } from "./ask-routes";
+import { askHref } from "@/lib/routes";
 import { useRunStream, type StreamConnection } from "./use-run-stream";
 
 const TITLE_MAX = 200;
@@ -30,9 +30,6 @@ export interface Prefill {
   /** Move focus to the composer when it remounts (set by an explicit "fill the composer" action). */
   focus: boolean;
 }
-
-/** Prefix of every conversation-list query key (any filters), derived from `coreKeys`. */
-const conversationListsKey = (ws: string) => coreKeys.conversations(ws, {}).slice(0, -1);
 
 export interface AskSession {
   ws: string;
@@ -84,7 +81,7 @@ export function AskSessionProvider({ ws, children }: { ws: string; children: Rea
   useEffect(() => {
     if (!settled || !active) return;
     void queryClient.invalidateQueries({ queryKey: queryKeys.messages(ws, active.conversationId) });
-    void queryClient.invalidateQueries({ queryKey: conversationListsKey(ws) });
+    void queryClient.invalidateQueries({ queryKey: coreKeys.conversationLists(ws) });
   }, [settled, active, ws, queryClient]);
 
   const start = useMutation({

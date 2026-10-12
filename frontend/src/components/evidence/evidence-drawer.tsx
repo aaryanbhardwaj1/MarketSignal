@@ -19,6 +19,7 @@ import { ChildSpanList } from "./child-span-list";
 import { ContextExcerpts } from "./context-excerpts";
 import { HighlightedText } from "./highlighted-text";
 import { VersionNotice } from "./version-notice";
+import { sourceHref } from "@/lib/routes";
 
 /** Optional span hint passed by the opener (a citation that knows offsets but no child id). */
 export interface SpanHint {
@@ -202,7 +203,7 @@ export function EvidenceDrawerBody({
       <EvidencePassageView ws={ws} evidence={evidence} span={pickSpan(evidence, childId, hint)} onSelectChild={onSelectChild} />
       <p className="border-t border-border pt-3 text-sm">
         <Link
-          href={`/w/${encodeURIComponent(ws)}/evidence/sources/${encodeURIComponent(evidence.source.source_id)}`}
+          href={sourceHref(ws, evidence.source.source_id)}
           className="font-medium text-accent-text hover:underline"
         >
           View source in Evidence Library

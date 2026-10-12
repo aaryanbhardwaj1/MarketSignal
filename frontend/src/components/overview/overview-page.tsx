@@ -1,13 +1,11 @@
 "use client";
 
-import { workspaceBase } from "@/components/shell/nav";
 import { DriftCallout, NoBriefState, useOpenEvidence } from "@/components/opportunities/brief-parts";
 import { LinkButton } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
-import { ErrorState, LoadingRegion, Skeleton } from "@/components/ui/states";
+import { CardGridSkeleton, ErrorState } from "@/components/ui/states";
 import type { InsightsBrief, WorkspaceOverview } from "@/lib/api/contracts";
 import { useWorkspaceOverview } from "@/lib/api/hooks/core";
 import { useAnalyses, useInsights } from "@/lib/api/hooks/insights";
@@ -17,6 +15,7 @@ import { OpportunityRows } from "./opportunity-rows";
 import { RecentActivity } from "./recent-activity";
 import { SignalCard } from "./signal-card";
 import { WorkspaceSummary } from "./workspace-summary";
+import { askHref, opportunitiesHref } from "@/lib/routes";
 
 function Header({ ws, overview }: { ws: string; overview: WorkspaceOverview | undefined }) {
   const name = overview ? splitWorkspaceName(overview.name) : null;
@@ -26,22 +25,8 @@ function Header({ ws, overview }: { ws: string; overview: WorkspaceOverview | un
       title={name?.client ?? "Overview"}
       description={name?.engagement ?? overview?.description ?? undefined}
       meta={asOf ? <span>Evidence as of {asOf}</span> : undefined}
-      actions={<LinkButton href={`${workspaceBase(ws)}/ask`}>Ask MarketSignal</LinkButton>}
+      actions={<LinkButton href={askHref(ws)}>Ask MarketSignal</LinkButton>}
     />
-  );
-}
-
-function CardGridSkeleton({ label, count, columns }: { label: string; count: number; columns: string }) {
-  return (
-    <LoadingRegion label={label}>
-      <div className={`grid gap-4 ${columns}`}>
-        {Array.from({ length: count }, (_, i) => (
-          <Card key={i} padding="sm">
-            <Skeleton lines={3} />
-          </Card>
-        ))}
-      </div>
-    </LoadingRegion>
   );
 }
 
@@ -66,7 +51,6 @@ function SummarySection({ ws }: { ws: string }) {
 
 function BriefSections({ ws, brief, analyses }: { ws: string; brief: InsightsBrief; analyses: AnalysisIndex }) {
   const onOpen = useOpenEvidence() ?? undefined;
-  const base = workspaceBase(ws);
   return (
     <>
       <Section
@@ -87,7 +71,7 @@ function BriefSections({ ws, brief, analyses }: { ws: string; brief: InsightsBri
           title="Growth opportunities"
           description="Hypotheses weighed against the evidence for and against them. Not scored or ranked."
           actions={
-            <LinkButton href={`${base}/opportunities`} variant="ghost">
+            <LinkButton href={opportunitiesHref(ws)} variant="ghost">
               View all opportunities
             </LinkButton>
           }

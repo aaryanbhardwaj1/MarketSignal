@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { describeError } from "@/lib/api/errors";
 import { cx } from "@/lib/cx";
 import { errorMessage } from "@/lib/labels";
+import { Card } from "./card";
 import { DevDetails } from "./disclosure";
 
 export function EmptyState({
@@ -92,5 +93,37 @@ export function LoadingRegion({ label, lines = 3, children }: { label: string; l
       <span className="sr-only">{label}</span>
       {children ?? <Skeleton lines={lines} />}
     </div>
+  );
+}
+
+/**
+ * Loading placeholder for a grid of summary cards: `count` cards of `lines` skeleton bars, announced
+ * once to screen readers via `label`. `columns` adds responsive grid-cols classes (single column if omitted).
+ */
+export function CardGridSkeleton({
+  label,
+  count = 3,
+  lines = 3,
+  columns,
+  gap = "md",
+  padding = "sm",
+}: {
+  label: string;
+  count?: number;
+  lines?: number;
+  columns?: string;
+  gap?: "sm" | "md";
+  padding?: "sm" | "md";
+}) {
+  return (
+    <LoadingRegion label={label}>
+      <div className={cx("grid", gap === "sm" ? "gap-3" : "gap-4", columns)}>
+        {Array.from({ length: count }, (_, i) => (
+          <Card key={i} padding={padding}>
+            <Skeleton lines={lines} />
+          </Card>
+        ))}
+      </div>
+    </LoadingRegion>
   );
 }

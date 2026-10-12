@@ -1,10 +1,9 @@
 "use client";
 
 import { Fragment } from "react";
-import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
-import { ErrorState, LoadingRegion, Skeleton } from "@/components/ui/states";
+import { CardGridSkeleton, ErrorState } from "@/components/ui/states";
 import { useInsights, useAnalyses } from "@/lib/api/hooks/insights";
 import { indexAnalyses } from "@/lib/insights-view";
 import { BriefMeta, DriftCallout, NoBriefState } from "./brief-parts";
@@ -30,20 +29,6 @@ export function WorkflowStrip() {
   );
 }
 
-function CardsSkeleton() {
-  return (
-    <LoadingRegion label="Loading growth opportunities">
-      <div className="grid gap-4 lg:grid-cols-2">
-        {Array.from({ length: 4 }, (_, i) => (
-          <Card key={i}>
-            <Skeleton lines={5} />
-          </Card>
-        ))}
-      </div>
-    </LoadingRegion>
-  );
-}
-
 export function OpportunitiesList({ ws }: { ws: string }) {
   const brief = useInsights(ws);
   const analyses = useAnalyses(ws);
@@ -58,7 +43,7 @@ export function OpportunitiesList({ ws }: { ws: string }) {
       />
       <div className="mt-6 flex flex-col gap-6">
         {brief.isPending ? (
-          <CardsSkeleton />
+          <CardGridSkeleton label="Loading growth opportunities" count={4} lines={5} columns="lg:grid-cols-2" padding="md" />
         ) : brief.isError ? (
           <ErrorState
             title="Growth opportunities could not be loaded"

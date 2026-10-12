@@ -13,6 +13,7 @@ import {
   verificationDisposition,
   type Humanized,
 } from "./labels";
+import { formatCount } from "./format";
 import { isCitationFallback, isModelUnavailable } from "./model-availability";
 import { describeModeDecision, modeCode, modeLabel } from "./run-mode";
 import type { RouteMode } from "./run-stream";
@@ -112,10 +113,6 @@ function datasetSource(args: unknown): string | null {
   return typeof dataset === "string" && dataset ? dataset.split(":")[0] : null;
 }
 
-function plural(n: number, word: string): string {
-  return `${n} ${word}${n === 1 ? "" : "s"}`;
-}
-
 function stepView(step: AgentTraceStep, titles: Readonly<Record<string, string>>): ResearchStepView {
   const base = toolStep(step.tool);
   let label = base.known ? base.label : "Ran a research step";
@@ -125,9 +122,9 @@ function stepView(step: AgentTraceStep, titles: Readonly<Record<string, string>>
     const title = code ? titles[code] : undefined;
     if (title) label = `${label} from ${title}`;
   } else if (step.tool === "get_evidence") {
-    label = step.handles.length > 1 ? `Read ${plural(step.handles.length, "evidence passage")}` : label;
+    label = step.handles.length > 1 ? `Read ${formatCount(step.handles.length, "evidence passage")}` : label;
   } else if (step.handles.length > 0) {
-    detail = `${plural(step.handles.length, "passage")} found`;
+    detail = `${formatCount(step.handles.length, "passage")} found`;
   }
   const failed = step.status !== "ok";
   return { key: `${step.step}:${step.call_index}`, label, detail, failed, durationMs: step.duration_ms };

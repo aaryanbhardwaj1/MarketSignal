@@ -11,7 +11,7 @@ import { cx } from "@/lib/cx";
 import { formatDateTime } from "@/lib/format";
 import { drawerTarget, type MetricView } from "@/lib/insights-view";
 import { integrity as integrityLabel, opportunityStatus } from "@/lib/labels";
-import { workspaceBase } from "@/components/shell/nav";
+import { askHref, evidenceLibraryHref } from "@/lib/routes";
 
 /** Opens a cited passage in the evidence drawer, or null when no drawer is mounted (tests). */
 export function useOpenEvidence(): ((ref: EvidenceRef) => void) | null {
@@ -93,8 +93,8 @@ export function NoBriefState({ ws, subject }: { ws: string; subject: string }) {
       description={`${subject} appear here once an analyst has prepared a brief from this workspace's evidence. You can still browse the evidence or ask a research question.`}
       action={
         <div className="flex flex-wrap justify-center gap-2">
-          <LinkButton href={`${workspaceBase(ws)}/evidence`}>Open the Evidence Library</LinkButton>
-          <LinkButton href={`${workspaceBase(ws)}/ask`} variant="ghost">
+          <LinkButton href={evidenceLibraryHref(ws)}>Open the Evidence Library</LinkButton>
+          <LinkButton href={askHref(ws)} variant="ghost">
             Ask MarketSignal
           </LinkButton>
         </div>

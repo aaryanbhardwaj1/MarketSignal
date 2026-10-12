@@ -3,12 +3,9 @@ import type { SourceSummary, VersionStatus } from "./api/types";
 import {
   hasInFlightSources,
   isNonTerminalStatus,
-  isTerminalStatus,
   libraryStatus,
   libraryStatusLabel,
   versionStatusLabel,
-  retryable,
-  statusTone,
 } from "./status";
 
 const NON_TERMINAL: VersionStatus[] = ["queued", "parsing", "chunking", "embedding", "indexing"];
@@ -29,31 +26,15 @@ function source(status: VersionStatus | null, deleted = false): SourceSummary {
 describe("status classification", () => {
   it.each(NON_TERMINAL)("%s is non-terminal", (status) => {
     expect(isNonTerminalStatus(status)).toBe(true);
-    expect(isTerminalStatus(status)).toBe(false);
-    expect(statusTone(status)).toBe("progress");
   });
 
   it.each(TERMINAL)("%s is terminal", (status) => {
-    expect(isTerminalStatus(status)).toBe(true);
     expect(isNonTerminalStatus(status)).toBe(false);
   });
 
-  it("treats unknown and missing statuses as neither", () => {
-    expect(isTerminalStatus("weird")).toBe(false);
+  it("treats unknown and missing statuses as not in flight", () => {
+    expect(isNonTerminalStatus("weird")).toBe(false);
     expect(isNonTerminalStatus(undefined)).toBe(false);
-    expect(statusTone("weird")).toBe("muted");
-  });
-
-  it("assigns distinct tones to terminal outcomes", () => {
-    expect(statusTone("ready")).toBe("success");
-    expect(statusTone("ready_degraded")).toBe("warning");
-    expect(statusTone("failed")).toBe("danger");
-    expect(statusTone("superseded")).toBe("muted");
-  });
-
-  it("only failed versions are retryable", () => {
-    expect(retryable("failed")).toBe(true);
-    expect(retryable("ready")).toBe(false);
   });
 });
 

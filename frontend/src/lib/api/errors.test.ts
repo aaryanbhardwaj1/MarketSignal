@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ApiError,
   describeError,
+  isNotFoundError,
   parseApiError,
   UNKNOWN_ERROR,
   VALIDATION_ERROR,
@@ -72,5 +73,18 @@ describe("describeError", () => {
     });
     expect(describeError(new Error("boom"))).toEqual({ code: UNKNOWN_ERROR, message: "boom" });
     expect(describeError("x")).toEqual({ code: UNKNOWN_ERROR, message: "x" });
+  });
+});
+
+describe("isNotFoundError", () => {
+  it("treats 404 and 422 API errors as not found", () => {
+    expect(isNotFoundError(new ApiError(404, "SOURCE_NOT_FOUND", "missing"))).toBe(true);
+    expect(isNotFoundError(new ApiError(422, VALIDATION_ERROR, "bad id"))).toBe(true);
+  });
+
+  it("does not treat other failures as not found", () => {
+    expect(isNotFoundError(new ApiError(500, UNKNOWN_ERROR, "boom"))).toBe(false);
+    expect(isNotFoundError(new Error("network"))).toBe(false);
+    expect(isNotFoundError(undefined)).toBe(false);
   });
 });

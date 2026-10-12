@@ -6,12 +6,13 @@ import { cx } from "@/lib/cx";
 import { ModelStatus } from "./model-status";
 import { NAV, activeNavId } from "./nav";
 import { WorkspaceControl } from "./workspace-control";
+import { overviewHref } from "@/lib/routes";
 
 /** Product wordmark (no logo art). */
 export function Wordmark({ ws }: { ws: string }) {
   return (
     <Link
-      href={`/w/${encodeURIComponent(ws)}/overview`}
+      href={overviewHref(ws)}
       className="rounded-sm text-md font-semibold tracking-tight text-primary"
     >
       MarketSignal

@@ -9,7 +9,8 @@ import { DevDetails } from "./disclosure";
 import { Button } from "./button";
 import { Select } from "./form-controls";
 import { ResultPanel } from "./result-panel";
-import { ErrorState, EmptyState } from "./states";
+import { Segmented } from "./segmented";
+import { CardGridSkeleton, ErrorState, EmptyState } from "./states";
 import { StatusIndicator } from "./status-indicator";
 import { normalizeTone } from "./tone";
 
@@ -138,5 +139,63 @@ describe("BarList", () => {
 
   it("handles an all-zero list without dividing by zero", () => {
     expect(html(<BarList ariaLabel="x" items={[{ label: "A", value: 0, display: "0" }]} />)).toContain("width:0%");
+  });
+
+  it("stacked layout puts a wrapping label above each bar", () => {
+    const out = html(
+      <BarList
+        layout="stacked"
+        ariaLabel="Route reasons"
+        items={[
+          { label: "A long humanized reason that should wrap", value: 3, display: "3" },
+          { label: "Short", value: 1, display: "1" },
+        ]}
+      />,
+    );
+    expect(out).toContain('<ol aria-label="Route reasons"');
+    expect(out).not.toContain("truncate");
+    expect(out).toContain("mt-1 block");
+    expect(out).toContain("width:100%");
+  });
+});
+
+describe("Segmented", () => {
+  it("renders a labelled native radio group with one option checked", () => {
+    const out = html(
+      <Segmented
+        label="Answer mode"
+        visibleLabel="Mode"
+        name="seg"
+        value="b"
+        onChange={() => undefined}
+        options={[
+          { value: "a", label: "Alpha", describedBy: "help-a" },
+          { value: "b", label: "Beta" },
+        ]}
+      />,
+    );
+    expect(out).toContain("<fieldset");
+    expect(out).toContain('<legend class="sr-only">Answer mode</legend>');
+    expect(out).toContain(">Mode<");
+    const radios = out.match(/<input[^>]*type="radio"[^>]*>/g) ?? [];
+    expect(radios).toHaveLength(2);
+    expect(radios.every((r) => r.includes('name="seg"'))).toBe(true);
+    expect(radios.filter((r) => / checked=""/.test(r))).toEqual([expect.stringContaining('value="b"')]);
+    expect(radios[0]).toContain('aria-describedby="help-a"');
+  });
+
+  it("disables every option through the fieldset", () => {
+    const out = html(<Segmented label="Split" value="x" onChange={() => undefined} disabled options={[{ value: "x", label: "X" }]} />);
+    expect(out).toMatch(/<fieldset[^>]* disabled=""/);
+  });
+});
+
+describe("CardGridSkeleton", () => {
+  it("announces one loading label and renders the requested number of cards", () => {
+    const out = html(<CardGridSkeleton label="Loading cards" count={4} columns="md:grid-cols-2" />);
+    expect(out).toContain('role="status"');
+    expect(out).toContain("Loading cards");
+    expect(out).toContain("md:grid-cols-2");
+    expect(out.match(/ms-skeleton/g)?.length).toBe(12);
   });
 });

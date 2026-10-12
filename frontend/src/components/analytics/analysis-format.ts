@@ -3,59 +3,11 @@
  * labels values the endpoint returned; nothing computes a new figure.
  */
 import type { Analysis, AnalysisFilter, AnalysisRow, AnalysisUnit } from "@/lib/api/contracts";
-import { formatNumber, formatPercent, formatUsd } from "@/lib/format";
+import { formatNumber, formatPercent, formatUsd, humanizeColumn, humanizeValue } from "@/lib/format";
 import { aggregationFn, basisKind, describeBasis } from "@/lib/insights-view";
-
-const WORDS: Record<string, string> = {
-  genz: "Gen Z",
-  aov: "average order value",
-  avg: "average",
-  pnl: "P&L",
-  sku: "SKU",
-  nps: "NPS",
-  qoq: "QoQ",
-  yoy: "YoY",
-  id: "ID",
-};
-
-const SUFFIXES: Array<[RegExp, string]> = [
-  [/_pct$/, " (%)"],
-  [/_usd$/, " (USD)"],
-];
 
 function sentenceCase(text: string): string {
   return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
-}
-
-/** Column or grouping key in plain words: `return_rate_pct` -> "Return rate (%)". */
-export function humanizeKey(key: string): string {
-  let suffix = "";
-  let base = key;
-  for (const [re, label] of SUFFIXES) {
-    if (re.test(base)) {
-      suffix = label;
-      base = base.replace(re, "");
-      break;
-    }
-  }
-  const words = base.split("_").filter(Boolean).map((w) => WORDS[w.toLowerCase()] ?? w.toLowerCase());
-  return sentenceCase(words.join(" ")) + suffix;
-}
-
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-/** Data value in plain words: "2026-09" -> "September 2026", "2026-Q3" -> "Q3 2026", "fit_inconsistency" -> "Fit inconsistency". */
-export function humanizeValue(value: string | number): string {
-  if (typeof value === "number") return formatNumber(value);
-  const month = /^(\d{4})-(\d{2})$/.exec(value);
-  if (month) {
-    const index = Number(month[2]) - 1;
-    if (index >= 0 && index < 12) return `${MONTHS[index]} ${month[1]}`;
-  }
-  const quarter = /^(\d{4})-Q([1-4])$/.exec(value);
-  if (quarter) return `Q${quarter[2]} ${quarter[1]}`;
-  if (/^[a-z0-9]+(_[a-z0-9]+)+$/.test(value)) return sentenceCase(value.replace(/_/g, " "));
-  return value;
 }
 
 function joinOr(values: string[]): string {
@@ -75,8 +27,8 @@ const OP_WORDS: Record<string, string> = {
 
 /** "Age group: 18-21, 22-24 or 25-27", "Quarter: Q3 2026", "Rating: at least 4". */
 export function describeFilter(filter: AnalysisFilter): string {
-  const label = filter.label || humanizeKey(filter.column);
-  const values = filter.values.map(humanizeValue);
+  const label = filter.label || humanizeColumn(filter.column);
+  const values = filter.values.map((v) => humanizeValue(v));
   if (filter.op === "between" && values.length === 2) return `${label}: ${values[0]} to ${values[1]}`;
   const prefix = OP_WORDS[filter.op];
   return `${label}: ${prefix ? `${prefix} ` : ""}${joinOr(values)}`;
@@ -103,7 +55,7 @@ const COLUMN_UNIT_LABELS: Record<string, string> = {
 /** Unit of a dataset column, in the same words as analysis units ("Percent", "US dollars"). */
 export function columnUnitLabel(unit: string | null | undefined): string {
   if (!unit) return "-";
-  return COLUMN_UNIT_LABELS[unit] ?? humanizeKey(unit);
+  return COLUMN_UNIT_LABELS[unit] ?? humanizeColumn(unit);
 }
 
 export function unitLabel(unit: AnalysisUnit): string {
@@ -118,7 +70,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export function categoryLabel(category: string): string {
-  return CATEGORY_LABELS[category] ?? humanizeKey(category);
+  return CATEGORY_LABELS[category] ?? humanizeColumn(category);
 }
 
 function isNumeric(value: string): boolean {
@@ -131,7 +83,7 @@ export function rowLabel(row: AnalysisRow, keys?: readonly string[]): string {
   return order
     .map((k) => row.group[k])
     .filter((v): v is string => typeof v === "string" && v !== "")
-    .map(humanizeValue)
+    .map((v) => humanizeValue(v))
     .join(" · ");
 }
 
@@ -272,11 +224,6 @@ export function analysisState(analysis: Pick<Analysis, "status">): AnalysisState
 /** Plain-language scope line: filters, then the dataset ("Age group: 18-21, 22-24 or 25-27 · Northstar Customer Survey 2026"). */
 export function scopeLine(analysis: Pick<Analysis, "filters" | "provenance">): string {
   return [...analysis.filters.map(describeFilter), analysis.provenance.source_title].join(" · ");
-}
-
-/** Table names arrive as stored ("SKU_Performance"); business pages show them in words. */
-export function tableLabel(table: string): string {
-  return humanizeKey(table.replace(/[^A-Za-z0-9]+/g, "_"));
 }
 
 /** A listing column is numeric when every non-empty cell parses as a number. */

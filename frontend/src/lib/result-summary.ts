@@ -6,7 +6,7 @@
  * names and metric keys never reach the business page.
  */
 import type { AnalyticsResultSummary, DatasetInfo } from "@/lib/api/contracts";
-import { humanizeKey, humanizeValue, tableLabel } from "./analysis-format";
+import { humanizeColumn, humanizeValue, tableLabel } from "./format";
 
 const FN_WORDS: Record<string, string> = {
   sum: "Total",
@@ -33,22 +33,22 @@ const OPS: Record<string, string> = {
 /** `sum(net_sales_usd)` -> "Total net sales (USD)"; `count(*)` -> "Number of records"; `share(a=b)` -> "Share with a: b". */
 export function describeMetricKey(key: string): string {
   const m = /^([a-z_]+)\((.*)\)$/.exec(key.trim());
-  if (!m) return humanizeKey(key.replace(/[^a-zA-Z0-9_]+/g, "_"));
+  if (!m) return humanizeColumn(key.replace(/[^a-zA-Z0-9_]+/g, "_"));
   const [, fn, arg] = m;
-  if (fn === "count") return arg === "*" || arg === "" ? "Number of records" : `Number of ${humanizeKey(arg).toLowerCase()} values`;
+  if (fn === "count") return arg === "*" || arg === "" ? "Number of records" : `Number of ${humanizeColumn(arg).toLowerCase()} values`;
   if (fn === "share") {
     const cmp = /^(\w+)\s*(<=|>=|<|>)\s*(.+)$/.exec(arg);
     if (cmp) {
       const words: Record<string, string> = { "<=": "at most", ">=": "at least", "<": "less than", ">": "more than" };
-      return `Share with ${lowerFirst(humanizeKey(cmp[1]))} ${words[cmp[2]]} ${humanizeValue(cmp[3])}`;
+      return `Share with ${lowerFirst(humanizeColumn(cmp[1]))} ${words[cmp[2]]} ${humanizeValue(cmp[3])}`;
     }
     const [col, value] = arg.split("=");
-    return value ? `Share with ${humanizeKey(col).toLowerCase()}: ${humanizeValue(value)}` : `Share of ${humanizeKey(col).toLowerCase()}`;
+    return value ? `Share with ${humanizeColumn(col).toLowerCase()}: ${humanizeValue(value)}` : `Share of ${humanizeColumn(col).toLowerCase()}`;
   }
   if (fn === "difference") return `Difference in ${lowerFirst(describeMetricKey(arg))}`;
   const word = FN_WORDS[fn];
   // "mean(avg_rating)" reads "Average rating", not "Average avg rating".
-  const column = humanizeKey(word ? arg.replace(/^(avg|average|mean)_/, "") : arg);
+  const column = humanizeColumn(word ? arg.replace(/^(avg|average|mean)_/, "") : arg);
   return word ? `${word} ${lowerFirst(column)}` : column;
 }
 
@@ -85,7 +85,7 @@ export function isIdentifierFilter(clause: string): boolean {
 /** `channel eq Social Shop` -> "Channel: Social Shop"; `month between 2026-08-01, 2026-08-31` -> "Month: August 2026". */
 export function describeFilterClause(clause: string): string {
   const nullCheck = /^(\S+)\s+(is_null|not_null)$/.exec(clause.trim());
-  if (nullCheck) return `${humanizeKey(nullCheck[1])}: ${nullCheck[2] === "is_null" ? "not recorded" : "recorded"}`;
+  if (nullCheck) return `${humanizeColumn(nullCheck[1])}: ${nullCheck[2] === "is_null" ? "not recorded" : "recorded"}`;
   const m = /^(\S+)\s+(eq|in|ne|not_in|gt|gte|lt|lte|between|contains)\s+(.*)$/.exec(clause.trim());
   if (!m) return clause.trim();
   const [, column, op, rest] = m;
@@ -93,7 +93,7 @@ export function describeFilterClause(clause: string): string {
   const values = raw.map(humanizeDay);
   const month = op === "between" && raw.length === 2 ? wholeMonth(raw[0], raw[1]) : null;
   const text = month ?? (op === "between" && values.length === 2 ? `${values[0]} to ${values[1]}` : values.join(", "));
-  return `${humanizeKey(column)}: ${OPS[op] ?? ""}${text}`;
+  return `${humanizeColumn(column)}: ${OPS[op] ?? ""}${text}`;
 }
 
 function splitTopLevel(text: string): string[] {
@@ -148,7 +148,7 @@ export function describeResult(result: Pick<AnalyticsResultSummary, "tool" | "su
       const cmp = /^by \w+: A=(.+) vs B=(.+)$/.exec(part);
       comparison = cmp ? `${cmp[1].trim()} vs ${cmp[2].trim()}` : null;
     } else if (part.startsWith("by ")) {
-      grouping = `by ${part.slice(3).split(/,\s*/).map((k) => humanizeKey(k).toLowerCase()).join(" and ")}`;
+      grouping = `by ${part.slice(3).split(/,\s*/).map((k) => humanizeColumn(k).toLowerCase()).join(" and ")}`;
     } else if (part.includes("(") && metricKeys.length === 0) {
       metricKeys = splitTopLevel(part);
     }

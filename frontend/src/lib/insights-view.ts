@@ -371,10 +371,6 @@ export function evidenceBalance(opportunity: Opportunity): EvidenceBalance {
   };
 }
 
-export function plural(count: number, one: string, many = `${one}s`): string {
-  return `${formatNumber(count)} ${count === 1 ? one : many}`;
-}
-
 // ── recent computed analyses ───────────────────────────────────────────────────────────────
 
 /** "24 of 120 rows" from a stored result summary, as plain "24 of 120 records"; null if absent. */

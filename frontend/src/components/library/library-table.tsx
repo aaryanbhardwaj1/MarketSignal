@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 import { EmptyState } from "../ui/states";
 import { StatusIndicator } from "../ui/status-indicator";
 import { Table, type Column } from "../ui/table";
+import { sourceHref } from "@/lib/routes";
 
 /** True when every row says the same thing in a column, so the column would tell the reader nothing. */
 function uniform(rows: readonly LibraryRow[], value: (row: LibraryRow) => string): boolean {
@@ -57,10 +58,6 @@ function optionalColumns(rows: readonly LibraryRow[]): Column<LibraryRow>[] {
     });
   }
   return columns;
-}
-
-export function sourceHref(ws: string, sourceId: string): string {
-  return `/w/${encodeURIComponent(ws)}/evidence/sources/${encodeURIComponent(sourceId)}`;
 }
 
 /** Sources at their current version (plus superseded versions when asked), with columns that carry information. */

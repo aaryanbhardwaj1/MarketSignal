@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Skeleton } from "@/components/ui/states";
 import { useConversations } from "@/lib/api/hooks/core";
 import { modeLabel } from "@/lib/run-mode";
-import { askHref } from "./ask-routes";
+import { askHref } from "@/lib/routes";
 import { useAskSession } from "./ask-session";
 import { Composer } from "./composer";
 

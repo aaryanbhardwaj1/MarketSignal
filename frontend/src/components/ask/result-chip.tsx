@@ -1,6 +1,6 @@
 "use client";
 
-import { describeResult } from "@/components/analytics/result-summary";
+import { describeResult } from "@/lib/result-summary";
 import { CiteChip } from "@/components/ui/cite-chip";
 import { useOptionalEvidenceDrawer } from "@/components/evidence/drawer-context";
 import type { AnalyticsResultSummary } from "@/lib/api/contracts";

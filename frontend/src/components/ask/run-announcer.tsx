@@ -1,6 +1,7 @@
 "use client";
 
 import { isResultCard } from "@/lib/api/types";
+import { formatCount } from "@/lib/format";
 import { isModelUnavailable } from "@/lib/model-availability";
 import { PHASE_LABELS } from "@/lib/labels";
 import type { RunStreamState } from "@/lib/run-stream";
@@ -8,10 +9,6 @@ import { useAskSession } from "./ask-session";
 import type { StreamConnection } from "./use-run-stream";
 
 const FAILED = new Set(["error", "tool_failure", "timeout", "interrupted"]);
-
-function plural(n: number, word: string): string {
-  return `${n} ${word}${n === 1 ? "" : "s"}`;
-}
 
 /** One short, plain-language line for the screen-reader status region; "" when nothing to say. */
 export function runAnnouncement(state: RunStreamState, connection: StreamConnection, active: boolean): string {
@@ -24,7 +21,7 @@ export function runAnnouncement(state: RunStreamState, connection: StreamConnect
     }
     if (state.final) {
       const passages = state.final.citations.filter((c) => !isResultCard(c)).length;
-      return passages > 0 ? `Answer ready, ${plural(passages, "cited passage")}.` : "Answer ready.";
+      return passages > 0 ? `Answer ready, ${formatCount(passages, "cited passage")}.` : "Answer ready.";
     }
     if (state.error || FAILED.has(done.terminationState)) return "The answer could not be completed.";
     return "Finished.";

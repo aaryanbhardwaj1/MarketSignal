@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import analysesFixture from "@/lib/api/__fixtures__/insights-analyses.json";
 import type { AnalysesResponse, Analysis } from "@/lib/api/contracts";
-import { analysisHeadline, describeFilter, formatListingCell, humanizeKey, humanizeValue, rowBase } from "./analysis-format";
-import { collapseRepeats, describeMetricKey, describeResult } from "./result-summary";
+import { humanizeColumn as humanizeKey, humanizeValue } from "@/lib/format";
+import { collapseRepeats, describeMetricKey, describeResult } from "@/lib/result-summary";
+import { analysisHeadline, describeFilter, formatListingCell, rowBase } from "./analysis-format";
 
 const analyses = (analysesFixture as unknown as AnalysesResponse).analyses;
 

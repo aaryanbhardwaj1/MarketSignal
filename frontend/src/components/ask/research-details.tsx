@@ -4,7 +4,7 @@ import { Disclosure, DevDetails } from "@/components/ui/disclosure";
 import { KeyValueList } from "@/components/ui/key-value";
 import { formatMs } from "@/lib/format";
 import type { SavedRunView } from "@/lib/saved-run";
-import { telemetryRunHref } from "./ask-routes";
+import { telemetryRunHref } from "@/lib/routes";
 
 function Summary({ view }: { view: SavedRunView }) {
   const parts = [view.mode, view.durationMs !== null ? formatMs(view.durationMs) : null, view.verification?.summary];

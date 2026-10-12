@@ -19,10 +19,9 @@ import { AnalyticsResults, ResearchCard, RouteCard, StageTiming, UsageCard } fro
 import { RetrievalPanel, RunTimeline, ToolCalls, VerificationAttempts } from "./run-trace";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { Panel, StatTile } from "./stat-tile";
+import { telemetryHref } from "@/lib/routes";
 
 export const REASONING_NOTE = "Model reasoning is not recorded; only observable actions, timings and outcomes are.";
-
-const telemetryHref = (ws: string): string => `/w/${encodeURIComponent(ws)}/dev/telemetry`;
 
 function crumbs(ws: string) {
   return [{ label: "Telemetry", href: telemetryHref(ws) }];

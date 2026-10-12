@@ -3,33 +3,16 @@
 import { useMemo, useState } from "react";
 import { useDatasets } from "@/lib/api/hooks/core";
 import { useAnalyses } from "@/lib/api/hooks/insights";
-import { describeError } from "@/lib/api/errors";
-import { errorMessage } from "@/lib/labels";
-import { formatDateTime, formatNumber } from "@/lib/format";
-import { Card } from "../ui/card";
+import { formatDateTime, formatNumber, tableLabel } from "@/lib/format";
 import { FilterBar, FilterSelect } from "../ui/filter-bar";
 import { PageContainer } from "../ui/page-container";
 import { PageHeader } from "../ui/page-header";
 import { Section } from "../ui/section";
-import { EmptyState, ErrorState, LoadingRegion, Skeleton } from "../ui/states";
+import { CardGridSkeleton, EmptyState, ErrorState, LoadingRegion } from "../ui/states";
 import { AnalysisCard } from "./analysis-card";
-import { categoryLabel, tableLabel } from "./analysis-format";
+import { categoryLabel } from "./analysis-format";
 import { DatasetsList } from "./datasets-list";
 import { SavedResults } from "./saved-results";
-
-function CardsSkeleton() {
-  return (
-    <LoadingRegion label="Loading analyses">
-      <ul className="grid gap-3 md:grid-cols-2">
-        {Array.from({ length: 4 }, (_, i) => (
-          <Card key={i} as="li" padding="sm">
-            <Skeleton lines={4} />
-          </Card>
-        ))}
-      </ul>
-    </LoadingRegion>
-  );
-}
 
 export function AnalyticsView({ ws }: { ws: string }) {
   const analyses = useAnalyses(ws);
@@ -71,11 +54,11 @@ export function AnalyticsView({ ws }: { ws: string }) {
           description="Curated questions recomputed from the source data on every visit. A figure is shown only when it still matches what was reviewed."
         >
           {analyses.isPending ? (
-            <CardsSkeleton />
+            <CardGridSkeleton label="Loading analyses" count={4} lines={4} columns="md:grid-cols-2" gap="sm" />
           ) : analyses.isError ? (
             <ErrorState
               title="Analyses could not be loaded"
-              description={errorMessage(describeError(analyses.error).code).label}
+              error={analyses.error}
               retry={() => void analyses.refetch()}
             />
           ) : all.length === 0 ? (
@@ -117,7 +100,7 @@ export function AnalyticsView({ ws }: { ws: string }) {
           {datasets.isPending ? (
             <LoadingRegion label="Loading datasets" lines={5} />
           ) : datasets.isError ? (
-            <ErrorState title="Datasets could not be loaded" description="Try again in a moment." retry={() => void datasets.refetch()} />
+            <ErrorState title="Datasets could not be loaded" description="Try again in a moment." error={datasets.error} retry={() => void datasets.refetch()} />
           ) : datasetList.length === 0 ? (
             <EmptyState title="No datasets yet" description="Spreadsheets and data tables added to the Evidence Library appear here once processed." />
           ) : (

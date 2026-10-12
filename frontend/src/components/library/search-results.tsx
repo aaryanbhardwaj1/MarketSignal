@@ -3,11 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { searchWorkspace } from "@/lib/api/endpoints";
-import { describeError } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/api/query-keys";
 import { SOURCE_CLASSES, type SearchItem, type SourceClass } from "@/lib/api/types";
 import { segmentHighlight } from "@/lib/highlight";
-import { errorMessage, sourceClass, sourceType } from "@/lib/labels";
+import { sourceClass, sourceType } from "@/lib/labels";
 import { filterSearchGroups, type LibraryFilters } from "@/lib/library-filters";
 import { DEFAULT_SEARCH_MODE, groupSearchResults, type SearchGroup } from "@/lib/search";
 import { businessLocator, formatNumber } from "@/lib/format";
@@ -17,7 +16,7 @@ import { Callout } from "../ui/callout";
 import { DevDetails } from "../ui/disclosure";
 import { Section } from "../ui/section";
 import { Card } from "../ui/card";
-import { EmptyState, ErrorState, LoadingRegion, Skeleton } from "../ui/states";
+import { CardGridSkeleton, EmptyState, ErrorState } from "../ui/states";
 
 const RESULT_LIMIT = 20;
 
@@ -85,20 +84,6 @@ function SourceGroup({ group, onOpen }: { group: SearchGroup; onOpen: (item: Sea
   );
 }
 
-function SearchSkeleton() {
-  return (
-    <LoadingRegion label="Searching the library">
-      <div className="flex flex-col gap-3">
-        {Array.from({ length: 3 }, (_, i) => (
-          <Card key={i} padding="sm">
-            <Skeleton lines={3} />
-          </Card>
-        ))}
-      </div>
-    </LoadingRegion>
-  );
-}
-
 /** One plain sentence describing the search state, for the page's screen-reader status region. */
 export function searchSummary(state: "pending" | "error" | "done", passages: number, sources: number): string {
   if (state === "pending") return "Searching the library";
@@ -161,11 +146,11 @@ export function LibrarySearchResults({
       actions={clearSearch}
     >
       {query.isPending ? (
-        <SearchSkeleton />
+        <CardGridSkeleton label="Searching the library" count={3} lines={3} gap="sm" />
       ) : query.isError ? (
         <ErrorState
           title="Search could not be completed"
-          description={errorMessage(describeError(query.error).code).label}
+          error={query.error}
           retry={() => void query.refetch()}
         />
       ) : groups.length === 0 ? (

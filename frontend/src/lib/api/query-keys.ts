@@ -1,8 +1,6 @@
 import type { SearchMode, SourceClass } from "./types";
 
 export const queryKeys = {
-  workspaces: ["workspaces"] as const,
-  workspace: (ws: string) => ["workspace", ws] as const,
   sources: (ws: string) => ["workspace", ws, "sources"] as const,
   source: (ws: string, id: string) => ["workspace", ws, "sources", id] as const,
   evidence: (ws: string, handle: string, child: string | null) =>

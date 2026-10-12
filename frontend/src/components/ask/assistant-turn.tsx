@@ -10,7 +10,7 @@ import { isResultCard, type AnyCitationCard, type ChatMessage } from "@/lib/api/
 import { modeLabel } from "@/lib/run-mode";
 import { toSavedRunView, type SavedRunView } from "@/lib/saved-run";
 import { AnswerView } from "./answer-view";
-import { evidenceLibraryHref } from "./ask-routes";
+import { evidenceLibraryHref } from "@/lib/routes";
 import { useAskSession } from "./ask-session";
 import { useGenerationAvailable } from "./model-unavailable";
 import { ResearchDetails } from "./research-details";

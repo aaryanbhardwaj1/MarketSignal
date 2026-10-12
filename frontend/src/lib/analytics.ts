@@ -8,7 +8,7 @@
  * `describeMetricKey` / `describeFilterClause`, so one computed result reads the same in Ask, the result drawer and
  * Analytics. Raw spec keys stay in the result's Technical details.
  */
-import { describeFilterClause, describeMetricKey } from "@/components/analytics/result-summary";
+import { describeFilterClause, describeMetricKey } from "./result-summary";
 import type { AnalyticsResult, AnalyticsScale, MetricValue, ResultRow } from "./api/types";
 import { humanizeColumn, humanizeValue } from "./format";
 

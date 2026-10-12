@@ -133,38 +133,3 @@ export function MetricGrid({ metrics, label }: { metrics: EvalMetric[]; label: s
     </ul>
   );
 }
-
-/** Two-option (or more) toggle rendered as pressed buttons in a labelled group. */
-export function Segmented<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (value: T) => void;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm text-muted">{label}</span>
-      <div role="group" aria-label={label} className="inline-flex rounded-md border border-border bg-surface-muted p-0.5">
-        {options.map((o) => (
-          <button
-            key={o.value}
-            type="button"
-            aria-pressed={o.value === value}
-            onClick={() => onChange(o.value)}
-            className={cx(
-              "rounded-sm px-2.5 py-1 text-sm font-medium transition-colors",
-              o.value === value ? "bg-surface text-primary shadow-sm" : "text-muted hover:text-primary",
-            )}
-          >
-            {o.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}

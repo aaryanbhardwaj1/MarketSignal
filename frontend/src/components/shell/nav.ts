@@ -3,6 +3,8 @@
  * The workspace code only appears in URLs, never as visible text.
  */
 
+import { workspaceHref } from "@/lib/routes";
+
 export type NavGroupName = "Workspace" | "Developer tools";
 export type NavId =
   | "overview"
@@ -61,7 +63,7 @@ export const DEFAULT_WORKSPACE = "NORTHSTAR";
 export const TEST_WORKSPACE_CODE = /^T[0-9A-F]{10}$/;
 
 export function workspaceBase(ws: string): string {
-  return `/w/${encodeURIComponent(ws)}`;
+  return workspaceHref(ws);
 }
 
 /** Path segments after `/w/{ws}/`, or null when the path is outside this workspace. */
