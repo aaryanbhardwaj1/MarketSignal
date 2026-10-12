@@ -4,7 +4,7 @@ import briefFixture from "@/lib/api/__fixtures__/insights-brief.json";
 import overviewFixture from "@/lib/api/__fixtures__/core-workspace-overview.json";
 import type { AnalysesResponse, Analysis, EvidenceRef, InsightsBrief, MetricRef, WorkspaceOverview } from "@/lib/api/contracts";
 import {
-  basisText,
+  describeBasis,
   buildMetricView,
   classBreakdown,
   drawerTarget,
@@ -67,7 +67,8 @@ describe("metric denominators", () => {
   });
   it("says 'across' for summed quantities", () => {
     const m = opportunity("O1").metrics[1]; // Q3 returns, fit runs large (a sum of return counts)
-    expect(buildMetricView(m, index).basis).toBe("across 30 return records");
+    expect(buildMetricView(m, index).basis).toBe("Total across 30 return records");
+    expect(buildMetricView(m, index).baseLabel).toBe("Summed across");
   });
   it("gives a derived difference the shared base of its inputs", () => {
     const nps = signal("genz-nps-gap").metrics[0];
@@ -76,7 +77,7 @@ describe("metric denominators", () => {
   it("never invents a base for a percent change", () => {
     const growth = signal("social-discovery").metrics[0];
     expect(resolveDenominator(growth, analysis("social-shop-sales-by-quarter"))).toBeNull();
-    expect(buildMetricView(growth, index).basis).toBe("Base: monthly channel rows");
+    expect(buildMetricView(growth, index).basis).toBe("Based on monthly channel records");
   });
   it("returns null when the row match is ambiguous", () => {
     const a: Analysis = {
@@ -90,7 +91,21 @@ describe("metric denominators", () => {
     expect(resolveDenominator(m, a)).toBeNull();
   });
   it("shows no basis without a label or count", () => {
-    expect(basisText({ ...opportunity("O3").metrics[1], denominator_label: null }, null)).toBeNull();
+    expect(describeBasis("total", null, null)).toBeNull();
+  });
+  it("uses one wording per kind of figure", () => {
+    expect(describeBasis("share", 400, "Gen Z respondents")?.text).toBe("of 400 Gen Z respondents");
+    expect(describeBasis("total", 7, "return records", 30)?.text).toBe("Total across 7 of 30 return records");
+    expect(describeBasis("average", 400, "of Gen Z respondents")?.text).toBe("Average of 400 Gen Z respondents");
+    expect(describeBasis("derived", 400, "Gen Z respondents")?.label).toBe("Based on");
+  });
+  it("describes averages and differences by what they are", () => {
+    const price = signal("premium-ceiling").metrics[0];
+    expect(buildMetricView(price, index).basis).toBe("Average of 400 Gen Z respondents");
+    const nps = signal("genz-nps-gap").metrics[0];
+    expect(buildMetricView(nps, index).basis).toBe("Based on 400 Gen Z respondents");
+    const sales = signal("social-discovery").metrics[1];
+    expect(buildMetricView(sales, index).basis).toBe("Total across 6 monthly channel records");
   });
 });
 

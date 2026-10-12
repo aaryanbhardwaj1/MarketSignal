@@ -10,6 +10,7 @@ import { PageHeader } from "../ui/page-header";
 import { EmptyState, ErrorState, LoadingRegion } from "../ui/states";
 import { AnalysisDetailView } from "./analysis-detail";
 import { analysisState, categoryLabel, scopeLine } from "./analysis-format";
+import { useDocumentTitle } from "../overview/use-document-title";
 
 function analyticsHref(ws: string): string {
   return `/w/${encodeURIComponent(ws)}/analytics`;
@@ -18,6 +19,7 @@ function analyticsHref(ws: string): string {
 /** Route container for one named analysis: loading, not found and error states around the detail view. */
 export function AnalysisPage({ ws, analysisId }: { ws: string; analysisId: string }) {
   const query = useAnalysis(ws, analysisId);
+  useDocumentTitle(query.data?.title, "Analytics");
   const crumbs = [{ label: "Analytics", href: analyticsHref(ws) }];
 
   if (query.isPending) {

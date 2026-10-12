@@ -2,7 +2,9 @@
 
 import { ItemIntegrityIndicator, MetricFigure } from "@/components/opportunities/brief-parts";
 import { CiteChip, type CiteState } from "@/components/ui/cite-chip";
+import { Card } from "@/components/ui/card";
 import type { EvidenceRef, Signal } from "@/lib/api/contracts";
+import { businessLocator } from "@/lib/format";
 import { metricViews, numbersAllowed, type AnalysisIndex } from "@/lib/insights-view";
 
 const CITE_STATE: Record<EvidenceRef["integrity"], CiteState> = {
@@ -33,7 +35,7 @@ function Citations({ evidence, onOpen }: { evidence: EvidenceRef[]; onOpen?: (re
             key={`${ref.handle}-${i}`}
             kind="evidence"
             index={i + 1}
-            label={`${ref.source.title}, ${ref.locator_label}`}
+            label={[ref.source.title, businessLocator(ref.locator_label)].filter(Boolean).join(", ")}
             state={CITE_STATE[ref.integrity]}
             onOpen={() => onOpen?.(ref)}
           />
@@ -55,14 +57,16 @@ export function SignalCard({
 }) {
   const metrics = metricViews(signal, analyses).slice(0, MAX_METRICS);
   return (
-    <article className="flex flex-col rounded-lg border border-border bg-surface p-5">
+    <Card as="article" className="@container flex flex-col">
       <div className="flex-1">
         <p className="text-xs font-medium uppercase tracking-wide text-muted">{signal.category}</p>
       <h3 className="mt-1 text-md font-semibold text-primary">{signal.title}</h3>
       <p className="mt-1.5 text-base text-secondary">{signal.statement}</p>
       {metrics.length > 0 &&
         (numbersAllowed(signal.integrity) ? (
-          <div className={metrics.length > 1 ? "mt-4 grid grid-cols-2 gap-4" : "mt-4"}>
+          // The pair sits side by side only when the card is wide enough for both labels; narrower
+          // cards stack them so labels and bases do not wrap into tall columns.
+          <div className={metrics.length > 1 ? "mt-4 grid gap-4 @[26rem]:grid-cols-2" : "mt-4"}>
             {metrics.map((m) => (
               <MetricFigure key={m.key} metric={m} compact />
             ))}
@@ -75,6 +79,6 @@ export function SignalCard({
         <Citations evidence={signal.evidence} onOpen={onOpen} />
         <ItemIntegrityIndicator value={signal.integrity} />
       </div>
-    </article>
+    </Card>
   );
 }

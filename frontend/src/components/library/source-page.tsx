@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSource } from "@/lib/api/endpoints";
 import { describeError, isApiError } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/api/query-keys";
-import type { SourceDetail } from "@/lib/api/types";
+import type { SourceDetail, SourceVersion } from "@/lib/api/types";
 import { formatDate, formatNumber, humanize } from "@/lib/format";
 
 function confidentialityLabel(value: string): string {
@@ -12,12 +12,15 @@ function confidentialityLabel(value: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 import { errorMessage, sourceClass, sourceType } from "@/lib/labels";
-import { versionHistory } from "@/lib/library-filters";
+import { versionHistory, type VersionHistoryEntry } from "@/lib/library-filters";
 import { isNonTerminalStatus, libraryStatusLabel, versionStatusLabel } from "@/lib/status";
 import { LinkButton } from "../ui/button";
 import { Callout } from "../ui/callout";
 import { DevDetails } from "../ui/disclosure";
+import { Card } from "../ui/card";
 import { KeyValueList } from "../ui/key-value";
+import { useDocumentTitle } from "../overview/use-document-title";
+import { SourceCitations } from "./source-citations";
 import { PageContainer } from "../ui/page-container";
 import { PageHeader } from "../ui/page-header";
 import { Section } from "../ui/section";
@@ -37,7 +40,8 @@ function countText(n: number | null): string {
 function VersionHistory({ detail }: { detail: SourceDetail }) {
   const entries = versionHistory(detail);
   return (
-    <ol aria-label="Version history" className="divide-y divide-border rounded-lg border border-border bg-surface">
+    <Card padding="none">
+    <ol aria-label="Version history" className="divide-y divide-border">
       {entries.map((entry) => {
         const status = entry.isCurrent
           ? versionStatusLabel(detail.versions.find((v) => v.version === entry.version)?.status)
@@ -56,6 +60,7 @@ function VersionHistory({ detail }: { detail: SourceDetail }) {
         );
       })}
     </ol>
+    </Card>
   );
 }
 
@@ -64,6 +69,7 @@ function technicalDetails(detail: SourceDetail): unknown {
     source_id: detail.source_id,
     source_code: detail.source_code,
     current_version_id: detail.current_version_id,
+    indexed_segments: versionHistory(detail).find((e) => e.isCurrent)?.segments ?? null,
     versions: detail.versions.map((v) => ({
       version: v.version,
       version_id: v.version_id,
@@ -81,15 +87,63 @@ function technicalDetails(detail: SourceDetail): unknown {
   };
 }
 
-/** One source in the Evidence Library: what it is, its versions and how much of it can be cited. */
+function SourceStatusCallouts({ deleted, failed, processing }: { deleted: boolean; failed: boolean; processing: boolean }) {
+  return (
+    <>
+      {deleted && (
+        <div className="mt-6">
+          <Callout tone="neutral" title="This source was removed from the library">
+            Passages from it can no longer be cited. Earlier answers that cited it show it as removed.
+          </Callout>
+        </div>
+      )}
+      {!deleted && failed && (
+        <div className="mt-6">
+          <Callout tone="danger" title="The latest version could not be processed">
+            It cannot be cited until it is processed successfully. The cause is recorded in Technical details.
+          </Callout>
+        </div>
+      )}
+      {!deleted && processing && (
+        <div className="mt-6">
+          <Callout tone="info" title="This source is still being processed">
+            Its passages become searchable and citable once processing finishes. This page refreshes automatically.
+          </Callout>
+        </div>
+      )}
+    </>
+  );
+}
+
+function AboutSource({ detail, current, currentVersion }: { detail: SourceDetail; current: VersionHistoryEntry | null; currentVersion: SourceVersion | null }) {
+  return (
+    <Section title="About this source">
+      <Card padding="sm">
+        <KeyValueList
+          columns={2}
+          items={[
+            { label: "Category", value: currentVersion ? sourceClass(currentVersion.source_class).label : "-" },
+            { label: "Type", value: sourceType(detail.source_type).label },
+            { label: "Confidentiality", value: currentVersion ? confidentialityLabel(currentVersion.confidentiality) : "-" },
+            { label: "Current version", value: current ? `Version ${current.version} of ${detail.versions.length}` : "-" },
+            { label: "Evidence passages", value: countText(current?.passages ?? null) },
+            { label: "Last updated", value: current?.date ? formatDate(current.date) : "-" },
+          ]}
+        />
+      </Card>
+    </Section>
+  );
+}
+
+/** One source in the Evidence Library: what it is, where the brief cites it, and its versions. */
 export function SourcePage({ ws, sourceId }: { ws: string; sourceId: string }) {
   const query = useQuery({
     queryKey: queryKeys.source(ws, sourceId),
     queryFn: ({ signal }) => getSource(ws, sourceId, signal),
     refetchInterval: (q) => (q.state.data?.versions.some((v) => isNonTerminalStatus(v.status)) ? POLL_INTERVAL_MS : false),
   });
+  useDocumentTitle(query.data?.title, "Evidence Library");
   const crumbs = [{ label: "Evidence Library", href: libraryHref(ws) }];
-
   if (query.isPending) {
     return (
       <PageContainer width="content">
@@ -149,46 +203,14 @@ export function SourcePage({ ws, sourceId }: { ws: string; sourceId: string }) {
       />
 
       <div className="mt-2 flex flex-col">
-        {detail.deleted && (
-          <div className="mt-6">
-            <Callout tone="neutral" title="This source was removed from the library">
-              Passages from it can no longer be cited. Earlier answers that cited it show it as removed.
-            </Callout>
-          </div>
-        )}
-        {!detail.deleted && currentVersion?.status === "failed" && (
-          <div className="mt-6">
-            <Callout tone="danger" title="The latest version could not be processed">
-              It cannot be cited until it is processed successfully. The cause is recorded in Technical details.
-            </Callout>
-          </div>
-        )}
-        {!detail.deleted && processing && (
-          <div className="mt-6">
-            <Callout tone="info" title="This source is still being processed">
-              Its passages become searchable and citable once processing finishes. This page refreshes automatically.
-            </Callout>
-          </div>
-        )}
+        <SourceStatusCallouts deleted={detail.deleted} failed={currentVersion?.status === "failed"} processing={!detail.deleted && processing} />
+        <AboutSource detail={detail} current={current} currentVersion={currentVersion} />
 
-        <Section title="About this source">
-          <div className="rounded-lg border border-border bg-surface p-4">
-            <KeyValueList
-              columns={2}
-              items={[
-                { label: "Category", value: currentVersion ? sourceClass(currentVersion.source_class).label : "-" },
-                { label: "Type", value: sourceType(detail.source_type).label },
-                { label: "Confidentiality", value: currentVersion ? confidentialityLabel(currentVersion.confidentiality) : "-" },
-                { label: "Current version", value: current ? `Version ${current.version} of ${detail.versions.length}` : "-" },
-                { label: "Evidence passages", value: countText(current?.passages ?? null) },
-                { label: "Indexed segments", value: countText(current?.segments ?? null) },
-                { label: "Last updated", value: current?.date ? formatDate(current.date) : "-" },
-              ]}
-            />
-          </div>
-          <p className="mt-2 text-sm text-muted">
-            An evidence passage is the unit MarketSignal cites; indexed segments are the smaller pieces used to find passages.
-          </p>
+        <Section
+          title="Cited in the analyst brief"
+          description="Passages from this source that key signals and growth opportunities rely on. Open a passage to read it in context."
+        >
+          <SourceCitations ws={ws} sourceCode={detail.source_code} />
         </Section>
 
         <Section

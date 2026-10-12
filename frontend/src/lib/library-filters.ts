@@ -164,11 +164,11 @@ export function libraryCounts(sources: readonly SourceSummary[]): LibraryCounts 
   }, counts);
 }
 
-/** Version cell text: "v2 · current", "v1 · superseded", or "-" while the first version is pending. */
+/** Version cell text: "Version 2 · Current", "Version 1 · Superseded", or "-" while the first version is pending. */
 export function versionLabel(row: Pick<LibraryRow, "version" | "isCurrent" | "bucket">): string {
   if (row.version == null) return "-";
-  if (row.bucket === "superseded" || !row.isCurrent) return `v${row.version} · superseded`;
-  return `v${row.version} · current`;
+  if (row.bucket === "superseded" || !row.isCurrent) return `Version ${row.version} · Superseded`;
+  return `Version ${row.version} · Current`;
 }
 
 export interface VersionHistoryEntry {

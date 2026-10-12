@@ -5,9 +5,10 @@ import type { DatasetColumn, DatasetInfo } from "@/lib/api/contracts";
 import { useDataset } from "@/lib/api/hooks/core";
 import { formatNumber } from "@/lib/format";
 import { sourceClass } from "@/lib/labels";
+import { Card } from "../ui/card";
 import { ErrorState, LoadingRegion } from "../ui/states";
 import { Table, type Column } from "../ui/table";
-import { humanizeKey, tableLabel } from "./analysis-format";
+import { columnUnitLabel, humanizeKey, tableLabel } from "./analysis-format";
 
 const TYPE_LABELS: Record<string, string> = {
   categorical: "Category",
@@ -17,17 +18,6 @@ const TYPE_LABELS: Record<string, string> = {
   boolean: "Yes / no",
 };
 
-const UNIT_LABELS: Record<string, string> = {
-  count: "Count",
-  percent: "Percent",
-  currency_usd: "US dollars",
-  number: "Number",
-  rating: "Rating",
-  ratio: "Ratio",
-  date: "Date",
-  text: "-",
-};
-
 function DatasetColumns({ ws, dataset }: { ws: string; dataset: string }) {
   const query = useDataset(ws, dataset);
   if (query.isPending) return <LoadingRegion label="Loading columns" lines={4} />;
@@ -35,7 +25,7 @@ function DatasetColumns({ ws, dataset }: { ws: string; dataset: string }) {
   const columns: Column<DatasetColumn>[] = [
     { key: "name", header: "Column", cell: (c) => humanizeKey(c.name) },
     { key: "type", header: "Type", cell: (c) => TYPE_LABELS[c.type] ?? humanizeKey(c.type) },
-    { key: "unit", header: "Unit", cell: (c) => UNIT_LABELS[c.unit] ?? (c.unit ? humanizeKey(c.unit) : "-") },
+    { key: "unit", header: "Unit", cell: (c) => columnUnitLabel(c.unit) },
     {
       key: "levels",
       header: "Values",
@@ -90,7 +80,7 @@ function DatasetItem({ ws, info }: { ws: string; info: DatasetInfo }) {
 export function DatasetsList({ ws, datasets, truncated }: { ws: string; datasets: readonly DatasetInfo[]; truncated: boolean }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="overflow-hidden rounded-lg border border-border bg-surface">
+      <Card padding="none" className="overflow-hidden">
         <div className="grid grid-cols-[1rem_minmax(0,1fr)_10rem_6rem_7rem] gap-3 border-b border-border bg-surface-muted px-4 py-2.5 text-sm font-medium text-secondary">
           <span />
           <span>Dataset</span>
@@ -103,7 +93,7 @@ export function DatasetsList({ ws, datasets, truncated }: { ws: string; datasets
             <DatasetItem key={d.dataset} ws={ws} info={d} />
           ))}
         </ul>
-      </div>
+      </Card>
       {truncated && <p className="text-sm text-muted">Showing the first datasets only.</p>}
     </div>
   );

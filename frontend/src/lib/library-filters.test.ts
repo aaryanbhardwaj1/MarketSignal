@@ -145,8 +145,8 @@ describe("libraryCounts", () => {
 
 describe("version labels and history", () => {
   it("labels current and superseded versions", () => {
-    expect(versionLabel({ version: 2, isCurrent: true, bucket: "ready" })).toBe("v2 · current");
-    expect(versionLabel({ version: 1, isCurrent: false, bucket: "superseded" })).toBe("v1 · superseded");
+    expect(versionLabel({ version: 2, isCurrent: true, bucket: "ready" })).toBe("Version 2 · Current");
+    expect(versionLabel({ version: 1, isCurrent: false, bucket: "superseded" })).toBe("Version 1 · Superseded");
     expect(versionLabel({ version: null, isCurrent: true, bucket: "processing" })).toBe("-");
   });
 

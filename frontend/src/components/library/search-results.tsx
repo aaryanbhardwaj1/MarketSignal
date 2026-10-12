@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { searchWorkspace } from "@/lib/api/endpoints";
 import { describeError } from "@/lib/api/errors";
 import { queryKeys } from "@/lib/api/query-keys";
@@ -10,13 +10,14 @@ import { segmentHighlight } from "@/lib/highlight";
 import { errorMessage, sourceClass, sourceType } from "@/lib/labels";
 import { filterSearchGroups, type LibraryFilters } from "@/lib/library-filters";
 import { DEFAULT_SEARCH_MODE, groupSearchResults, type SearchGroup } from "@/lib/search";
-import { formatNumber } from "@/lib/format";
+import { businessLocator, formatNumber } from "@/lib/format";
 import { useEvidenceDrawer } from "../evidence/drawer-context";
 import { Button } from "../ui/button";
 import { Callout } from "../ui/callout";
 import { DevDetails } from "../ui/disclosure";
 import { Section } from "../ui/section";
-import { EmptyState, ErrorState, Skeleton } from "../ui/states";
+import { Card } from "../ui/card";
+import { EmptyState, ErrorState, LoadingRegion, Skeleton } from "../ui/states";
 
 const RESULT_LIMIT = 20;
 
@@ -50,7 +51,7 @@ function SourceGroup({ group, onOpen }: { group: SearchGroup; onOpen: (item: Sea
   const hidden = group.items.length - PASSAGES_PER_SOURCE;
   const items = expanded ? group.items : group.items.slice(0, PASSAGES_PER_SOURCE);
   return (
-    <li className="rounded-lg border border-border bg-surface">
+    <Card as="li" padding="none">
       <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border px-4 py-2.5">
         <h3 className="min-w-0 truncate text-base font-semibold text-primary">{group.title}</h3>
         <p className="text-sm text-muted">
@@ -64,9 +65,10 @@ function SourceGroup({ group, onOpen }: { group: SearchGroup; onOpen: (item: Sea
             <button
               type="button"
               onClick={() => onOpen(item)}
+              aria-label={`Open passage: ${[group.title, businessLocator(item.locator_label)].filter(Boolean).join(", ")}`}
               className="flex w-full flex-col gap-1 px-4 py-3 text-left hover:bg-surface-muted/60"
             >
-              <span className="text-sm font-medium text-secondary">{item.locator_label}</span>
+              <span className="text-sm font-medium text-secondary">{businessLocator(item.locator_label)}</span>
               <Snippet item={item} />
             </button>
           </li>
@@ -79,20 +81,30 @@ function SourceGroup({ group, onOpen }: { group: SearchGroup; onOpen: (item: Sea
           </Button>
         </div>
       )}
-    </li>
+    </Card>
   );
 }
 
 function SearchSkeleton() {
   return (
-    <div role="status" aria-label="Searching the library" className="flex flex-col gap-3">
-      {Array.from({ length: 3 }, (_, i) => (
-        <div key={i} className="rounded-lg border border-border bg-surface p-4">
-          <Skeleton lines={3} />
-        </div>
-      ))}
-    </div>
+    <LoadingRegion label="Searching the library">
+      <div className="flex flex-col gap-3">
+        {Array.from({ length: 3 }, (_, i) => (
+          <Card key={i} padding="sm">
+            <Skeleton lines={3} />
+          </Card>
+        ))}
+      </div>
+    </LoadingRegion>
   );
+}
+
+/** One plain sentence describing the search state, for the page's screen-reader status region. */
+export function searchSummary(state: "pending" | "error" | "done", passages: number, sources: number): string {
+  if (state === "pending") return "Searching the library";
+  if (state === "error") return "Search could not be completed";
+  if (passages === 0) return "No passages match this search";
+  return `${formatNumber(passages)} ${passages === 1 ? "passage" : "passages"} from ${formatNumber(sources)} ${sources === 1 ? "source" : "sources"}`;
 }
 
 /** Library search: passages grouped by source, with snippet and location; no ranking scores. */
@@ -102,12 +114,15 @@ export function LibrarySearchResults({
   filters,
   onClearSearch,
   onClearFilters,
+  onSummary,
 }: {
   ws: string;
   q: string;
   filters: LibraryFilters;
   onClearSearch: () => void;
   onClearFilters?: () => void;
+  /** Receives a plain sentence ("12 passages from 4 sources") whenever the result changes. */
+  onSummary?: (text: string) => void;
 }) {
   const drawer = useEvidenceDrawer();
   const classes = asSourceClasses(filters.cls);
@@ -125,6 +140,10 @@ export function LibrarySearchResults({
     });
   const groups = query.data ? filterSearchGroups(groupSearchResults(query.data.items), filters) : [];
   const passageCount = groups.reduce((n, g) => n + g.items.length, 0);
+  const summary = searchSummary(query.isPending ? "pending" : query.isError ? "error" : "done", passageCount, groups.length);
+  useEffect(() => {
+    onSummary?.(summary);
+  }, [summary, onSummary]);
   const clearSearch = (
     <Button variant="ghost" size="sm" onClick={onClearSearch}>
       Clear search

@@ -5,8 +5,8 @@
  * this turns it into "Total net sales (USD) by month" plus "Channel: Social Shop". Raw operation
  * names and metric keys never reach the business page.
  */
-import type { AnalyticsResultSummary } from "@/lib/api/contracts";
-import { humanizeKey, humanizeValue } from "./analysis-format";
+import type { AnalyticsResultSummary, DatasetInfo } from "@/lib/api/contracts";
+import { humanizeKey, humanizeValue, tableLabel } from "./analysis-format";
 
 const FN_WORDS: Record<string, string> = {
   sum: "Total",
@@ -57,15 +57,42 @@ function lowerFirst(text: string): string {
   return /^[A-Z][a-z]*(\s|$|\()/.test(text) ? `${text.charAt(0).toLowerCase()}${text.slice(1)}` : text;
 }
 
-/** `channel eq Social Shop` -> "Channel: Social Shop"; `month between 2026-08-01, 2026-08-31` -> "Month: 2026-08-01 to 2026-08-31". */
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+/** "2026-08-01" -> "August 1, 2026"; anything else goes through `humanizeValue`. */
+function humanizeDay(value: string): string {
+  const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!day) return humanizeValue(value);
+  const month = MONTH_NAMES[Number(day[2]) - 1];
+  return month ? `${month} ${Number(day[3])}, ${day[1]}` : value;
+}
+
+/** A first-to-last-day range within one month reads as the month: "2026-08-01".."2026-08-31" -> "August 2026". */
+function wholeMonth(from: string, to: string): string | null {
+  const a = /^(\d{4})-(\d{2})-01$/.exec(from);
+  const b = /^(\d{4})-(\d{2})-(\d{2})$/.exec(to);
+  if (!a || !b || a[1] !== b[1] || a[2] !== b[2]) return null;
+  const lastDay = new Date(Date.UTC(Number(a[1]), Number(a[2]), 0)).getUTCDate();
+  return Number(b[3]) === lastDay ? humanizeValue(`${a[1]}-${a[2]}`) : null;
+}
+
+/** Record-identifier filters (`record_id`, `sku_id`, `id`) are technical; business pages leave them out. */
+export function isIdentifierFilter(clause: string): boolean {
+  const column = clause.trim().split(/\s+/)[0] ?? "";
+  return /(^|_)id$/i.test(column);
+}
+
+/** `channel eq Social Shop` -> "Channel: Social Shop"; `month between 2026-08-01, 2026-08-31` -> "Month: August 2026". */
 export function describeFilterClause(clause: string): string {
   const nullCheck = /^(\S+)\s+(is_null|not_null)$/.exec(clause.trim());
   if (nullCheck) return `${humanizeKey(nullCheck[1])}: ${nullCheck[2] === "is_null" ? "not recorded" : "recorded"}`;
   const m = /^(\S+)\s+(eq|in|ne|not_in|gt|gte|lt|lte|between|contains)\s+(.*)$/.exec(clause.trim());
   if (!m) return clause.trim();
   const [, column, op, rest] = m;
-  const values = rest.split(/,\s*/).map((v) => humanizeValue(v.trim()));
-  const text = op === "between" && values.length === 2 ? `${values[0]} to ${values[1]}` : values.join(", ");
+  const raw = rest.split(/,\s*/).map((v) => v.trim());
+  const values = raw.map(humanizeDay);
+  const month = op === "between" && raw.length === 2 ? wholeMonth(raw[0], raw[1]) : null;
+  const text = month ?? (op === "between" && values.length === 2 ? `${values[0]} to ${values[1]}` : values.join(", "));
   return `${humanizeKey(column)}: ${OPS[op] ?? ""}${text}`;
 }
 
@@ -109,9 +136,14 @@ export function describeResult(result: Pick<AnalyticsResultSummary, "tool" | "su
   for (const part of parts.slice(1)) {
     const rows = /^(\d+) of (\d+) rows$/.exec(part);
     if (rows) {
-      rowsMatched = `${rows[1]} of ${rows[2]} rows`;
+      rowsMatched = `${rows[1]} of ${rows[2]} records`;
     } else if (part.startsWith("filters:")) {
-      filters = part.slice("filters:".length).split(";").map(describeFilterClause).filter(Boolean);
+      filters = part
+        .slice("filters:".length)
+        .split(";")
+        .filter((c) => c.trim() && !isIdentifierFilter(c))
+        .map(describeFilterClause)
+        .filter(Boolean);
     } else if (/^by \w+: A=/.test(part)) {
       const cmp = /^by \w+: A=(.+) vs B=(.+)$/.exec(part);
       comparison = cmp ? `${cmp[1].trim()} vs ${cmp[2].trim()}` : null;
@@ -132,4 +164,36 @@ function headlineMetrics(keys: readonly string[]): string[] {
   const unique = [...new Set(keys.map((k) => k.trim()))];
   const main = unique.filter((k) => !k.startsWith("difference(") && k !== "count(*)");
   return main.length > 0 ? main : unique.filter((k) => !k.startsWith("difference("));
+}
+
+/**
+ * The business title of a saved result, shared by Overview and Analytics so both name it the same
+ * way: the humanized measure ("Total net sales (USD) by month"), or for record listings the table
+ * they came from ("Market sizing records").
+ */
+export function resultTitle(
+  result: Pick<AnalyticsResultSummary, "tool" | "summary" | "metrics">,
+  dataset: Pick<DatasetInfo, "table"> | undefined,
+): string {
+  const d = describeResult(result);
+  if (result.tool === "filter_rows" && dataset && d.title === KIND_TITLES.filter_rows) return `${tableLabel(dataset.table)} records`;
+  return d.title;
+}
+
+/**
+ * Collapses repeats of the same result within one conversation (research often recomputes a
+ * figure while drafting), keeping the most recent. Results outside a conversation are kept as is.
+ */
+export function collapseRepeats<T extends Pick<AnalyticsResultSummary, "result_id" | "conversation_id" | "tool" | "summary" | "metrics" | "dataset">>(
+  results: readonly T[],
+): T[] {
+  const seen = new Set<string>();
+  return results.filter((r) => {
+    if (!r.conversation_id) return true;
+    const d = describeResult(r);
+    const key = [r.conversation_id, r.dataset, d.title, ...d.filters].join("|");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }

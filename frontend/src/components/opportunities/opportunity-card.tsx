@@ -5,6 +5,7 @@ import { workspaceBase } from "@/components/shell/nav";
 import type { Opportunity } from "@/lib/api/contracts";
 import { cx } from "@/lib/cx";
 import { evidenceBalance, numbersAllowed, plural, topMetric, type AnalysisIndex } from "@/lib/insights-view";
+import { Card } from "@/components/ui/card";
 import { ItemIntegrityIndicator, MetricFigure, OpportunityStatusBadge } from "./brief-parts";
 
 export function opportunityHref(ws: string, id: string): string {
@@ -41,7 +42,35 @@ export function EvidenceBalanceLine({ opportunity, compact = false }: { opportun
   );
 }
 
-/** One opportunity on the list page: status first, then the hypothesis and its evidence balance. */
+/**
+ * An opportunity's title with its status badge beside it: the one placement used on Overview,
+ * the list and (as the page title) the detail page.
+ */
+export function OpportunityTitle({
+  level,
+  href,
+  title,
+  status,
+}: {
+  level: 2 | 3;
+  href: string;
+  title: string;
+  status: Opportunity["status"];
+}) {
+  const Heading = level === 2 ? "h2" : "h3";
+  return (
+    <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+      <Heading className={cx("min-w-0 font-semibold text-primary", level === 2 ? "text-md" : "text-base")}>
+        <Link href={href} className="rounded-sm hover:text-accent-text hover:underline">
+          {title}
+        </Link>
+      </Heading>
+      <OpportunityStatusBadge status={status} />
+    </div>
+  );
+}
+
+/** One opportunity on the list page: title and status, then the hypothesis and its evidence balance. */
 export function OpportunityCard({
   ws,
   opportunity,
@@ -54,20 +83,15 @@ export function OpportunityCard({
   const metric = topMetric(opportunity, analyses);
   const href = opportunityHref(ws, opportunity.id);
   return (
-    <article className="flex flex-col rounded-lg border border-border bg-surface p-5">
-      <h2 className="text-md font-semibold text-primary">
-        <Link href={href} className="rounded-sm hover:underline">
-          {opportunity.title}
-        </Link>
-      </h2>
+    <Card as="article" className="flex flex-col">
+      <OpportunityTitle level={2} href={href} title={opportunity.title} status={opportunity.status} />
       <p className="mt-1.5 text-base text-secondary">{opportunity.thesis}</p>
-      <div className="mt-3 flex flex-col gap-1.5 rounded-md bg-surface-muted px-3 py-2.5">
-        <div className="flex flex-wrap items-center gap-2">
-          <OpportunityStatusBadge status={opportunity.status} />
-          {opportunity.integrity !== "verified" && <ItemIntegrityIndicator value={opportunity.integrity} />}
+      <p className="mt-2 text-sm text-muted">{opportunity.status_rationale}</p>
+      {opportunity.integrity !== "verified" && (
+        <div className="mt-2">
+          <ItemIntegrityIndicator value={opportunity.integrity} />
         </div>
-        <p className="text-sm text-secondary">{opportunity.status_rationale}</p>
-      </div>
+      )}
       <div className="mt-4">
         <EvidenceBalanceLine opportunity={opportunity} />
       </div>
@@ -89,6 +113,6 @@ export function OpportunityCard({
           Review the evidence
         </Link>
       </div>
-    </article>
+    </Card>
   );
 }

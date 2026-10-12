@@ -3,7 +3,8 @@
  * labels values the endpoint returned; nothing computes a new figure.
  */
 import type { Analysis, AnalysisFilter, AnalysisRow, AnalysisUnit } from "@/lib/api/contracts";
-import { formatNumber, formatUsd } from "@/lib/format";
+import { formatNumber, formatPercent, formatUsd } from "@/lib/format";
+import { aggregationFn, basisKind, describeBasis } from "@/lib/insights-view";
 
 const WORDS: Record<string, string> = {
   genz: "Gen Z",
@@ -81,13 +82,29 @@ export function describeFilter(filter: AnalysisFilter): string {
   return `${label}: ${prefix ? `${prefix} ` : ""}${joinOr(values)}`;
 }
 
+/** One wording per unit across Analytics (analysis value columns and dataset column units). */
 export const UNIT_LABELS: Record<AnalysisUnit, string> = {
-  percent: "Share (%)",
+  percent: "Percent",
   count: "Count",
-  usd: "Amount (USD)",
+  usd: "US dollars",
   score: "Average score",
   ratio: "Ratio",
 };
+
+const COLUMN_UNIT_LABELS: Record<string, string> = {
+  ...UNIT_LABELS,
+  currency_usd: UNIT_LABELS.usd,
+  number: "Number",
+  rating: "Rating",
+  date: "Date",
+  text: "-",
+};
+
+/** Unit of a dataset column, in the same words as analysis units ("Percent", "US dollars"). */
+export function columnUnitLabel(unit: string | null | undefined): string {
+  if (!unit) return "-";
+  return COLUMN_UNIT_LABELS[unit] ?? humanizeKey(unit);
+}
 
 export function unitLabel(unit: AnalysisUnit): string {
   return UNIT_LABELS[unit] ?? sentenceCase(unit);
@@ -126,16 +143,59 @@ export function listingRowLabel(row: AnalysisRow, columns: readonly string[]): s
     .join(" · ");
 }
 
-/** Base behind one row: "108 of 400" for shares, "7 of 30 return records" or "n = 400" otherwise. */
-export function rowBase(row: AnalysisRow, analysis: Pick<Analysis, "denominator">): string | null {
-  if (row.numerator != null && row.denominator != null) {
-    return `${formatNumber(row.numerator)} of ${formatNumber(row.denominator)}`;
-  }
+/**
+ * What a row's base counts when the endpoint gives no label: survey groupings (cohort, segment)
+ * count respondents; anything else counts records.
+ */
+export function baseNoun(analysis: Pick<Analysis, "denominator" | "group_by">): string {
+  if (analysis.denominator) return analysis.denominator.label;
+  return analysis.group_by.some((k) => k === "cohort" || k === "segment") ? "respondents" : "records";
+}
+
+/** True when a count row counts records (its base is itself), so it can be read as a share of the population. */
+function isRecordCount(row: AnalysisRow, analysis: Pick<Analysis, "unit" | "spec">): boolean {
+  if (analysis.unit !== "count") return false;
+  const fn = aggregationFn(analysis);
+  if (fn) return fn === "count";
+  return row.denominator != null && row.denominator === row.value;
+}
+
+/**
+ * Base behind one row, in the shared wording (see `describeBasis`):
+ * "108 of 400 respondents" (shares), "of 400 Gen Z respondents" (record counts),
+ * "Total across 7 of 30 return records" (sums), "Average of 96 of 600 respondents" (means).
+ */
+export function rowBase(
+  row: AnalysisRow,
+  analysis: Pick<Analysis, "denominator" | "unit" | "spec" | "group_by">,
+): string | null {
   if (row.denominator == null) return null;
-  if (analysis.denominator) {
-    return `${formatNumber(row.denominator)} of ${formatNumber(analysis.denominator.value)} ${analysis.denominator.label}`;
+  const noun = baseNoun(analysis);
+  if (row.numerator != null) return `${formatNumber(row.numerator)} of ${formatNumber(row.denominator)} ${noun}`;
+  if (isRecordCount(row, analysis)) {
+    const share = recordShare(row, analysis);
+    return share && analysis.denominator ? `${share} of ${formatNumber(analysis.denominator.value)} ${noun}` : null;
   }
-  return `n = ${formatNumber(row.denominator)}`;
+  const kind = basisKind(analysis.unit, aggregationFn(analysis));
+  return describeBasis(kind, row.denominator, noun, analysis.denominator?.value ?? null)?.text ?? null;
+}
+
+/**
+ * The share a record count represents of the analysis population (108 of 400 -> "27.0%"), or null
+ * when the analysis has no population base. Reshapes two endpoint values; no new data.
+ */
+export function recordShare(row: AnalysisRow, analysis: Pick<Analysis, "denominator" | "unit" | "spec">): string | null {
+  if (!analysis.denominator || analysis.denominator.value <= 0 || row.value == null) return null;
+  if (!isRecordCount(row, analysis)) return null;
+  return formatPercent(row.value / analysis.denominator.value, { digits: 1 });
+}
+
+/** Card footer: the population the analysis covers, in plain words. */
+export function coverageLine(analysis: Analysis): string | null {
+  const noun = baseNoun(analysis);
+  if (analysis.denominator) return `Based on ${formatNumber(analysis.denominator.value)} ${noun}`;
+  const matched = analysis.provenance.rows_matched;
+  return matched != null ? `Based on ${formatNumber(matched)} ${noun}` : null;
 }
 
 /** A listing cell, formatted by its column suffix; text is shown as given. */
@@ -166,7 +226,7 @@ export function analysisHeadline(analysis: Analysis): Headline | null {
     return {
       label: analysis.title,
       display: analysis.display,
-      context: analysis.denominator ? `${formatNumber(analysis.denominator.value)} ${analysis.denominator.label}` : null,
+      context: analysis.denominator ? `Based on ${formatNumber(analysis.denominator.value)} ${analysis.denominator.label}` : null,
     };
   }
   const first = analysis.rows[0];
@@ -175,6 +235,9 @@ export function analysisHeadline(analysis: Analysis): Headline | null {
     analysis.op === "filter_rows" && analysis.columns
       ? listingRowLabel(first, analysis.columns)
       : rowLabel(first, analysis.group_by);
+  const share = recordShare(first, analysis);
+  // A count of respondents leads with its share of the population; the count becomes the base.
+  if (share) return { label, display: share, context: `${first.display} of ${formatNumber(analysis.denominator?.value ?? 0)} ${baseNoun(analysis)}` };
   return { label, display: first.display, context: rowBase(first, analysis) };
 }
 

@@ -3,6 +3,7 @@
 import { workspaceBase } from "@/components/shell/nav";
 import { DriftCallout, NoBriefState, useOpenEvidence } from "@/components/opportunities/brief-parts";
 import { LinkButton } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
@@ -35,9 +36,9 @@ function CardGridSkeleton({ label, count, columns }: { label: string; count: num
     <LoadingRegion label={label}>
       <div className={`grid gap-4 ${columns}`}>
         {Array.from({ length: count }, (_, i) => (
-          <div key={i} className="rounded-lg border border-border bg-surface p-4">
+          <Card key={i} padding="sm">
             <Skeleton lines={3} />
-          </div>
+          </Card>
         ))}
       </div>
     </LoadingRegion>
@@ -49,7 +50,7 @@ function SummarySection({ ws }: { ws: string }) {
   return (
     <Section title="Workspace summary" description="What this workspace holds today.">
       {overview.isPending ? (
-        <CardGridSkeleton label="Loading workspace summary" count={5} columns="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" />
+        <CardGridSkeleton label="Loading workspace summary" count={5} columns="sm:grid-cols-2 lg:grid-cols-3 min-[1440px]:grid-cols-5" />
       ) : overview.isError ? (
         <ErrorState
           title="Workspace summary could not be loaded"
@@ -74,7 +75,7 @@ function BriefSections({ ws, brief, analyses }: { ws: string; brief: InsightsBri
       >
         <div className="flex flex-col gap-4">
           <DriftCallout brief={brief} />
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 min-[1440px]:grid-cols-3">
             {brief.signals.map((s) => (
               <SignalCard key={s.id} signal={s} analyses={analyses} onOpen={onOpen} />
             ))}
@@ -104,7 +105,7 @@ function Brief({ ws }: { ws: string }) {
   if (brief.isPending) {
     return (
       <Section title="Key signals">
-        <CardGridSkeleton label="Loading key signals" count={6} columns="md:grid-cols-2 xl:grid-cols-3" />
+        <CardGridSkeleton label="Loading key signals" count={6} columns="md:grid-cols-2 min-[1440px]:grid-cols-3" />
       </Section>
     );
   }
@@ -138,7 +139,7 @@ export function OverviewPage({ ws }: { ws: string }) {
       <div className="mt-6">
         <SummarySection ws={ws} />
         <Brief ws={ws} />
-        <Section title="Recent activity" description="Saved research and figures computed while answering questions.">
+        <Section title="Recent activity" description="Saved research and the results computed while answering it.">
           <RecentActivity ws={ws} />
         </Section>
       </div>

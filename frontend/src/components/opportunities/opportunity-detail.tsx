@@ -3,6 +3,7 @@
 import { workspaceBase } from "@/components/shell/nav";
 import { LinkButton } from "@/components/ui/button";
 import { Callout } from "@/components/ui/callout";
+import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { ResultPanel } from "@/components/ui/result-panel";
@@ -14,6 +15,7 @@ import { formatNumber } from "@/lib/format";
 import { indexAnalyses, metricViews, numbersAllowed, type AnalysisIndex, type MetricView } from "@/lib/insights-view";
 import { BriefMeta, DriftCallout, ItemIntegrityIndicator, MetricFigure, NoBriefState, OpportunityStatusBadge, useOpenEvidence } from "./brief-parts";
 import { EvidenceItem } from "./evidence-item";
+import { useDocumentTitle } from "@/components/overview/use-document-title";
 
 function EvidenceColumn({
   title,
@@ -52,9 +54,9 @@ function QuantPanel({ metric }: { metric: MetricView }) {
   const denominator = !metric.visible
     ? undefined
     : metric.base
-      ? { label: "Base", value: metric.base }
+      ? { label: metric.baseLabel, value: metric.base }
       : metric.provenance.rowsMatched != null
-        ? { label: "Dataset rows in view", value: formatNumber(metric.provenance.rowsMatched) }
+        ? { label: "Based on", value: `${formatNumber(metric.provenance.rowsMatched)} records` }
         : undefined;
   return (
     <ResultPanel
@@ -94,14 +96,14 @@ export function OpportunityDetailView({
     <>
       <PageHeader
         breadcrumb={[{ label: "Growth Opportunities", href: `${workspaceBase(ws)}/opportunities` }]}
-        title={opportunity.title}
-        description={opportunity.thesis}
-        meta={
-          <>
+        title={
+          <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span>{opportunity.title}</span>
             <OpportunityStatusBadge status={opportunity.status} size="md" />
-            <span className="text-secondary">{opportunity.status_rationale}</span>
-          </>
+          </span>
         }
+        description={opportunity.thesis}
+        meta={<span className="text-secondary">{opportunity.status_rationale}</span>}
       />
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm text-muted">
         <ItemIntegrityIndicator value={opportunity.integrity} />
@@ -154,7 +156,8 @@ export function OpportunityDetailView({
         )}
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <section aria-labelledby="gaps-heading" className="rounded-lg border border-border bg-surface p-5">
+          <Card as="div">
+            <section aria-labelledby="gaps-heading">
             <h2 id="gaps-heading" className="text-md font-semibold text-primary">
               Evidence gaps
             </h2>
@@ -167,13 +170,16 @@ export function OpportunityDetailView({
                 ))}
               </ul>
             )}
-          </section>
-          <section aria-labelledby="next-heading" className="rounded-lg border border-border bg-surface p-5">
+            </section>
+          </Card>
+          <Card as="div">
+            <section aria-labelledby="next-heading">
             <h2 id="next-heading" className="text-md font-semibold text-primary">
               Next research step
             </h2>
             <p className="mt-2 text-base text-primary">{opportunity.next_step}</p>
-          </section>
+            </section>
+          </Card>
         </div>
 
         {opportunity.caveats.length > 0 && (
@@ -208,6 +214,7 @@ export function OpportunityDetail({ ws, opportunityId }: { ws: string; opportuni
   const brief = useInsights(ws);
   const analyses = useAnalyses(ws);
   const onOpen = useOpenEvidence() ?? undefined;
+  useDocumentTitle(brief.data?.opportunities.find((o) => o.id === opportunityId)?.title, "Growth Opportunities");
   const back = (
     <LinkButton href={`${workspaceBase(ws)}/opportunities`}>Back to Growth Opportunities</LinkButton>
   );

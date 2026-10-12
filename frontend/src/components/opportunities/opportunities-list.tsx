@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
+import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { ErrorState, LoadingRegion, Skeleton } from "@/components/ui/states";
@@ -22,7 +23,7 @@ export function WorkflowStrip() {
               →
             </li>
           )}
-          <li className="rounded-sm border border-border bg-surface px-2 py-0.5">{step}</li>
+          <li>{step}</li>
         </Fragment>
       ))}
     </ol>
@@ -34,9 +35,9 @@ function CardsSkeleton() {
     <LoadingRegion label="Loading growth opportunities">
       <div className="grid gap-4 lg:grid-cols-2">
         {Array.from({ length: 4 }, (_, i) => (
-          <div key={i} className="rounded-lg border border-border bg-surface p-5">
+          <Card key={i}>
             <Skeleton lines={5} />
-          </div>
+          </Card>
         ))}
       </div>
     </LoadingRegion>

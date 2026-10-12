@@ -19,6 +19,7 @@ import {
   unitLabel,
 } from "./analysis-format";
 import type { AnalysisRow } from "@/lib/api/contracts";
+import { Card } from "../ui/card";
 
 interface IndexedRow {
   index: number;
@@ -104,9 +105,9 @@ export function AnalysisDetailView({ analysis }: { analysis: Analysis }) {
   return (
     <div className="flex flex-col">
       <Section title="What was measured">
-        <div className="rounded-lg border border-border bg-surface p-4">
+        <Card padding="sm">
           <KeyValueList items={scope} columns={2} />
-        </div>
+        </Card>
       </Section>
 
       <Section
@@ -133,7 +134,7 @@ export function AnalysisDetailView({ analysis }: { analysis: Analysis }) {
       </Section>
 
       <Section title="Provenance">
-        <div className="rounded-lg border border-border bg-surface p-4">
+        <Card padding="sm">
           <KeyValueList
             columns={2}
             items={[
@@ -144,7 +145,7 @@ export function AnalysisDetailView({ analysis }: { analysis: Analysis }) {
               { label: "Recomputed at", value: formatDateTime(prov.computed_at) },
             ]}
           />
-        </div>
+        </Card>
       </Section>
 
       <Section title="Caveats">

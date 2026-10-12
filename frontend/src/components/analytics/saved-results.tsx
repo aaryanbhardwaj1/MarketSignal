@@ -11,7 +11,7 @@ import { LoadMore } from "../ui/load-more";
 import { Section } from "../ui/section";
 import { Table, type Column } from "../ui/table";
 import { tableLabel } from "./analysis-format";
-import { describeResult } from "./result-summary";
+import { collapseRepeats, describeResult, resultTitle } from "./result-summary";
 
 const FIRST_ROWS = 10;
 const MORE_ROWS = 20;
@@ -28,7 +28,7 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
   const drawer = useEvidenceDrawer();
   const titles = useMemo(() => new Map(datasets.map((d) => [d.dataset, d])), [datasets]);
   const [visible, setVisible] = useState(FIRST_ROWS);
-  const loaded = query.data?.pages.flatMap((p) => p.items) ?? [];
+  const loaded = collapseRepeats(query.data?.pages.flatMap((p) => p.items) ?? []);
   const rows = loaded.slice(0, visible);
   const hasMore = loaded.length > visible || Boolean(query.hasNextPage);
   const showMore = () => {
@@ -42,8 +42,7 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
       header: "Result",
       cell: (r) => {
         const d = describeResult(r);
-        const info = titles.get(r.dataset);
-        const title = r.tool === "filter_rows" && info && d.title === "Matching records" ? `${tableLabel(info.table)} records` : d.title;
+        const title = resultTitle(r, titles.get(r.dataset));
         return (
           <div className="min-w-0">
             <p className="font-medium text-primary">{title}</p>
@@ -70,7 +69,7 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
     },
     {
       key: "rows",
-      header: "Rows matched",
+      header: "Records used",
       align: "right",
       width: "9rem",
       cell: (r) => <span className="whitespace-nowrap tabular-nums text-secondary">{describeResult(r).rowsMatched ?? "-"}</span>,
@@ -98,7 +97,8 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
 
   return (
     <Section
-      title="From saved research"
+      id="saved-results"
+      title="Saved results"
       description="Figures computed while answering research questions, saved with the conversation they came from. Select a row to see the full result."
     >
       {query.isPending ? (

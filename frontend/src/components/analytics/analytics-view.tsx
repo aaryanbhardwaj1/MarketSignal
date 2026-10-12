@@ -6,13 +6,14 @@ import { useAnalyses } from "@/lib/api/hooks/insights";
 import { describeError } from "@/lib/api/errors";
 import { errorMessage } from "@/lib/labels";
 import { formatDateTime, formatNumber } from "@/lib/format";
+import { Card } from "../ui/card";
 import { FilterBar, FilterSelect } from "../ui/filter-bar";
 import { PageContainer } from "../ui/page-container";
 import { PageHeader } from "../ui/page-header";
 import { Section } from "../ui/section";
 import { EmptyState, ErrorState, LoadingRegion, Skeleton } from "../ui/states";
 import { AnalysisCard } from "./analysis-card";
-import { categoryLabel } from "./analysis-format";
+import { categoryLabel, tableLabel } from "./analysis-format";
 import { DatasetsList } from "./datasets-list";
 import { SavedResults } from "./saved-results";
 
@@ -21,9 +22,9 @@ function CardsSkeleton() {
     <LoadingRegion label="Loading analyses">
       <ul className="grid gap-3 md:grid-cols-2">
         {Array.from({ length: 4 }, (_, i) => (
-          <li key={i} className="rounded-lg border border-border bg-surface p-4">
+          <Card key={i} as="li" padding="sm">
             <Skeleton lines={4} />
-          </li>
+          </Card>
         ))}
       </ul>
     </LoadingRegion>
@@ -46,7 +47,8 @@ export function AnalyticsView({ ws }: { ws: string }) {
   const datasetList = useMemo(() => datasets.data?.datasets ?? [], [datasets.data]);
   const datasetLabel = (id: string, title: string): string => {
     const table = datasetList.find((d) => d.dataset === id)?.table;
-    return table && table !== title ? `${title} · ${table}` : title;
+    const plain = table ? tableLabel(table) : null;
+    return plain && plain.toLowerCase() !== title.toLowerCase() ? `${title} · ${plain}` : title;
   };
 
   return (
@@ -111,7 +113,7 @@ export function AnalyticsView({ ws }: { ws: string }) {
 
         <SavedResults ws={ws} datasets={datasetList} />
 
-        <Section title="Datasets" description="Structured tables MarketSignal can compute from. Expand a dataset to see its columns.">
+        <Section id="datasets" title="Datasets" description="Structured tables MarketSignal can compute from. Expand a dataset to see its columns.">
           {datasets.isPending ? (
             <LoadingRegion label="Loading datasets" lines={5} />
           ) : datasets.isError ? (

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import analysesFixture from "@/lib/api/__fixtures__/insights-analyses.json";
 import briefFixture from "@/lib/api/__fixtures__/insights-brief.json";
 import type { AnalysesResponse, EvidenceRef, InsightsBrief, Opportunity } from "@/lib/api/contracts";
+import { businessLocator } from "@/lib/format";
 import { indexAnalyses } from "@/lib/insights-view";
 import { OpportunityCard } from "./opportunity-card";
 import { OpportunityDetailView } from "./opportunity-detail";
@@ -32,7 +33,7 @@ describe("OpportunityDetailView", () => {
     expect(html).toContain(`Supporting evidence <span class="font-normal tabular-nums text-muted">(${o.supporting.length})`);
     expect(html).toContain(`Contradicting evidence <span class="font-normal tabular-nums text-muted">(${o.contradicting.length})`);
     for (const ref of [...o.supporting, ...o.contradicting]) {
-      expect(html).toContain(esc(ref.locator_label));
+      expect(html).toContain(esc(businessLocator(ref.locator_label)));
     }
   });
 

@@ -54,6 +54,21 @@ export function classBreakdown(overview: Pick<WorkspaceOverview, "sources_by_cla
     .map(([code, count]) => ({ code, label: sourceClass(code).label, count }));
 }
 
+/**
+ * Research runs, split into those that finished normally and those that returned evidence only
+ * (live model unavailable), so the headline count does not overstate answered research.
+ */
+export function researchRunBreakdown(overview: Pick<WorkspaceOverview, "runs">): { total: number; detail: string | null } {
+  const states = overview.runs.by_termination_state;
+  const completed = states.completed ?? 0;
+  const evidenceOnly = states.generation_unavailable ?? 0;
+  const parts = [
+    completed > 0 ? `${formatNumber(completed)} completed` : null,
+    evidenceOnly > 0 ? `${formatNumber(evidenceOnly)} evidence only` : null,
+  ].filter((p): p is string => p != null);
+  return { total: overview.runs.total, detail: parts.length > 0 ? parts.join(" · ") : null };
+}
+
 // ── metrics ────────────────────────────────────────────────────────────────────────────────
 
 export type AnalysisIndex = ReadonlyMap<string, Analysis>;
@@ -106,8 +121,98 @@ export function resolveDenominator(metric: MetricRef, analysis: Analysis | undef
   return [...bases][0] ?? null;
 }
 
-function cleanBaseLabel(label: string): string {
-  return label.replace(/^of\s+/i, "").trim();
+/** Copy-level cleanup of a stored base label: "of Gen Z respondents surveyed" -> "Gen Z respondents surveyed", "rows" -> "records". */
+export function cleanBaseLabel(label: string): string {
+  return label
+    .replace(/^of\s+/i, "")
+    .replace(/\brows\b/gi, "records")
+    .replace(/\brow\b/gi, "record")
+    .trim();
+}
+
+/**
+ * How a figure relates to its base, which decides the one wording used for it everywhere:
+ * - share: a percentage of a population ("27.0% of 400 Gen Z respondents");
+ * - records: a count of records out of a population ("108 of 400 Gen Z respondents");
+ * - total: a quantity summed over records ("Total across 7 of 30 return records");
+ * - average: a mean over records ("Average of 400 Gen Z respondents");
+ * - derived: computed from other figures ("Based on 400 Gen Z respondents").
+ */
+export type BasisKind = "share" | "records" | "total" | "average" | "derived";
+
+export interface Basis {
+  /** Short label for labelled layouts ("Out of", "Summed across"). */
+  label: string;
+  /** The base alone ("400 Gen Z respondents", "7 of 30 return records"). */
+  value: string;
+  /** One line for compact layouts ("of 400 Gen Z respondents", "Total across 30 return records"). */
+  text: string;
+}
+
+const BASIS_WORDS: Record<BasisKind, { label: string; lead: string }> = {
+  share: { label: "Out of", lead: "of" },
+  records: { label: "Out of", lead: "of" },
+  total: { label: "Summed across", lead: "Total across" },
+  average: { label: "Averaged across", lead: "Average of" },
+  derived: { label: "Based on", lead: "Based on" },
+};
+
+/**
+ * The basis of a figure in plain words. `count` is the base size (null when unknown), `noun` what
+ * it counts ("Gen Z respondents"), and `outOf` an enclosing total ("7 of 30 return records").
+ * Returns null when there is nothing to say; never guesses a count.
+ */
+export function describeBasis(
+  kind: BasisKind,
+  count: number | null,
+  noun: string | null,
+  outOf: number | null = null,
+): Basis | null {
+  const words = BASIS_WORDS[kind];
+  const what = noun ? cleanBaseLabel(noun) : "records";
+  if (count == null) {
+    if (!noun) return null;
+    return { label: "Based on", value: what, text: `Based on ${what}` };
+  }
+  const value =
+    outOf != null && outOf !== count
+      ? `${formatNumber(count)} of ${formatNumber(outOf)} ${what}`
+      : `${formatNumber(count)} ${what}`;
+  return { label: words.label, value, text: `${words.lead} ${value}` };
+}
+
+/** The aggregation the analysis spec ran ("sum", "mean", "count"), read defensively; null if unknown. */
+export function aggregationFn(analysis: Pick<Analysis, "spec"> | undefined): string | null {
+  const spec = analysis?.spec;
+  const first = Array.isArray(spec) ? (spec[0] as { spec?: unknown } | undefined)?.spec : spec;
+  const metrics = (first as { metrics?: Array<{ fn?: unknown }> } | null | undefined)?.metrics;
+  const fn = Array.isArray(metrics) ? metrics[0]?.fn : undefined;
+  return typeof fn === "string" ? fn : null;
+}
+
+const FN_KINDS: Record<string, BasisKind> = {
+  sum: "total",
+  mean: "average",
+  avg: "average",
+  median: "average",
+  count: "records",
+  share: "share",
+};
+
+/** The basis kind of a figure from its unit, the analysis's aggregation and whether it counts records. */
+export function basisKind(
+  unit: Analysis["unit"],
+  fn: string | null,
+  options: { recordCount?: boolean; derived?: boolean } = {},
+): BasisKind {
+  if (options.derived) return "derived";
+  if (unit === "percent") return "share";
+  if (unit === "ratio") return "derived";
+  const byFn = fn ? FN_KINDS[fn] : undefined;
+  if (byFn) return byFn;
+  if (unit === "count") return options.recordCount ? "records" : "total";
+  if (unit === "score") return "average";
+  return "total";
 }
 
 /**
@@ -116,25 +221,17 @@ function cleanBaseLabel(label: string): string {
  */
 export function countsRecords(metric: MetricRef, analysis: Analysis | undefined): boolean {
   if (!analysis || metric.unit !== "count" || metric.value == null) return false;
+  if (aggregationFn(analysis) === "count") return true;
   return analysis.rows.some((row) => row.value === metric.value && row.denominator === row.value);
 }
 
-/**
- * "of 400 Gen Z respondents" (shares and record counts), "across 6 monthly channel rows" (sums,
- * averages, scores), or "Base: <label>" when no count is known.
- */
-export function basisText(metric: MetricRef, denominator: number | null, recordCount = false): string | null {
-  const label = metric.denominator_label ? cleanBaseLabel(metric.denominator_label) : null;
-  if (denominator == null) return label ? `Base: ${label}` : null;
-  const joiner = metric.unit === "percent" || recordCount ? "of" : "across";
-  return `${joiner} ${formatNumber(denominator)} ${label ?? "records"}`;
-}
-
-/** The base alone, for labelled layouts: "400 Gen Z respondents", or the label when no count is known. */
-export function baseText(metric: MetricRef, denominator: number | null): string | null {
-  const label = metric.denominator_label ? cleanBaseLabel(metric.denominator_label) : null;
-  if (denominator == null) return label;
-  return `${formatNumber(denominator)} ${label ?? "records"}`;
+/** The basis of a brief figure: "of 400 Gen Z respondents", "Total across 30 return records", "Based on monthly channel records". */
+export function metricBasis(metric: MetricRef, denominator: number | null, analysis?: Analysis): Basis | null {
+  const kind = basisKind(metric.unit, aggregationFn(analysis), {
+    recordCount: countsRecords(metric, analysis),
+    derived: metric.derived != null,
+  });
+  return describeBasis(kind, denominator, metric.denominator_label);
 }
 
 export interface Provenance {
@@ -153,8 +250,10 @@ export interface MetricView {
   visible: boolean;
   display: string | null;
   basis: string | null;
-  /** The base without a joining word, for "Base: ..." layouts. */
+  /** The base without a joining word, for labelled layouts ("Summed across" / "30 return records"). */
   base: string | null;
+  /** The label that goes with `base` ("Out of", "Summed across", "Averaged across", "Based on"). */
+  baseLabel: string;
   denominator: number | null;
   provenance: Provenance | null;
   derived: boolean;
@@ -164,13 +263,15 @@ export function buildMetricView(metric: MetricRef, analyses: AnalysisIndex, inde
   const analysis = analyses.get(metric.analysis_id);
   const visible = metric.value != null && metric.display != null && inputsComputed(metric, analysis);
   const denominator = visible ? resolveDenominator(metric, analysis) : null;
+  const basis = visible ? metricBasis(metric, denominator, analysis) : null;
   return {
     key: `${metric.analysis_id}-${index}`,
     label: metric.label,
     visible,
     display: visible ? metric.display : null,
-    basis: visible ? basisText(metric, denominator, countsRecords(metric, analysis)) : null,
-    base: visible ? baseText(metric, denominator) : null,
+    basis: basis?.text ?? null,
+    base: basis?.value ?? null,
+    baseLabel: basis?.label ?? "Based on",
     denominator,
     provenance: analysis
       ? {

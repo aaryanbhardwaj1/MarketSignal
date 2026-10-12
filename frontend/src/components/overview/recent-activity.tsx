@@ -3,14 +3,18 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { workspaceBase } from "@/components/shell/nav";
+import { Card, CardHeader } from "@/components/ui/card";
 import { LoadingRegion } from "@/components/ui/states";
-import type { AnalyticsResultSummary, ConversationSummary } from "@/lib/api/contracts";
+import type { ConversationSummary } from "@/lib/api/contracts";
 import { useAnalyticsResults, useConversations, useDatasets } from "@/lib/api/hooks/core";
 import { formatRelativeDate } from "@/lib/format";
 import { rowsMatchedText } from "@/lib/insights-view";
-import { runMode, toolStep } from "@/lib/labels";
+import { runMode } from "@/lib/labels";
+import { collapseRepeats, describeResult, resultTitle } from "@/components/analytics/result-summary";
 
 const LIMIT = 5;
+/** Fetch a few extra so collapsing repeats still fills the list. */
+const FETCH = 10;
 
 function ActivityList({
   title,
@@ -22,13 +26,10 @@ function ActivityList({
   children: ReactNode;
 }) {
   return (
-    <div className="min-w-0 rounded-lg border border-border bg-surface">
-      <div className="border-b border-border px-5 py-3">
-        <h3 className="text-base font-semibold text-primary">{title}</h3>
-        <p className="mt-0.5 text-sm text-muted">{description}</p>
-      </div>
+    <Card padding="none" className="min-w-0">
+      <CardHeader title={title} meta={description} />
       <div className="px-5 py-2">{children}</div>
-    </div>
+    </Card>
   );
 }
 
@@ -36,11 +37,11 @@ function Row({ href, title, meta }: { href: string | null; title: string; meta: 
   return (
     <li className="py-2.5">
       {href ? (
-        <Link href={href} className="block truncate rounded-sm text-base text-primary hover:text-accent-text hover:underline" title={title}>
+        <Link href={href} className="line-clamp-2 rounded-sm text-base text-primary hover:text-accent-text hover:underline" title={title}>
           {title}
         </Link>
       ) : (
-        <p className="truncate text-base text-primary" title={title}>
+        <p className="line-clamp-2 text-base text-primary" title={title}>
           {title}
         </p>
       )}
@@ -58,14 +59,25 @@ function conversationMeta(c: ConversationSummary): string {
   return parts.filter(Boolean).join(" · ");
 }
 
+/** The same question asked twice (for example in both research modes) is listed once, most recent first. */
+function uniqueByTitle(items: readonly ConversationSummary[]): ConversationSummary[] {
+  const seen = new Set<string>();
+  return items.filter((c) => {
+    const key = c.title.trim().toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 /** Featured conversations first; a workspace without featured ones shows its most recent research. */
 function SavedResearch({ ws }: { ws: string }) {
-  const featured = useConversations(ws, { featured: true, limit: LIMIT });
+  const featured = useConversations(ws, { featured: true, limit: FETCH });
   const featuredItems = featured.data?.pages.flatMap((p) => p.items) ?? [];
   const useRecent = featured.isSuccess && featuredItems.length === 0;
-  const recent = useConversations(ws, { limit: LIMIT });
+  const recent = useConversations(ws, { limit: FETCH });
   const q = useRecent ? recent : featured;
-  const items = (q.data?.pages.flatMap((p) => p.items) ?? []).slice(0, LIMIT);
+  const items = uniqueByTitle(q.data?.pages.flatMap((p) => p.items) ?? []).slice(0, LIMIT);
   return (
     <ActivityList
       title={useRecent ? "Recent research" : "Saved research"}
@@ -95,32 +107,29 @@ function SavedResearch({ ws }: { ws: string }) {
   );
 }
 
-function resultTitle(r: AnalyticsResultSummary, datasetTitles: ReadonlyMap<string, string>): string {
-  const dataset = datasetTitles.get(r.dataset) ?? "a structured dataset";
-  return `${toolStep(r.tool).label} from ${dataset}`;
-}
-
 function RecentAnalyses({ ws }: { ws: string }) {
-  const q = useAnalyticsResults(ws, { limit: LIMIT });
+  const q = useAnalyticsResults(ws, { limit: FETCH });
   const datasets = useDatasets(ws);
-  const titles = new Map((datasets.data?.datasets ?? []).map((d) => [d.dataset, d.title]));
-  const items = (q.data?.pages.flatMap((p) => p.items) ?? []).slice(0, LIMIT);
+  const info = new Map((datasets.data?.datasets ?? []).map((d) => [d.dataset, d]));
+  const items = collapseRepeats(q.data?.pages.flatMap((p) => p.items) ?? []).slice(0, LIMIT);
   return (
-    <ActivityList title="Recent computed analyses" description="Figures computed from datasets during research.">
+    <ActivityList title="Recent saved results" description="Figures computed from datasets while answering research questions.">
       {q.isPending ? (
-        <LoadingRegion label="Loading recent analyses" lines={4} />
+        <LoadingRegion label="Loading recent saved results" lines={4} />
       ) : q.isError ? (
-        <Quiet>Recent analyses could not be loaded.</Quiet>
+        <Quiet>Recent saved results could not be loaded.</Quiet>
       ) : items.length === 0 ? (
-        <Quiet>No computed analyses yet.</Quiet>
+        <Quiet>No saved results yet.</Quiet>
       ) : (
         <ul className="divide-y divide-border">
           {items.map((r) => (
             <Row
               key={r.result_id}
               href={r.conversation_id ? `${workspaceBase(ws)}/ask/${encodeURIComponent(r.conversation_id)}` : null}
-              title={resultTitle(r, titles)}
-              meta={[rowsMatchedText(r), formatRelativeDate(r.created_at)].filter(Boolean).join(" · ")}
+              title={resultTitle(r, info.get(r.dataset))}
+              meta={[describeResult(r).filters.join(", ") || info.get(r.dataset)?.title, rowsMatchedText(r), formatRelativeDate(r.created_at)]
+                .filter(Boolean)
+                .join(" · ")}
             />
           ))}
         </ul>
