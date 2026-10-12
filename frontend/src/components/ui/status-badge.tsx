@@ -1,16 +1,16 @@
 import { humanize } from "@/lib/format";
 import { isNonTerminalStatus, statusTone } from "@/lib/status";
-import { Badge } from "./badge";
+import { StatusIndicator } from "./status-indicator";
 
+/** @deprecated Use `<StatusIndicator>` with a label from `lib/labels`. Kept for older pages. */
 export function StatusBadge({ status }: { status: string | null | undefined }) {
-  if (!status) return <Badge tone="muted">no version</Badge>;
-  const inFlight = isNonTerminalStatus(status);
+  if (!status) return <StatusIndicator tone="neutral" label="No version" />;
+  const label = humanize(status);
   return (
-    <Badge tone={statusTone(status)} title={inFlight ? "In progress" : undefined}>
-      {inFlight && (
-        <span aria-hidden className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
-      )}
-      {humanize(status)}
-    </Badge>
+    <StatusIndicator
+      tone={statusTone(status)}
+      label={label.charAt(0).toUpperCase() + label.slice(1)}
+      detail={isNonTerminalStatus(status) ? "in progress" : undefined}
+    />
   );
 }

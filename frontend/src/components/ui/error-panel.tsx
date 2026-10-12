@@ -1,23 +1,25 @@
 import { describeError } from "@/lib/api/errors";
+import { errorMessage } from "@/lib/labels";
+import { ErrorState } from "./states";
 
-export function ErrorPanel({ error, title = "Request failed" }: { error: unknown; title?: string }) {
+function plainMessage(error: unknown): { message: string; code: string } {
   const { code, message } = describeError(error);
-  return (
-    <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900">
-      <p className="font-semibold">{title}</p>
-      <p className="mt-1">
-        <code className="rounded bg-red-100 px-1.5 py-0.5 font-mono text-xs">{code}</code>{" "}
-        <span>{message}</span>
-      </p>
-    </div>
-  );
+  const known = errorMessage(code);
+  return { message: known.known ? known.label : message || known.label, code };
 }
 
+/** @deprecated Use `<ErrorState>`. Shows a plain message; the code moves into "Technical details". */
+export function ErrorPanel({ error, title = "Something went wrong" }: { error: unknown; title?: string }) {
+  const { message, code } = plainMessage(error);
+  return <ErrorState title={title} description={message} devDetail={code} />;
+}
+
+/** @deprecated Inline variant kept for older forms; no raw code in the sentence. */
 export function InlineError({ error }: { error: unknown }) {
-  const { code, message } = describeError(error);
+  const { message } = plainMessage(error);
   return (
-    <p role="alert" className="text-sm text-red-700">
-      <code className="font-mono text-xs font-semibold">{code}</code>: {message}
+    <p role="alert" className="text-sm text-danger">
+      {message}
     </p>
   );
 }

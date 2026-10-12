@@ -25,11 +25,9 @@ export function CopyButton({ value, label = "Copy" }: { value: string; label?: s
       type="button"
       onClick={copy}
       aria-label={`${label}: ${value}`}
-      className="rounded px-1.5 py-0.5 text-xs font-medium text-indigo-700 hover:bg-indigo-50 focus-visible:outline-2 focus-visible:outline-indigo-600"
+      className="rounded-sm px-1.5 py-0.5 text-xs font-medium text-accent-text hover:bg-accent-subtle"
     >
-      <span aria-live="polite">
-        {state === "copied" ? "Copied" : state === "failed" ? "Copy failed" : label}
-      </span>
+      <span aria-live="polite">{state === "copied" ? "Copied" : state === "failed" ? "Copy failed" : label}</span>
     </button>
   );
 }

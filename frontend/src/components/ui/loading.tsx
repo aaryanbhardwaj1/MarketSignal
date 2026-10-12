@@ -1,11 +1,6 @@
-export function Loading({ label = "Loading..." }: { label?: string }) {
-  return (
-    <p role="status" aria-live="polite" className="flex items-center gap-2 text-sm text-slate-500">
-      <span
-        aria-hidden
-        className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600"
-      />
-      {label}
-    </p>
-  );
+import { LoadingRegion } from "./states";
+
+/** @deprecated Use `<LoadingRegion>` (skeleton + polite live region). */
+export function Loading({ label = "Loading" }: { label?: string }) {
+  return <LoadingRegion label={label} lines={3} />;
 }

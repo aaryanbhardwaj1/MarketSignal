@@ -1,25 +1,83 @@
 @import "tailwindcss";
-
-:root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-}
+@import "../styles/tokens.css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* legacy aliases, kept so older components still resolve */
+  --color-background: var(--color-canvas);
+  --color-foreground: var(--color-text);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-canvas);
+  color: var(--color-text);
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
 }
 
+/* One focus treatment for every interactive element (keyboard only). */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-accent-subtle);
+}
+
+/* Evidence highlight inside passages. */
 mark.evidence-mark {
-  background-color: #fde68a;
+  background-color: var(--color-mark);
   color: inherit;
   border-radius: 2px;
-  box-shadow: 0 0 0 2px #fde68a;
+  box-shadow: 0 0 0 2px var(--color-mark);
+}
+
+/* Native <dialog> backdrop for Dialog and Drawer. */
+dialog.ms-overlay::backdrop {
+  background: rgb(27 28 30 / 0.32);
+}
+
+/* Drawer: the only slide motion in the product (150ms). */
+@keyframes ms-drawer-in {
+  from {
+    transform: translateX(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+dialog.ms-drawer[open] {
+  animation: ms-drawer-in 150ms ease-out;
+}
+
+/* Skeleton: a calm opacity pulse. */
+@keyframes ms-skeleton {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.ms-skeleton {
+  animation: ms-skeleton 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.ms-drawer[open],
+  .ms-skeleton {
+    animation: none;
+  }
 }

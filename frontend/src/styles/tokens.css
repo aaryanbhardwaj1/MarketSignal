@@ -1,0 +1,94 @@
+/*
+ * MarketSignal design tokens (light theme). Declared inside Tailwind 4 `@theme`, so each
+ * token also generates utilities: `bg-surface`, `border-border`, `text-accent`,
+ * `rounded-md`, `shadow-overlay`, `max-w-reading`, `text-sm` (13px) and so on.
+ * Text colours additionally get short aliases through the `--text-color-*` namespace:
+ * `text-primary`, `text-secondary`, `text-muted`, `text-disabled`.
+ * Tokens are semantic, so a dark set can be added later by redefining the same names.
+ */
+@theme static {
+  /* surfaces */
+  --color-canvas: #f7f7f5;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f2f2ef;
+  --color-surface-sunken: #ecece8;
+  --color-border: #e3e3de;
+  --color-border-strong: #cfcfc8;
+
+  /* text */
+  --color-text: #1b1c1e;
+  --color-text-secondary: #4a4d52;
+  --color-text-muted: #6b6f76;
+  --color-text-disabled: #9a9ea5;
+  --text-color-primary: var(--color-text);
+  --text-color-secondary: var(--color-text-secondary);
+  --text-color-muted: var(--color-text-muted);
+  --text-color-disabled: var(--color-text-disabled);
+
+  /* accent (single, controlled) */
+  --color-accent: #2b4c9b;
+  --color-accent-hover: #223d7e;
+  --color-accent-subtle: #ebf0fa;
+  --color-accent-text: #24418a;
+
+  /* status */
+  --color-success: #1f7a4d;
+  --color-success-subtle: #e7f3ec;
+  --color-warn: #8f5b00;
+  --color-warn-subtle: #fbf1de;
+  --color-danger: #b42318;
+  --color-danger-subtle: #fbeae8;
+  --color-info: #3a5a8c;
+  --color-info-subtle: #edf2f8;
+
+  /* citation kinds */
+  --color-cite-evidence: var(--color-accent-text);
+  --color-cite-evidence-bg: var(--color-accent-subtle);
+  --color-cite-result: #0f6466;
+  --color-cite-result-bg: #e4f1f0;
+  --color-cite-inference: var(--color-text-muted);
+  --color-mark: #fce8a6;
+
+  /* charts */
+  --color-chart-bar: #5b6b8c;
+  --color-chart-bar-emphasis: var(--color-accent);
+  --color-chart-track: var(--color-surface-sunken);
+
+  /* focus */
+  --color-focus: #2b4c9b;
+
+  /* radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  /* shadows: overlays only (drawer, dialog, popover) */
+  --shadow-overlay: 0 8px 24px rgb(17 17 17 / 0.12), 0 1px 2px rgb(17 17 17 / 0.06);
+
+  /* type scale (overrides Tailwind defaults) */
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 13px;
+  --text-sm--line-height: 20px;
+  --text-base: 14px;
+  --text-base--line-height: 22px;
+  --text-md: 16px;
+  --text-md--line-height: 24px;
+  --text-lg: 20px;
+  --text-lg--line-height: 28px;
+  --text-xl: 24px;
+  --text-xl--line-height: 32px;
+
+  /* layout widths */
+  --width-reading: 46rem;
+  --width-content: 72rem;
+  --width-wide: 84rem;
+  --width-sidebar: 15rem;
+  --width-panel: 17rem;
+  --width-drawer: 34rem;
+  --container-reading: 46rem;
+  --container-content: 72rem;
+  --container-wide: 84rem;
+  --container-drawer: 34rem;
+}

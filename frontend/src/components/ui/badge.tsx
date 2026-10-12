@@ -1,31 +1,39 @@
 import type { ReactNode } from "react";
-import type { StatusTone } from "@/lib/status";
+import { cx } from "@/lib/cx";
+import { normalizeTone, type LegacyTone, type StatusTone } from "./tone";
 
-export type BadgeTone = StatusTone | "info" | "neutral";
+export type BadgeTone = StatusTone | LegacyTone | "accent";
 
-const TONE_CLASSES: Record<BadgeTone, string> = {
-  success: "bg-emerald-50 text-emerald-800 ring-emerald-600/20",
-  warning: "bg-amber-50 text-amber-800 ring-amber-600/25",
-  danger: "bg-red-50 text-red-800 ring-red-600/20",
-  progress: "bg-sky-50 text-sky-800 ring-sky-600/20",
-  muted: "bg-slate-100 text-slate-600 ring-slate-500/20",
-  info: "bg-indigo-50 text-indigo-800 ring-indigo-600/20",
-  neutral: "bg-white text-slate-700 ring-slate-300",
+const TONE: Record<StatusTone | "accent", string> = {
+  success: "bg-success-subtle text-success border-success/20",
+  warn: "bg-warn-subtle text-warn border-warn/20",
+  danger: "bg-danger-subtle text-danger border-danger/20",
+  info: "bg-info-subtle text-info border-info/20",
+  neutral: "bg-surface-muted text-secondary border-border",
+  accent: "bg-accent-subtle text-accent-text border-accent/20",
 };
 
+/** Small label. Tone adds meaning only alongside the text, never instead of it. */
 export function Badge({
   tone = "neutral",
+  size = "sm",
   title,
   children,
 }: {
   tone?: BadgeTone;
+  size?: "sm" | "md";
   title?: string;
   children: ReactNode;
 }) {
+  const key = tone === "accent" ? "accent" : normalizeTone(tone);
   return (
     <span
       title={title}
-      className={`inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${TONE_CLASSES[tone]}`}
+      className={cx(
+        "inline-flex items-center gap-1 whitespace-nowrap rounded-sm border font-medium",
+        size === "sm" ? "px-1.5 py-px text-xs" : "px-2 py-0.5 text-sm",
+        TONE[key],
+      )}
     >
       {children}
     </span>
