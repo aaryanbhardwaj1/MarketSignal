@@ -5,20 +5,15 @@ import Link from "next/link";
 import { useOptionalEvidenceDrawer } from "@/components/evidence/drawer-context";
 import { ResultPanel } from "@/components/ui/result-panel";
 import { Skeleton } from "@/components/ui/states";
-import {
-  buildResultTable,
-  denominatorText,
-  describeFilters,
-  describeGrouping,
-  describeMetrics,
-  formatMetricValue,
-} from "@/lib/analytics";
+import { describeResult } from "@/components/evidence/result-display";
+import { DevDetails } from "@/components/ui/disclosure";
+import { buildResultTable } from "@/lib/analytics";
 import { getEvidence, getResult } from "@/lib/api/endpoints";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { CitationCard, Evidence, ResultCitationCard } from "@/lib/api/types";
 import { businessLocator, parseRowPassage } from "@/lib/format";
 import { evidenceViewerHref } from "@/lib/handles";
-import { sourceClass, sourceType } from "@/lib/labels";
+import { COMPUTED_FIGURE, sourceClass, sourceType } from "@/lib/labels";
 
 const EXCERPT_FIELDS = 4;
 
@@ -137,7 +132,7 @@ export function SupportingEvidenceList({ ws, cards }: { ws: string; cards: reado
 }
 
 /** Name for one computed result, used by the inline chip, the panel and the drawer. */
-export const COMPUTED_FIGURE = "Computed figure";
+export { COMPUTED_FIGURE } from "@/lib/labels";
 
 /** One computed result cited by the answer, as a ResultPanel (never shaped like evidence). */
 function AnalyticsResultPanel({
@@ -171,18 +166,16 @@ function AnalyticsResultPanel({
     );
   }
   const result = query.data.result;
-  const metrics = describeMetrics(result.spec);
+  const view = describeResult(result);
   const table = buildResultTable(result);
-  const single = !table && result.rows.length === 1 && result.rows[0].metrics.length === 1 ? result.rows[0].metrics[0] : null;
-  const title = metrics.length > 0 ? metrics.join("; ") : COMPUTED_FIGURE;
   return (
     <ResultPanel
-      title={`${number}. ${title}`}
-      value={single ? formatMetricValue(single) : undefined}
+      title={`${number}. ${view.title}`}
+      value={view.value}
       unit=""
-      denominator={single ? { label: "Base", value: denominatorText(single) } : undefined}
-      filters={describeFilters(result.spec)}
-      groupBy={describeGrouping(result.spec)}
+      denominator={{ label: view.value !== undefined ? "Base" : "Records matched", value: view.base }}
+      filters={view.filters}
+      groupBy={view.groupBy}
       provenance={{ sourceTitle, sourceCode: result.source_code, version: result.source_version, table: result.table }}
     >
       {table && (
@@ -199,6 +192,7 @@ function AnalyticsResultPanel({
           Open full result
         </button>
       )}
+      <div className="mt-2"><DevDetails data={{ result_id: result.result_id, operation: result.operation, source_code: result.source_code, table: result.table }} /></div>
     </ResultPanel>
   );
 }

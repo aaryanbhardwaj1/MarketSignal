@@ -7,13 +7,14 @@ import { datasetTerms, humanizeDatasetTerms } from "@/lib/analytics";
 import { isResultCard, type AnyCitationCard, type CitationCard, type ResultCitationCard } from "@/lib/api/types";
 import { parseSections, type AnswerSections } from "@/lib/answer-sections";
 import { numberCitations, stripInference, type CitationContext } from "@/lib/citations";
+import { COMPUTED_FIGURES } from "@/lib/labels";
 import { isModelUnavailable } from "@/lib/model-availability";
 import { AnalyticsResults, SupportingEvidenceList } from "./answer-evidence";
 import { ChipNumberingContext } from "./citation-numbering";
 import { SafeMarkdown } from "./safe-markdown";
 
 /** Section title for the computed results an answer cites, and its hint. */
-export const COMPUTED_FIGURES_TITLE = "Computed figures";
+export const COMPUTED_FIGURES_TITLE = COMPUTED_FIGURES;
 export const COMPUTED_FIGURES_HINT = "Calculated from workspace datasets";
 
 /** Dataset codes named by the cited results (`knit_upper_durability`) and their plain wording. */

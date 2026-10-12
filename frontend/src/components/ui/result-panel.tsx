@@ -24,6 +24,7 @@ export function ResultPanel({
   groupBy,
   provenance,
   children,
+  headingLevel = 3,
 }: {
   title: string;
   value?: ReactNode;
@@ -33,16 +34,19 @@ export function ResultPanel({
   groupBy?: string[];
   provenance: { sourceTitle: string; sourceCode: string; version: string | number; table: string };
   children?: ReactNode;
+  /** Heading level of the title (3 by default; 4 when nested under an h3). */
+  headingLevel?: 3 | 4;
 }) {
   const details = [
     ...(denominator ? [{ label: denominator.label, value: denominator.value }] : []),
     ...(filters && filters.length > 0 ? [{ label: "Filters", value: filters.join("; ") }] : []),
     ...(groupBy && groupBy.length > 0 ? [{ label: "Grouped by", value: groupBy.join(", ") }] : []),
   ];
+  const Heading = headingLevel === 4 ? "h4" : "h3";
   return (
     <section className="rounded-lg border border-border border-l-[3px] border-l-cite-result bg-surface p-4">
       <p className="text-xs font-medium text-cite-result">Computed</p>
-      <h3 className="mt-0.5 text-base font-semibold text-primary">{title}</h3>
+      <Heading className="mt-0.5 text-base font-semibold text-primary">{title}</Heading>
       {value != null && (
         <p className="mt-2 flex items-baseline gap-1 text-xl font-semibold tabular-nums text-primary">
           {value}

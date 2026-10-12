@@ -940,7 +940,7 @@
       "dataset": "CHANNEL-PERF:1",
       "unit": "usd",
       "presentation": "bar",
-      "denominator_label": "monthly channel rows",
+      "denominator_label": "monthly channel records",
       "filter_labels": {
         "channel": "Channel",
         "month": "Month"
@@ -1101,7 +1101,7 @@
               "top_pain_point": "delivery_speed"
             }
           },
-          "denominator_label": "of Gen Z respondents surveyed"
+          "denominator_label": "Gen Z respondents surveyed"
         }
       ],
       "caveats": [
@@ -1689,7 +1689,7 @@
               "top_pain_point": "sustainability_transparency"
             }
           },
-          "denominator_label": "of Gen Z respondents surveyed"
+          "denominator_label": "Gen Z respondents surveyed"
         }
       ],
       "gaps": [

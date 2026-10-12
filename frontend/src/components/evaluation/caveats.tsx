@@ -3,11 +3,11 @@ import { formatDateTime } from "@/lib/format";
 import { shortHash } from "@/lib/eval-view";
 import { Table, type Column } from "@/components/ui/table";
 
-/** Caveats block. Rendered unconditionally on the Overview; per tab it lists the relevant ones. */
+/** Caveats block in a neutral tone (context, not a warning). Overview lists all, after the headline results; each tab lists its own. */
 export function Caveats({ caveats, title = "Caveats" }: { caveats: EvalCatalog["caveats"]; title?: string }) {
   if (caveats.length === 0) return null;
   return (
-    <section aria-label={title} className="rounded-lg border border-warn/25 bg-warn-subtle px-4 py-3">
+    <section aria-label={title} className="rounded-lg border border-border bg-surface-muted px-4 py-3">
       <p className="text-base font-semibold text-primary">{title}</p>
       <ul className="mt-1.5 flex list-disc flex-col gap-1 pl-5 text-base text-secondary">
         {caveats.map((c) => (

@@ -74,7 +74,7 @@ export function QuestionForm({
     <form
       onSubmit={onFormSubmit}
       className={cx(
-        "flex flex-col rounded-lg border border-border-strong bg-surface focus-within:border-accent",
+        "flex flex-col rounded-lg border border-border-control bg-surface focus-within:border-accent",
         inactive && "bg-surface-muted",
       )}
     >

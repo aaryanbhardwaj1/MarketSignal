@@ -1,6 +1,6 @@
 import { Callout } from "@/components/ui/callout";
 import { DevDetails } from "@/components/ui/disclosure";
-import { degradationFlag, terminationState } from "@/lib/labels";
+import { terminationState, userFacingFlags } from "@/lib/labels";
 import { isModelUnavailable } from "@/lib/model-availability";
 import type { RunDone, RunError, RunWarning } from "@/lib/run-stream";
 import { MODEL_UNAVAILABLE_BODY } from "./model-unavailable";
@@ -24,14 +24,7 @@ export function RunNotices({
 
   const unavailable = isModelUnavailable({ warnings, terminationState: termination, flags });
   const ending = termination ? terminationState(termination) : null;
-  const flagLabels = [
-    ...new Set(
-      flags
-        .map((f) => degradationFlag(f))
-        .filter((l) => !l.internal)
-        .map((l) => (l.known ? l.label : "A processing notice was recorded")),
-    ),
-  ];
+  const flagLabels = [...new Set(userFacingFlags(flags).map((l) => l.label))];
   const technical = {
     error: error ? { code: error.code, message: error.message } : undefined,
     termination: termination ?? undefined,

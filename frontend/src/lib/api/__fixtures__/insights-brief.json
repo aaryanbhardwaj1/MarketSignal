@@ -144,7 +144,7 @@
                     "value": 32,
                     "display": "32",
                     "unit": "count",
-                    "denominator_label": "of Gen Z respondents surveyed",
+                    "denominator_label": "Gen Z respondents surveyed",
                     "derived": null
                 }
             ],
@@ -203,7 +203,7 @@
                     "value": 142.0,
                     "display": "+142.0%",
                     "unit": "percent",
-                    "denominator_label": "monthly channel rows",
+                    "denominator_label": "monthly channel records",
                     "derived": {
                         "op": "pct_change",
                         "of": [
@@ -218,7 +218,7 @@
                     "value": 2146098.0,
                     "display": "$2,146,098",
                     "unit": "usd",
-                    "denominator_label": "monthly channel rows",
+                    "denominator_label": "monthly channel records",
                     "derived": null
                 }
             ],
@@ -1081,7 +1081,7 @@
                     "value": 142.0,
                     "display": "+142.0%",
                     "unit": "percent",
-                    "denominator_label": "monthly channel rows",
+                    "denominator_label": "monthly channel records",
                     "derived": {
                         "op": "pct_change",
                         "of": [
@@ -1235,7 +1235,7 @@
                     "value": 36,
                     "display": "36",
                     "unit": "count",
-                    "denominator_label": "of Gen Z respondents surveyed",
+                    "denominator_label": "Gen Z respondents surveyed",
                     "derived": null
                 }
             ],

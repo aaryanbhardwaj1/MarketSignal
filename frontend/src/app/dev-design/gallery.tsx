@@ -236,7 +236,7 @@ export function Gallery({ initialOverlay }: { initialOverlay?: "drawer" | "dialo
               value={mode}
               onChange={setMode}
               orientation="horizontal"
-              options={[{ value: "auto", label: "Automatic" }, { value: "standard", label: "Standard answer" }, { value: "research", label: "Deep research" }]}
+              options={[{ value: "auto", label: "Automatic" }, { value: "standard", label: "Standard" }, { value: "research", label: "Research" }]}
             />
             <Checkbox id="g-cb" label="Include archived sources" />
           </div>
@@ -354,7 +354,7 @@ export function Gallery({ initialOverlay }: { initialOverlay?: "drawer" | "dialo
         <Grid cols={2}>
           <div className="flex flex-col gap-3">
             <Disclosure summary="Research details">
-              <KeyValueList items={[{ label: "Mode", value: "Deep research" }, { label: "Research steps", value: "5" }]} />
+              <KeyValueList items={[{ label: "Mode", value: "Research" }, { label: "Research steps", value: "5" }]} />
               <div className="mt-3">
                 <DevDetails data={{ handle: "SAMPLE/SOURCE@v1:P1", flags: [] }} />
               </div>

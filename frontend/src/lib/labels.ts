@@ -7,6 +7,7 @@
  * domain/enums.py, generation/verifier.py, migration 0004, and lib/api/contracts.ts.
  */
 import type { StatusTone } from "@/components/ui/tone";
+import type { RunPhase } from "./run-stream";
 
 export interface LabelEntry {
   label: string;
@@ -49,7 +50,7 @@ export const DEGRADATION_FLAGS: Dict = {
   RETRIEVAL_DENSE_UNAVAILABLE: { label: "Meaning-based search unavailable", description: "Only keyword matching was available for this search.", tone: "warn" },
   RERANKER_UNAVAILABLE: { label: "Result re-ranking unavailable", description: "Results were ordered without the re-ranking step.", tone: "info", internal: true },
   CONVERSATION_STATE_NOT_UPDATED: { label: "Conversation summary not saved", description: "The answer was saved, but the conversation summary was not updated.", tone: "info", internal: true },
-  RESEARCH_UNAVAILABLE: { label: "Deep research unavailable", description: "Deep research was requested but not available; a standard answer was produced.", tone: "warn" },
+  RESEARCH_UNAVAILABLE: { label: "Research mode unavailable", description: "Research mode was requested but was not available, so Standard mode answered.", tone: "warn" },
   AGENT_STEP_BUDGET_EXHAUSTED: { label: "Research step limit reached", description: "Research stopped after the maximum number of steps.", tone: "warn" },
   AGENT_TOKEN_BUDGET_EXHAUSTED: { label: "Research budget reached", description: "Research stopped after reaching its processing budget.", tone: "warn" },
   AGENT_CONTEXT_LIMIT: { label: "Research context limit reached", description: "Research stopped because it gathered as much context as it can hold.", tone: "warn" },
@@ -175,10 +176,10 @@ export const SOURCE_TYPES: Dict = {
 export const ROUTE_REASONS: Dict = {
   explicit_request: { label: "You chose this mode" },
   auto_cues: { label: "The question called for deeper research" },
-  auto_no_cue: { label: "A standard answer fit the question" },
+  auto_no_cue: { label: "The question did not need deeper research" },
   persona_default: { label: "Default for this role" },
   persona_auto_cues: { label: "The question called for deeper research (role default: automatic)" },
-  persona_auto_no_cue: { label: "A standard answer fit the question (role default: automatic)" },
+  persona_auto_no_cue: { label: "The question did not need deeper research (role default: automatic)" },
   analytics_task: { label: "The question needed computed figures" },
 };
 
@@ -194,11 +195,25 @@ export const TOOL_STEPS: Dict = {
   group_compare: { label: "Compared groups" },
 };
 
+/** Live research phases (SSE `status.phase`). "analyzing" is evidence-pack assembly, not analytics. */
+export const PHASE_LABELS: Readonly<Record<RunPhase, string>> = {
+  routing: "Choosing a mode",
+  planning: "Planning research",
+  searching: "Searching evidence",
+  analyzing: "Selecting evidence",
+  synthesizing: "Writing the answer",
+  verifying: "Checking citations",
+};
+
+/** Name for a deterministic analytics result cited in an answer ("Computed figure 2"). */
+export const COMPUTED_FIGURE = "Computed figure";
+export const COMPUTED_FIGURES = "Computed figures";
+
 /** Run modes (requested and used). */
 export const RUN_MODES: Dict = {
   auto: { label: "Automatic" },
-  standard: { label: "Standard answer" },
-  research: { label: "Deep research" },
+  standard: { label: "Standard" },
+  research: { label: "Research" },
 };
 
 /** Agent stop reasons (agent/state.py StopReason). */

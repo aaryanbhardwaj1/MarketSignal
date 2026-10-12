@@ -18,6 +18,7 @@ export function EvidenceCard({
   role,
   integrity,
   onOpen,
+  headingLevel = 3,
 }: {
   source: { title: string; type: string; classLabel: string; version?: string | number };
   locator: string;
@@ -25,15 +26,18 @@ export function EvidenceCard({
   role?: "support" | "contradict";
   integrity?: Integrity;
   onOpen?: () => void;
+  /** Heading level of the source title (3 by default; 4 when nested under an h3). */
+  headingLevel?: 3 | 4;
 }) {
   const integ = integrity ? integrityLabel(integrity) : null;
   const where = businessLocator(locator);
   const fields = isTabularSource(source.type) ? parseRowPassage(quote) : null;
+  const Heading = headingLevel === 4 ? "h4" : "h3";
   return (
     <article className="rounded-lg border border-border bg-surface p-4">
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="truncate text-base font-medium text-primary">{source.title}</h3>
+          <Heading className="truncate text-base font-medium text-primary">{source.title}</Heading>
           <p className="mt-0.5 text-sm text-muted">
             {[source.classLabel, source.type, where].filter(Boolean).join(" · ")}
           </p>
@@ -62,6 +66,7 @@ export function EvidenceCard({
         <button
           type="button"
           onClick={onOpen}
+          aria-label={`Open passage: ${[source.title, where].filter(Boolean).join(", ")}`}
           className="mt-3 rounded-sm text-sm font-medium text-accent-text hover:underline"
         >
           Open passage

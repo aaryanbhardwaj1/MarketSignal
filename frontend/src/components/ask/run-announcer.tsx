@@ -2,7 +2,7 @@
 
 import { isResultCard } from "@/lib/api/types";
 import { isModelUnavailable } from "@/lib/model-availability";
-import { PHASE_LABELS } from "@/lib/run-mode";
+import { PHASE_LABELS } from "@/lib/labels";
 import type { RunStreamState } from "@/lib/run-stream";
 import { useAskSession } from "./ask-session";
 import type { StreamConnection } from "./use-run-stream";

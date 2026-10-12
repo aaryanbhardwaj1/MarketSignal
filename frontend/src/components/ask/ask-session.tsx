@@ -43,7 +43,7 @@ export interface AskSession {
   starting: boolean;
   /** A start failed for a reason other than the model being unavailable. */
   startError: unknown;
-  /** A `POST /runs` came back 503 `PROVIDER_UNAVAILABLE`: treat the model as unavailable. */
+  /** `POST /conversations` or `POST /runs` came back 503 `PROVIDER_UNAVAILABLE`: show the calm "Live model unavailable" state, never an error. */
   providerUnavailable: boolean;
   cancelling: boolean;
   cancelError: unknown;

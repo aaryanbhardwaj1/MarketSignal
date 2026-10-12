@@ -6,7 +6,7 @@
 import type { StatusTone } from "@/components/ui/tone";
 import type { AgentTraceStep, ConversationSummary, RunRecord, RunVerification } from "./api/contracts";
 import {
-  degradationFlag,
+  userFacingFlags,
   runStatus,
   terminationState,
   toolStep,
@@ -74,7 +74,7 @@ function corrections(v: RunVerification | null): number {
 }
 
 const DISPOSITION_SUMMARY: Readonly<Record<string, string>> = {
-  accepted: "Citations checked",
+  accepted: "Citations verified",
   regenerate: "Citations checked; the first draft was rewritten",
   rejected: "Did not pass citation checks",
   fallback: "Citation checks failed; evidence shown instead",
@@ -136,13 +136,11 @@ function stepView(step: AgentTraceStep, titles: Readonly<Record<string, string>>
 function notices(flags: readonly string[]): RunNotice[] {
   const seen = new Set<string>();
   const out: RunNotice[] = [];
-  for (const flag of flags) {
-    const entry = degradationFlag(flag);
-    if (entry.internal) continue; // implementation detail; Technical details still lists it
-    const label = entry.known ? entry.label : "A processing notice was recorded";
-    if (seen.has(label)) continue;
-    seen.add(label);
-    out.push({ label, description: entry.description ?? null });
+  // Internal and unknown codes are skipped here; Technical details still lists them.
+  for (const entry of userFacingFlags(flags)) {
+    if (seen.has(entry.label)) continue;
+    seen.add(entry.label);
+    out.push({ label: entry.label, description: entry.description ?? null });
   }
   return out;
 }

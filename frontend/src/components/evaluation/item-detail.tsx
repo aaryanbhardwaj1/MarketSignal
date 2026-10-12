@@ -155,11 +155,11 @@ function ResearchDetail({ item }: { item: Of<"research"> }) {
       </Block>
       <div className="grid gap-4 border-t border-border pt-4 xl:grid-cols-2">
         <div className="min-w-0">
-          <h3 className="mb-2 text-base font-semibold text-primary">Standard answer</h3>
+          <h3 className="mb-2 text-base font-semibold text-primary">Standard mode answer</h3>
           <AnswerText markdown={item.standard.answer_markdown} />
         </div>
         <div className="min-w-0">
-          <h3 className="mb-2 text-base font-semibold text-primary">Research answer</h3>
+          <h3 className="mb-2 text-base font-semibold text-primary">Research mode answer</h3>
           <AnswerText markdown={item.research.answer_markdown} />
         </div>
       </div>

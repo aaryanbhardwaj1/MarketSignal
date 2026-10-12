@@ -8,9 +8,11 @@ import { classBreakdown, researchRunBreakdown, sourceTotal } from "@/lib/insight
 
 /**
  * Five headline counts about what the workspace holds. Every figure comes from the workspace
- * endpoint. Five tiles fit one row only on wide screens; below that the row wraps 3 + 2 so labels
- * and the source breakdown stay on one line.
+ * endpoint. Five tiles sit on one row from xl; below that they split 3 + 2 on a six-column grid
+ * (and 2 + 2 + 1 full-width on small screens), so no row leaves an empty slot.
  */
+const FIRST_ROW = "lg:col-span-2 xl:col-span-1";
+const SECOND_ROW = "lg:col-span-3 xl:col-span-1";
 export function WorkspaceSummary({ ws, overview }: { ws: string; overview: WorkspaceOverview }) {
   const total = sourceTotal(overview);
   const breakdown = classBreakdown(overview);
@@ -18,9 +20,10 @@ export function WorkspaceSummary({ ws, overview }: { ws: string; overview: Works
   const runs = researchRunBreakdown(overview);
   const base = workspaceBase(ws);
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 min-[1440px]:grid-cols-5">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6 xl:grid-cols-5">
       <MetricCard
         label="Evidence sources"
+        className={FIRST_ROW}
         value={formatNumber(total)}
         href={`${base}/evidence`}
         context={
@@ -31,29 +34,31 @@ export function WorkspaceSummary({ ws, overview }: { ws: string; overview: Works
       />
       <MetricCard
         label="Structured datasets"
+        className={FIRST_ROW}
         value={formatNumber(overview.dataset_count)}
         href={`${base}/analytics#datasets`}
         context={<span className="text-xs text-muted">Tables that figures are computed from</span>}
       />
       <MetricCard
         label="Customer evidence"
+        className={FIRST_ROW}
         value={formatNumber(customer)}
         unit={`of ${formatNumber(total)} sources`}
         context={<span className="text-xs text-muted">Sources classed as customer research</span>}
       />
       <MetricCard
         label="Research runs"
+        className={SECOND_ROW}
         value={formatNumber(runs.total)}
         href={`${base}/ask`}
         context={<span className="text-xs text-muted">{runs.detail ?? "Questions researched in this workspace"}</span>}
       />
       <MetricCard
         label="Saved results"
+        className={`sm:col-span-2 ${SECOND_ROW}`}
         value={formatNumber(overview.analytics_result_count)}
         href={`${base}/analytics#saved-results`}
-        context={
-<span className="text-xs text-muted">Figures computed while answering research questions</span>
-        }
+        context={<span className="text-xs text-muted">Figures computed while answering research questions</span>}
       />
     </div>
   );

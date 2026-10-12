@@ -1,4 +1,5 @@
 import { cx } from "@/lib/cx";
+import { COMPUTED_FIGURE } from "@/lib/labels";
 
 export type CiteState = "verified" | "unverified" | "stale";
 
@@ -32,7 +33,7 @@ export function CiteChip({
 }) {
   const stateText = STATE_TEXT[state];
   const visible = kind === "evidence" ? String(index) : `Computed ${index}`;
-  const a11y = `${kind === "evidence" ? `Evidence ${index}` : `Computed result ${index}`}: ${label}${stateText ? ` (${stateText})` : ""}`;
+  const a11y = `${kind === "evidence" ? `Evidence ${index}` : `${COMPUTED_FIGURE} ${index}`}: ${label}${stateText ? ` (${stateText})` : ""}`;
   return (
     <button
       type="button"

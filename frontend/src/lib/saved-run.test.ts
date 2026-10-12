@@ -86,16 +86,17 @@ describe("degraded runs", () => {
     degradation_flags: ["LLM_SYNTHESIS_UNAVAILABLE", "LLM_SYNTHESIS_UNAVAILABLE", "NOT_A_KNOWN_FLAG"],
   };
 
-  it("labels the evidence-only fallback and de-duplicates notices", () => {
+  it("labels the evidence-only fallback, de-duplicates notices and drops unknown codes", () => {
     const view = toSavedRunView(degraded, null);
     expect(view.modelUnavailable).toBe(true);
     expect(view.verification?.label).toBe(terminationState("generation_unavailable").label);
-    expect(view.notices.map((n) => n.label)).toEqual(["Live model unavailable", "A processing notice was recorded"]);
+    expect(view.notices.map((n) => n.label)).toEqual(["Live model unavailable"]);
   });
 
   it("maps verification dispositions", () => {
     const v = (d: RunVerification["final_disposition"]): RunVerification => ({ run_id: "r", final_disposition: d, attempts: [] });
     expect(verificationLabel(standardRun, v("accepted"))?.label).toBe(verificationDisposition("accepted").label);
+    expect(verificationLabel(standardRun, v("accepted"))).toMatchObject({ label: "Citations verified", summary: "Citations verified" });
     expect(verificationLabel(standardRun, v("fallback"))?.label).toBe(verificationDisposition("fallback").label);
     expect(verificationLabel(standardRun, v("regenerate"))?.label).toBe(verificationDisposition("regenerate").label);
     expect(verificationLabel(standardRun, v("repaired"))?.label).toBe(verificationDisposition("repaired").label);

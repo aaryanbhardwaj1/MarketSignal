@@ -50,7 +50,7 @@ function SummarySection({ ws }: { ws: string }) {
   return (
     <Section title="Workspace summary" description="What this workspace holds today.">
       {overview.isPending ? (
-        <CardGridSkeleton label="Loading workspace summary" count={5} columns="sm:grid-cols-2 lg:grid-cols-3 min-[1440px]:grid-cols-5" />
+        <CardGridSkeleton label="Loading workspace summary" count={5} columns="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5" />
       ) : overview.isError ? (
         <ErrorState
           title="Workspace summary could not be loaded"

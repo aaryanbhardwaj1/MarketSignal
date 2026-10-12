@@ -6,7 +6,9 @@
  */
 import type { RunMode } from "./api/types";
 import { routeReason, runMode, toolStep } from "./labels";
-import type { RouteMode, RunPhase, ToolStep } from "./run-stream";
+
+export { PHASE_LABELS } from "./labels";
+import type { RouteMode, ToolStep } from "./run-stream";
 
 /** Display name of a mode ("standard" | "research" | "auto"); unknown modes read as Standard. */
 export function modeLabel(mode: string | null | undefined): string {
@@ -81,19 +83,9 @@ export function describeRoute(route: RouteDecision | null): RouteDescription | n
   };
 }
 
-/** Live research phases (SSE `status.phase`). "analyzing" is evidence-pack assembly, not analytics. */
-export const PHASE_LABELS: Readonly<Record<RunPhase, string>> = {
-  routing: "Choosing a mode",
-  planning: "Planning research",
-  searching: "Searching evidence",
-  analyzing: "Selecting evidence",
-  synthesizing: "Writing the answer",
-  verifying: "Checking citations",
-};
-
 const KIND_FALLBACKS: Readonly<Record<string, string>> = {
   search: "Searching evidence",
-  keyword: "Searching for exact terms",
+  keyword: "Looking up exact names",
   lookup: "Reading evidence passages",
   catalog: "Reviewing available sources",
   analytics: "Computing a figure",

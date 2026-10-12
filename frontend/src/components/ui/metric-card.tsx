@@ -12,6 +12,7 @@ export function MetricCard({
   provenance,
   tone,
   href,
+  className,
 }: {
   label: string;
   value: ReactNode;
@@ -20,6 +21,8 @@ export function MetricCard({
   provenance?: ReactNode;
   tone?: StatusTone;
   href?: string;
+  /** Layout classes from the parent grid (column spans). */
+  className?: string;
 }) {
   const body = (
     <>
@@ -38,10 +41,10 @@ export function MetricCard({
   const surface = "block rounded-lg border border-border bg-surface p-4";
   if (href) {
     return (
-      <Link href={href} className={cx(surface, "transition-colors hover:border-border-strong hover:bg-surface-muted/40")}>
+      <Link href={href} className={cx(surface, "transition-colors hover:border-border-strong hover:bg-surface-muted/40", className)}>
         {body}
       </Link>
     );
   }
-  return <div className={surface}>{body}</div>;
+  return <div className={cx(surface, className)}>{body}</div>;
 }

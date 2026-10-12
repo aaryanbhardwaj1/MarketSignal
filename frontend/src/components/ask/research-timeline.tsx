@@ -1,5 +1,6 @@
 import { formatMs } from "@/lib/format";
-import { PHASE_LABELS, toolSummaryText } from "@/lib/run-mode";
+import { PHASE_LABELS } from "@/lib/labels";
+import { toolSummaryText } from "@/lib/run-mode";
 import type { RunPhase, ToolStatus, ToolStep } from "@/lib/run-stream";
 
 const STATUS_VIEW: Record<ToolStatus, { label: string; className: string } | null> = {

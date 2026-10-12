@@ -17,10 +17,6 @@ export function OverviewTab({ catalog }: { catalog: EvalCatalog }) {
         analysis.
       </p>
 
-      <div className="mt-6">
-        <Caveats caveats={catalog.caveats} />
-      </div>
-
       <Section title="Headline results" description="Point estimates with 95% confidence intervals and sample sizes where recorded.">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {catalog.overview.headline.map((m) => (
@@ -28,6 +24,10 @@ export function OverviewTab({ catalog }: { catalog: EvalCatalog }) {
           ))}
         </div>
       </Section>
+
+      <div className="mt-6">
+        <Caveats caveats={catalog.caveats} />
+      </div>
 
       <Section title="Evaluation phases" description="Phases in the order they were built; each was measured against its own versioned dataset.">
         <ol className="grid gap-3 md:grid-cols-2">

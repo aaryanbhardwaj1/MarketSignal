@@ -49,6 +49,7 @@ export function EvidenceItem({ evidence, onOpen }: { evidence: EvidenceRef; onOp
           locator={evidence.locator_label}
           quote={view.quote}
           onOpen={open}
+          headingLevel={4}
         />
         <AnalystNote note={evidence.note} />
       </li>
