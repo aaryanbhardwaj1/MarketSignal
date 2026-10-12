@@ -1,12 +1,6 @@
-import { EvidenceView } from "@/components/evidence/evidence-view";
-import { firstParam } from "@/lib/search-params";
+import { PagePlaceholder } from "@/components/shell/page-placeholder";
 
-export default async function EvidencePage({
-  params,
-  searchParams,
-}: PageProps<"/w/[ws]/evidence">) {
-  const { ws } = await params;
-  const query = await searchParams;
-  const handle = firstParam(query.h)?.trim() ?? "";
-  return <EvidenceView ws={ws} handle={handle} child={firstParam(query.child)} />;
+/** `?ev=` (and the legacy `?h=`) with `&child=` open the evidence drawer from the workspace layout. */
+export default function EvidenceLibraryPage() {
+  return <PagePlaceholder title="Evidence Library" />;
 }

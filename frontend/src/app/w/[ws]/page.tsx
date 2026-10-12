@@ -1,6 +1,7 @@
-import { WorkspaceDashboard } from "@/components/dashboard/workspace-dashboard";
+import { redirect } from "next/navigation";
+import { workspaceRootTarget } from "@/components/shell/routes";
 
 export default async function WorkspacePage({ params }: PageProps<"/w/[ws]">) {
   const { ws } = await params;
-  return <WorkspaceDashboard ws={ws} />;
+  redirect(workspaceRootTarget(ws));
 }

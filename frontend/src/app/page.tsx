@@ -1,21 +1,18 @@
-import { Card, PageHeader } from "@/components/ui/card";
-import { CreateWorkspaceForm } from "@/components/workspaces/create-workspace-form";
-import { WorkspaceList } from "@/components/workspaces/workspace-list";
+import { redirect } from "next/navigation";
+import { connection } from "next/server";
+import { rootRedirectTarget } from "@/components/shell/routes";
+import { listWorkspaces } from "@/lib/api/endpoints";
 
-export default function Home() {
-  return (
-    <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6">
-      <PageHeader
-        eyebrow="Phase 1 - corpus inspection"
-        title="Workspaces"
-        description="Each workspace is an isolated client engagement. Every material claim resolves to an exact, immutable evidence handle inside one workspace."
-      />
-      <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
-        <WorkspaceList />
-        <Card title="New workspace">
-          <CreateWorkspaceForm />
-        </Card>
-      </div>
-    </main>
-  );
+const LOOKUP_TIMEOUT_MS = 2_000;
+
+/** `/` opens NORTHSTAR's overview, or the first visible workspace when NORTHSTAR is absent. */
+export default async function Home() {
+  await connection(); // resolve at request time, never at build time
+  let workspaces: { code: string }[] | null = null;
+  try {
+    workspaces = await listWorkspaces(AbortSignal.timeout(LOOKUP_TIMEOUT_MS));
+  } catch {
+    workspaces = null; // API unreachable: fall back to the default workspace
+  }
+  redirect(rootRedirectTarget(workspaces));
 }

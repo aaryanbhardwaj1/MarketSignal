@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { ResultRef } from "@/lib/citations";
-import { ResultCard } from "./result-card";
+import { ResultCard } from "@/components/evidence/result-card";
 
 const CHIP =
   "mx-0.5 inline-flex max-w-[18rem] items-center gap-1 rounded-full px-2 py-0.5 align-baseline text-[11px] font-medium leading-4 ring-1 ring-inset bg-teal-50 text-teal-900 ring-teal-600/30 hover:bg-teal-100 focus-visible:outline-2 focus-visible:outline-teal-700";

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { TopNav } from "@/components/layout/top-nav";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -15,21 +14,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MarketSignal",
+  title: { default: "MarketSignal", template: "%s · MarketSignal" },
   description: "Evidence-grounded growth-strategy research for consulting teams.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="flex min-h-full flex-col font-sans">
-        <Providers>
-          <TopNav />
-          <div className="flex flex-1 flex-col">{children}</div>
-        </Providers>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full bg-canvas font-sans text-primary">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

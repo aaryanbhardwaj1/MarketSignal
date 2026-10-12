@@ -1,16 +1,9 @@
-import { SearchView } from "@/components/search/search-view";
-import { parseSearchMode, parseSourceClasses } from "@/lib/search";
-import { firstParam } from "@/lib/search-params";
+import { redirect } from "next/navigation";
+import { searchRedirectTarget } from "@/components/shell/routes";
 
-export default async function SearchPage({ params, searchParams }: PageProps<"/w/[ws]/search">) {
+/** Legacy route: `/search?q=` → `/evidence?q=`. */
+export default async function LegacySearchPage({ params, searchParams }: PageProps<"/w/[ws]/search">) {
   const { ws } = await params;
-  const query = await searchParams;
-  return (
-    <SearchView
-      ws={ws}
-      q={(firstParam(query.q) ?? "").trim()}
-      mode={parseSearchMode(firstParam(query.mode))}
-      sourceClasses={parseSourceClasses(query.source_class)}
-    />
-  );
+  const { q } = await searchParams;
+  redirect(searchRedirectTarget(ws, q));
 }

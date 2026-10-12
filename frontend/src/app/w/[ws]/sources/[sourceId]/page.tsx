@@ -1,8 +1,8 @@
-import { SourceDetail } from "@/components/sources/source-detail";
+import { redirect } from "next/navigation";
+import { sourceDetailRedirectTarget } from "@/components/shell/routes";
 
-export default async function SourceDetailPage({
-  params,
-}: PageProps<"/w/[ws]/sources/[sourceId]">) {
+/** Legacy route: `/sources/[id]` → `/evidence/sources/[id]`. */
+export default async function LegacySourceDetailPage({ params }: PageProps<"/w/[ws]/sources/[sourceId]">) {
   const { ws, sourceId } = await params;
-  return <SourceDetail ws={ws} sourceId={sourceId} />;
+  redirect(sourceDetailRedirectTarget(ws, sourceId));
 }

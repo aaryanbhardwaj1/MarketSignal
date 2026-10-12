@@ -1,6 +1,8 @@
-import { SourcesView } from "@/components/sources/sources-view";
+import { redirect } from "next/navigation";
+import { sourcesRedirectTarget } from "@/components/shell/routes";
 
-export default async function SourcesPage({ params }: PageProps<"/w/[ws]/sources">) {
+/** Legacy route: `/sources` → `/evidence`. */
+export default async function LegacySourcesPage({ params }: PageProps<"/w/[ws]/sources">) {
   const { ws } = await params;
-  return <SourcesView ws={ws} />;
+  redirect(sourcesRedirectTarget(ws));
 }
