@@ -1,5 +1,12 @@
-import { PagePlaceholder } from "@/components/shell/page-placeholder";
+import { Suspense } from "react";
+import { CatalogLoading } from "@/components/evaluation/catalog-states";
+import { EvaluationView } from "@/components/evaluation/evaluation-view";
 
-export default function EvaluationPage() {
-  return <PagePlaceholder title="RAG Evaluation" description="Frozen evaluation datasets" />;
+export default async function EvaluationPage({ params }: PageProps<"/w/[ws]/dev/evaluation">) {
+  const { ws } = await params;
+  return (
+    <Suspense fallback={<CatalogLoading />}>
+      <EvaluationView ws={ws} />
+    </Suspense>
+  );
 }
