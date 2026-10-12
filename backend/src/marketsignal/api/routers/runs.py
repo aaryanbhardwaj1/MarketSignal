@@ -13,6 +13,12 @@
 * A stream never hangs or loops: a run with no ``done`` row that is no longer running (e.g. its
   events were purged) gets a ``done`` synthesized from ``query_runs``; a run still ``running``
   past its deadline + reap margin (its process died) is reaped, which writes ``done``.
+* ``GET /conversations`` lists conversations (keyset pages on ``updated_at, id``; curated
+  ``featured`` list; harness runs hidden unless ``include_test_runs``), and
+  ``GET /runs/{rid}/verification`` summarizes the verification attempts without rejected spans
+  (final productization phase).
+* ``POST …/runs`` refuses with ``503 PROVIDER_UNAVAILABLE`` *before* creating any row when live
+  generation is unavailable (``providers.llm.availability``); no provider text is returned.
 * Modes (ADR-0015): the deterministic router (``runs.router``) decides ``standard`` or
   ``research`` from the request mode, the conversation's persona default and the cue rules; the
   decision is stored in ``query_runs.route`` and sent in ``run_started``.
@@ -21,8 +27,11 @@
 from __future__ import annotations
 
 import asyncio
+import base64
+import binascii
 import uuid
 from collections.abc import AsyncIterator
+from datetime import datetime
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, Header, Query, Request
@@ -32,7 +41,9 @@ from sqlalchemy import text
 
 from marketsignal.api.deps import Factory, Principal, Scope, SettingsDep
 from marketsignal.api.errors import AppError
+from marketsignal.api.routers.capabilities import current_generation_status
 from marketsignal.db.session import scoped_session
+from marketsignal.demo import featured as featured_conversations
 from marketsignal.domain.enums import SourceClass
 from marketsignal.generation.prompts import PROMPT_VERSION
 from marketsignal.runs import store, tokens
@@ -48,6 +59,10 @@ from marketsignal.runs.reaper import (
 from marketsignal.runs.router import PERSONA_DEFAULT_MODES, route
 
 router = APIRouter(prefix="/api/workspaces/{ws}", tags=["runs"])
+
+PROVIDER_UNAVAILABLE_MESSAGE = "Answer generation is unavailable; saved runs remain browsable."
+# Test-harness runs (FakeLLM) are hidden from product lists unless include_test_runs is set.
+NOT_TEST_RUN_SQL = "coalesce(models->>'synthesis', '') <> 'fake-llm'"
 
 
 class ConversationIn(BaseModel):
@@ -129,6 +144,15 @@ async def start_run(
     state = await store.conversation_state(factory, scope, conversation_id)
     if state is None:
         raise AppError(404, "CONVERSATION_NOT_FOUND", "conversation not found")
+    availability = current_generation_status(request)
+    if not availability.available:  # before create_run: a refused run leaves no rows
+        raise AppError(
+            503,
+            "PROVIDER_UNAVAILABLE",
+            PROVIDER_UNAVAILABLE_MESSAGE,
+            reason=availability.reason,
+            retryable=False,
+        )
     question = body.question.strip()
     decision = route(
         question,
@@ -275,3 +299,194 @@ async def run_events(
             ):
                 continue  # the orphan now has its done
         await broker.wait(run_id, settings.sse_poll_interval_s)
+
+
+# --- conversation list and verification summary (final productization phase) ------------------
+
+
+def encode_cursor(at: datetime, row_id: uuid.UUID) -> str:
+    """Opaque keyset cursor: base64("<iso timestamp>|<uuid>")."""
+    return base64.urlsafe_b64encode(f"{at.isoformat()}|{row_id}".encode()).decode()
+
+
+def decode_cursor(cursor: str | None) -> tuple[datetime, uuid.UUID] | None:
+    """The cursor's (timestamp, id), ``None`` for no cursor; a malformed one is a 422."""
+    if not cursor:
+        return None
+    try:
+        at, _, row_id = base64.urlsafe_b64decode(cursor.encode()).decode().partition("|")
+        parsed = datetime.fromisoformat(at), uuid.UUID(row_id)
+    except (binascii.Error, UnicodeDecodeError, ValueError) as exc:
+        raise AppError(422, "VALIDATION_ERROR", "invalid cursor", fields=[]) from exc
+    if parsed[0].tzinfo is None:
+        raise AppError(422, "VALIDATION_ERROR", "invalid cursor", fields=[])
+    return parsed
+
+
+def like_pattern(q: str | None) -> str | None:
+    """``%q%`` for ILIKE with ``\\`` as the escape character; ``None`` for an empty query."""
+    q = (q or "").strip()
+    if not q:
+        return None
+    escaped = q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return f"%{escaped}%"
+
+
+_CONVERSATIONS = f"""
+SELECT c.id, c.title, c.created_at, c.updated_at, fq.content AS first_question,
+       (SELECT count(*) FROM messages m
+         WHERE m.workspace_id = c.workspace_id AND m.conversation_id = c.id) AS message_count,
+       lr.id AS run_id, lr.mode, lr.status, lr.termination_state, lr.degradation_flags,
+       lr.created_at AS run_created_at, lr.finished_at
+FROM conversations c
+LEFT JOIN LATERAL (
+    SELECT content FROM messages m
+    WHERE m.workspace_id = c.workspace_id AND m.conversation_id = c.id AND m.role = 'user'
+    ORDER BY m.created_at, m.id LIMIT 1
+) fq ON true
+LEFT JOIN LATERAL (
+    SELECT id, mode, status, termination_state, degradation_flags, created_at, finished_at
+    FROM query_runs r
+    WHERE r.workspace_id = c.workspace_id AND r.conversation_id = c.id
+    ORDER BY r.created_at DESC, r.id DESC LIMIT 1
+) lr ON true
+WHERE c.workspace_id = :ws
+  AND (CAST(:include_test AS boolean) OR NOT EXISTS (
+        SELECT 1 FROM query_runs t
+        WHERE t.workspace_id = c.workspace_id AND t.conversation_id = c.id
+          AND NOT ({NOT_TEST_RUN_SQL})))
+  AND (CAST(:q AS text) IS NULL
+       OR c.title ILIKE CAST(:q AS text) ESCAPE '\\'
+       OR fq.content ILIKE CAST(:q AS text) ESCAPE '\\')
+  AND (CAST(:ids AS uuid[]) IS NULL OR c.id = ANY(CAST(:ids AS uuid[])))
+  AND (CAST(:c_at AS timestamptz) IS NULL
+       OR (c.updated_at, c.id) < (CAST(:c_at AS timestamptz), CAST(:c_id AS uuid)))
+ORDER BY c.updated_at DESC, c.id DESC
+LIMIT :limit
+"""  # noqa: S608 - the only interpolation is the NOT_TEST_RUN_SQL constant
+
+
+def _conversation_item(row: Any, featured_set: frozenset[uuid.UUID]) -> dict[str, Any]:
+    title = (row.title or "").strip()
+    last_run = None
+    if row.run_id is not None:
+        last_run = {
+            "run_id": str(row.run_id),
+            "mode": row.mode,
+            "status": row.status,
+            "termination_state": row.termination_state,
+            "degradation_flags": list(row.degradation_flags or []),
+            "created_at": row.run_created_at.isoformat(),
+            "finished_at": row.finished_at.isoformat() if row.finished_at else None,
+        }
+    return {
+        "conversation_id": str(row.id),
+        "title": title or (row.first_question or "").strip(),
+        "title_source": "title" if title else "first_question",
+        "created_at": row.created_at.isoformat(),
+        "updated_at": row.updated_at.isoformat(),
+        "message_count": int(row.message_count),
+        "featured": row.id in featured_set,
+        "last_run": last_run,
+    }
+
+
+@router.get("/conversations")
+async def list_conversations(
+    scope: Scope,
+    factory: Factory,
+    limit: Annotated[int, Query(ge=1, le=100)] = 25,
+    cursor: Annotated[str | None, Query(max_length=200)] = None,
+    q: Annotated[str | None, Query(max_length=200)] = None,
+    featured: bool = False,
+    include_test_runs: bool = False,
+) -> dict[str, Any]:
+    """Conversations, newest activity first. ``featured=true`` returns the curated list in its
+    display order (one page; ids missing from this workspace are dropped)."""
+    featured_order = featured_conversations.featured_ids(scope.workspace_code)
+    featured_set = frozenset(featured_order)
+    after = None if featured else decode_cursor(cursor)
+    if featured and not featured_order:
+        return {"items": [], "next_cursor": None}
+    params = {
+        "ws": scope.workspace_id,
+        "include_test": include_test_runs,
+        "q": like_pattern(q),
+        "ids": list(featured_order) if featured else None,
+        "c_at": after[0] if after else None,
+        "c_id": after[1] if after else None,
+        "limit": len(featured_order) if featured else limit + 1,
+    }
+    async with scoped_session(factory, scope) as session:
+        rows = (await session.execute(text(_CONVERSATIONS), params)).all()
+    if featured:
+        position = {cid: i for i, cid in enumerate(featured_order)}
+        ordered = sorted(rows, key=lambda r: position[r.id])[:limit]
+        return {
+            "items": [_conversation_item(r, featured_set) for r in ordered],
+            "next_cursor": None,
+        }
+    page = rows[:limit]
+    next_cursor = (
+        encode_cursor(page[-1].updated_at, page[-1].id) if len(rows) > limit and page else None
+    )
+    return {
+        "items": [_conversation_item(r, featured_set) for r in page],
+        "next_cursor": next_cursor,
+    }
+
+
+def _str_list(value: Any) -> list[str]:
+    return [str(v) for v in value] if isinstance(value, list) else []
+
+
+def _attempt_summary(attempt: int, disposition: str, report: Any) -> dict[str, Any]:
+    """One attempt, without the rejected model spans (reason, section and aliases only)."""
+    report = report if isinstance(report, dict) else {}
+    rejected = [
+        {
+            "reason": str(r.get("reason", "")),
+            "section": str(r["section"]) if r.get("section") is not None else None,
+            "aliases": _str_list(r.get("aliases")),
+        }
+        for r in report.get("rejected") or []
+        if isinstance(r, dict)
+    ]
+    return {
+        "attempt": attempt,
+        "disposition": disposition,
+        "passed": bool(report.get("passed", False)),
+        "citations": int(report.get("citations") or 0),
+        "failure_categories": _str_list(report.get("failure_categories")),
+        "repairs_n": len(report.get("repairs") or []),
+        "rejected": rejected,
+        "result_ids": _str_list(report.get("result_ids")),
+    }
+
+
+@router.get("/runs/{run_id}/verification")
+async def get_run_verification(scope: Scope, factory: Factory, run_id: uuid.UUID) -> dict[str, Any]:
+    async with scoped_session(factory, scope) as session:
+        exists = (
+            await session.execute(
+                text("SELECT 1 FROM query_runs WHERE workspace_id = :ws AND id = :r"),
+                {"ws": scope.workspace_id, "r": run_id},
+            )
+        ).first()
+        if exists is None:
+            raise AppError(404, "RUN_NOT_FOUND", "run not found")
+        rows = (
+            await session.execute(
+                text(
+                    "SELECT attempt, disposition, report FROM verification_attempts "
+                    "WHERE workspace_id = :ws AND query_run_id = :r ORDER BY attempt, created_at"
+                ),
+                {"ws": scope.workspace_id, "r": run_id},
+            )
+        ).all()
+    attempts = [_attempt_summary(int(r[0]), str(r[1]), r[2]) for r in rows]
+    return {
+        "run_id": str(run_id),
+        "final_disposition": attempts[-1]["disposition"] if attempts else None,
+        "attempts": attempts,
+    }

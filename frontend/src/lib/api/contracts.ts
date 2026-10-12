@@ -97,7 +97,7 @@ export interface RunRecord {
     tool_calls: number;
     tool_errors: number;
     pool_size: number;
-    sufficient: boolean;
+    sufficient: boolean | null; // null when the planner never ran (e.g. planner_unavailable)
     gap_count: number;
     duration_ms: number;
     flags: string[];
@@ -603,6 +603,7 @@ export const PRODUCT_ERROR_CODES = [
   "DATASET_NOT_FOUND",
   "ANALYSIS_NOT_FOUND",
   "EVAL_RUN_NOT_FOUND",
+  "EVAL_CATALOG_UNAVAILABLE",
   "VALIDATION_ERROR",
   "PROVIDER_UNAVAILABLE",
 ] as const;

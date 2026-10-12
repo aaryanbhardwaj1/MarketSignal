@@ -1,0 +1,1 @@
+{"run_id":"6f18725e-3095-4aab-a90f-ae8505d7dc55","final_disposition":"repaired","attempts":[{"attempt":1,"disposition":"repaired","passed":true,"citations":18,"failure_categories":["numbers_in_gaps"],"repairs_n":2,"rejected":[{"reason":"numbers_in_gaps","section":"Gaps & unknowns","aliases":[]}],"result_ids":["d3d38949-dbb4-422b-8963-6591b6cb5182"]}]}

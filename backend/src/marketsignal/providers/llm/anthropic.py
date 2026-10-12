@@ -55,6 +55,7 @@ from typing import Any, Literal, Protocol, cast
 import anthropic
 from pydantic import SecretStr
 
+from marketsignal.providers.llm import availability
 from marketsignal.providers.llm.base import (
     AgentLLMRequest,
     AgentTurn,
@@ -369,6 +370,9 @@ def _classify(exc: BaseException) -> Exception:
             or _body_error_type(exc.body) in (RETRYABLE_ERROR_TYPES)
         ):
             return _Retryable(reason)
+        # Non-retryable rejection (billing, auth, ...): latch "generation unavailable" so new
+        # runs are refused up front. Only the error type is kept, never the message or id.
+        availability.latch(_body_error_type(exc.body))
         return LLMUnavailableError(f"Anthropic request rejected ({reason})")
     if isinstance(exc, anthropic.APIConnectionError):  # includes APITimeoutError
         return _Retryable(type(exc).__name__)
