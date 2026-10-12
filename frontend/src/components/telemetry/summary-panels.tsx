@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Pct, TelemetrySummary } from "@/lib/api/contracts";
-import { BarList, type BarItem } from "@/components/ui/bar-list";
+import type { BarItem } from "@/components/ui/bar-list";
 import { Callout } from "@/components/ui/callout";
 import { Table, type Column } from "@/components/ui/table";
 import { formatMs, formatNumber, formatPercent, formatUsd } from "@/lib/format";
@@ -11,7 +11,9 @@ import {
   verificationFailure,
   type Humanized,
 } from "@/lib/labels";
-import { STAGE_ROWS, ofTotal, sumValues } from "@/lib/telemetry-view";
+import { glossaryTitle } from "@/lib/eval-view";
+import { STAGE_ROWS, ofTotal, sumValues, toolStatusLabel } from "@/lib/telemetry-view";
+import { StackedBarList } from "./stacked-bars";
 import { NotRecorded, Panel, StatTile } from "./stat-tile";
 
 type Summary = TelemetrySummary;
@@ -89,6 +91,10 @@ export function CostNote({ cost }: { cost: Summary["cost"] }) {
   );
 }
 
+/** Latency column headers; the abbreviation is explained on hover and in the metric glossary. */
+const P50 = <span title={glossaryTitle("p50")}>p50</span>;
+const P95 = <span title={glossaryTitle("p50")}>p95</span>;
+
 interface StageRow {
   key: string;
   label: string;
@@ -100,8 +106,8 @@ export function StageLatencyTable({ summary }: { summary: Summary }) {
   const rows: StageRow[] = STAGE_ROWS.map((s) => ({ ...s, pct: summary.latency_ms.stages[s.key] ?? { p50: null, p95: null, n: 0 } }));
   const columns: Column<StageRow>[] = [
     { key: "stage", header: "Stage", cell: (r) => <span className="font-medium">{r.label}</span> },
-    { key: "p50", header: "p50", align: "right", cell: (r) => formatMs(r.pct.p50) },
-    { key: "p95", header: "p95", align: "right", cell: (r) => formatMs(r.pct.p95) },
+    { key: "p50", header: P50, align: "right", cell: (r) => formatMs(r.pct.p50) },
+    { key: "p95", header: P95, align: "right", cell: (r) => formatMs(r.pct.p95) },
     { key: "n", header: "Runs", align: "right", cell: (r) => formatNumber(r.pct.n) },
     { key: "note", header: "Measures", cell: (r) => <span className="text-sm text-muted">{r.note}</span> },
   ];
@@ -116,13 +122,13 @@ export function ToolTable({ summary }: { summary: Summary }) {
   const columns: Column<ToolRow>[] = [
     { key: "tool", header: "Tool", cell: (r) => <span className="font-mono text-sm">{r.tool}</span> },
     { key: "n", header: "Calls", align: "right", cell: (r) => formatNumber(r.n) },
-    { key: "ok", header: "OK", align: "right", cell: (r) => count(r.ok) },
+    { key: "ok", header: "Succeeded", align: "right", cell: (r) => count(r.ok) },
     { key: "truncated", header: "Truncated", align: "right", cell: (r) => count(r.truncated) },
     { key: "error", header: "Error", align: "right", cell: (r) => count(r.error) },
     { key: "denied", header: "Denied", align: "right", cell: (r) => count(r.denied) },
-    { key: "timeout", header: "Timeout", align: "right", cell: (r) => count(r.timeout) },
-    { key: "p50", header: "p50", align: "right", cell: (r) => formatMs(r.p50_ms) },
-    { key: "p95", header: "p95", align: "right", cell: (r) => formatMs(r.p95_ms) },
+    { key: "timeout", header: "Timed out", align: "right", cell: (r) => count(r.timeout) },
+    { key: "p50", header: P50, align: "right", cell: (r) => formatMs(r.p50_ms) },
+    { key: "p95", header: P95, align: "right", cell: (r) => formatMs(r.p95_ms) },
   ];
   return (
     <Table
@@ -141,7 +147,7 @@ const RETRIEVAL_TIMINGS: { key: keyof Summary["retrieval"]["timings"]; label: st
   { key: "lexical_prep_ms", label: "Lexical query prep" },
   { key: "lexical_ms", label: "Lexical search" },
   { key: "dense_ms", label: "Dense search" },
-  { key: "fusion_ms", label: "Fusion (RRF)" },
+  { key: "fusion_ms", label: "Fusion (reciprocal-rank)" },
   { key: "total_ms", label: "Total" },
 ];
 
@@ -151,6 +157,17 @@ const LANES: { key: keyof Summary["retrieval"]["candidates"]; label: string }[] 
   { key: "fused", label: "Fused" },
   { key: "final", label: "Final" },
 ];
+
+type TimingRow = (typeof RETRIEVAL_TIMINGS)[number];
+
+const TIMING_COLUMNS = (r: Summary["retrieval"]): Column<TimingRow>[] => {
+  const strong = (t: TimingRow, text: string) => (t.key === "total_ms" ? <span className="font-medium">{text}</span> : text);
+  return [
+    { key: "stage", header: "Stage", cell: (t) => strong(t, t.label) },
+    { key: "p50", header: P50, align: "right", cell: (t) => strong(t, formatMs(r.timings[t.key]?.p50)) },
+    { key: "p95", header: P95, align: "right", cell: (t) => strong(t, formatMs(r.timings[t.key]?.p95)) },
+  ];
+};
 
 export function RetrievalSummary({ summary }: { summary: Summary }) {
   const r = summary.retrieval;
@@ -173,27 +190,14 @@ export function RetrievalSummary({ summary }: { summary: Summary }) {
           <span className="font-medium tabular-nums text-primary">{r.embedding_cache_hit_rate == null ? "Not recorded" : formatPercent(r.embedding_cache_hit_rate)}</span>
         </p>
       </Panel>
-      <Panel title="Sub-stage timings" meta={`${formatNumber(r.n)} traces`}>
-        <table className="w-full text-sm">
-          <caption className="sr-only">Retrieval sub-stage timings</caption>
-          <thead>
-            <tr className="text-left text-muted">
-              <th scope="col" className="pb-1.5 font-medium">Stage</th>
-              <th scope="col" className="pb-1.5 text-right font-medium">p50</th>
-              <th scope="col" className="pb-1.5 text-right font-medium">p95</th>
-            </tr>
-          </thead>
-          <tbody>
-            {RETRIEVAL_TIMINGS.map((t) => (
-              <tr key={t.key} className="border-t border-border">
-                <td className={t.key === "total_ms" ? "py-1 font-medium text-primary" : "py-1 text-secondary"}>{t.label}</td>
-                <td className="py-1 text-right tabular-nums text-primary">{formatMs(r.timings[t.key]?.p50)}</td>
-                <td className="py-1 text-right tabular-nums text-primary">{formatMs(r.timings[t.key]?.p95)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Panel>
+      <Table
+        caption={`Sub-stage timings across ${formatNumber(r.n)} traces`}
+        showCaption
+        columns={TIMING_COLUMNS(r)}
+        rows={RETRIEVAL_TIMINGS}
+        rowKey={(t) => t.key}
+        density="compact"
+      />
     </div>
   );
 }
@@ -205,7 +209,7 @@ function bars(items: { label: string; n: number }[], denom: number): BarItem[] {
 function BarPanel({ title, meta, items, empty }: { title: string; meta: string; items: BarItem[]; empty: string }) {
   return (
     <Panel title={title} meta={meta}>
-      {items.length === 0 ? <NotRecorded>{empty}</NotRecorded> : <BarList ariaLabel={title} items={items} />}
+      {items.length === 0 ? <NotRecorded>{empty}</NotRecorded> : <StackedBarList ariaLabel={title} items={items} />}
     </Panel>
   );
 }
@@ -222,29 +226,31 @@ export function Auditability({ summary }: { summary: Summary }) {
   }));
   const failures = summary.verification.failure_categories.map((f) => ({ label: codeLabel(verificationFailure(f.category)), n: f.n }));
   const flags = summary.flags.map((f) => ({ label: codeLabel(degradationFlag(f.code)), n: f.n }));
-  const status = Object.entries(summary.governance.tool_status).map(([s, n]) => ({ label: s, n }));
+  const status = Object.entries(summary.governance.tool_status).map(([s, n]) => ({ label: toolStatusLabel(s), n }));
   return (
     <div className="grid gap-3 lg:grid-cols-2">
       <BarPanel title="Route decision reasons" meta={`${formatNumber(cov.runs_with_route)} runs with a route record`} items={bars(route, cov.runs_with_route)} empty="No route decisions recorded in this window." />
       <BarPanel title="Verification dispositions" meta={`By attempt (#1, #2) · ${formatNumber(verifyRuns)} verified runs`} items={bars(dispositions, verifyRuns)} empty="No verification attempts recorded in this window." />
       <BarPanel title="Verification failure categories" meta="Count of attempts, per category" items={bars(failures, 0)} empty="No failed checks in this window." />
       <BarPanel title="Degradation flags" meta={`Share of ${formatNumber(total)} runs`} items={bars(flags, total)} empty="No degraded runs in this window." />
-      <Panel title="Governance" meta={`${formatNumber(toolTotal)} audited tool calls`}>
-        {toolTotal === 0 ? (
-          <NotRecorded>No tool calls in this window.</NotRecorded>
-        ) : (
-          <BarList ariaLabel="Tool status mix" items={bars(status, toolTotal)} />
-        )}
-        <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-2.5 text-sm">
-          <div>
-            <dt className="text-muted">Redacted tool arguments</dt>
-            <dd className="font-medium tabular-nums text-primary">{formatNumber(summary.governance.redacted_tool_args)}</dd>
-          </div>
-          <div>
-            <dt className="text-muted">Redacted messages</dt>
-            <dd className="font-medium tabular-nums text-primary">{formatNumber(summary.governance.redacted_messages)}</dd>
-          </div>
-        </dl>
+      <Panel className="lg:col-span-2" title="Governance" meta={`${formatNumber(toolTotal)} audited tool calls`}>
+        <div className="grid gap-4 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          {toolTotal === 0 ? (
+            <NotRecorded>No tool calls in this window.</NotRecorded>
+          ) : (
+            <StackedBarList ariaLabel="Tool call outcomes" items={bars(status, toolTotal)} />
+          )}
+          <dl className="grid content-start gap-3 text-sm md:border-l md:border-border md:pl-4">
+            <div>
+              <dt className="text-muted">Redacted tool arguments</dt>
+              <dd className="font-medium tabular-nums text-primary">{formatNumber(summary.governance.redacted_tool_args)}</dd>
+            </div>
+            <div>
+              <dt className="text-muted">Redacted messages</dt>
+              <dd className="font-medium tabular-nums text-primary">{formatNumber(summary.governance.redacted_messages)}</dd>
+            </div>
+          </dl>
+        </div>
       </Panel>
     </div>
   );

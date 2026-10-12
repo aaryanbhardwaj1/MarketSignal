@@ -427,3 +427,64 @@ export function pageWindow(offset: number, count: number, total: number): string
   if (total === 0 || count === 0) return `0 of ${formatNumber(total)}`;
   return `${formatNumber(offset + 1)}–${formatNumber(offset + count)} of ${formatNumber(total)}`;
 }
+
+// ── glossary + check labels ──────────────────────────────────────────────────────────────────
+
+export interface GlossaryEntry {
+  term: string;
+  meaning: string;
+}
+
+/** Abbreviations used on the Developer Tools pages, in one place for the glossary and header tooltips. */
+export const METRIC_GLOSSARY = {
+  p50: { term: "p50 / p95", meaning: "Median and 95th-percentile latency: half of runs finish faster than the p50 value and 95% faster than the p95 value." },
+  hit: { term: "Hit@k", meaning: "Share of questions with at least one expected evidence passage in the top k results." },
+  recall: { term: "Recall@k", meaning: "Share of a question's expected evidence passages found in the top k results, averaged over questions." },
+  mrr: { term: "MRR", meaning: "Mean reciprocal rank: 1 / rank of the first expected passage, averaged over questions (1.0 = always first)." },
+  rrf: { term: "RRF", meaning: "Reciprocal-rank fusion: merges the keyword and dense result lists by summing 1 / (k + rank) per passage." },
+  bge: { term: "BGE prefix", meaning: "The query instruction the BGE embedding model expects before a search query." },
+  pp: { term: "pp", meaning: "Percentage points: the absolute difference between two percentages." },
+  ci: { term: "95% CI", meaning: "95% confidence interval (Wilson for rates, bootstrap for paired differences). A difference whose interval crosses 0 is not distinguishable." },
+  eligible: { term: "Retrieval-eligible", meaning: "Questions with labelled expected evidence; questions meant to be declined have none and are excluded." },
+} as const satisfies Record<string, GlossaryEntry>;
+
+export type GlossaryKey = keyof typeof METRIC_GLOSSARY;
+
+/** Tooltip text for an abbreviation ("MRR: Mean reciprocal rank ..."). */
+export function glossaryTitle(key: GlossaryKey): string {
+  const e = METRIC_GLOSSARY[key];
+  return `${e.term}: ${e.meaning}`;
+}
+
+/** Explicit labels for stored per-item check keys; units live in the value, never the label. */
+const CHECK_LABELS: Record<string, string> = {
+  abstained_deterministic: "Declined without the model",
+  answered: "Answered",
+  citations: "Citations",
+  evidence_only: "Evidence-only answer",
+  first_token_ms: "First token",
+  gold_coverage: "Expected evidence cited",
+  has_done: "Stream completed",
+  has_final: "Final answer saved",
+  in_pack: "Citations in evidence pack",
+  llm_called: "Model called",
+  numeric_correct: "Numbers correct",
+  pass_behaviour: "Expected behaviour",
+  resolvable: "Citations resolvable",
+  southpeak_marker_leak: "Cross-workspace leak",
+  total_ms: "Total time",
+};
+
+/** Label for a check key: the explicit map, else the key humanized without a unit suffix. */
+export function checkLabel(key: string): string {
+  const known = CHECK_LABELS[key];
+  if (known) return known;
+  const words = key.replace(/_(ms|s|usd)$/, "").replace(/_/g, " ").replace(/\bllm\b/g, "model");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+/** 1-based page from the `?page=` param; anything missing or invalid is page 1. */
+export function parsePageParam(value: string | null | undefined): number {
+  const n = Number(value);
+  return Number.isInteger(n) && n >= 1 ? n : 1;
+}

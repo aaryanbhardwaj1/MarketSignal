@@ -26,6 +26,8 @@ import {
   type TelemetryViewState,
   type TelemetryWindow,
 } from "@/lib/telemetry-view";
+import { MetricGlossary } from "@/components/evaluation/metric-glossary";
+import { ApiReadiness } from "./api-readiness";
 import { RunsTable } from "./runs-table";
 import { Auditability, CostNote, CoverageNote, RetrievalSummary, StageLatencyTable, SummaryMetrics, ToolTable } from "./summary-panels";
 
@@ -96,13 +98,12 @@ function dispositionOptions(summary: TelemetrySummary | undefined) {
 }
 
 function RunsSection({ ws, state, update, since, summary }: { ws: string; state: TelemetryViewState; update: (p: Partial<TelemetryViewState>) => void; since: string | undefined; summary: TelemetrySummary | undefined }) {
-  const router = useRouter();
   const runs = useTelemetryRuns(ws, runFilters(state, since));
   const rows = useMemo(() => runs.data?.pages.flatMap((p) => p.items) ?? [], [runs.data]);
   const filtered = state.mode || state.outcome || state.degraded || state.disposition;
-  const open = (row: TelemetryRunRow) => router.push(`/w/${encodeURIComponent(ws)}/dev/telemetry/runs/${encodeURIComponent(row.id)}`);
+  const runHref = (row: TelemetryRunRow) => `/w/${encodeURIComponent(ws)}/dev/telemetry/runs/${encodeURIComponent(row.id)}`;
   return (
-    <Section title="Runs" description="Every persisted run in the window, newest first. Select a row for its timeline, tool calls and checks.">
+    <Section title="Runs" description="Every persisted run in the window, newest first. Open a run for its timeline, tool calls and checks.">
       <div className="mb-3">
         <FilterBar onReset={filtered ? () => update({ mode: "", outcome: "", degraded: "", disposition: "" }) : undefined}>
           <FilterSelect
@@ -145,7 +146,7 @@ function RunsSection({ ws, state, update, since, summary }: { ws: string; state:
         <ErrorState title="Runs could not be loaded" description="The telemetry service did not respond. Try again." retry={() => void runs.refetch()} />
       ) : (
         <>
-          <RunsTable rows={rows} onOpen={open} />
+          <RunsTable rows={rows} runHref={runHref} />
           <p className="mt-2 text-xs text-muted">
             Showing {formatNumber(rows.length)} runs. Tokens are input / output across synthesis and research; estimated cost uses list prices and is not a billed amount.
           </p>
@@ -162,8 +163,9 @@ function SummaryBody({ summary }: { summary: TelemetrySummary }) {
       <Section title="Summary" description="Volume, latency, usage and quality rates for runs in the window.">
         <SummaryMetrics summary={summary} />
         <CostNote cost={summary.cost} />
-        <div className="mt-3">
+        <div className="mt-3 flex flex-col gap-3">
           <CoverageNote summary={summary} />
+          <MetricGlossary keys={["p50", "rrf"]} />
         </div>
       </Section>
       <Section title="Stage latency" description="Where run time goes. Stages a run did not perform are not counted.">
@@ -199,6 +201,8 @@ export function TelemetryDashboard({ ws }: { ws: string }) {
             <span>{name}</span>
             <span aria-hidden>·</span>
             <span>Developer tools</span>
+            <span aria-hidden>·</span>
+            <ApiReadiness />
           </>
         }
         actions={<HeaderControls state={state} update={update} excluded={data && !state.includeTestRuns ? data.test_runs_excluded : null} />}

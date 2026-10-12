@@ -18,7 +18,7 @@ import { rowTokens, shortId } from "@/lib/telemetry-view";
 import { AnalyticsResults, ResearchCard, RouteCard, StageTiming, UsageCard } from "./run-sections";
 import { RetrievalPanel, RunTimeline, ToolCalls, VerificationAttempts } from "./run-trace";
 import { StatusIndicator } from "@/components/ui/status-indicator";
-import { StatTile } from "./stat-tile";
+import { Panel, StatTile } from "./stat-tile";
 
 export const REASONING_NOTE = "Model reasoning is not recorded; only observable actions, timings and outcomes are.";
 
@@ -74,9 +74,9 @@ function OutcomeStrip({ run }: { run: TelemetryRunDetail["run"] }) {
       <StatTile label="Tokens" value={formatNumber(run.tokens_in + run.tokens_out)} context={rowTokens(run) ?? "No model tokens"} />
       <StatTile label="Estimated cost" value={formatUsd(run.est_cost_usd)} context="List prices, not billed" />
       <StatTile
-        label="Evidence"
-        value={`${formatNumber(run.cited_count)} cited`}
-        context={`of ${formatNumber(run.evidence_count)} in the pack${run.result_count ? ` · ${formatNumber(run.result_count)} computed` : ""}`}
+        label="Passages cited"
+        value={formatNumber(run.cited_count)}
+        context={`Unique pack items cited, of ${formatNumber(run.evidence_count)} in the pack${run.result_count ? ` (incl. ${formatNumber(run.result_count)} computed)` : ""}`}
       />
       <StatTile
         label="Verification"
@@ -150,11 +150,9 @@ export function RunDetailView({ ws, detail }: { ws: string; detail: TelemetryRun
       <Section title="Usage and computed results">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           <UsageCard detail={detail} />
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
-            <h3 className="text-base font-semibold text-primary">Computed results</h3>
-            <p className="mb-3 text-xs text-muted">Deterministic analytics results this run used.</p>
+          <Panel title="Computed results" meta="Deterministic analytics results this run used">
             <AnalyticsResults ids={detail.analytics_result_ids} />
-          </div>
+          </Panel>
         </div>
       </Section>
       <Section title="Raw details">

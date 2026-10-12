@@ -15,6 +15,7 @@ import {
 import { formatNumber, humanize } from "@/lib/format";
 import { Caveats, ProvenanceTable } from "./caveats";
 import { MetricCell, MetricGrid, MetricSource } from "./metric-bits";
+import { MetricGlossary } from "./metric-glossary";
 
 type Gate = EvalCatalog["grounded"]["hard_gates"][number];
 type Category = EvalCatalog["grounded"]["by_category"][number];
@@ -148,6 +149,9 @@ export function GroundedTab({ catalog }: { catalog: EvalCatalog }) {
         Live answers generated against a fixed question set. Every citation is checked against stored passages, numbers
         are re-checked against the evidence, and questions without enough evidence must be declined.
       </p>
+      <div className="mt-4">
+        <MetricGlossary keys={["ci", "pp"]} />
+      </div>
 
       <Section title="Safety gates" description="Hard requirements checked on every item. One failure fails the gate.">
         <GatesTable gates={g.hard_gates} leaks={metricById(g.metrics, "p3.cross_workspace_leaks")} />

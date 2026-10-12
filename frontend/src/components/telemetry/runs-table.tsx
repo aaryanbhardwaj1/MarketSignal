@@ -2,8 +2,9 @@ import type { TelemetryRunRow } from "@/lib/api/contracts";
 import { Badge } from "@/components/ui/badge";
 import { Table, type Column } from "@/components/ui/table";
 import { formatDateTime, formatMs, formatNumber, formatUsd } from "@/lib/format";
-import { degradationFlag, routeReason, runStatus, terminationState, verificationDisposition } from "@/lib/labels";
-import { rowTokens, shortId } from "@/lib/telemetry-view";
+import Link from "next/link";
+import { routeReason, runStatus, terminationState, verificationDisposition } from "@/lib/labels";
+import { flagLabel, outcomeFlags, rowTokens, shortId } from "@/lib/telemetry-view";
 
 function routeText(code: string | null): string {
   if (!code) return "Route not recorded";
@@ -18,47 +19,50 @@ function Outcome({ row }: { row: TelemetryRunRow }) {
   const status = runStatus(row.status);
   const shown = term ?? status;
   const disp = row.verification_disposition ? verificationDisposition(row.verification_disposition) : null;
+  const { implied, extra } = outcomeFlags(row.termination_state, row.flags);
+  const outcomeTitle = [shown.code, ...implied.map((f) => `${flagLabel(f)} (${f})`)].join("\n");
+  const [first, ...rest] = extra;
   return (
-    <div className="flex flex-col items-start gap-1">
-      <Badge tone={shown.tone ?? "neutral"} title={shown.code}>
-        {shown.known ? shown.label : shown.code}
-      </Badge>
-      {row.status !== "completed" && term && <span className="text-xs text-muted">Status: {status.known ? status.label : row.status}</span>}
+    <div className="flex flex-col items-start gap-0.5">
+      <span className="flex flex-wrap items-center gap-1">
+        <Badge tone={shown.tone ?? "neutral"} title={outcomeTitle}>
+          {shown.known ? shown.label : shown.code}
+        </Badge>
+        {first && (
+          <Badge tone="warn" title={first}>
+            {flagLabel(first)}
+          </Badge>
+        )}
+        {rest.length > 0 && (
+          <Badge tone="neutral" title={rest.map((f) => `${flagLabel(f)} (${f})`).join("\n")}>
+            <span aria-hidden>+{rest.length}</span>
+            <span className="sr-only">{`${rest.length} more warnings: ${rest.map(flagLabel).join(", ")}`}</span>
+          </Badge>
+        )}
+      </span>
       <span className="text-xs text-muted">
+        {row.status !== "completed" && term && `Status: ${status.known ? status.label : row.status} · `}
         {disp ? `Verification: ${disp.label}` : "Verification not recorded"}
         {row.regenerated && " · regenerated"}
       </span>
-      <Warnings flags={row.flags} />
     </div>
   );
 }
 
-function Warnings({ flags }: { flags: string[] }) {
-  if (flags.length === 0) return null;
-  return (
-    <ul aria-label="Warnings" className="flex max-w-64 flex-wrap gap-1">
-      {flags.map((f) => {
-        const h = degradationFlag(f);
-        return (
-          <li key={f}>
-            <Badge tone="warn" title={f}>
-              {h.known ? h.label : f}
-            </Badge>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-const COLUMNS: Column<TelemetryRunRow>[] = [
+const columns = (href: (row: TelemetryRunRow) => string): Column<TelemetryRunRow>[] => [
   {
     key: "time",
     header: "Run",
     width: "8.5rem",
     cell: (r) => (
       <div className="flex flex-col">
-        <span className="whitespace-nowrap text-sm">{formatDateTime(r.created_at)}</span>
+        <Link
+          href={href(r)}
+          aria-label={`Open run ${formatDateTime(r.created_at)} (${shortId(r.id)})`}
+          className="whitespace-nowrap rounded-sm text-sm font-medium text-accent-text underline-offset-2 hover:underline"
+        >
+          {formatDateTime(r.created_at)}
+        </Link>
         <span className="font-mono text-xs text-muted" title={r.id}>
           {shortId(r.id)}
         </span>
@@ -79,7 +83,7 @@ const COLUMNS: Column<TelemetryRunRow>[] = [
       </div>
     ),
   },
-  { key: "outcome", header: "Outcome and warnings", cell: (r) => <Outcome row={r} /> },
+  { key: "outcome", header: "Outcome", cell: (r) => <Outcome row={r} /> },
   { key: "latency", header: "Latency", align: "right", cell: (r) => <span className="whitespace-nowrap text-sm">{formatMs(r.total_ms)}</span> },
   {
     key: "calls",
@@ -120,14 +124,14 @@ const COLUMNS: Column<TelemetryRunRow>[] = [
   },
 ];
 
-export function RunsTable({ rows, onOpen }: { rows: TelemetryRunRow[]; onOpen: (row: TelemetryRunRow) => void }) {
+/** Runs list. Each row opens through a real link in the Run column (new tab and copy work). */
+export function RunsTable({ rows, runHref }: { rows: TelemetryRunRow[]; runHref: (row: TelemetryRunRow) => string }) {
   return (
     <Table
-      caption="Runs, newest first. Select a row to open its telemetry."
-      columns={COLUMNS}
+      caption="Runs, newest first. Open a run from the Run column to see its telemetry."
+      columns={columns(runHref)}
       rows={rows}
       rowKey={(r) => r.id}
-      onRowClick={onOpen}
       density="compact"
       empty="No runs match these filters."
     />

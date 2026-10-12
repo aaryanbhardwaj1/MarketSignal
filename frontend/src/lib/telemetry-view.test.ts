@@ -7,6 +7,11 @@ import {
   formatOffset,
   formatShare,
   isRedacted,
+  outcomeFlags,
+  timelineResultCounts,
+  toolResultCount,
+  toolStatusLabel,
+  toolStepLabel,
   parseViewState,
   runFilters,
   serializeViewState,
@@ -184,5 +189,48 @@ describe("fallback retrieval and warnings", () => {
     expect(steps.find((s) => s.kind === "warning")?.detail).toContain("(LLM_SYNTHESIS_UNAVAILABLE)");
     expect(formatOffset(steps[0].t_ms)).toBe("t-2 ms");
     expect(formatOffset(1234.4)).toBe("t+1,234 ms");
+  });
+});
+
+describe("tool call counts and labels", () => {
+  const entries: TimelineEntry[] = [
+    { t_ms: 1, kind: "tool_completed", label: "describe_dataset ok", detail: { step: 1, call_index: 0, tool: "describe_dataset", result_count: 9 } },
+    { t_ms: 2, kind: "tool_completed", label: "search_evidence ok", detail: { step: 1, call_index: 1, tool: "search_evidence", result_count: 10 } },
+  ];
+  const counts = timelineResultCounts(entries);
+
+  it("labels steps with a 1-based call index", () => {
+    expect(toolStepLabel({ step: 2, call_index: 0 })).toBe("Step 2 · call 1");
+  });
+
+  it("prefers the timeline count so the table and timeline agree", () => {
+    expect(toolResultCount({ step: 1, call_index: 0, tool: "describe_dataset", result_count: 0 }, counts)).toBe(9);
+  });
+
+  it("shows no count for an analytics tool whose audit row reports 0 and no timeline count", () => {
+    expect(toolResultCount({ step: 2, call_index: 0, tool: "aggregate", result_count: 0 }, counts)).toBeNull();
+    expect(toolResultCount({ step: 3, call_index: 0, tool: "get_evidence", result_count: 4 }, counts)).toBe(4);
+  });
+});
+
+describe("outcomeFlags", () => {
+  it("drops flags the termination state already states", () => {
+    const flags = ["PLANNER_UNAVAILABLE_FALLBACK", "LLM_SYNTHESIS_UNAVAILABLE", "PACK_BUDGET_TRUNCATED"];
+    expect(outcomeFlags("generation_unavailable", flags)).toEqual({
+      implied: ["PLANNER_UNAVAILABLE_FALLBACK", "LLM_SYNTHESIS_UNAVAILABLE"],
+      extra: ["PACK_BUDGET_TRUNCATED"],
+    });
+  });
+
+  it("keeps every flag when nothing is implied", () => {
+    expect(outcomeFlags(null, ["EVIDENCE_EMPTY"])).toEqual({ implied: [], extra: ["EVIDENCE_EMPTY"] });
+  });
+});
+
+describe("toolStatusLabel", () => {
+  it("humanizes audit statuses and keeps unknown codes", () => {
+    expect(toolStatusLabel("ok")).toBe("Succeeded");
+    expect(toolStatusLabel("timeout")).toBe("Timed out");
+    expect(toolStatusLabel("weird")).toBe("weird");
   });
 });

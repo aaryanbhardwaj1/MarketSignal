@@ -105,32 +105,30 @@ export function DeltaCell({
   );
 }
 
-/** Summary figure card for headline metrics. CI and n are always visible when recorded. */
-export function EvalStat({ metric, note }: { metric: EvalMetric; note?: ReactNode }) {
+/**
+ * Evaluation figure tile: value, then CI / n / source. `dense` is the grid variant for groups
+ * of related measures. One tile for every eval figure (the `DevMetric` primitive cannot carry
+ * the catalog's sha/git source tooltip or k-of-n display yet).
+ */
+export function EvalStat({ metric, note, dense = false, as: Tag = "div" }: { metric: EvalMetric; note?: ReactNode; dense?: boolean; as?: "div" | "li" }) {
   return (
-    <div className="flex flex-col rounded-lg border border-border bg-surface p-4">
+    <Tag className={cx("flex min-w-0 flex-col rounded-lg border border-border bg-surface", dense ? "px-4 py-3" : "p-4")}>
       <p className="text-sm text-secondary">{metric.label}</p>
-      <p className="mt-1 text-lg font-semibold tabular-nums text-primary">
+      <p className={cx("mt-1 font-semibold tabular-nums text-primary", dense ? "text-md" : "text-lg")}>
         {metric.value == null ? <span className="text-muted">Not measured</span> : primaryDisplay(metric)}
       </p>
       <MetricMeta metric={metric} />
       {note && <p className="mt-2 text-xs text-muted">{note}</p>}
-    </div>
+    </Tag>
   );
 }
 
-/** Dense grid of small stat tiles for groups of related measures. */
+/** Dense grid of evaluation tiles for groups of related measures. */
 export function MetricGrid({ metrics, label }: { metrics: EvalMetric[]; label: string }) {
   return (
     <ul aria-label={label} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {metrics.map((m) => (
-        <li key={m.id} className="flex flex-col rounded-lg border border-border bg-surface px-4 py-3">
-          <span className="text-sm text-secondary">{m.label}</span>
-          <span className="mt-1 text-md font-semibold tabular-nums text-primary">
-            {m.value == null ? <span className="text-muted">Not measured</span> : primaryDisplay(m)}
-          </span>
-          <MetricMeta metric={m} />
-        </li>
+        <EvalStat key={m.id} as="li" dense metric={m} />
       ))}
     </ul>
   );

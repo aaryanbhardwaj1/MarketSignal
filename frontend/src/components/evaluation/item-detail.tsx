@@ -5,7 +5,9 @@ import { DevDetails } from "@/components/ui/disclosure";
 import { KeyValueList } from "@/components/ui/key-value";
 import { Table, type Column } from "@/components/ui/table";
 import type { EvalItem, EvalProvenance } from "@/lib/api/contracts";
-import { formatCheck, formatCheckDelta } from "@/lib/eval-view";
+import { checkLabel, formatCheck, formatCheckDelta } from "@/lib/eval-view";
+import { stopReason, terminationState, type Humanized } from "@/lib/labels";
+import { toolStatusLabel } from "@/lib/telemetry-view";
 import { formatDateTime, formatNumber, humanize } from "@/lib/format";
 import { AnswerText, HandleChip, InlineText } from "./answer-text";
 
@@ -17,11 +19,31 @@ function Block({ title, children, aside }: { title: string; children: ReactNode;
   return (
     <section className="border-t border-border pt-4">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted">{title}</h3>
+        <h3 className="text-base font-semibold text-primary">{title}</h3>
         {aside}
       </div>
       {children}
     </section>
+  );
+}
+
+/** Label with its stored code beside it, as Telemetry shows codes on developer pages. */
+function Coded({ h }: { h: Humanized }) {
+  if (!h.code) return <span>Not recorded</span>;
+  return (
+    <span>
+      {h.known ? h.label : h.code}
+      {h.known && <span className="ml-1 font-mono">({h.code})</span>}
+    </span>
+  );
+}
+
+function CodedBadge({ h }: { h: Humanized }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <Badge tone={h.tone ?? "neutral"}>{h.known ? h.label : h.code || "Not recorded"}</Badge>
+      {h.known && <span className="font-mono text-xs text-muted">{h.code}</span>}
+    </span>
   );
 }
 
@@ -38,8 +60,6 @@ function HandleList({ handles, highlight, empty }: { handles: string[]; highligh
     </ul>
   );
 }
-
-const checkLabel = (k: string) => sentence(humanize(k)).replace(/\bLlm\b/, "Model");
 
 function Checks({ checks }: { checks: Record<string, number | boolean | null> }) {
   return (
@@ -103,7 +123,7 @@ function GroundedDetail({ item }: { item: Of<"grounded"> }) {
           </p>
         </Callout>
       )}
-      <Block title="Final answer (as stored)" aside={<Badge tone="neutral">{humanize(item.termination_state)}</Badge>}>
+      <Block title="Final answer (as stored)" aside={<CodedBadge h={terminationState(item.termination_state)} />}>
         <AnswerText markdown={item.answer_markdown} />
       </Block>
       <Block title="Expected evidence">
@@ -135,11 +155,11 @@ function ResearchDetail({ item }: { item: Of<"research"> }) {
       </Block>
       <div className="grid gap-4 border-t border-border pt-4 xl:grid-cols-2">
         <div className="min-w-0">
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Standard answer</h3>
+          <h3 className="mb-2 text-base font-semibold text-primary">Standard answer</h3>
           <AnswerText markdown={item.standard.answer_markdown} />
         </div>
         <div className="min-w-0">
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Research answer</h3>
+          <h3 className="mb-2 text-base font-semibold text-primary">Research answer</h3>
           <AnswerText markdown={item.research.answer_markdown} />
         </div>
       </div>
@@ -147,7 +167,7 @@ function ResearchDetail({ item }: { item: Of<"research"> }) {
         title="Research steps"
         aside={
           <span className="text-xs text-muted">
-            {formatNumber(item.research.tool_calls)} tool calls · stopped: {humanize(item.research.stop_reason)}
+            {formatNumber(item.research.tool_calls)} tool calls · stopped: <Coded h={stopReason(item.research.stop_reason)} />
           </span>
         }
       >
@@ -156,7 +176,9 @@ function ResearchDetail({ item }: { item: Of<"research"> }) {
             <li key={i} className="flex items-center gap-3">
               <span className="w-12 tabular-nums text-muted">Step {t.step}</span>
               <span className="font-mono">{t.tool}</span>
-              <Badge tone={t.status === "ok" ? "success" : "warn"}>{humanize(t.status)}</Badge>
+              <Badge tone={t.status === "ok" ? "success" : "warn"} title={t.status}>
+                {toolStatusLabel(t.status)}
+              </Badge>
             </li>
           ))}
         </ol>

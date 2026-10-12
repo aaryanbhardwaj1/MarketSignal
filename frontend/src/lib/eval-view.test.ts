@@ -4,6 +4,9 @@ import type { EvalCatalog, EvalMetric } from "@/lib/api/contracts";
 import { ApiError } from "@/lib/api/errors";
 import {
   MINUS,
+  checkLabel,
+  glossaryTitle,
+  parsePageParam,
   catalogFailure,
   changeVerdict,
   deltaVerdict,
@@ -162,5 +165,34 @@ describe("run helpers", () => {
   it("describes the paging window", () => {
     expect(pageWindow(20, 20, 76)).toBe("21–40 of 76");
     expect(pageWindow(0, 0, 0)).toBe("0 of 0");
+  });
+});
+
+describe("checkLabel", () => {
+  it("uses explicit labels for known keys", () => {
+    expect(checkLabel("first_token_ms")).toBe("First token");
+    expect(checkLabel("has_done")).toBe("Stream completed");
+    expect(checkLabel("southpeak_marker_leak")).toBe("Cross-workspace leak");
+  });
+
+  it("humanizes unknown keys and drops unit suffixes", () => {
+    expect(checkLabel("synthesis_ms")).toBe("Synthesis");
+    expect(checkLabel("llm_retries")).toBe("Model retries");
+  });
+});
+
+describe("glossaryTitle", () => {
+  it("names the term and its meaning", () => {
+    expect(glossaryTitle("mrr")).toMatch(/^MRR: Mean reciprocal rank/);
+  });
+});
+
+describe("parsePageParam", () => {
+  it("reads positive integers and falls back to page 1", () => {
+    expect(parsePageParam("3")).toBe(3);
+    expect(parsePageParam(null)).toBe(1);
+    expect(parsePageParam("0")).toBe(1);
+    expect(parsePageParam("2.5")).toBe(1);
+    expect(parsePageParam("abc")).toBe(1);
   });
 });

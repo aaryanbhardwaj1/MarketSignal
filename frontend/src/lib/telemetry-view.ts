@@ -314,7 +314,7 @@ function simpleStep(entry: TimelineEntry, index: number, runMode: string): Timel
       const attempt = num(d.attempt);
       const detail = [
         chunks != null ? `${plural(chunks, "chunk")} streamed` : null,
-        cites != null ? plural(cites, "citation") : null,
+        cites != null ? plural(cites, "citation marker") : null,
         attempt != null ? `attempt ${attempt}` : null,
       ]
         .filter(Boolean)
@@ -330,7 +330,7 @@ function simpleStep(entry: TimelineEntry, index: number, runMode: string): Timel
         ...base,
         kind: "final",
         title: "Final answer persisted",
-        detail: cites != null ? `${plural(cites, "citation")} kept` : null,
+        detail: cites != null ? `${plural(cites, "citation marker")} in the answer` : null,
       };
     }
     case "warning": {
@@ -433,4 +433,77 @@ export function formatShare(pct: number): string {
 export function formatOffset(ms: number): string {
   const r = Math.round(ms);
   return `t${r < 0 ? "-" : "+"}${Math.abs(r).toLocaleString("en-US")} ms`;
+}
+
+/** "Step 1 · call 2": research step number with a 1-based call index within that step. */
+export function toolStepLabel(call: Pick<TelemetryToolCall, "step" | "call_index">): string {
+  return `Step ${call.step} · call ${call.call_index + 1}`;
+}
+
+/**
+ * Result counts per tool call as reported on its `tool_completed` timeline event, keyed by
+ * `step.call_index`. The audit row's `result_count` counts list results only (0 for analytics
+ * tools), so the timeline count is the one the run detail shows in both places.
+ */
+export function timelineResultCounts(entries: TimelineEntry[]): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const e of entries) {
+    if (e.kind !== "tool_completed") continue;
+    const d = e.detail ?? {};
+    const step = num(d.step);
+    const call = num(d.call_index);
+    const count = num(d.result_count);
+    if (step != null && call != null && count != null) out.set(`${step}.${call}`, count);
+  }
+  return out;
+}
+
+/** Result count for one tool call: the timeline's count, else the audit count, else null for analytics tools reporting 0. */
+export function toolResultCount(call: Pick<TelemetryToolCall, "step" | "call_index" | "tool" | "result_count">, counts: Map<string, number>): number | null {
+  const fromTimeline = counts.get(`${call.step}.${call.call_index}`);
+  if (fromTimeline != null) return fromTimeline;
+  if (call.result_count == null) return null;
+  return ANALYTICS_TOOLS.has(call.tool) && call.result_count === 0 ? null : call.result_count;
+}
+
+/** Degradation flags a termination state already states, so the run list need not repeat them. */
+const IMPLIED_FLAGS: Record<string, readonly string[]> = {
+  generation_unavailable: ["LLM_SYNTHESIS_UNAVAILABLE", "PLANNER_UNAVAILABLE_FALLBACK", "AGENT_LLM_UNAVAILABLE"],
+  no_relevant_evidence: ["EVIDENCE_EMPTY"],
+  completed_with_limited_evidence: ["EVIDENCE_EMPTY"],
+  retrieval_degraded: ["RETRIEVAL_LEXICAL_FALLBACK", "RETRIEVAL_DENSE_UNAVAILABLE", "RETRIEVAL_TIMEOUT"],
+  timeout: ["RUN_TIMEOUT", "GATHER_TIMEOUT"],
+  tool_failure: ["TOOL_CIRCUIT_OPEN"],
+};
+
+export interface OutcomeFlags {
+  /** Flags the outcome label already implies (still listed in the outcome badge's tooltip). */
+  implied: string[];
+  /** Remaining flags, in recorded order. */
+  extra: string[];
+}
+
+/** Split a run's flags into those its termination state implies and the rest. */
+export function outcomeFlags(terminationState: string | null, flags: readonly string[]): OutcomeFlags {
+  const implied = new Set(terminationState ? (IMPLIED_FLAGS[terminationState] ?? []) : []);
+  return { implied: flags.filter((f) => implied.has(f)), extra: flags.filter((f) => !implied.has(f)) };
+}
+
+/** Plain label for a flag code, or the code itself when unknown (developer page). */
+export function flagLabel(code: string): string {
+  const h = degradationFlag(code);
+  return h.known ? h.label : code;
+}
+
+/** Audited tool-call outcomes (governance audit `status`). Unknown codes fall back to the code. */
+const TOOL_STATUS_LABELS: Record<string, string> = {
+  ok: "Succeeded",
+  truncated: "Truncated",
+  error: "Error",
+  denied: "Denied",
+  timeout: "Timed out",
+};
+
+export function toolStatusLabel(status: string): string {
+  return TOOL_STATUS_LABELS[status] ?? status;
 }

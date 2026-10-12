@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Section } from "@/components/ui/section";
 import { Table, type Column } from "@/components/ui/table";
 import type { EvalCatalog } from "@/lib/api/contracts";
@@ -66,14 +67,14 @@ export function AnalyticsTab({ catalog }: { catalog: EvalCatalog }) {
       <Section title="Superseded attempts" description="Earlier runs that were replaced. They are kept for the record and excluded from the figures above.">
         <ul className="flex flex-col gap-2">
           {catalog.superseded.map((s) => (
-            <li key={s.path} className="rounded-lg border border-border bg-surface px-4 py-3">
+            <Card key={s.path} as="li" padding="none" className="px-4 py-3">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge tone="neutral">Superseded</Badge>
                 <span className="text-base font-medium text-primary">{s.label}</span>
               </div>
               <p className="mt-1 text-base text-secondary">{s.reason}</p>
               <p className="mt-1 break-all font-mono text-xs text-muted">{s.path}</p>
-            </li>
+            </Card>
           ))}
         </ul>
       </Section>

@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Callout } from "@/components/ui/callout";
 import { Select } from "@/components/ui/form-controls";
 import { PageContainer } from "@/components/ui/page-container";
@@ -12,7 +12,7 @@ import { EmptyState, ErrorState, LoadingRegion, Skeleton } from "@/components/ui
 import type { EvalCatalog, EvalItem, EvalRunId } from "@/lib/api/contracts";
 import { useEvalCatalog, useEvalItems } from "@/lib/api/hooks/evaluation";
 import { cx } from "@/lib/cx";
-import { armLabels, bucketLabel, evalHref, evalRunHref, isEvalRunId, pageWindow, provenanceForRun } from "@/lib/eval-view";
+import { armLabels, bucketLabel, evalHref, evalRunHref, isEvalRunId, pageWindow, parsePageParam, provenanceForRun } from "@/lib/eval-view";
 import { formatNumber, humanize } from "@/lib/format";
 import { CatalogProvider } from "./catalog-context";
 import { CatalogLoading, CatalogProblem } from "./catalog-states";
@@ -73,6 +73,61 @@ function ItemList({
   );
 }
 
+function ItemListPanel({
+  title,
+  items,
+  offset,
+  selected,
+  onSelect,
+  onPage,
+}: {
+  title: string;
+  items: ReturnType<typeof useEvalItems>;
+  offset: number;
+  selected: string | null;
+  onSelect: (id: string) => void;
+  onPage: (offset: number) => void;
+}) {
+  const list = items.data?.items ?? [];
+  const total = items.data?.total ?? 0;
+  return (
+    <Card padding="none">
+      <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
+        <p className="text-sm font-medium text-secondary">{title}</p>
+        {items.data && <p className="text-xs tabular-nums text-muted">{pageWindow(offset, list.length, total)}</p>}
+      </div>
+      {items.isPending ? (
+        <div className="p-3">
+          <LoadingRegion label="Loading items" lines={8} />
+        </div>
+      ) : items.isError ? (
+        <div className="p-3">
+          <ErrorState
+            title="Items could not be loaded"
+            description="The items for this run were not returned."
+            retry={() => void items.refetch()}
+            devDetail={items.error instanceof Error ? items.error.message : undefined}
+          />
+        </div>
+      ) : list.length === 0 ? (
+        <p className="px-3 py-6 text-center text-sm text-muted">No items in this bucket.</p>
+      ) : (
+        <ItemList items={list} selected={selected} onSelect={onSelect} />
+      )}
+      {total > PAGE && (
+        <nav aria-label="Item pages" className="flex items-center justify-between gap-2 border-t border-border px-3 py-2">
+          <Button variant="secondary" size="sm" disabled={offset === 0} onClick={() => onPage(Math.max(offset - PAGE, 0))}>
+            Previous
+          </Button>
+          <Button variant="secondary" size="sm" disabled={offset + PAGE >= total} onClick={() => onPage(offset + PAGE)}>
+            Next
+          </Button>
+        </nav>
+      )}
+    </Card>
+  );
+}
+
 function RunBody({ catalog, ws, runId }: { catalog: EvalCatalog; ws: string; runId: EvalRunId }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -80,18 +135,21 @@ function RunBody({ catalog, ws, runId }: { catalog: EvalCatalog; ws: string; run
   const run = catalog.failure_runs.find((r) => r.run_id === runId);
   const bucket = params.get("bucket") || null;
   const validBucket = bucket && run?.buckets.some((b) => b.id === bucket) ? bucket : null;
-  const [offset, setOffset] = useState(0);
+  const offset = (parsePageParam(params.get("page")) - 1) * PAGE;
   const items = useEvalItems(runId, { offset, limit: PAGE, bucket: validBucket });
   const list = items.data?.items ?? [];
   const selectedId = params.get("item") ?? list[0]?.item_id ?? null;
   const selected = list.find((i) => i.item_id === selectedId) ?? null;
 
-  const setParam = (key: string, value: string | null) => {
+  /** Bucket and page changes clear the item (it may not be on the new page); page changes are history entries. */
+  const navigate = (patch: Record<string, string | null>, mode: "push" | "replace") => {
     const next = new URLSearchParams(params.toString());
-    if (value) next.set(key, value);
-    else next.delete(key);
-    if (key === "bucket") next.delete("item");
-    router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+    for (const [key, value] of Object.entries(patch)) {
+      if (value) next.set(key, value);
+      else next.delete(key);
+    }
+    const qs = next.toString();
+    router[mode](qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
 
   const bucketOptions = [
@@ -123,10 +181,7 @@ function RunBody({ catalog, ws, runId }: { catalog: EvalCatalog; ws: string; run
           Failure bucket
           <Select
             value={validBucket ?? ""}
-            onChange={(e) => {
-              setOffset(0);
-              setParam("bucket", e.target.value || null);
-            }}
+            onChange={(e) => navigate({ bucket: e.target.value || null, page: null, item: null }, "replace")}
             options={bucketOptions}
             className="min-w-72"
           />
@@ -140,45 +195,14 @@ function RunBody({ catalog, ws, runId }: { catalog: EvalCatalog; ws: string; run
 
       <div className="mt-5 grid gap-5 lg:grid-cols-12">
         <aside className="lg:col-span-4">
-          <div className="rounded-lg border border-border bg-surface">
-            <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
-              <p className="text-sm font-medium text-secondary">{bucketLabel(catalog, runId, validBucket)}</p>
-              {items.data && <p className="text-xs tabular-nums text-muted">{pageWindow(offset, list.length, items.data.total)}</p>}
-            </div>
-            {items.isPending ? (
-              <div className="p-3">
-                <LoadingRegion label="Loading items" lines={8} />
-              </div>
-            ) : items.isError ? (
-              <div className="p-3">
-                <ErrorState
-                  title="Items could not be loaded"
-                  description="The items for this run were not returned."
-                  retry={() => void items.refetch()}
-                  devDetail={items.error instanceof Error ? items.error.message : undefined}
-                />
-              </div>
-            ) : list.length === 0 ? (
-              <p className="px-3 py-6 text-center text-sm text-muted">No items in this bucket.</p>
-            ) : (
-              <ItemList items={list} selected={selected?.item_id ?? null} onSelect={(id) => setParam("item", id)} />
-            )}
-            {items.data && items.data.total > PAGE && (
-              <div className="flex items-center justify-between gap-2 border-t border-border px-3 py-2">
-                <Button variant="secondary" size="sm" disabled={offset === 0} onClick={() => setOffset(Math.max(offset - PAGE, 0))}>
-                  Previous
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={offset + PAGE >= items.data.total}
-                  onClick={() => setOffset(offset + PAGE)}
-                >
-                  Next
-                </Button>
-              </div>
-            )}
-          </div>
+          <ItemListPanel
+            title={bucketLabel(catalog, runId, validBucket)}
+            items={items}
+            offset={offset}
+            selected={selected?.item_id ?? null}
+            onSelect={(id) => navigate({ item: id }, "replace")}
+            onPage={(next) => navigate({ page: next > 0 ? String(next / PAGE + 1) : null, item: null }, "push")}
+          />
         </aside>
         <div className="min-w-0 lg:col-span-8">
           {items.isPending ? (

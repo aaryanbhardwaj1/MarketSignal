@@ -1,11 +1,22 @@
 import type { TelemetryRunDetail, TelemetryToolCall, VerificationAttemptSummary } from "@/lib/api/contracts";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { DevDetails } from "@/components/ui/disclosure";
 import { Table, type Column } from "@/components/ui/table";
 import { cx } from "@/lib/cx";
+import { glossaryTitle } from "@/lib/eval-view";
 import { formatMs, formatNumber } from "@/lib/format";
 import { verificationDisposition, verificationFailure } from "@/lib/labels";
-import { buildTimeline, formatOffset, isRedacted, toolStatusTone, type TimelineStep, type TimelineStepKind } from "@/lib/telemetry-view";
+import {
+  buildTimeline,
+  formatOffset,
+  isRedacted,
+  timelineResultCounts,
+  toolResultCount,
+  toolStatusLabel,
+  toolStatusTone,
+  toolStepLabel,
+  type TimelineStep, type TimelineStepKind } from "@/lib/telemetry-view";
 import { NotRecorded, Panel } from "./stat-tile";
 
 type Detail = TelemetryRunDetail;
@@ -33,7 +44,7 @@ function StepRow({ step }: { step: TimelineStep }) {
         {step.detail && <p className="truncate text-xs text-muted" title={step.detail}>{step.detail}</p>}
       </div>
       <div className="flex items-center gap-2 pt-px">
-        {step.status && <Badge tone={toolStatusTone(step.status)}>{step.status}</Badge>}
+        {step.status && <Badge tone={toolStatusTone(step.status)} title={step.status}>{toolStatusLabel(step.status)}</Badge>}
         {dur != null && <span className="whitespace-nowrap text-xs tabular-nums text-muted">{formatMs(dur)}</span>}
       </div>
     </li>
@@ -44,22 +55,22 @@ export function RunTimeline({ detail }: { detail: Detail }) {
   const steps = buildTimeline(detail.timeline, detail.run.mode);
   if (steps.length === 0) return <NotRecorded>No observable events were recorded for this run.</NotRecorded>;
   return (
-    <div className="rounded-lg border border-border bg-surface px-4 py-2">
+    <Card padding="none" className="px-4 py-2">
       <ol aria-label="Observable run timeline">
         {steps.map((s) => (
           <StepRow key={s.id} step={s} />
         ))}
       </ol>
-    </div>
+    </Card>
   );
 }
 
-const TOOL_COLUMNS: Column<TelemetryToolCall>[] = [
+const toolColumns = (counts: Map<string, number>): Column<TelemetryToolCall>[] => [
   {
     key: "step",
     header: "Step",
-    width: "4rem",
-    cell: (t) => <span className="font-mono text-xs tabular-nums">{`${t.step}.${t.call_index}`}</span>,
+    width: "7.5rem",
+    cell: (t) => <span className="whitespace-nowrap text-sm tabular-nums">{toolStepLabel(t)}</span>,
   },
   { key: "tool", header: "Tool", cell: (t) => <span className="font-mono text-sm">{t.tool}</span> },
   {
@@ -67,7 +78,7 @@ const TOOL_COLUMNS: Column<TelemetryToolCall>[] = [
     header: "Status",
     cell: (t) => (
       <span className="flex flex-col items-start gap-0.5">
-        <Badge tone={toolStatusTone(t.status)}>{t.status}</Badge>
+        <Badge tone={toolStatusTone(t.status)} title={t.status}>{toolStatusLabel(t.status)}</Badge>
         {t.error_code && <span className="font-mono text-xs text-muted">{t.error_code}</span>}
       </span>
     ),
@@ -77,13 +88,16 @@ const TOOL_COLUMNS: Column<TelemetryToolCall>[] = [
     key: "results",
     header: "Results",
     align: "right",
-    cell: (t) => (
+    cell: (t) => {
+      const n = toolResultCount(t, counts);
+      return (
       <span className="whitespace-nowrap text-sm">
-        {t.result_count == null ? "-" : formatNumber(t.result_count)}
+        {n == null ? <span className="text-muted" title="This tool returns a non-list result">—</span> : formatNumber(n)}
         {t.total_matches != null && <span className="block text-xs text-muted">{`of ${formatNumber(t.total_matches)} matches`}</span>}
         {t.truncated && <span className="block text-xs text-warn">Truncated</span>}
       </span>
-    ),
+      );
+    },
   },
   {
     key: "args",
@@ -128,7 +142,7 @@ export function ToolCalls({ detail }: { detail: Detail }) {
   return (
     <Table
       caption="Audited research tool calls, in order"
-      columns={TOOL_COLUMNS}
+      columns={toolColumns(timelineResultCounts(detail.timeline))}
       rows={detail.tools}
       rowKey={(t) => `${t.step}-${t.call_index}-${t.tool}`}
       density="compact"
@@ -155,7 +169,12 @@ const VERIFY_COLUMNS: Column<VerificationAttemptSummary>[] = [
       );
     },
   },
-  { key: "cites", header: "Citations", align: "right", cell: (v) => formatNumber(v.citations) },
+  {
+    key: "cites",
+    header: <span title="Citation references the verifier checked in this attempt, including repeats">References checked</span>,
+    align: "right",
+    cell: (v) => formatNumber(v.citations),
+  },
   { key: "repairs", header: "Repairs", align: "right", cell: (v) => formatNumber(v.repairs_n) },
   {
     key: "failures",
@@ -210,9 +229,19 @@ const SUB_STAGES: { key: string; label: string }[] = [
   { key: "lexical_prep_ms", label: "Lexical query prep" },
   { key: "lexical_ms", label: "Lexical search" },
   { key: "dense_ms", label: "Dense search" },
-  { key: "fusion_ms", label: "Fusion (RRF)" },
+  { key: "fusion_ms", label: "Fusion (reciprocal-rank)" },
   { key: "total_ms", label: "Total" },
 ];
+
+type SubStage = (typeof SUB_STAGES)[number];
+
+const SUB_STAGE_COLUMNS = (timings: Record<string, number>): Column<SubStage>[] => {
+  const strong = (st: SubStage, text: string) => (st.key === "total_ms" ? <span className="font-medium">{text}</span> : text);
+  return [
+    { key: "stage", header: "Stage", cell: (st) => strong(st, st.label) },
+    { key: "ms", header: "Duration", align: "right", cell: (st) => strong(st, formatMs(timings[st.key])) },
+  ];
+};
 
 type TopFinal = NonNullable<Detail["retrieval"]>["top_final"][number];
 
@@ -223,7 +252,7 @@ const TOP_COLUMNS: Column<TopFinal>[] = [
   { key: "handle", header: "Handle", cell: (r) => <span className="break-all font-mono text-xs">{r.handle}</span> },
   { key: "lex", header: "Lexical", align: "right", cell: (r) => rank(r.lanes.lexical) },
   { key: "dense", header: "Dense", align: "right", cell: (r) => rank(r.lanes.dense) },
-  { key: "rrf", header: "RRF", align: "right", cell: (r) => <span className="font-mono text-xs">{r.rrf.toFixed(4)}</span> },
+  { key: "rrf", header: <span title={glossaryTitle("rrf")}>RRF score</span>, align: "right", cell: (r) => <span className="font-mono text-xs">{r.rrf.toFixed(4)}</span> },
 ];
 
 export function RetrievalPanel({ detail }: { detail: Detail }) {
@@ -258,21 +287,14 @@ export function RetrievalPanel({ detail }: { detail: Detail }) {
             <span className="font-medium text-primary">{r.embedding_cache_hit == null ? "Not recorded" : r.embedding_cache_hit ? "Hit" : "Miss"}</span>
           </p>
         </Panel>
-        <Panel title="Sub-stage timings">
-          <table className="w-full text-sm">
-            <caption className="sr-only">Retrieval sub-stage timings for this run</caption>
-            <tbody>
-              {SUB_STAGES.filter((s) => typeof r.timings[s.key] === "number").map((s) => (
-                <tr key={s.key} className="border-t border-border first:border-t-0">
-                  <th scope="row" className={cx("py-1 text-left", s.key === "total_ms" ? "font-medium text-primary" : "font-normal text-secondary")}>
-                    {s.label}
-                  </th>
-                  <td className="py-1 text-right tabular-nums text-primary">{formatMs(r.timings[s.key])}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Panel>
+        <Table
+          caption="Sub-stage timings"
+          showCaption
+          columns={SUB_STAGE_COLUMNS(r.timings)}
+          rows={SUB_STAGES.filter((st) => typeof r.timings[st.key] === "number")}
+          rowKey={(st) => st.key}
+          density="compact"
+        />
       </div>
       <Table
         caption="Top final evidence passages, with each lane's rank"

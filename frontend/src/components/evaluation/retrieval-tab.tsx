@@ -4,10 +4,13 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { BarList } from "@/components/ui/bar-list";
 import { Callout } from "@/components/ui/callout";
+import { Card } from "@/components/ui/card";
 import { Section } from "@/components/ui/section";
 import { Table, type Column } from "@/components/ui/table";
 import type { EvalCatalog, EvalMetric, EvalRunId } from "@/lib/api/contracts";
 import {
+  glossaryTitle,
+  type GlossaryKey,
   DECISION_OUTCOME,
   caveatsFor,
   deltaVerdict,
@@ -18,6 +21,7 @@ import {
 } from "@/lib/eval-view";
 import { formatMs, formatNumber } from "@/lib/format";
 import { Caveats } from "./caveats";
+import { MetricGlossary } from "./metric-glossary";
 import { DeltaCell, MetricCell, MetricSource, Segmented, SourceRef } from "./metric-bits";
 
 type RetrievalRun = EvalCatalog["retrieval"]["runs"][number];
@@ -27,10 +31,13 @@ type Decision = EvalCatalog["retrieval"]["decisions"][number];
 type Population = "eligible" | "all";
 
 const ARM_METRICS = [
-  { key: "hit@1", header: "Hit@1" },
-  { key: "recall@10", header: "Recall@10" },
-  { key: "mrr", header: "MRR" },
+  { key: "hit@1", header: "Hit@1", gloss: "hit" },
+  { key: "recall@10", header: "Recall@10", gloss: "recall" },
+  { key: "mrr", header: "MRR", gloss: "mrr" },
 ] as const;
+
+/** Column header with its glossary definition on hover. */
+const abbr = (text: string, key: GlossaryKey) => <span title={glossaryTitle(key)}>{text}</span>;
 
 const splitLabel = (run: RetrievalRun) => (run.provenance.split === "test" ? "Held-out test" : "Dev");
 
@@ -96,11 +103,11 @@ function ArmsTable({ run, population }: { run: RetrievalRun; population: Populat
       ),
     },
     ...ARM_METRICS.map(
-      (m): Column<Arm> => ({ key: m.key, header: m.header, align: "right", cell: (a) => <MetricCell metric={a[population][m.key]} /> }),
+      (m): Column<Arm> => ({ key: m.key, header: abbr(m.header, m.gloss), align: "right", cell: (a) => <MetricCell metric={a[population][m.key]} /> }),
     ),
     {
       key: "latency",
-      header: "Latency p50 / p95",
+      header: abbr("Latency p50 / p95", "p50"),
       align: "right",
       cell: (a) => (
         <span className="inline-flex flex-col items-end">
@@ -138,11 +145,11 @@ function ComparisonsTable({ catalog, run }: { catalog: EvalCatalog; run: Retriev
         </span>
       ),
     },
-    { key: "recall", header: "Δ Recall@10", align: "right", cell: (c) => <DeltaCell metric={metricOf(c, "d_recall@10")} /> },
-    { key: "mrr", header: "Δ MRR", align: "right", cell: (c) => <DeltaCell metric={metricOf(c, "d_mrr")} /> },
+    { key: "recall", header: abbr("Δ Recall@10", "recall"), align: "right", cell: (c) => <DeltaCell metric={metricOf(c, "d_recall@10")} /> },
+    { key: "mrr", header: abbr("Δ MRR", "mrr"), align: "right", cell: (c) => <DeltaCell metric={metricOf(c, "d_mrr")} /> },
     {
       key: "hits",
-      header: "Hit@10 items gained / lost",
+      header: abbr("Hit@10 items gained / lost", "hit"),
       align: "right",
       cell: (c) => (
         <span className="inline-flex flex-col items-end">
@@ -171,7 +178,7 @@ function ComparisonsTable({ catalog, run }: { catalog: EvalCatalog; run: Retriev
 function DecisionCard({ decision }: { decision: Decision }) {
   const outcome = DECISION_OUTCOME[decision.outcome];
   return (
-    <li className="rounded-lg border border-border bg-surface p-4">
+    <Card as="li" padding="sm">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <p className="min-w-0 flex-1 text-base font-semibold text-primary">{decision.title}</p>
         <Badge tone={outcome.tone} size="md">
@@ -203,7 +210,7 @@ function DecisionCard({ decision }: { decision: Decision }) {
         <SourceRef path={decision.source.path} locator={sourceLocator(decision.source)} />
         <span className="ml-1 font-mono">{decision.source.path}</span>
       </p>
-    </li>
+    </Card>
   );
 }
 
@@ -219,6 +226,9 @@ export function RetrievalTab({ catalog }: { catalog: EvalCatalog }) {
   return (
     <div>
       <Conclusion catalog={catalog} testRun={testRun} />
+      <div className="mt-4">
+        <MetricGlossary keys={["hit", "recall", "mrr", "eligible", "ci", "pp", "rrf", "bge", "p50"]} />
+      </div>
 
       {run && (
         <Section
@@ -245,7 +255,7 @@ export function RetrievalTab({ catalog }: { catalog: EvalCatalog }) {
           }
         >
           <ArmsTable run={run} population={population} />
-          <div className="mt-4 rounded-lg border border-border bg-surface p-4">
+          <Card padding="sm" className="mt-4">
             <p className="mb-3 text-sm font-medium text-secondary">Recall@10 by method ({splitLabel(run).toLowerCase()})</p>
             <BarList
               ariaLabel={`Recall@10 by retrieval method, ${run.label}`}
@@ -257,7 +267,7 @@ export function RetrievalTab({ catalog }: { catalog: EvalCatalog }) {
                 emphasis: a.is_default,
               }))}
             />
-          </div>
+          </Card>
         </Section>
       )}
 
@@ -271,13 +281,13 @@ export function RetrievalTab({ catalog }: { catalog: EvalCatalog }) {
         title="Decisions"
         description="What was adopted and what was rejected. Negative findings are kept on the record alongside the adopted changes."
       >
-        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">Negative findings</h3>
+        <h3 className="mb-2 text-base font-semibold text-primary">Negative findings</h3>
         <ul className="grid gap-3 lg:grid-cols-2">
           {negative.map((d) => (
             <DecisionCard key={d.id} decision={d} />
           ))}
         </ul>
-        <h3 className="mb-2 mt-6 text-sm font-semibold uppercase tracking-wide text-muted">Adopted</h3>
+        <h3 className="mb-2 mt-6 text-base font-semibold text-primary">Adopted</h3>
         <ul className="grid gap-3 lg:grid-cols-2">
           {adopted.map((d) => (
             <DecisionCard key={d.id} decision={d} />

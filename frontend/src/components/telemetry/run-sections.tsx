@@ -1,10 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type { TelemetryRunDetail } from "@/lib/api/contracts";
 import { useOptionalEvidenceDrawer } from "@/components/evidence/drawer-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { KeyValueList } from "@/components/ui/key-value";
+import { Table, type Column } from "@/components/ui/table";
 import { cx } from "@/lib/cx";
 import { formatMs, formatNumber, formatUsd } from "@/lib/format";
 import { degradationFlag, routeReason, runMode, stopReason, type Humanized } from "@/lib/labels";
@@ -108,54 +110,49 @@ export function ResearchCard({ detail }: { detail: Detail }) {
 interface UsageRow {
   label: string;
   usage: Record<string, number> | null | undefined;
+  missing: string;
 }
 
-function UsageCell({ usage, k }: { usage: UsageRow["usage"]; k: string }) {
-  const v = usageValue(usage, k);
-  return <td className="py-1 text-right tabular-nums text-primary">{v == null ? <span className="text-muted">-</span> : formatNumber(v)}</td>;
+function usageCell(k: string): (r: UsageRow) => ReactNode {
+  return function UsageCell(r: UsageRow) {
+    const v = usageValue(r.usage, k);
+    return v == null ? <span className="text-muted">-</span> : formatNumber(v);
+  };
 }
+
+const USAGE_COLUMNS: Column<UsageRow>[] = [
+  {
+    key: "source",
+    header: "Source",
+    cell: (r) => (
+      <span className="flex flex-col">
+        <span className="text-secondary">{r.label}</span>
+        {!r.usage && <span className="text-xs text-muted">{r.missing}</span>}
+      </span>
+    ),
+  },
+  { key: "calls", header: "Calls", align: "right", cell: usageCell(USAGE_KEYS.calls) },
+  { key: "in", header: "Input", align: "right", cell: usageCell(USAGE_KEYS.input) },
+  { key: "out", header: "Output", align: "right", cell: usageCell(USAGE_KEYS.output) },
+  { key: "cr", header: "Cache read", align: "right", cell: usageCell(USAGE_KEYS.cacheRead) },
+  { key: "cw", header: "Cache write", align: "right", cell: usageCell(USAGE_KEYS.cacheWrite) },
+];
 
 export function UsageCard({ detail }: { detail: Detail }) {
   const { run, agent } = detail;
   const rows: UsageRow[] = [
-    { label: "Synthesis", usage: Object.keys(run.usage ?? {}).length ? run.usage : null },
-    { label: "Research steps", usage: agent?.usage ?? null },
+    { label: "Synthesis", usage: Object.keys(run.usage ?? {}).length ? run.usage : null, missing: "Not recorded" },
+    {
+      label: "Research steps",
+      usage: agent?.usage ?? null,
+      missing: run.mode !== "research" ? "Not applicable (standard run)" : "Not recorded",
+    },
   ];
   const models = Object.entries(run.models ?? {});
   return (
     <Panel title="Model and token usage" meta={run.model ?? undefined}>
-      <table className="w-full text-sm">
-        <caption className="sr-only">Token usage by source</caption>
-        <thead>
-          <tr className="text-left text-muted">
-            <th scope="col" className="pb-1.5 font-medium">Source</th>
-            <th scope="col" className="pb-1.5 text-right font-medium">Calls</th>
-            <th scope="col" className="pb-1.5 text-right font-medium">Input</th>
-            <th scope="col" className="pb-1.5 text-right font-medium">Output</th>
-            <th scope="col" className="pb-1.5 text-right font-medium">Cache read</th>
-            <th scope="col" className="pb-1.5 text-right font-medium">Cache write</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.label} className="border-t border-border">
-              <th scope="row" className="py-1 text-left font-normal text-secondary">
-                {r.label}
-              </th>
-              {r.usage ? (
-                [USAGE_KEYS.calls, USAGE_KEYS.input, USAGE_KEYS.output, USAGE_KEYS.cacheRead, USAGE_KEYS.cacheWrite].map((k) => (
-                  <UsageCell key={k} usage={r.usage} k={k} />
-                ))
-              ) : (
-                <td colSpan={5} className="py-1 text-right text-muted">
-                  {r.label === "Research steps" && run.mode !== "research" ? "Not applicable (standard run)" : "Not recorded"}
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <dl className="mt-3 grid grid-cols-3 gap-3 border-t border-border pt-2.5 text-sm">
+      <Table caption="Token usage by source" columns={USAGE_COLUMNS} rows={rows} rowKey={(r) => r.label} density="compact" />
+      <dl className="mt-3 grid grid-cols-3 gap-3 text-sm">
         <div>
           <dt className="text-muted">Model calls</dt>
           <dd className="font-medium tabular-nums text-primary">{run.model_calls == null ? "Not recorded" : formatNumber(run.model_calls)}</dd>
@@ -183,6 +180,40 @@ export function UsageCard({ detail }: { detail: Detail }) {
 /** Accent shades for consecutive segments; the table carries the labels, so colour is never the only cue. */
 const SHADES = ["bg-accent", "bg-accent/70", "bg-accent/45", "bg-accent/30", "bg-accent/85", "bg-accent/55"];
 
+interface StageTimingRow {
+  key: string;
+  label: string;
+  ms: number | null;
+  pct: number | null;
+  index: number;
+}
+
+/** Segments plus a final "Total" row (emphasized) so the table needs no separate footer. */
+function stageRows(segments: ReturnType<typeof stageSegments>, total: number | null): StageTimingRow[] {
+  return [...segments.map((s, index) => ({ key: s.key, label: s.label, ms: s.ms, pct: s.pct, index })), { key: "__total", label: "Total", ms: total, pct: null, index: -1 }];
+}
+
+function stageColumns(shade: (i: number, key: string) => string): Column<StageTimingRow>[] {
+  const total = (r: StageTimingRow) => r.key === "__total";
+  return [
+    {
+      key: "stage",
+      header: "Stage",
+      cell: (r) =>
+        total(r) ? (
+          <span className="font-medium">Total</span>
+        ) : (
+          <span className="flex items-center gap-2 text-secondary">
+            <span aria-hidden className={cx("h-2.5 w-2.5 shrink-0 rounded-sm", shade(r.index, r.key))} />
+            {r.label}
+          </span>
+        ),
+    },
+    { key: "ms", header: "Duration", align: "right", cell: (r) => <span className={total(r) ? "font-medium" : undefined}>{formatMs(r.ms)}</span> },
+    { key: "share", header: "Share", align: "right", cell: (r) => (r.pct == null ? "" : <span className="text-muted">{formatShare(r.pct)}</span>) },
+  ];
+}
+
 export function StageTiming({ detail }: { detail: Detail }) {
   const { timings, mode, total_ms } = detail.run;
   const segments = stageSegments(mode, timings ?? {});
@@ -190,43 +221,15 @@ export function StageTiming({ detail }: { detail: Detail }) {
   if (segments.length === 0) return <NotRecorded>No stage timings were recorded for this run.</NotRecorded>;
   const shade = (i: number, key: string) => (key === "other" ? "bg-border-strong" : SHADES[i % SHADES.length]);
   return (
-    <div className="rounded-lg border border-border bg-surface px-4 py-3">
+    <div>
       <div className="flex h-3 w-full overflow-hidden rounded-sm bg-surface-sunken" role="img" aria-label="Stage timing bar; values in the table below">
         {segments.map((s, i) => (
           <div key={s.key} className={cx("h-full border-r border-surface last:border-r-0", shade(i, s.key))} style={{ width: `${s.pct}%` }} title={`${s.label}: ${formatMs(s.ms)}`} />
         ))}
       </div>
-      <table className="mt-3 w-full text-sm">
-        <caption className="sr-only">Stage timings for this run</caption>
-        <thead>
-          <tr className="text-left text-muted">
-            <th scope="col" className="pb-1.5 font-medium">Stage</th>
-            <th scope="col" className="pb-1.5 text-right font-medium">Duration</th>
-            <th scope="col" className="pb-1.5 text-right font-medium">Share</th>
-          </tr>
-        </thead>
-        <tbody>
-          {segments.map((s, i) => (
-            <tr key={s.key} className="border-t border-border">
-              <th scope="row" className="py-1 text-left font-normal text-secondary">
-                <span className="flex items-center gap-2">
-                  <span aria-hidden className={cx("h-2.5 w-2.5 shrink-0 rounded-sm", shade(i, s.key))} />
-                  {s.label}
-                </span>
-              </th>
-              <td className="py-1 text-right tabular-nums text-primary">{formatMs(s.ms)}</td>
-              <td className="py-1 text-right tabular-nums text-muted">{formatShare(s.pct)}</td>
-            </tr>
-          ))}
-          <tr className="border-t border-border-strong">
-            <th scope="row" className="py-1 text-left font-medium text-primary">
-              Total
-            </th>
-            <td className="py-1 text-right font-medium tabular-nums text-primary">{formatMs(total_ms)}</td>
-            <td />
-          </tr>
-        </tbody>
-      </table>
+      <div className="mt-3">
+        <Table caption="Stage timings for this run" columns={stageColumns(shade)} rows={stageRows(segments, total_ms)} rowKey={(r) => r.key} density="compact" />
+      </div>
       <p className="mt-2 text-xs text-muted">
         {firstToken == null ? "First token: not recorded." : `First token ${formatMs(firstToken)} after synthesis started.`} Stages a run did not
         record are omitted, not shown as zero.
