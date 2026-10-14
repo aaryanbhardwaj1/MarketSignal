@@ -21,6 +21,7 @@ from marketsignal.api.errors import install_error_handlers
 from marketsignal.api.routers import (
     analytics,
     capabilities,
+    decks,
     dev,
     evaluation,
     evidence,
@@ -398,6 +399,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(results.router)
     app.include_router(analytics.router)
     app.include_router(insights.router)
+    app.include_router(decks.router)
     app.include_router(capabilities.router)
     # Governed MCP tools over Streamable HTTP (loopback only unless mcp_public; ADR-0006).
     app.mount("/mcp", _DeferredMCP(app))
