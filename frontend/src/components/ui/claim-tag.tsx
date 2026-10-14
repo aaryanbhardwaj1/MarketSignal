@@ -52,7 +52,7 @@ export function ClaimTag({
       tabIndex={explain ? 0 : undefined}
       data-claim={type}
       className={cx(
-        "inline-flex shrink-0 items-center whitespace-nowrap rounded-md border align-baseline font-medium leading-none",
+        "inline-flex shrink-0 items-center whitespace-nowrap rounded-md border align-baseline font-medium normal-case leading-none tracking-normal",
         SIZE[size],
         STYLE[type],
         explain && "cursor-help",

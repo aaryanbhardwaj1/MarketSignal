@@ -37,7 +37,7 @@ export type StageOutcome = "completed" | "failed" | "cancelled" | "running";
 export interface StagesSummary {
   stages: ResearchStage[];
   outcome: StageOutcome;
-  /** "4 steps · 5 tool calls · 17.8 s" (research) or "4 stages · 9.38 s" (standard). */
+  /** "4 steps · 5 lookups · 17.8 s" (research) or "4 stages · 9.38 s" (standard). */
   summary: string;
   totalMs: number | null;
 }
@@ -84,7 +84,7 @@ function summaryText(run: RunRecord, stages: readonly ResearchStage[], totalMs: 
   const agent = run.agent;
   const parts =
     agent && agent.steps > 0
-      ? [formatCount(agent.steps, "step"), formatCount(agent.tool_calls, "tool call")]
+      ? [formatCount(agent.steps, "step"), formatCount(agent.tool_calls, "lookup")]
       : [formatCount(stages.length, "stage")];
   if (totalMs !== null) parts.push(formatMs(totalMs));
   if (outcome === "failed") parts.push("Did not complete");

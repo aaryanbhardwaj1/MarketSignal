@@ -191,7 +191,7 @@ export function SourcePage({ ws, sourceId }: { ws: string; sourceId: string }) {
         description={[
           currentVersion ? sourceClass(currentVersion.source_class).label : null,
           sourceType(detail.source_type).label,
-          currentVersion ? `${confidentialityLabel(currentVersion.confidentiality)} confidentiality` : null,
+          currentVersion ? confidentialityLabel(currentVersion.confidentiality) : null,
         ]
           .filter(Boolean)
           .join(" · ")}
@@ -204,7 +204,7 @@ export function SourcePage({ ws, sourceId }: { ws: string; sourceId: string }) {
 
         <Section
           title="Cited in the analyst brief"
-          description="Passages from this source that key signals and growth opportunities rely on. Open a passage to read it in context."
+          description="Passages from this source that insights and growth opportunities rely on. Open a passage to read it in context."
         >
           <SourceCitations ws={ws} sourceCode={detail.source_code} />
         </Section>

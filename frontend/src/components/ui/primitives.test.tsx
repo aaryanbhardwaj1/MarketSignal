@@ -107,7 +107,7 @@ describe("controls", () => {
   });
 
   it("InferenceTag explains itself", () => {
-    expect(html(<InferenceTag />)).toContain("not stated directly in a source");
+    expect(html(<InferenceTag />)).toContain("not stated by it");
   });
 });
 

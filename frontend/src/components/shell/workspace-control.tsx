@@ -111,7 +111,7 @@ export function WorkspaceControl({ ws, onNavigate }: { ws: string; onNavigate?: 
               className={cx(ROW, "text-secondary hover:bg-surface-muted hover:text-primary")}
             >
               <BookOpenText aria-hidden className="size-4 text-muted" />
-              Evidence library
+              Evidence Library
             </Link>
           </div>
         </>

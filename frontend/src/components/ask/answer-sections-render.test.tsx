@@ -72,4 +72,18 @@ describe("AnswerView section order", () => {
     expect(html).toContain("Inference");
     expect(html).not.toContain("[inference]");
   });
+
+  it("labels the interpretation block once, not again on each inline-marked line", () => {
+    const html = render({
+      answer: [`Fact [[${A.handle}]].`],
+      interpretation: ["A reading of it [inference].", "Another reading [inference]."],
+    });
+    const block = html.slice(html.indexOf("Interpretation"));
+    expect(block.match(/>Inference</g)).toHaveLength(1);
+  });
+
+  it("still marks inline inference in the executive answer", () => {
+    const html = render({ answer: [`Fact [[${A.handle}]].`, "Demand may rise [inference]."] });
+    expect(html.match(/>Inference</g)).toHaveLength(1);
+  });
 });

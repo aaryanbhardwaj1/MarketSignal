@@ -165,7 +165,7 @@ describe("EvidencePassageView", () => {
     );
     const mark = host.querySelector("mark.evidence-mark");
     expect(mark?.textContent).toContain("Delivery speed decides the basket.");
-    expect(host.querySelector("#evidence-passage-label")?.textContent).toBe("Page 4");
+    expect(host.querySelector("#evidence-passage-label")?.textContent).toBe("Brand strategy / Audience"); // the locator is the drawer subtitle
     expect(host.textContent).toContain("Internal");
 
     const visible = visibleText(host);

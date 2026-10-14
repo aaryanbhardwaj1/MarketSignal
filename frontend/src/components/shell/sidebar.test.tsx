@@ -150,7 +150,7 @@ describe("WorkspaceControl", () => {
     const items = Array.from(host.querySelectorAll<HTMLAnchorElement>("li a"));
     expect(items.map((a) => a.getAttribute("href"))).toEqual(["/w/NORTHSTAR/ask", "/w/SOUTHPEAK/ask"]);
     expect(items[0].getAttribute("aria-current")).toBe("true");
-    const library = Array.from(host.querySelectorAll<HTMLAnchorElement>("a")).find((a) => a.textContent === "Evidence library");
+    const library = Array.from(host.querySelectorAll<HTMLAnchorElement>("a")).find((a) => a.textContent === "Evidence Library");
     expect(library?.getAttribute("href")).toBe("/w/NORTHSTAR/evidence");
     expect(host.textContent).not.toContain("Harness workspace");
   });
@@ -160,7 +160,7 @@ describe("WorkspaceControl", () => {
     act(() => root.render(<WorkspaceControl ws="NORTHSTAR" />));
     act(() => host.querySelector<HTMLButtonElement>("button")!.click());
     expect(host.textContent).not.toContain("Switch workspace");
-    expect(host.textContent).toContain("Evidence library");
+    expect(host.textContent).toContain("Evidence Library");
   });
 
   it("closes on Escape and returns focus to the trigger", () => {

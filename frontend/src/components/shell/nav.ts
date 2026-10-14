@@ -43,7 +43,7 @@ export const DEV_TOOLS: readonly NavItem[] = [
 ];
 
 /** Sections without a nav entry that still count as "where you are" (e.g. for switching workspace). */
-export const EVIDENCE_SECTION: NavItem = item("evidence", "Evidence library", "evidence", ["sources", "search"]);
+export const EVIDENCE_SECTION: NavItem = item("evidence", "Evidence Library", "evidence", ["sources", "search"]);
 
 export const NAV_ITEMS: readonly NavItem[] = [...PRIMARY_NAV, EVIDENCE_SECTION, ...DEV_TOOLS];
 

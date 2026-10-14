@@ -44,23 +44,31 @@ function AnswerSection({ title, hint, tag, children }: { title: string; hint?: s
   );
 }
 
-function Unit({ unit, ws, ctx }: { unit: string; ws: string; ctx: CitationContext }) {
+interface UnitProps {
+  unit: string;
+  ws: string;
+  ctx: CitationContext;
+  /** False inside a block whose heading already carries the Inference tag (no duplicate tag). */
+  tagInference?: boolean;
+}
+
+function Unit({ unit, ws, ctx, tagInference = true }: UnitProps) {
   const { text, inferred } = stripInference(unit);
   const plain = usePlainText(text);
   return (
     <>
       <SafeMarkdown inline text={plain} ws={ws} citations={ctx} />
-      {inferred && <InferenceTag />}
+      {inferred && tagInference && <InferenceTag />}
     </>
   );
 }
 
-function UnitList({ units, ws, ctx }: { units: readonly string[]; ws: string; ctx: CitationContext }) {
+function UnitList({ units, ws, ctx, tagInference }: Omit<UnitProps, "unit"> & { units: readonly string[] }) {
   return (
     <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-muted">
       {units.map((unit, i) => (
         <li key={i}>
-          <Unit unit={unit} ws={ws} ctx={ctx} />
+          <Unit unit={unit} ws={ws} ctx={ctx} tagInference={tagInference} />
         </li>
       ))}
     </ul>
@@ -172,7 +180,7 @@ function GeneratedBody({ parsed, ws, ctx, evidence, figures }: BodyProps & { par
               <p className="mb-1 flex items-center gap-2 text-sm font-medium text-secondary">
                 Interpretation <ClaimTag type="inference" size="sm" explain />
               </p>
-              <UnitList units={parsed.interpretation} ws={ws} ctx={ctx} />
+              <UnitList units={parsed.interpretation} ws={ws} ctx={ctx} tagInference={false} />
             </div>
           )}
         </AnswerSection>

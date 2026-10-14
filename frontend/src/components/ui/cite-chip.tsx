@@ -1,5 +1,6 @@
 import { cx } from "@/lib/cx";
 import { COMPUTED_FIGURE } from "@/lib/labels";
+import { CLAIM_DEFINITION } from "./claim-tag";
 import { Tooltip } from "./tooltip";
 
 export type CiteState = "verified" | "unverified" | "stale";
@@ -60,7 +61,8 @@ export function CiteChip({
   );
 }
 
-export const INFERENCE_DESCRIPTION = "A conclusion drawn from the cited evidence, not stated directly in a source";
+/** Same definition as the section-level Inference tag, so both read identically. */
+export const INFERENCE_DESCRIPTION = CLAIM_DEFINITION.inference;
 
 /** Marks a sentence as the assistant's inference rather than a cited fact. */
 export function InferenceTag() {

@@ -11,7 +11,7 @@ import { RunAnnouncer } from "./run-announcer";
 export function AskFrame({ children }: { children: ReactNode }) {
   return (
     <div className="min-w-0">
-      <PageContainer width="reading">{children}</PageContainer>
+      <PageContainer width="reading" className="mx-auto">{children}</PageContainer>
       <RunAnnouncer />
     </div>
   );

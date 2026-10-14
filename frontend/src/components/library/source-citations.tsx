@@ -8,12 +8,12 @@ import type { EvidenceRef, InsightsBrief } from "@/lib/api/contracts";
 import { useInsights } from "@/lib/api/hooks/insights";
 import { businessLocator, formatCount } from "@/lib/format";
 import { evidenceView } from "@/lib/insights-view";
-import { opportunityHref, overviewHref } from "@/lib/routes";
+import { insightsHref, opportunityHref } from "@/lib/routes";
 
 export interface SourceCitation {
   key: string;
-  /** What cites the passage: a key signal or a growth opportunity. */
-  kind: "Key signal" | "Growth opportunity";
+  /** What cites the passage: an insight or a growth opportunity. */
+  kind: "Insight" | "Growth opportunity";
   itemTitle: string;
   href: string;
   ref: EvidenceRef;
@@ -22,10 +22,10 @@ export interface SourceCitation {
 /** Every passage of this source that the curated brief cites, in brief order. */
 export function citationsOf(brief: InsightsBrief, sourceCode: string, ws: string): SourceCitation[] {
   const out: SourceCitation[] = [];
-  const overview = overviewHref(ws);
+  const insights = insightsHref(ws);
   for (const s of brief.signals) {
     s.evidence.forEach((ref, i) => {
-      if (ref.source.code === sourceCode) out.push({ key: `s-${s.id}-${i}`, kind: "Key signal", itemTitle: s.title, href: overview, ref });
+      if (ref.source.code === sourceCode) out.push({ key: `s-${s.id}-${i}`, kind: "Insight", itemTitle: s.title, href: insights, ref });
     });
   }
   for (const o of brief.opportunities) {

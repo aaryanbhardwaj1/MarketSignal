@@ -46,7 +46,7 @@ describe("Live research progress", () => {
 const summary: StagesSummary = {
   outcome: "completed",
   totalMs: 17761,
-  summary: "4 steps · 5 tool calls · 17.8 s",
+  summary: "4 steps · 5 lookups · 17.8 s",
   stages: [
     { id: "understand", label: "Understanding question", state: "done", durationMs: null, detail: null },
     { id: "search", label: "Searching evidence", state: "done", durationMs: 9252, detail: "3 searches · 26 passages" },
@@ -58,7 +58,7 @@ describe("SavedResearchSteps", () => {
   it("summarises the saved run collapsed by default, with a replay control", () => {
     const html = renderToStaticMarkup(<SavedResearchSteps summary={summary} />);
     expect(html).toContain("Research steps");
-    expect(html).toContain("4 steps · 5 tool calls · 17.8 s");
+    expect(html).toContain("4 steps · 5 lookups · 17.8 s");
     expect(html).toContain('aria-expanded="false"');
     expect(html).toContain("Replay");
     expect(html).toContain("9.25 s");

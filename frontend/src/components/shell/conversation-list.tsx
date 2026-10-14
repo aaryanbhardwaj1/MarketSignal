@@ -47,10 +47,11 @@ function ConversationRow({
           <span className="block truncate">{title}</span>
           {note && <span className="block text-xs font-normal text-muted">{note}</span>}
         </span>
+        {/* Hidden (not just transparent) when idle, so titles use the full row width. */}
         <span
           className={cx(
-            "shrink-0 text-2xs font-normal text-muted tabular-nums transition-opacity duration-(--duration-fast)",
-            selected ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100",
+            "shrink-0 text-2xs font-normal text-muted tabular-nums",
+            selected ? "block" : "hidden group-hover:block group-focus-visible:block",
           )}
         >
           {formatRelativeDate(row.updated_at)}

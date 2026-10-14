@@ -172,10 +172,10 @@ export function EvidencePassageView({
       <section aria-labelledby="evidence-passage-label" className="flex flex-col gap-2">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-muted">Cited passage</p>
+          {/* The locator is already the drawer subtitle; here the section path places the passage. */}
           <h4 id="evidence-passage-label" className="mt-0.5 text-sm font-semibold text-primary">
-            {businessLocator(evidence.locator_label) || "Passage"}
+            {headings.length > 0 ? headings.join(" / ") : businessLocator(evidence.locator_label) || "Passage"}
           </h4>
-          {headings.length > 0 && <p className="text-sm text-muted">{headings.join(" / ")}</p>}
         </div>
         <PassageBody evidence={evidence} span={span} />
       </section>

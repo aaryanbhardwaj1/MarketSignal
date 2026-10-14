@@ -70,7 +70,7 @@ export interface FeaturedEntry {
   note?: string;
 }
 
-export const COMPARISON_NOTE = "Same question as above, answered for comparison";
+export const COMPARISON_NOTE = "Same question, for comparison";
 
 /**
  * Featured rows with repeated questions kept together (Research answer first) and the repeat

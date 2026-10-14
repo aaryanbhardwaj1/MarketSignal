@@ -85,7 +85,7 @@ describe("savedStages", () => {
     expect(analyze.detail).toBe("1 calculation");
     expect(out.stages[1].durationMs).toBe(9315 - 63);
     expect(out.stages[1].detail).toBe("3 searches · 26 passages");
-    expect(out.summary).toBe("4 steps · 5 tool calls · 17.8 s");
+    expect(out.summary).toBe("4 steps · 5 lookups · 17.8 s");
   });
 
   it("omits Running analysis for a research run that only searched (dataset description alone is not analysis)", () => {
