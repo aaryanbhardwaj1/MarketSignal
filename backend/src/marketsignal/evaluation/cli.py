@@ -576,6 +576,41 @@ async def _grounded(args: argparse.Namespace, settings: Settings) -> int:
     return 0 if ok else 1
 
 
+async def _ragas_export(args: argparse.Namespace, settings: Settings) -> int:
+    """Persisted run + gold dataset -> RAGAS samples JSON (read-only DB, no model calls)."""
+    from marketsignal.evaluation import ragas_export as rx
+
+    out: Path = args.out or rx.default_out_path(args.run)
+    try:
+        rx.check_out_path(out)
+    except rx.ExportError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    engine = create_engine(settings)
+    try:
+        document = await rx.export(
+            rx.RUNS[args.run],
+            create_session_factory(engine),
+            created_at=datetime.now(UTC).isoformat(timespec="seconds"),
+            git_sha=_git_sha(),
+        )
+    except rx.ExportError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    finally:
+        await engine.dispose()
+    size = rx.write_document(document, out)
+    for configuration in document["run"]["configurations"]:
+        n = sum(1 for s in document["samples"] if s["configuration"] == configuration)
+        reasons: dict[str, int] = {}
+        for e in document["excluded"]:
+            if e["configuration"] == configuration:
+                reasons[e["reason"]] = reasons.get(e["reason"], 0) + 1
+        print(f"{configuration}: {n} samples, excluded {json.dumps(reasons, sort_keys=True)}")
+    print(f"wrote {_repo_relative(out)} ({size} bytes)")
+    return 0
+
+
 async def _analytics(args: argparse.Namespace, settings: Settings) -> int:
     """Structured-analytics evaluation (analytics-v0) through the real in-process API."""
     from marketsignal.api.app import create_app
@@ -697,6 +732,11 @@ def main(argv: list[str] | None = None) -> int:
     p_an.add_argument("--ids")
     p_an.add_argument("--limit", type=int)
     p_an.add_argument("--concurrency", type=int, default=1)
+    p_rx = sub.add_parser("ragas-export", help="persisted run -> RAGAS samples JSON (no model)")
+    p_rx.add_argument("--run", required=True, choices=("p3-live-v0", "p4-research-test"))
+    p_rx.add_argument(
+        "--out", type=Path, help="default eval/reports/ragas-inputs/<run>.samples.json"
+    )
     p_cmp = sub.add_parser("compare")
     p_cmp.add_argument("--a", required=True, help="results.json:arm")
     p_cmp.add_argument("--b", required=True, help="results.json:arm")
@@ -717,5 +757,6 @@ def main(argv: list[str] | None = None) -> int:
         "classify": _classify,
         "grounded": _grounded,
         "analytics": _analytics,
+        "ragas-export": _ragas_export,
     }[args.command]
     return asyncio.run(handler(args, settings))

@@ -1,0 +1,1762 @@
+{
+  "format": "marketsignal.ragas-results",
+  "format_version": 1,
+  "mode": "offline",
+  "ragas_version": "0.4.3",
+  "created_at": "2026-10-14T17:07:29+00:00",
+  "git_sha": "3b5ed593b39dc1c3e971f0634f398ee355b4af93",
+  "inputs": [
+    {
+      "path": "eval/reports/ragas-inputs/p4-research-test.samples.json",
+      "sha256": "8b5f3a24bd2551addb8288f99fcb18e26cedc2504f6b929ef5346be4efea5bbd",
+      "run_id": "p4-research-test"
+    }
+  ],
+  "telemetry_disabled": true,
+  "metrics": [
+    {
+      "key": "id_context_recall_pack",
+      "label": "Context recall (IDs, evidence pack)",
+      "family": "ragas_non_llm",
+      "ragas_class": "IDBasedContextRecall",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "retrieved_context_ids (evidence pack handles)",
+        "reference_context_ids (gold handles)"
+      ],
+      "what_it_measures": "Share of distinct gold passage handles that appear in the evidence pack."
+    },
+    {
+      "key": "id_context_precision_pack",
+      "label": "Context precision (IDs, evidence pack)",
+      "family": "ragas_non_llm",
+      "ragas_class": "IDBasedContextPrecision",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "retrieved_context_ids (evidence pack handles)",
+        "reference_context_ids (gold handles)"
+      ],
+      "what_it_measures": "Share of distinct evidence-pack handles that are gold handles. Undefined for an empty pack."
+    },
+    {
+      "key": "id_context_recall_cited",
+      "label": "Context recall (IDs, cited passages)",
+      "family": "ragas_non_llm",
+      "ragas_class": "IDBasedContextRecall",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "cited_context_ids (handles cited in the answer)",
+        "reference_context_ids (gold handles)"
+      ],
+      "what_it_measures": "Share of distinct gold passage handles that the answer actually cites."
+    },
+    {
+      "key": "id_context_precision_cited",
+      "label": "Context precision (IDs, cited passages)",
+      "family": "ragas_non_llm",
+      "ragas_class": "IDBasedContextPrecision",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "cited_context_ids (handles cited in the answer)",
+        "reference_context_ids (gold handles)"
+      ],
+      "what_it_measures": "Share of distinct cited handles that are gold handles. Undefined when the answer cites nothing."
+    },
+    {
+      "key": "nonllm_context_recall_pack",
+      "label": "Context recall (text similarity, evidence pack)",
+      "family": "ragas_non_llm",
+      "ragas_class": "NonLLMContextRecall",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "retrieved_contexts (evidence pack passage texts)",
+        "reference_contexts (gold passage texts)"
+      ],
+      "what_it_measures": "Share of gold passages whose best normalised string similarity to any pack passage exceeds 0.5. A lexical heuristic, not a judgement of meaning."
+    },
+    {
+      "key": "nonllm_context_precision_pack",
+      "label": "Context precision (text similarity, evidence pack)",
+      "family": "ragas_non_llm",
+      "ragas_class": "NonLLMContextPrecisionWithReference",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "retrieved_contexts (evidence pack passage texts)",
+        "reference_contexts (gold passage texts)"
+      ],
+      "what_it_measures": "Rank-weighted average precision of pack passages, where a pack passage counts as relevant when its best string similarity to a gold passage is at least 0.5."
+    },
+    {
+      "key": "faithfulness",
+      "label": "Faithfulness (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "Faithfulness",
+      "needs_llm": true,
+      "needs_reference_answer": false,
+      "inputs": [
+        "user_input",
+        "response",
+        "retrieved_contexts (evidence pack passage texts)"
+      ],
+      "what_it_measures": "Share of the answer's claims that a judge model finds supported by the evidence pack."
+    },
+    {
+      "key": "answer_relevancy",
+      "label": "Answer relevancy (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "AnswerRelevancy",
+      "needs_llm": true,
+      "needs_reference_answer": false,
+      "inputs": [
+        "user_input",
+        "response"
+      ],
+      "what_it_measures": "Mean embedding similarity between the question and questions a judge model generates from the answer; zero when the answer is non-committal."
+    },
+    {
+      "key": "llm_context_precision_with_reference",
+      "label": "Context precision vs reference (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "ContextPrecisionWithReference",
+      "needs_llm": true,
+      "needs_reference_answer": true,
+      "inputs": [
+        "user_input",
+        "reference",
+        "retrieved_contexts (evidence pack passage texts)"
+      ],
+      "what_it_measures": "Rank-weighted precision of pack passages judged useful for an authored reference answer."
+    },
+    {
+      "key": "llm_context_recall",
+      "label": "Context recall vs reference (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "ContextRecall",
+      "needs_llm": true,
+      "needs_reference_answer": true,
+      "inputs": [
+        "user_input",
+        "reference",
+        "retrieved_contexts (evidence pack passage texts)"
+      ],
+      "what_it_measures": "Share of an authored reference answer's statements that a judge model attributes to the evidence pack."
+    },
+    {
+      "key": "factual_correctness",
+      "label": "Factual correctness vs reference (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "FactualCorrectness",
+      "needs_llm": true,
+      "needs_reference_answer": true,
+      "inputs": [
+        "response",
+        "reference"
+      ],
+      "what_it_measures": "Claim-level F1 between the answer and an authored reference answer, as judged by a model."
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "p4-research-test",
+      "configuration": "standard",
+      "n_samples": 30,
+      "n_excluded": 4,
+      "summary": {
+        "id_context_recall_pack": {
+          "status": "computed",
+          "mean": 0.736111111111111,
+          "median": 1.0,
+          "p25": 0.5,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 3
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 2
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 6
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 1
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 17
+            }
+          ]
+        },
+        "id_context_precision_pack": {
+          "status": "computed",
+          "mean": 0.15833333333333333,
+          "median": 0.16666666666666666,
+          "p25": 0.08333333333333333,
+          "p75": 0.16666666666666666,
+          "min": 0.0,
+          "max": 0.5,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 11
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 14
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 2
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 1
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 1
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 1
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 0
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 0
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 0
+            }
+          ]
+        },
+        "id_context_recall_cited": {
+          "status": "computed",
+          "mean": 0.7238888888888888,
+          "median": 0.9166666666666667,
+          "p25": 0.5,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 3
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 2
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 6
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 1
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 2
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 15
+            }
+          ]
+        },
+        "id_context_precision_cited": {
+          "status": "computed",
+          "mean": 0.4777777777777778,
+          "median": 0.5,
+          "p25": 0.3333333333333333,
+          "p75": 0.6666666666666666,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 3
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 1
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 3
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 5
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 2
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 6
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 6
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 0
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 4
+            }
+          ]
+        },
+        "nonllm_context_recall_pack": {
+          "status": "computed",
+          "mean": 0.7527777777777778,
+          "median": 1.0,
+          "p25": 0.5,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 3
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 2
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 5
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 1
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 18
+            }
+          ]
+        },
+        "nonllm_context_precision_pack": {
+          "status": "computed",
+          "mean": 0.6761792680784564,
+          "median": 0.7388888888628611,
+          "p25": 0.49749999998821665,
+          "p75": 0.9999999999,
+          "min": 0.0,
+          "max": 0.99999999995,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 3
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 1
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 1
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 3
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 2
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 4
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 3
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 4
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 9
+            }
+          ]
+        },
+        "faithfulness": {
+          "status": "not_run",
+          "not_run_reason": "model_credits_unavailable"
+        },
+        "answer_relevancy": {
+          "status": "not_run",
+          "not_run_reason": "model_credits_unavailable"
+        },
+        "llm_context_precision_with_reference": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        },
+        "llm_context_recall": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        },
+        "factual_correctness": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        }
+      },
+      "items": [
+        {
+          "item_id": "R-CC-01",
+          "category": "customer_competitor",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.4166666666666667,
+            "id_context_recall_cited": 0.8,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.7277777777632222,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CC-02",
+          "category": "customer_competitor",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 0.3333333333333333,
+            "id_context_recall_pack": 0.3333333333333333,
+            "nonllm_context_precision_pack": 0.699999999965,
+            "nonllm_context_recall_pack": 0.3333333333333333
+          }
+        },
+        {
+          "item_id": "R-CC-04",
+          "category": "customer_competitor",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.699999999965,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CF-02",
+          "category": "conflict_search",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.3333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.624999999984375,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CF-04",
+          "category": "conflict_search",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.5,
+            "id_context_recall_cited": 0.8333333333333334,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.8968253968104498,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CI-01",
+          "category": "customer_internal",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.7499999999625,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CI-03",
+          "category": "customer_internal",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.4,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.12878787878143938,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CI-04",
+          "category": "customer_internal",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.5909090908795455,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-FP-01",
+          "category": "first_pass_insufficient",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.375,
+            "id_context_precision_pack": 0.25,
+            "id_context_recall_cited": 0.75,
+            "id_context_recall_pack": 0.75,
+            "nonllm_context_precision_pack": 0.766666666641111,
+            "nonllm_context_recall_pack": 0.75
+          }
+        },
+        {
+          "item_id": "R-FP-02",
+          "category": "first_pass_insufficient",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 0.3333333333333333,
+            "id_context_recall_pack": 0.3333333333333333,
+            "nonllm_context_precision_pack": 0.4166666666458333,
+            "nonllm_context_recall_pack": 0.3333333333333333
+          }
+        },
+        {
+          "item_id": "R-FP-03",
+          "category": "first_pass_insufficient",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.6570655534847383,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-FP-06",
+          "category": "first_pass_insufficient",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.3333333333,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "R-IT-01",
+          "category": "identifier_then_semantic",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.25,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.4799999999904,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "R-IT-02",
+          "category": "identifier_then_semantic",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.8790123456692456,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-IT-03",
+          "category": "identifier_then_semantic",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.125,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "R-IT-04",
+          "category": "identifier_then_semantic",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 0.6666666666666666,
+            "id_context_recall_pack": 0.6666666666666666,
+            "nonllm_context_precision_pack": 0.8333333332916666,
+            "nonllm_context_recall_pack": 0.6666666666666666
+          }
+        },
+        {
+          "item_id": "R-MC-02",
+          "category": "multi_class",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.8333333332916666,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "R-MC-04",
+          "category": "multi_class",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-MC-06",
+          "category": "multi_class",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.4,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-RF-02",
+          "category": "reformulation",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.4166666666458333,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "R-RF-04",
+          "category": "reformulation",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.25,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.5499999999816666,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-RF-05",
+          "category": "reformulation",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.0,
+            "id_context_precision_pack": 0.0,
+            "id_context_recall_cited": 0.0,
+            "id_context_recall_pack": 0.0,
+            "nonllm_context_precision_pack": 0.0,
+            "nonllm_context_recall_pack": 0.0
+          }
+        },
+        {
+          "item_id": "R-RF-06",
+          "category": "reformulation",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.0,
+            "id_context_precision_pack": 0.0,
+            "id_context_recall_cited": 0.0,
+            "id_context_recall_pack": 0.0,
+            "nonllm_context_precision_pack": 0.0,
+            "nonllm_context_recall_pack": 0.0
+          }
+        },
+        {
+          "item_id": "R-SC-02",
+          "category": "simple_control",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-04",
+          "category": "simple_control",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.0,
+            "id_context_precision_pack": 0.0,
+            "id_context_recall_cited": 0.0,
+            "id_context_recall_pack": 0.0,
+            "nonllm_context_precision_pack": 0.0,
+            "nonllm_context_recall_pack": 0.0
+          }
+        },
+        {
+          "item_id": "R-SC-06",
+          "category": "simple_control",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-07",
+          "category": "simple_control",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-09",
+          "category": "simple_control",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-11",
+          "category": "simple_control",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.2,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-12",
+          "category": "simple_control",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.25,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "run_id": "p4-research-test",
+      "configuration": "research",
+      "n_samples": 30,
+      "n_excluded": 4,
+      "summary": {
+        "id_context_recall_pack": {
+          "status": "computed",
+          "mean": 0.8638888888888889,
+          "median": 1.0,
+          "p25": 0.75,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 1
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 0
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 4
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 3
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 21
+            }
+          ]
+        },
+        "id_context_precision_pack": {
+          "status": "computed",
+          "mean": 0.1912962962962963,
+          "median": 0.16666666666666666,
+          "p25": 0.10277777777777777,
+          "p75": 0.25,
+          "min": 0.0,
+          "max": 0.5,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 7
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 12
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 8
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 0
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 2
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 1
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 0
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 0
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 0
+            }
+          ]
+        },
+        "id_context_recall_cited": {
+          "status": "computed",
+          "mean": 0.8433333333333334,
+          "median": 1.0,
+          "p25": 0.75,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 1
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 0
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 5
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 2
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 2
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 19
+            }
+          ]
+        },
+        "id_context_precision_cited": {
+          "status": "computed",
+          "mean": 0.49462233169129716,
+          "median": 0.4,
+          "p25": 0.2857142857142857,
+          "p75": 0.6666666666666666,
+          "min": 0.2,
+          "max": 1.0,
+          "n": 29,
+          "n_nan": 1,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 0
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 9
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 5
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 3
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 3
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 3
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 0
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 2
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 4
+            }
+          ]
+        },
+        "nonllm_context_recall_pack": {
+          "status": "computed",
+          "mean": 0.8805555555555556,
+          "median": 1.0,
+          "p25": 0.8125,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 1
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 0
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 3
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 3
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 22
+            }
+          ]
+        },
+        "nonllm_context_precision_pack": {
+          "status": "computed",
+          "mean": 0.745093394216794,
+          "median": 0.8333333332916666,
+          "p25": 0.5660984848296149,
+          "p75": 0.9999999999,
+          "min": 0.0,
+          "max": 0.99999999995,
+          "n": 30,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 1
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 2
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 1
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 2
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 3
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 3
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 0
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 7
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 11
+            }
+          ]
+        },
+        "faithfulness": {
+          "status": "not_run",
+          "not_run_reason": "model_credits_unavailable"
+        },
+        "answer_relevancy": {
+          "status": "not_run",
+          "not_run_reason": "model_credits_unavailable"
+        },
+        "llm_context_precision_with_reference": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        },
+        "llm_context_recall": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        },
+        "factual_correctness": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        }
+      },
+      "items": [
+        {
+          "item_id": "R-CC-01",
+          "category": "customer_competitor",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.8,
+            "id_context_precision_pack": 0.4166666666666667,
+            "id_context_recall_cited": 0.8,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.8083333333171667,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CC-02",
+          "category": "customer_competitor",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.25,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.4027777777643518,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "R-CC-04",
+          "category": "customer_competitor",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.2857142857142857,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CF-02",
+          "category": "conflict_search",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.8,
+            "id_context_precision_pack": 0.4,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.874999999978125,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CF-04",
+          "category": "conflict_search",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.5,
+            "id_context_recall_cited": 0.8333333333333334,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.8773809523663294,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CI-01",
+          "category": "customer_internal",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.2222222222222222,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CI-03",
+          "category": "customer_internal",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.2857142857142857,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.36111111109305555,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-CI-04",
+          "category": "customer_internal",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.2857142857142857,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-FP-01",
+          "category": "first_pass_insufficient",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.42857142857142855,
+            "id_context_precision_pack": 0.25,
+            "id_context_recall_cited": 0.75,
+            "id_context_recall_pack": 0.75,
+            "nonllm_context_precision_pack": 0.6388888888675925,
+            "nonllm_context_recall_pack": 0.75
+          }
+        },
+        {
+          "item_id": "R-FP-02",
+          "category": "first_pass_insufficient",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.375,
+            "id_context_precision_pack": 0.25,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.5277777777601852,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "R-FP-03",
+          "category": "first_pass_insufficient",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.2857142857142857,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.6372895622824812,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-FP-06",
+          "category": "first_pass_insufficient",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.2916666666520833,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-IT-01",
+          "category": "identifier_then_semantic",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.2,
+            "id_context_precision_pack": 0.1,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "R-IT-02",
+          "category": "identifier_then_semantic",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.1111111111111111,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-IT-03",
+          "category": "identifier_then_semantic",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.2857142857142857,
+            "id_context_precision_pack": 0.2222222222222222,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.8333333332916666,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-IT-04",
+          "category": "identifier_then_semantic",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 0.6666666666666666,
+            "id_context_recall_pack": 0.6666666666666666,
+            "nonllm_context_precision_pack": 0.8333333332916666,
+            "nonllm_context_recall_pack": 0.6666666666666666
+          }
+        },
+        {
+          "item_id": "R-MC-02",
+          "category": "multi_class",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.42857142857142855,
+            "id_context_precision_pack": 0.25,
+            "id_context_recall_cited": 0.75,
+            "id_context_recall_pack": 0.75,
+            "nonllm_context_precision_pack": 0.5575757575571717,
+            "nonllm_context_recall_pack": 0.75
+          }
+        },
+        {
+          "item_id": "R-MC-04",
+          "category": "multi_class",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-MC-06",
+          "category": "multi_class",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.4,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-RF-02",
+          "category": "reformulation",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.3,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.75,
+            "nonllm_context_precision_pack": 0.5916666666469445,
+            "nonllm_context_recall_pack": 0.75
+          }
+        },
+        {
+          "item_id": "R-RF-04",
+          "category": "reformulation",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.3,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.6999999999766667,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-RF-05",
+          "category": "reformulation",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.2,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.49999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-RF-06",
+          "category": "reformulation",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.249999999975,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-02",
+          "category": "simple_control",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.8333333332916666,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-04",
+          "category": "simple_control",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": null,
+            "id_context_precision_pack": 0.0,
+            "id_context_recall_cited": 0.0,
+            "id_context_recall_pack": 0.0,
+            "nonllm_context_precision_pack": 0.0,
+            "nonllm_context_recall_pack": 0.0
+          }
+        },
+        {
+          "item_id": "R-SC-06",
+          "category": "simple_control",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.8333333332916666,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-07",
+          "category": "simple_control",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.2,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-09",
+          "category": "simple_control",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-11",
+          "category": "simple_control",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.25,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "R-SC-12",
+          "category": "simple_control",
+          "configuration": "research",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        }
+      ]
+    }
+  ]
+}

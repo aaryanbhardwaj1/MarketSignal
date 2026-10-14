@@ -1,0 +1,1341 @@
+{
+  "format": "marketsignal.ragas-results",
+  "format_version": 1,
+  "mode": "offline",
+  "ragas_version": "0.4.3",
+  "created_at": "2026-10-14T17:07:28+00:00",
+  "git_sha": "3b5ed593b39dc1c3e971f0634f398ee355b4af93",
+  "inputs": [
+    {
+      "path": "eval/reports/ragas-inputs/p3-live-v0.samples.json",
+      "sha256": "4e7afc7dc3ae938ab601def154ad82634e8c272192095d21aea6939e2dc7a739",
+      "run_id": "p3-live-v0"
+    }
+  ],
+  "telemetry_disabled": true,
+  "metrics": [
+    {
+      "key": "id_context_recall_pack",
+      "label": "Context recall (IDs, evidence pack)",
+      "family": "ragas_non_llm",
+      "ragas_class": "IDBasedContextRecall",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "retrieved_context_ids (evidence pack handles)",
+        "reference_context_ids (gold handles)"
+      ],
+      "what_it_measures": "Share of distinct gold passage handles that appear in the evidence pack."
+    },
+    {
+      "key": "id_context_precision_pack",
+      "label": "Context precision (IDs, evidence pack)",
+      "family": "ragas_non_llm",
+      "ragas_class": "IDBasedContextPrecision",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "retrieved_context_ids (evidence pack handles)",
+        "reference_context_ids (gold handles)"
+      ],
+      "what_it_measures": "Share of distinct evidence-pack handles that are gold handles. Undefined for an empty pack."
+    },
+    {
+      "key": "id_context_recall_cited",
+      "label": "Context recall (IDs, cited passages)",
+      "family": "ragas_non_llm",
+      "ragas_class": "IDBasedContextRecall",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "cited_context_ids (handles cited in the answer)",
+        "reference_context_ids (gold handles)"
+      ],
+      "what_it_measures": "Share of distinct gold passage handles that the answer actually cites."
+    },
+    {
+      "key": "id_context_precision_cited",
+      "label": "Context precision (IDs, cited passages)",
+      "family": "ragas_non_llm",
+      "ragas_class": "IDBasedContextPrecision",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "cited_context_ids (handles cited in the answer)",
+        "reference_context_ids (gold handles)"
+      ],
+      "what_it_measures": "Share of distinct cited handles that are gold handles. Undefined when the answer cites nothing."
+    },
+    {
+      "key": "nonllm_context_recall_pack",
+      "label": "Context recall (text similarity, evidence pack)",
+      "family": "ragas_non_llm",
+      "ragas_class": "NonLLMContextRecall",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "retrieved_contexts (evidence pack passage texts)",
+        "reference_contexts (gold passage texts)"
+      ],
+      "what_it_measures": "Share of gold passages whose best normalised string similarity to any pack passage exceeds 0.5. A lexical heuristic, not a judgement of meaning."
+    },
+    {
+      "key": "nonllm_context_precision_pack",
+      "label": "Context precision (text similarity, evidence pack)",
+      "family": "ragas_non_llm",
+      "ragas_class": "NonLLMContextPrecisionWithReference",
+      "needs_llm": false,
+      "needs_reference_answer": false,
+      "inputs": [
+        "retrieved_contexts (evidence pack passage texts)",
+        "reference_contexts (gold passage texts)"
+      ],
+      "what_it_measures": "Rank-weighted average precision of pack passages, where a pack passage counts as relevant when its best string similarity to a gold passage is at least 0.5."
+    },
+    {
+      "key": "faithfulness",
+      "label": "Faithfulness (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "Faithfulness",
+      "needs_llm": true,
+      "needs_reference_answer": false,
+      "inputs": [
+        "user_input",
+        "response",
+        "retrieved_contexts (evidence pack passage texts)"
+      ],
+      "what_it_measures": "Share of the answer's claims that a judge model finds supported by the evidence pack."
+    },
+    {
+      "key": "answer_relevancy",
+      "label": "Answer relevancy (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "AnswerRelevancy",
+      "needs_llm": true,
+      "needs_reference_answer": false,
+      "inputs": [
+        "user_input",
+        "response"
+      ],
+      "what_it_measures": "Mean embedding similarity between the question and questions a judge model generates from the answer; zero when the answer is non-committal."
+    },
+    {
+      "key": "llm_context_precision_with_reference",
+      "label": "Context precision vs reference (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "ContextPrecisionWithReference",
+      "needs_llm": true,
+      "needs_reference_answer": true,
+      "inputs": [
+        "user_input",
+        "reference",
+        "retrieved_contexts (evidence pack passage texts)"
+      ],
+      "what_it_measures": "Rank-weighted precision of pack passages judged useful for an authored reference answer."
+    },
+    {
+      "key": "llm_context_recall",
+      "label": "Context recall vs reference (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "ContextRecall",
+      "needs_llm": true,
+      "needs_reference_answer": true,
+      "inputs": [
+        "user_input",
+        "reference",
+        "retrieved_contexts (evidence pack passage texts)"
+      ],
+      "what_it_measures": "Share of an authored reference answer's statements that a judge model attributes to the evidence pack."
+    },
+    {
+      "key": "factual_correctness",
+      "label": "Factual correctness vs reference (model-judged)",
+      "family": "ragas_llm_judge",
+      "ragas_class": "FactualCorrectness",
+      "needs_llm": true,
+      "needs_reference_answer": true,
+      "inputs": [
+        "response",
+        "reference"
+      ],
+      "what_it_measures": "Claim-level F1 between the answer and an authored reference answer, as judged by a model."
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "p3-live-v0",
+      "configuration": "standard",
+      "n_samples": 59,
+      "n_excluded": 17,
+      "summary": {
+        "id_context_recall_pack": {
+          "status": "computed",
+          "mean": 0.8940677966101694,
+          "median": 1.0,
+          "p25": 1.0,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 59,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 2
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 1
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 6
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 1
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 48
+            }
+          ]
+        },
+        "id_context_precision_pack": {
+          "status": "computed",
+          "mean": 0.09745762711864407,
+          "median": 0.08333333333333333,
+          "p25": 0.08333333333333333,
+          "p75": 0.08333333333333333,
+          "min": 0.0,
+          "max": 0.3333333333333333,
+          "n": 59,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 51
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 5
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 2
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 1
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 0
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 0
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 0
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 0
+            }
+          ]
+        },
+        "id_context_recall_cited": {
+          "status": "computed",
+          "mean": 0.885593220338983,
+          "median": 1.0,
+          "p25": 1.0,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 59,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 3
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 1
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 5
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 1
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 48
+            }
+          ]
+        },
+        "id_context_precision_cited": {
+          "status": "computed",
+          "mean": 0.4633440947000269,
+          "median": 0.3333333333333333,
+          "p25": 0.25,
+          "p75": 0.5,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 59,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 3
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 5
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 8
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 14
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 2
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 15
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 0
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 11
+            }
+          ]
+        },
+        "nonllm_context_recall_pack": {
+          "status": "computed",
+          "mean": 0.902542372881356,
+          "median": 1.0,
+          "p25": 1.0,
+          "p75": 1.0,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 59,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 2
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 0
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 0
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 1
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 0
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 5
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 1
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 1
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 0
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 49
+            }
+          ]
+        },
+        "nonllm_context_precision_pack": {
+          "status": "computed",
+          "mean": 0.7132663076050091,
+          "median": 0.9406172110632054,
+          "p25": 0.48426677488080255,
+          "p75": 0.9999999999,
+          "min": 0.0,
+          "max": 0.9999999999916667,
+          "n": 59,
+          "n_nan": 0,
+          "histogram": [
+            {
+              "lo": 0.0,
+              "hi": 0.1,
+              "n": 4
+            },
+            {
+              "lo": 0.1,
+              "hi": 0.2,
+              "n": 3
+            },
+            {
+              "lo": 0.2,
+              "hi": 0.3,
+              "n": 1
+            },
+            {
+              "lo": 0.3,
+              "hi": 0.4,
+              "n": 5
+            },
+            {
+              "lo": 0.4,
+              "hi": 0.5,
+              "n": 7
+            },
+            {
+              "lo": 0.5,
+              "hi": 0.6,
+              "n": 2
+            },
+            {
+              "lo": 0.6,
+              "hi": 0.7,
+              "n": 4
+            },
+            {
+              "lo": 0.7,
+              "hi": 0.8,
+              "n": 0
+            },
+            {
+              "lo": 0.8,
+              "hi": 0.9,
+              "n": 3
+            },
+            {
+              "lo": 0.9,
+              "hi": 1.0,
+              "n": 30
+            }
+          ]
+        },
+        "faithfulness": {
+          "status": "not_run",
+          "not_run_reason": "model_credits_unavailable"
+        },
+        "answer_relevancy": {
+          "status": "not_run",
+          "not_run_reason": "model_credits_unavailable"
+        },
+        "llm_context_precision_with_reference": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        },
+        "llm_context_recall": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        },
+        "factual_correctness": {
+          "status": "not_run",
+          "not_run_reason": "no_reference_answers"
+        }
+      },
+      "items": [
+        {
+          "item_id": "G-C1",
+          "category": "conflict",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.16666666666666666,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.3333333333,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-C3",
+          "category": "conflict",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.25,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.0909090909,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-C4",
+          "category": "conflict",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.2,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.3333333333,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-C5",
+          "category": "conflict",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.16666666665,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-001",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.2,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-002",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-003",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.249999999975,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-004",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-005",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "G-R0-006",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-007",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.16666666666666666,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-008",
+          "category": "exact_number",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.6,
+            "id_context_precision_pack": 0.25,
+            "id_context_recall_cited": 0.75,
+            "id_context_recall_pack": 0.75,
+            "nonllm_context_precision_pack": 0.9999999999666667,
+            "nonllm_context_recall_pack": 0.75
+          }
+        },
+        {
+          "item_id": "G-R0-011",
+          "category": "exact_number",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-012",
+          "category": "exact_number",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-013",
+          "category": "exact_number",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-014",
+          "category": "exact_number",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-016",
+          "category": "exact_number",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.99999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-018",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.642857142825,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-019",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "G-R0-020",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.4,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.699999999965,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-022",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.49999999995,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "G-R0-025",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999916667,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-026",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.6209183673380685,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-027",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.6893424036182701,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-028",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.4963113275551237,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-029",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999916667,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-030",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-031",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.0,
+            "id_context_precision_pack": 0.0,
+            "id_context_recall_cited": 0.0,
+            "id_context_recall_pack": 0.0,
+            "nonllm_context_precision_pack": 0.0,
+            "nonllm_context_recall_pack": 0.0
+          }
+        },
+        {
+          "item_id": "G-R0-032",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-033",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999916667,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-034",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.14285714285714285,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.808799029246222,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-035",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-036",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.49999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-037",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-038",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.16666666666666666,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-039",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999916667,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-040",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.11111111109999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-041",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.3333333333,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-042",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.25,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.09999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-043",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-044",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 1.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.49999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-045",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.0,
+            "id_context_precision_pack": 0.0,
+            "id_context_recall_cited": 0.0,
+            "id_context_recall_pack": 0.0,
+            "nonllm_context_precision_pack": 0.0,
+            "nonllm_context_recall_pack": 0.0
+          }
+        },
+        {
+          "item_id": "G-R0-046",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.25,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-047",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.16666666665,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "G-R0-049",
+          "category": "cross_source",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.25,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.4722222222064814,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-051",
+          "category": "cross_source",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.8333333332916666,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-052",
+          "category": "cross_source",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.5,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.808799029246222,
+            "nonllm_context_recall_pack": 0.5
+          }
+        },
+        {
+          "item_id": "G-R0-053",
+          "category": "cross_source",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.6666666666666666,
+            "id_context_precision_pack": 0.3333333333333333,
+            "id_context_recall_cited": 0.6666666666666666,
+            "id_context_recall_pack": 0.6666666666666666,
+            "nonllm_context_precision_pack": 0.3124999999921875,
+            "nonllm_context_recall_pack": 0.6666666666666666
+          }
+        },
+        {
+          "item_id": "G-R0-054",
+          "category": "cross_source",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.1111111111111111,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.3333333333333333,
+            "id_context_recall_pack": 0.3333333333333333,
+            "nonllm_context_precision_pack": 0.5395156926339487,
+            "nonllm_context_recall_pack": 0.3333333333333333
+          }
+        },
+        {
+          "item_id": "G-R0-055",
+          "category": "cross_source",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.0,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 0.0,
+            "id_context_recall_pack": 0.5,
+            "nonllm_context_precision_pack": 0.9999999999916667,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-056",
+          "category": "cross_source",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.4,
+            "id_context_precision_pack": 0.16666666666666666,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.4166666666458333,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-057",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.25,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-059",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.2,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-060",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9406172110632054,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-061",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.5821428571283036,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-062",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.3333333333333333,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.3333333333,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-063",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-064",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.5,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.49999999995,
+            "nonllm_context_recall_pack": 1.0
+          }
+        },
+        {
+          "item_id": "G-R0-065",
+          "category": "answerable_fact",
+          "configuration": "standard",
+          "scores": {
+            "id_context_precision_cited": 0.25,
+            "id_context_precision_pack": 0.08333333333333333,
+            "id_context_recall_cited": 1.0,
+            "id_context_recall_pack": 1.0,
+            "nonllm_context_precision_pack": 0.9999999999,
+            "nonllm_context_recall_pack": 1.0
+          }
+        }
+      ]
+    }
+  ]
+}
