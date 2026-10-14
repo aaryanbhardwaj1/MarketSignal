@@ -15,6 +15,8 @@ import type { EvalCatalog, MetricUnit } from "@/lib/api/contracts";
 import { formatEvalValue, formatSigned } from "@/lib/eval-view";
 import { formatBytes, formatDateTime, formatNumber } from "@/lib/format";
 import { AnalyticsTab } from "./analytics-tab";
+import { ConfigStrip } from "./dashboard/config-strip";
+import { SafetyGates } from "./dashboard/gate-tiles";
 import { CatalogProvider } from "./catalog-context";
 import { CATALOG_UNAVAILABLE, CatalogProblem } from "./catalog-states";
 import { ApiError } from "@/lib/api/errors";
@@ -29,8 +31,11 @@ const catalog = catalogJson as unknown as EvalCatalog;
 
 const render = (el: ReactElement, c: EvalCatalog = catalog) =>
   renderToStaticMarkup(<CatalogProvider catalog={c}>{el}</CatalogProvider>);
+// Chart SVGs are skipped: their axis ticks are layout, and every plotted value is repeated in the
+// chart's visually hidden data table, which is still checked.
 const textOf = (html: string) =>
   html
+    .replace(/<svg[\s\S]*?<\/svg>/g, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/&amp;/g, "&")
     .replace(/&#x27;/g, "'")
@@ -62,7 +67,10 @@ function allowedTokens(c: EvalCatalog): Set<string> {
 }
 
 const TABS: [string, ReactElement][] = [
-  ["overview", <OverviewTab key="o" catalog={catalog} />],
+  ["header", <ConfigStrip key="h" catalog={catalog} />],
+  ["overview", <OverviewTab key="o" catalog={catalog} ws="NORTHSTAR" />],
+  ["retrieval (dev)", <RetrievalTab key="rd" catalog={catalog} split="dev" onSplitChange={() => {}} />],
+  ["research (dev)", <ResearchTab key="sd" catalog={catalog} split="dev" onSplitChange={() => {}} />],
   ["retrieval", <RetrievalTab key="r" catalog={catalog} />],
   ["grounded", <GroundedTab key="g" catalog={catalog} />],
   ["research", <ResearchTab key="s" catalog={catalog} />],
@@ -106,13 +114,57 @@ describe("evaluation tabs", () => {
 
   it("states the research trade-off without implying research is always better", () => {
     const text = textOf(render(<ResearchTab catalog={catalog} />));
-    expect(text).toContain("Research mode finds more relevant evidence, but costs more and takes longer.");
+    expect(text).toContain("Research finds and cites more evidence, but is slower and more expensive.");
     expect(text).toContain("It is not better on every measure");
+    expect(text).toContain("Not distinguishable");
+    const dev = textOf(render(<ResearchTab catalog={catalog} split="dev" onSplitChange={() => {}} />));
+    expect(dev).not.toContain("Research finds and cites more evidence, but");
+    expect(dev).toContain("not distinguishable from standard mode");
+  });
+
+  it("tells the overview story with links to the tabs that hold the detail", () => {
+    const html = render(<OverviewTab catalog={catalog} ws="NORTHSTAR" />);
+    const text = textOf(html);
+    for (const t of ["Hybrid beats dense on held-out recall", "Reranker rejected", "Standard vs Research trade-off"]) {
+      expect(text).toContain(t);
+    }
+    expect(html).toContain('href="/w/NORTHSTAR/dev/evaluation?tab=retrieval"');
+    for (const p of catalog.overview.phases) expect(text).toContain(p.title);
+  });
+
+  it("shows only configuration the catalog records", () => {
+    const text = textOf(render(<ConfigStrip catalog={catalog} />));
+    for (const v of ["retrieval-v0", "grounded-v0", "research-v0", "analytics-v0", "Reranker off", "claude-sonnet-5-5"]) {
+      expect(text).toContain(v);
+    }
+    expect(text).not.toMatch(/corpus|verifier-v1|62%/i);
   });
 
   it("labels superseded analytics attempts", () => {
     const text = textOf(render(<AnalyticsTab catalog={catalog} />));
     expect(text.match(/Superseded/g)?.length ?? 0).toBeGreaterThanOrEqual(catalog.superseded.length);
+  });
+});
+
+describe("safety gate styling", () => {
+  const g = catalog.grounded;
+
+  it("renders every recorded gate as a pass with its k / n", () => {
+    const html = render(<SafetyGates gates={g.hard_gates} metrics={g.metrics} />);
+    expect(html.match(/data-state="pass"/g)?.length).toBe(g.hard_gates.length);
+    expect(html).not.toContain('data-state="fail"');
+    for (const gate of g.hard_gates) expect(textOf(html)).toContain(`${formatNumber(gate.k)} / ${formatNumber(gate.n)}`);
+    expect(html).toContain("Deterministic metric");
+  });
+
+  it("styles a failed gate and a recorded leak as failures", () => {
+    const gates = g.hard_gates.map((x, i) => (i === 0 ? { ...x, k: x.n - 1, pass: false } : x));
+    const metrics = g.metrics.map((m) => (m.id === "p3.cross_workspace_leaks" ? { ...m, value: 1 } : m));
+    const html = render(<SafetyGates gates={gates} metrics={metrics} />);
+    expect(html.match(/data-state="fail"/g)?.length).toBe(1);
+    expect(html.match(/data-state="danger"/g)?.length).toBe(1);
+    expect(html).toContain("border-danger/50");
+    expect(textOf(html)).toContain("Fail");
   });
 });
 

@@ -8,53 +8,19 @@ import {
   changeVerdict,
   formatEvalValue,
   groupGroundedMetrics,
-  metricById,
   verifierDirection,
   weakestCategory,
 } from "@/lib/eval-view";
 import { formatNumber, humanize } from "@/lib/format";
 import { Caveats, ProvenanceTable } from "./caveats";
 import { MetricCell, MetricGrid, MetricSource } from "./metric-bits";
-import { MetricGlossary } from "./metric-glossary";
+import { SAFETY_METRIC_IDS, SafetyGates } from "./dashboard/gate-tiles";
+import { MethodTag } from "./dashboard/story-cards";
 
-type Gate = EvalCatalog["grounded"]["hard_gates"][number];
 type Category = EvalCatalog["grounded"]["by_category"][number];
 
 const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const catMetric = (c: Category, suffix: string) => c.metrics.find((m) => m.id.endsWith(`.${suffix}`));
-
-function GatesTable({ gates, leaks }: { gates: Gate[]; leaks: EvalMetric | undefined }) {
-  const columns: Column<Gate>[] = [
-    { key: "label", header: "Safety gate", cell: (g) => <span className="font-medium">{g.label}</span> },
-    {
-      key: "kn",
-      header: "Passed",
-      align: "right",
-      cell: (g) => (
-        <span className="whitespace-nowrap tabular-nums">
-          {formatNumber(g.k)} / {formatNumber(g.n)}
-        </span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Result",
-      cell: (g) => <Badge tone={g.pass ? "success" : "danger"}>{g.pass ? "Pass" : "Fail"}</Badge>,
-    },
-    { key: "src", header: <span className="sr-only">Source</span>, cell: (g) => <MetricSource source={g.source} /> },
-  ];
-  return (
-    <div className="flex flex-col gap-3">
-      <Table columns={columns} rows={gates} rowKey={(g) => g.id} caption="Hard gates: every item must pass" />
-      {leaks && (
-        <p className="flex flex-wrap items-center gap-2 text-sm text-secondary">
-          Workspace isolation: <span className="font-medium tabular-nums text-primary">{formatEvalValue(leaks.value, leaks.unit)}</span>{" "}
-          {leaks.label.toLowerCase()} across all runs. <MetricSource source={leaks.source} />
-        </p>
-      )}
-    </div>
-  );
-}
 
 function CategoryTable({ categories }: { categories: Category[] }) {
   const weakest = weakestCategory(categories, "gold_coverage_mean");
@@ -142,22 +108,34 @@ function VerifierTable({ split }: { split: EvalCatalog["grounded"]["verifier"][n
 
 export function GroundedTab({ catalog }: { catalog: EvalCatalog }) {
   const g = catalog.grounded;
-  const groups = groupGroundedMetrics(g.metrics);
+  const groups = groupGroundedMetrics(g.metrics, SAFETY_METRIC_IDS(g.metrics));
   return (
     <div>
       <p className="max-w-reading text-base text-secondary">
-        Live answers generated against a fixed question set. Every citation is checked against stored passages, numbers
+        Live answers generated against a frozen question set. Every citation is checked against stored passages, numbers
         are re-checked against the evidence, and questions without enough evidence must be declined.
       </p>
-      <div className="mt-4">
-        <MetricGlossary keys={["ci", "pp"]} />
-      </div>
+      <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
+        <MethodTag /> Every figure on this tab is computed by a deterministic check over the stored run outputs; no model
+        judged it.
+      </p>
 
-      <Section title="Safety gates" description="Hard requirements checked on every item. One failure fails the gate.">
-        <GatesTable gates={g.hard_gates} leaks={metricById(g.metrics, "p3.cross_workspace_leaks")} />
+      <Section title="Safety gates" description="Citation integrity, workspace isolation and abstention, with counts as recorded.">
+        <SafetyGates gates={g.hard_gates} metrics={g.metrics} />
       </Section>
 
-      <Section title="Coverage by question category" description="Behaviour pass rate with 95% CI; coverage and numeric correctness are item means.">
+      <Section
+        title="Verifier v1: before and after"
+        description="Precision of the answer verifier on labelled answer units, on dev and on a separate holdout. n is the number of labelled units per rate."
+      >
+        <div className="grid gap-4 xl:grid-cols-2">
+          {g.verifier.map((v) => (
+            <VerifierTable key={v.split} split={v} />
+          ))}
+        </div>
+      </Section>
+
+      <Section title="By question category" description="Behaviour pass rate with 95% CI; coverage and numeric correctness are item means.">
         <CategoryTable categories={g.by_category} />
       </Section>
 
@@ -167,23 +145,12 @@ export function GroundedTab({ catalog }: { catalog: EvalCatalog }) {
         </Section>
       ))}
 
-      <Section
-        title="Verifier v1: before and after"
-        description="Precision of the answer verifier measured on labelled answer units, on dev and on a separate holdout."
-      >
-        <div className="grid gap-4 xl:grid-cols-2">
-          {g.verifier.map((v) => (
-            <VerifierTable key={v.split} split={v} />
-          ))}
-        </div>
-      </Section>
-
       <Section title="Run provenance">
         <ProvenanceTable rows={[{ id: "grounded", label: "Grounded answers", provenance: g.provenance }]} caption="Grounded answers run provenance" />
       </Section>
 
       <div className="mt-8">
-        <Caveats caveats={caveatsFor(catalog, "grounded")} title="Caveats for grounded answers" />
+        <Caveats caveats={caveatsFor(catalog, "grounded")} title="Caveats for grounding and safety" />
       </div>
     </div>
   );

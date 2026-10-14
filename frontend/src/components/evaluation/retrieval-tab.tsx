@@ -2,17 +2,20 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { BarList } from "@/components/ui/bar-list";
-import { Callout } from "@/components/ui/callout";
-import { Card } from "@/components/ui/card";
+import { HBarChart } from "@/components/charts";
 import { Section } from "@/components/ui/section";
 import { Table, type Column } from "@/components/ui/table";
 import type { EvalCatalog, EvalMetric, EvalRunId } from "@/lib/api/contracts";
+import { cx } from "@/lib/cx";
 import {
   glossaryTitle,
   type GlossaryKey,
   DECISION_OUTCOME,
+  SPLIT_LABEL,
   caveatsFor,
+  ciOf,
+  parseSplitParam,
+  type EvalSplit,
   deltaVerdict,
   formatCi,
   formatEvalValue,
@@ -33,6 +36,14 @@ type Population = "eligible" | "all";
 
 const ARM_METRICS = [
   { key: "hit@1", header: "Hit@1", gloss: "hit" },
+  { key: "hit@10", header: "Hit@10", gloss: "hit" },
+  { key: "recall@10", header: "Recall@10", gloss: "recall" },
+  { key: "mrr", header: "MRR", gloss: "mrr" },
+] as const;
+
+const ARM_CHARTS = [
+  { key: "hit@1", header: "Hit@1", gloss: "hit" },
+  { key: "hit@10", header: "Hit@10", gloss: "hit" },
   { key: "recall@10", header: "Recall@10", gloss: "recall" },
   { key: "mrr", header: "MRR", gloss: "mrr" },
 ] as const;
@@ -40,7 +51,6 @@ const ARM_METRICS = [
 /** Column header with its glossary definition on hover. */
 const abbr = (text: string, key: GlossaryKey) => <span title={glossaryTitle(key)}>{text}</span>;
 
-const splitLabel = (run: RetrievalRun) => (run.provenance.split === "test" ? "Held-out test" : "Dev");
 
 function armLabel(run: RetrievalRun | undefined, arm: string): string {
   return run?.arms.find((a) => a.arm === arm)?.label ?? arm;
@@ -53,41 +63,88 @@ function findComparison(c: EvalCatalog, runId: EvalRunId, a: string, b: string):
 const metricOf = (cmp: Comparison | undefined, suffix: string): EvalMetric | undefined =>
   cmp?.metrics.find((m) => m.id.endsWith(`.${suffix}`));
 
-/** The headline reading: does hybrid beat vector-only on held-out data, and what did the reranker do? */
-function Conclusion({ catalog, testRun }: { catalog: EvalCatalog; testRun: RetrievalRun | undefined }) {
-  if (!testRun) return null;
-  const hybridArm = testRun.arms.find((a) => a.is_default);
-  const dense = findComparison(catalog, testRun.run_id, "dense", hybridArm?.arm ?? "hybrid");
-  const rerank = findComparison(catalog, testRun.run_id, hybridArm?.arm ?? "hybrid", "hybrid-rerank");
+/** The production choice and why: the adopted default, its held-out evidence, and what the reranker did. */
+function ProductionChoice({ catalog, testRun }: { catalog: EvalCatalog; testRun: RetrievalRun | undefined }) {
+  const adopted = catalog.retrieval.decisions.find((d) => d.id === "hybrid-default");
+  const hybridArm = testRun?.arms.find((a) => a.is_default);
+  const dense = testRun && findComparison(catalog, testRun.run_id, "dense", hybridArm?.arm ?? "hybrid");
   const d1 = metricOf(dense, "d_recall@10");
-  const d2 = metricOf(rerank, "d_recall@10");
   const v1 = d1 ? deltaVerdict(d1) : null;
-  const v2 = d2 ? deltaVerdict(d2) : null;
+  if (!adopted && !d1) return null;
   return (
-    <div className="flex flex-col gap-3">
-      {d1 && v1 && (
-        <Callout
-          tone="info"
-          title={
-            v1.distinguishable && v1.tone === "success"
-              ? `Hybrid retrieval recovered more of the expected evidence than vector-only search on the held-out split.`
-              : `Hybrid and vector-only retrieval were not distinguishable on the held-out split.`
-          }
-        >
-          {d1.label}: <span className="font-medium tabular-nums text-primary">{formatSigned(d1.value, d1.unit)}</span> (
-          {formatCi(d1, { signed: true })}, n = {formatNumber(d1.n)}). Hit@10 changed on{" "}
-          {formatNumber(dense?.hit_at_10.gains)} items for the better and {formatNumber(dense?.hit_at_10.losses)} for the
-          worse. <MetricSource source={d1.source} />
-        </Callout>
+    <section
+      aria-label="Production choice"
+      className="rounded-lg border border-accent/30 bg-accent-subtle px-4 py-3"
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge tone="accent" size="md">
+          Production choice
+        </Badge>
+        <p className="text-base font-semibold text-primary">{adopted?.title ?? hybridArm?.label}</p>
+      </div>
+      {adopted && <p className="mt-1.5 max-w-reading text-sm text-secondary">{adopted.text}</p>}
+      {d1 && v1 && dense && (
+        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 text-sm text-secondary">
+          <span>{d1.label}:</span>
+          <span className="font-semibold tabular-nums text-primary">{formatSigned(d1.value, d1.unit)}</span>
+          <span className="tabular-nums">
+            {formatCi(d1, { signed: true })}, n = {formatNumber(dense.n)}
+          </span>
+          <Badge tone={v1.tone}>{v1.label}</Badge>
+          <MetricSource source={d1.source} />
+        </p>
       )}
-      {d2 && v2 && v2.distinguishable && v2.tone === "warn" && (
-        <Callout tone="warn" title="Negative finding: the reranker lowered held-out evidence recall, so it was not adopted.">
-          {d2.label}: <span className="font-medium tabular-nums text-primary">{formatSigned(d2.value, d2.unit)}</span> (
-          {formatCi(d2, { signed: true })}, n = {formatNumber(d2.n)}). It looked better on dev; see Decisions below.{" "}
-          <MetricSource source={d2.source} />
-        </Callout>
-      )}
+    </section>
+  );
+}
+
+const ratio3 = (v: number) => formatEvalValue(v, "ratio");
+
+/** Small multiples: one bar chart per measure, CI whiskers from the catalog, production arm emphasised. */
+function ArmCharts({ run, population }: { run: RetrievalRun; population: Population }) {
+  return (
+    <div className="grid gap-x-8 gap-y-6 lg:grid-cols-2">
+      {ARM_CHARTS.map((m) => (
+        <HBarChart
+          key={m.key}
+          title={abbr(m.header, m.gloss)}
+          ariaLabel={`${m.header} by retrieval method, ${run.label}`}
+          domain={[0, 1]}
+          format={ratio3}
+          valueLabel={m.header}
+          labelWidth="13rem"
+          data={run.arms.map((a) => {
+            const metric = a[population][m.key];
+            const ci = metric ? ciOf(metric) : null;
+            return {
+              label: a.label,
+              value: metric?.value ?? 0,
+              ...(ci ? { low: ci[0], high: ci[1] } : {}),
+              emphasis: a.is_default,
+            };
+          })}
+        />
+      ))}
     </div>
+  );
+}
+
+function LatencyChart({ run }: { run: RetrievalRun }) {
+  return (
+    <HBarChart
+      title={abbr("Latency p50 per query", "p50")}
+      ariaLabel={`Median retrieval latency by method, ${run.label}`}
+      format={formatMs}
+      valueLabel="Latency p50"
+      labelWidth="13rem"
+      data={run.arms.map((a) => ({ label: a.label, value: a.latency_ms.p50, emphasis: a.is_default }))}
+      caption={
+        <span className="flex flex-wrap items-center gap-2">
+          Linear scale; read the value labels. p95 values are in the table below.
+          <SourceRef path={run.provenance.path} note="Per-arm latency percentiles from this run's results file." />
+        </span>
+      }
+    />
   );
 }
 
@@ -178,8 +235,15 @@ function ComparisonsTable({ catalog, run }: { catalog: EvalCatalog; run: Retriev
 
 function DecisionCard({ decision }: { decision: Decision }) {
   const outcome = DECISION_OUTCOME[decision.outcome];
+  const negative = decision.outcome !== "adopted";
   return (
-    <Card as="li" padding="sm">
+    <li
+      className={cx(
+        "relative overflow-hidden rounded-lg border border-border bg-surface p-4",
+        negative && "before:absolute before:inset-y-0 before:left-0 before:w-0.5",
+        decision.outcome === "rejected" ? "before:bg-danger" : "before:bg-warn",
+      )}
+    >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <p className="min-w-0 flex-1 text-base font-semibold text-primary">{decision.title}</p>
         <Badge tone={outcome.tone} size="md">
@@ -211,22 +275,34 @@ function DecisionCard({ decision }: { decision: Decision }) {
         <SourceRef path={decision.source.path} locator={sourceLocator(decision.source)} />
         <span className="ml-1 font-mono">{decision.source.path}</span>
       </p>
-    </Card>
+    </li>
   );
 }
 
-export function RetrievalTab({ catalog }: { catalog: EvalCatalog }) {
+export function RetrievalTab({
+  catalog,
+  split: splitProp,
+  onSplitChange,
+}: {
+  catalog: EvalCatalog;
+  /** `?split=` value; the page keeps it in the URL. */
+  split?: string | null;
+  onSplitChange?: (split: EvalSplit) => void;
+}) {
   const runs = catalog.retrieval.runs;
-  const testRun = runs.find((r) => r.provenance.split === "test");
-  const [runId, setRunId] = useState<EvalRunId | undefined>(testRun?.run_id ?? runs[0]?.run_id);
+  const available = runs.map((r) => r.provenance.split ?? "");
+  const [localSplit, setLocalSplit] = useState<EvalSplit | null>(null);
+  const split = parseSplitParam(onSplitChange ? splitProp : (localSplit ?? splitProp), available);
+  const changeSplit = onSplitChange ?? setLocalSplit;
   const [population, setPopulation] = useState<Population>("eligible");
-  const run = runs.find((r) => r.run_id === runId) ?? runs[0];
+  const testRun = runs.find((r) => r.provenance.split === "test");
+  const run = runs.find((r) => r.provenance.split === split) ?? runs[0];
   const negative = catalog.retrieval.decisions.filter((d) => d.outcome !== "adopted");
   const adopted = catalog.retrieval.decisions.filter((d) => d.outcome === "adopted");
 
   return (
     <div>
-      <Conclusion catalog={catalog} testRun={testRun} />
+      <ProductionChoice catalog={catalog} testRun={testRun} />
       <div className="mt-4">
         <MetricGlossary keys={["hit", "recall", "mrr", "eligible", "ci", "pp", "rrf", "bge", "p50"]} />
       </div>
@@ -234,14 +310,17 @@ export function RetrievalTab({ catalog }: { catalog: EvalCatalog }) {
       {run && (
         <Section
           title="Retrieval methods compared"
-          description="Each method retrieves passages for the same questions; scores measure how early the expected evidence appears."
+          description="Same questions, four methods: how often and how early the expected evidence appears. Whiskers are 95% confidence intervals."
           actions={
             <>
               <Segmented
                 label="Split"
-                value={run.run_id}
-                options={runs.map((r) => ({ value: r.run_id, label: splitLabel(r) }))}
-                onChange={setRunId}
+                value={split}
+                options={runs.map((r) => {
+                  const s: EvalSplit = r.provenance.split === "test" ? "test" : "dev";
+                  return { value: s, label: SPLIT_LABEL[s] };
+                })}
+                onChange={changeSplit}
               />
               <Segmented
                 label="Items"
@@ -255,40 +334,39 @@ export function RetrievalTab({ catalog }: { catalog: EvalCatalog }) {
             </>
           }
         >
-          <ArmsTable run={run} population={population} />
-          <Card padding="sm" className="mt-4">
-            <p className="mb-3 text-sm font-medium text-secondary">Recall@10 by method ({splitLabel(run).toLowerCase()})</p>
-            <BarList
-              ariaLabel={`Recall@10 by retrieval method, ${run.label}`}
-              max={1}
-              items={run.arms.map((a) => ({
-                label: a.label,
-                value: a[population]["recall@10"]?.value ?? 0,
-                display: formatEvalValue(a[population]["recall@10"]?.value, "ratio"),
-                emphasis: a.is_default,
-              }))}
-            />
-          </Card>
-        </Section>
-      )}
-
-      {run && (
-        <Section title="Paired comparisons" description="Same items, two methods: the difference and its 95% confidence interval.">
-          <ComparisonsTable catalog={catalog} run={run} />
+          <p className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted">
+            {run.label}: {population === "eligible" ? "retrieval-eligible items" : "all items"}, n ={" "}
+            {formatNumber(population === "eligible" ? run.n_eligible : run.n)}.
+            <SourceRef path={run.provenance.path} note="Per-arm metrics; each table cell below links its own pointer." />
+          </p>
+          <ArmCharts run={run} population={population} />
+          <div className="mt-6 max-w-3xl">
+            <LatencyChart run={run} />
+          </div>
+          <div className="mt-6">
+            <ArmsTable run={run} population={population} />
+          </div>
         </Section>
       )}
 
       <Section
-        title="Decisions"
-        description="What was adopted and what was rejected. Negative findings are kept on the record alongside the adopted changes."
+        title="Rejected and not adopted"
+        description="Negative findings are first-class results: each was measured, and the measurement said no."
       >
-        <h3 className="mb-2 text-base font-semibold text-primary">Negative findings</h3>
         <ul className="grid gap-3 lg:grid-cols-2">
           {negative.map((d) => (
             <DecisionCard key={d.id} decision={d} />
           ))}
         </ul>
-        <h3 className="mb-2 mt-6 text-base font-semibold text-primary">Adopted</h3>
+      </Section>
+
+      {run && (
+        <Section title="Paired comparisons" description="Same items, two methods: the difference, its 95% confidence interval and a sign test.">
+          <ComparisonsTable catalog={catalog} run={run} />
+        </Section>
+      )}
+
+      <Section title="Adopted" description="Changes that stayed, with the measurement that justified them.">
         <ul className="grid gap-3 lg:grid-cols-2">
           {adopted.map((d) => (
             <DecisionCard key={d.id} decision={d} />

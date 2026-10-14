@@ -51,6 +51,12 @@ export function formatSigned(value: number | null | undefined, unit: MetricUnit)
   return body;
 }
 
+/** True when a recorded 95% CI includes 0 (either bound may sit exactly on 0). */
+export function crossesZero(m: Pick<EvalMetric, "ci_low" | "ci_high">): boolean {
+  const ci = ciOf(m);
+  return !!ci && ci[0] <= 0 && ci[1] >= 0;
+}
+
 export function ciOf(m: Pick<EvalMetric, "ci_low" | "ci_high">): [number, number] | null {
   return isNum(m.ci_low) && isNum(m.ci_high) ? [m.ci_low, m.ci_high] : null;
 }
@@ -101,7 +107,7 @@ export function deltaVerdict(
   const ci = ciOf(m);
   if (!isNum(m.value)) return { label: "Not measured", tone: "neutral", distinguishable: false };
   if (!ci) return { label: "No interval recorded", tone: "neutral", distinguishable: false };
-  if (ci[0] <= 0 && ci[1] >= 0) return { label: "Not distinguishable", tone: "neutral", distinguishable: false };
+  if (crossesZero(m)) return { label: "Not distinguishable", tone: "neutral", distinguishable: false };
   const up = m.value > 0;
   const good = direction === "higher" ? up : !up;
   if (resource) return { label: up ? "Costs more" : "Costs less", tone: good ? "success" : "warn", distinguishable: true };
@@ -257,10 +263,13 @@ export const GROUNDED_GROUPS: { id: string; title: string; ids: string[] }[] = [
 
 const SHOWN_ELSEWHERE = new Set(["p3.citation_resolvability", "p3.cross_workspace_leaks"]);
 
-export function groupGroundedMetrics(metrics: EvalMetric[]): { id: string; title: string; metrics: EvalMetric[] }[] {
-  const used = new Set<string>(SHOWN_ELSEWHERE);
+export function groupGroundedMetrics(
+  metrics: EvalMetric[],
+  exclude: readonly string[] = [],
+): { id: string; title: string; metrics: EvalMetric[] }[] {
+  const used = new Set<string>([...SHOWN_ELSEWHERE, ...exclude]);
   const groups = GROUNDED_GROUPS.map((g) => {
-    const ms = g.ids.map((id) => metricById(metrics, id)).filter((m): m is EvalMetric => !!m);
+    const ms = g.ids.map((id) => metricById(metrics, id)).filter((m): m is EvalMetric => !!m && !used.has(m.id));
     ms.forEach((m) => used.add(m.id));
     return { id: g.id, title: g.title, metrics: ms };
   });
@@ -361,11 +370,13 @@ export function catalogFailure(error: unknown): CatalogFailure {
   return "error";
 }
 
+/** Tab registry and `?tab=` keys, in display order. Keys are stable: older links keep working. */
 export const EVAL_TABS = [
   { id: "overview", label: "Overview" },
   { id: "retrieval", label: "Retrieval" },
-  { id: "grounded", label: "Grounded answers" },
+  { id: "grounded", label: "Grounding & safety" },
   { id: "research", label: "Standard vs Research" },
+  { id: "ragas", label: "RAGAS" },
   { id: "analytics", label: "Analytics" },
   { id: "failures", label: "Failure analysis" },
   { id: "provenance", label: "Provenance" },
@@ -373,9 +384,28 @@ export const EVAL_TABS = [
 
 export type EvalTabId = (typeof EVAL_TABS)[number]["id"];
 
-export function evalHref(ws: string, tab?: EvalTabId): string {
+/** `?tab=` value as a known tab; anything missing or unknown is the overview. */
+export function parseEvalTab(raw: string | null | undefined): EvalTabId {
+  return EVAL_TABS.some((t) => t.id === raw) ? (raw as EvalTabId) : "overview";
+}
+
+/** Split shared by the Retrieval and Standard vs Research tabs (`?split=dev|test`). */
+export type EvalSplit = "dev" | "test";
+export const SPLIT_LABEL: Record<EvalSplit, string> = { dev: "Dev", test: "Held-out test" };
+
+/** `?split=` value among the splits a tab has; defaults to the held-out test split when present. */
+export function parseSplitParam(raw: string | null | undefined, available: readonly string[] = ["dev", "test"]): EvalSplit {
+  if ((raw === "dev" || raw === "test") && available.includes(raw)) return raw;
+  return available.includes("test") || available.length === 0 ? "test" : "dev";
+}
+
+export function evalHref(ws: string, tab?: EvalTabId, opts: { split?: EvalSplit } = {}): string {
   const base = evaluationHref(ws);
-  return tab ? `${base}?tab=${tab}` : base;
+  const q = new URLSearchParams();
+  if (tab) q.set("tab", tab);
+  if (opts.split) q.set("split", opts.split);
+  const qs = q.toString();
+  return qs ? `${base}?${qs}` : base;
 }
 
 export function evalRunHref(ws: string, runId: EvalRunId, opts: { bucket?: string | null; item?: string | null } = {}): string {

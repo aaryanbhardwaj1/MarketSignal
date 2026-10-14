@@ -16,6 +16,11 @@ import {
   formatSigned,
   gitForPath,
   groupGroundedMetrics,
+  EVAL_TABS,
+  crossesZero,
+  evalHref,
+  parseEvalTab,
+  parseSplitParam,
   isEvalRunId,
   joinBySuffix,
   parseAnswer,
@@ -194,5 +199,60 @@ describe("parsePageParam", () => {
     expect(parsePageParam("0")).toBe(1);
     expect(parsePageParam("2.5")).toBe(1);
     expect(parsePageParam("abc")).toBe(1);
+  });
+});
+
+describe("dashboard tab and split state", () => {
+  it("registers the final tab order with stable URL keys", () => {
+    expect(EVAL_TABS.map((t) => t.id)).toEqual([
+      "overview",
+      "retrieval",
+      "grounded",
+      "research",
+      "ragas",
+      "analytics",
+      "failures",
+      "provenance",
+    ]);
+    expect(EVAL_TABS.find((t) => t.id === "grounded")?.label).toBe("Grounding & safety");
+    expect(parseEvalTab("ragas")).toBe("ragas");
+    expect(parseEvalTab("failures")).toBe("failures");
+    expect(parseEvalTab("nope")).toBe("overview");
+    expect(parseEvalTab(null)).toBe("overview");
+  });
+
+  it("reads ?split= and defaults to the held-out split", () => {
+    expect(parseSplitParam("dev")).toBe("dev");
+    expect(parseSplitParam("test")).toBe("test");
+    expect(parseSplitParam(null)).toBe("test");
+    expect(parseSplitParam("holdout")).toBe("test");
+    expect(parseSplitParam("test", ["dev"])).toBe("dev");
+    expect(parseSplitParam(undefined, ["dev"])).toBe("dev");
+  });
+
+  it("builds tab and split hrefs", () => {
+    expect(evalHref("NORTHSTAR")).toBe("/w/NORTHSTAR/dev/evaluation");
+    expect(evalHref("NORTHSTAR", "ragas")).toBe("/w/NORTHSTAR/dev/evaluation?tab=ragas");
+    expect(evalHref("NORTHSTAR", "retrieval", { split: "dev" })).toBe("/w/NORTHSTAR/dev/evaluation?tab=retrieval&split=dev");
+  });
+});
+
+describe("crossesZero", () => {
+  it("is true only when a recorded CI includes 0", () => {
+    expect(crossesZero({ ci_low: -0.1, ci_high: 0.2 })).toBe(true);
+    expect(crossesZero({ ci_low: 0, ci_high: 0.03 })).toBe(true);
+    expect(crossesZero({ ci_low: -0.09, ci_high: 0 })).toBe(true);
+    expect(crossesZero({ ci_low: 0.02, ci_high: 0.2 })).toBe(false);
+    expect(crossesZero({ ci_low: -0.3, ci_high: -0.02 })).toBe(false);
+    expect(crossesZero({})).toBe(false);
+    const test = catalog.retrieval.comparisons.find((c) => c.run_id === "p2-test-c3" && c.a === "dense" && c.b === "hybrid")!;
+    expect(test.metrics.map((m) => crossesZero(m))).toEqual([false, true]);
+  });
+
+  it("can exclude metrics already shown elsewhere without dropping the rest", () => {
+    const groups = groupGroundedMetrics(catalog.grounded.metrics, ["p3.over_refusal"]);
+    const ids = groups.flatMap((g) => g.metrics.map((m) => m.id));
+    expect(ids).not.toContain("p3.over_refusal");
+    expect(ids.length).toBe(catalog.grounded.metrics.length - 3);
   });
 });

@@ -12,10 +12,11 @@ import { EmptyState, ErrorState, LoadingRegion, Skeleton } from "@/components/ui
 import type { EvalCatalog, EvalItem, EvalRunId } from "@/lib/api/contracts";
 import { useEvalCatalog, useEvalItems } from "@/lib/api/hooks/evaluation";
 import { cx } from "@/lib/cx";
-import { armLabels, bucketLabel, evalHref, evalRunHref, isEvalRunId, pageWindow, parsePageParam, provenanceForRun } from "@/lib/eval-view";
-import { formatNumber, humanize } from "@/lib/format";
+import { armLabels, evalHref, evalRunHref, isEvalRunId, pageWindow, parsePageParam, provenanceForRun } from "@/lib/eval-view";
+import { formatNumber } from "@/lib/format";
 import { CatalogProvider } from "./catalog-context";
 import { CatalogLoading, CatalogProblem } from "./catalog-states";
+import { failureBucketLabel } from "./failures-tab";
 import { ItemDetail } from "./item-detail";
 
 const PAGE = 25;
@@ -26,7 +27,7 @@ function itemFlag(item: EvalItem): { label: string; tone: "warn" | "danger" | "n
     case "retrieval":
       return item.bucket ? { label: item.bucket === "both_miss" ? "Missed" : "Differs", tone: item.bucket === "both_miss" ? "danger" : "warn" } : null;
     case "grounded":
-      return item.failure ? { label: humanize(item.failure.final_classification), tone: "warn" } : null;
+      return item.failure ? { label: failureBucketLabel(item.failure.final_classification), tone: "warn" } : null;
     case "analytics":
       if (!item.task_type_correct) return { label: "Misrouted", tone: "danger" };
       return item.values_matched === false ? { label: "Value mismatch", tone: "warn" } : null;
@@ -155,7 +156,7 @@ function RunBody({ catalog, ws, runId }: { catalog: EvalCatalog; ws: string; run
 
   const bucketOptions = [
     { value: "", label: `All items (${formatNumber(run?.item_count)})` },
-    ...(run?.buckets ?? []).map((b) => ({ value: b.id, label: `${b.label} (${formatNumber(b.n)})` })),
+    ...(run?.buckets ?? []).map((b) => ({ value: b.id, label: `${failureBucketLabel(b.id)} (${formatNumber(b.n)})` })),
   ];
 
   return (
@@ -197,7 +198,7 @@ function RunBody({ catalog, ws, runId }: { catalog: EvalCatalog; ws: string; run
       <div className="mt-5 grid gap-5 lg:grid-cols-12">
         <aside className="lg:col-span-4">
           <ItemListPanel
-            title={bucketLabel(catalog, runId, validBucket)}
+            title={validBucket ? failureBucketLabel(validBucket) : "All items"}
             items={items}
             offset={offset}
             selected={selected?.item_id ?? null}

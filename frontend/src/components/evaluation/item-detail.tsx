@@ -10,6 +10,7 @@ import { stopReason, terminationState, type Humanized } from "@/lib/labels";
 import { toolStatusLabel } from "@/lib/telemetry-view";
 import { formatDateTime, formatNumber, humanize } from "@/lib/format";
 import { AnswerText, HandleChip, InlineText } from "./answer-text";
+import { failureBucketLabel } from "./failures-tab";
 
 const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -247,6 +248,24 @@ export function itemCategory(item: EvalItem): string | null {
 }
 
 /** One evaluation item as recorded: no reasoning text exists or is shown. */
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** Plain description of the configuration an item was run under (mode, or retrieval arms compared). */
+export function itemConfiguration(item: EvalItem, labels: Record<string, string> = {}): string {
+  switch (item.phase) {
+    case "retrieval":
+      return Object.keys(item.by_arm)
+        .map((arm) => labels[arm] ?? capitalize(humanize(arm)))
+        .join(" vs ");
+    case "grounded":
+      return "Standard mode";
+    case "research":
+      return "Standard vs Research mode";
+    case "analytics":
+      return "Analytics engine";
+  }
+}
+
 export function ItemDetail({
   item,
   provenance,
@@ -263,7 +282,15 @@ export function ItemDetail({
         <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
           <span className="font-mono">{item.item_id}</span>
           {category && <Badge tone="neutral">{humanize(category)}</Badge>}
-          {item.phase === "retrieval" && item.bucket && <Badge tone="warn">{humanize(item.bucket)}</Badge>}
+          {item.phase === "retrieval" && item.bucket && <Badge tone="warn">{failureBucketLabel(item.bucket)}</Badge>}
+        </p>
+        <p className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted" data-testid="item-configuration">
+          <span>
+            Configuration <span className="text-secondary">{itemConfiguration(item, armLabels)}</span>
+          </span>
+          <span>
+            Split <span className="text-secondary">{provenance?.split ?? "Not recorded"}</span>
+          </span>
         </p>
         <h2 id="eval-item-question" className="mt-1.5 text-md font-semibold text-primary">
           {item.question}
