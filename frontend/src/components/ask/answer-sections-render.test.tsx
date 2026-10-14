@@ -40,18 +40,20 @@ describe("AnswerView section order", () => {
       "Next",
     );
     expect(headings(html)).toEqual([
-      "Answer",
+      "Executive answer",
       "Key findings",
       "Supporting evidence",
       "Conflicting evidence",
       "Evidence gaps",
-      "Suggested next step",
+      "Recommended next step",
+      "Sources",
     ]);
   });
 
   it("hides empty sections", () => {
     const html = render({ answer: [`Only an answer [[${A.handle}]].`] });
-    expect(headings(html)).toEqual(["Answer", "Supporting evidence"]);
+    expect(headings(html)).toEqual(["Executive answer", "Supporting evidence", "Sources"]);
+    expect(html).not.toContain("Risks");
     expect(html).not.toContain("Key findings");
     expect(html).not.toContain("Conflicting evidence");
     expect(html).not.toContain("Evidence gaps");

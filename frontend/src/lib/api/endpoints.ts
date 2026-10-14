@@ -5,16 +5,19 @@ import { apiGet, apiRequest } from "./client";
 import type {
   CancelRunResult,
   ChatMessage,
+  Confidentiality,
   CreateConversationInput,
   CreateConversationResult,
   Evidence,
   ResultEnvelope,
   SearchParams,
   SearchResponse,
+  SourceClass,
   SourceDetail,
   SourceSummary,
   StartRunInput,
   StartRunResult,
+  VersionStatus,
   Workspace,
 } from "./types";
 
@@ -28,6 +31,37 @@ export const listSources = (code: string, signal?: AbortSignal) =>
 
 export const getSource = (code: string, sourceId: string, signal?: AbortSignal) =>
   apiGet<SourceDetail>(`${ws(code)}/sources/${encodeURIComponent(sourceId)}`, { signal });
+
+/** `POST /sources` response (202 new version, 200 when the bytes duplicate an existing version). */
+export interface SourceUploadResult {
+  source_id: string;
+  source_code: string;
+  version_id: string;
+  version: number;
+  status: VersionStatus;
+  created: boolean;
+  duplicate_of: string | null;
+  status_url: string;
+}
+
+export interface SourceUploadInput {
+  file: Blob;
+  filename: string;
+  source_class: SourceClass;
+  confidentiality?: Confidentiality;
+  title?: string;
+}
+
+/** Uploads one file as workspace evidence (multipart); the server validates and queues it. */
+export async function uploadSource(code: string, input: SourceUploadInput, signal?: AbortSignal): Promise<SourceUploadResult> {
+  const form = new FormData();
+  form.append("file", input.file, input.filename);
+  form.append("source_class", input.source_class);
+  if (input.confidentiality) form.append("confidentiality", input.confidentiality);
+  if (input.title) form.append("title", input.title);
+  const res = await apiRequest<SourceUploadResult>(`${ws(code)}/sources`, { method: "POST", form, signal });
+  return res.data;
+}
 
 export const getEvidence = (
   code: string,

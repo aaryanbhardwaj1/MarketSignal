@@ -3,9 +3,10 @@
 import { useMemo } from "react";
 import type { CitationContext } from "@/lib/citations";
 import type { RunStreamState } from "@/lib/run-stream";
+import { PulseNode } from "../motion/pulse-node";
 import { Button } from "../ui/button";
 import { AnswerView } from "./answer-view";
-import { ResearchTimeline } from "./research-timeline";
+import { LiveResearchProgress, ResearchTimeline } from "./research-timeline";
 import { RouteBadge } from "./route-badge";
 import { RunNotices } from "./run-notices";
 import { SafeMarkdown } from "./safe-markdown";
@@ -19,10 +20,7 @@ function StatusLine({ state, connection }: { state: RunStreamState; connection: 
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-secondary">
       <span className="flex items-center gap-2">
-        <span
-          aria-hidden
-          className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-border-strong border-t-accent motion-reduce:animate-none"
-        />
+        <PulseNode size="sm" active />
         {message}
       </span>
       {state.evidence && (
@@ -48,8 +46,8 @@ function DraftPanel({ ws, state }: { ws: string; state: RunStreamState }) {
     );
   }
   return (
-    <section aria-label="Unverified draft" className="rounded-lg border border-dashed border-border-strong bg-surface-muted p-3">
-      <p className="text-xs font-medium text-muted">Draft, not yet verified</p>
+    <section aria-label="Unverified draft" className="rounded-lg border border-dashed border-border-strong bg-sunken px-4 py-3">
+      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">Draft — not yet verified</p>
       <SafeMarkdown text={state.draft} ws={ws} citations={citations} className="text-secondary" />
     </section>
   );
@@ -69,7 +67,7 @@ export function RunPanel({ ws, state, connection, onCancel, cancelling }: RunPan
   const lost = !state.done && connection === "closed";
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex max-w-[46rem] flex-col gap-4">
       <RouteBadge route={state.route} />
       {running && (
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -79,19 +77,22 @@ export function RunPanel({ ws, state, connection, onCancel, cancelling }: RunPan
           </Button>
         </div>
       )}
+      {!state.final && <LiveResearchProgress state={state} running={running} />}
       <ResearchTimeline tools={state.tools} phase={state.phase} running={running} />
       {state.final ? (
-        <AnswerView
-          ws={ws}
-          content={state.final.content}
-          citations={state.final.citations}
-          sections={state.final.sections}
-        />
+        <div className="ms-fade-in">
+          <AnswerView
+            ws={ws}
+            content={state.final.content}
+            citations={state.final.citations}
+            sections={state.final.sections}
+          />
+        </div>
       ) : (
         running && <DraftPanel ws={ws} state={state} />
       )}
       {lost && (
-        <p role="alert" className="text-sm text-warn">
+        <p role="alert" className="rounded-md border border-warn/30 bg-warn-subtle px-3 py-2 text-sm text-warn">
           Lost the live connection. The answer is still being prepared; reload this conversation
           to see it once it is saved.
         </p>

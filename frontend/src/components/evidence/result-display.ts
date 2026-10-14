@@ -173,3 +173,29 @@ export function describeResult(result: AnalyticsResult) {
     notes: resultNotes(result),
   };
 }
+
+export interface ResultBar {
+  label: string;
+  value: number;
+  /** The figure exactly as the result table prints it ("37.5%", "4.2"). */
+  display: string;
+}
+
+const MAX_BARS = 12;
+
+/**
+ * Bars for a grouped result with one numeric metric per group: only when there are at least two
+ * groups and every value is a real number (otherwise null, and callers show the table or figure).
+ */
+export function resultBars(result: AnalyticsResult): ResultBar[] | null {
+  if (result.operation === "filter_rows" || result.rows.length < 2 || result.rows.length > MAX_BARS) return null;
+  const bars: ResultBar[] = [];
+  for (const row of result.rows) {
+    const groups = Object.values(row.group ?? {});
+    const metric = row.metrics.length === 1 ? row.metrics[0] : null;
+    if (groups.length === 0 || !metric || typeof metric.value !== "number" || !Number.isFinite(metric.value)) return null;
+    const label = groups.map((g) => humanizeValue(g === null || g === undefined ? "Not stated" : String(g))).join(" · ");
+    bars.push({ label, value: metric.value, display: formatMetricValue(metric) });
+  }
+  return bars;
+}

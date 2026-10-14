@@ -122,7 +122,7 @@ describe("AnswerView", () => {
       "",
       [counted],
     );
-    expect(html).toContain("Computed figures");
+    expect(html).toContain("Quantitative signals");
     expect(html).toContain("Calculated from workspace datasets");
     expect(html).toContain("68 respondents have knit upper durability as their top pain point");
     expect(html).not.toContain("knit_upper_durability");

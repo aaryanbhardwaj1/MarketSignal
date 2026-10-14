@@ -16,6 +16,7 @@ import {
 import { formatCount } from "./format";
 import { isCitationFallback, isModelUnavailable } from "./model-availability";
 import { describeModeDecision, modeCode, modeLabel } from "./run-mode";
+import { savedStages, type StagesSummary } from "./research-stages";
 import type { RouteMode } from "./run-stream";
 
 export { describeModeDecision, modeLabel } from "./run-mode";
@@ -47,6 +48,10 @@ export interface SavedRunView {
   modeReason: string | null;
   durationMs: number | null;
   verification: VerificationView | null;
+  /** Short verified status for the run meta line: "Citations verified", "Verified after corrections", "Evidence only". */
+  verifiedText: string | null;
+  /** Observable research stages with recorded timings (research-stages.ts). */
+  stages: StagesSummary;
   steps: ResearchStepView[];
   notices: RunNotice[];
   modelUnavailable: boolean;
@@ -106,6 +111,22 @@ export function verificationLabel(run: RunRecord, v: RunVerification | null): Ve
   return { ...labelled(entry), summary: DISPOSITION_SUMMARY[disposition] ?? entry.label };
 }
 
+const VERIFIED_TEXT: Readonly<Record<string, string>> = {
+  accepted: "Citations verified",
+  repaired: "Verified after corrections",
+  regenerate: "Verified after a rewrite",
+};
+
+/** Plain verified status for the meta line under an answer; null when the run has no outcome yet. */
+export function verifiedText(run: RunRecord, v: RunVerification | null): string | null {
+  const flags = run.degradation_flags;
+  const disposition = v?.final_disposition ?? null;
+  if (isModelUnavailable({ terminationState: run.termination_state, flags }) || isCitationFallback({ flags, disposition })) {
+    return "Evidence only";
+  }
+  return disposition ? (VERIFIED_TEXT[disposition] ?? null) : null;
+}
+
 /** "SURVEY-2026:1" → "SURVEY-2026"; dataset ids carry the source version after the colon. */
 function datasetSource(args: unknown): string | null {
   if (typeof args !== "object" || args === null) return null;
@@ -160,6 +181,8 @@ export function toSavedRunView(
     modeReason: describeModeDecision(run.route, run.mode),
     durationMs: typeof total === "number" ? total : null,
     verification: verificationLabel(run, v),
+    verifiedText: verifiedText(run, v),
+    stages: savedStages(run),
     steps: (run.agent?.trace ?? []).map((step) => stepView(step, sourceTitles)),
     notices: notices(flags),
     modelUnavailable: isModelUnavailable({ terminationState: run.termination_state, flags }),

@@ -11,6 +11,7 @@ import type { RunMode } from "@/lib/api/types";
 import { isProviderUnavailableError } from "@/lib/model-availability";
 import type { RunStreamState } from "@/lib/run-stream";
 import { askHref } from "@/lib/routes";
+import { AttachmentsProvider } from "./attachments/attachments-context";
 import { useRunStream, type StreamConnection } from "./use-run-stream";
 
 const TITLE_MAX = 200;
@@ -153,5 +154,9 @@ export function AskSessionProvider({ ws, children }: { ws: string; children: Rea
     }),
     [ws, active, state, connection, running, start.isPending, startError, providerUnavailable, cancelMutation.isPending, cancelMutation.error, prefill, ask, cancel, fillComposer, focusTarget, clearFocusTarget, composerFocused],
   );
-  return <AskSessionContext.Provider value={value}>{children}</AskSessionContext.Provider>;
+  return (
+    <AskSessionContext.Provider value={value}>
+      <AttachmentsProvider ws={ws}>{children}</AttachmentsProvider>
+    </AskSessionContext.Provider>
+  );
 }

@@ -3,19 +3,22 @@
 import { createContext, useContext, useId, useMemo, type ReactNode } from "react";
 import { Callout } from "@/components/ui/callout";
 import { InferenceTag } from "@/components/ui/cite-chip";
+import { ClaimTag } from "@/components/ui/claim-tag";
 import { datasetTerms, humanizeDatasetTerms } from "@/lib/analytics";
 import { isResultCard, type AnyCitationCard, type CitationCard, type ResultCitationCard } from "@/lib/api/types";
 import { parseSections, type AnswerSections } from "@/lib/answer-sections";
 import { numberCitations, stripInference, type CitationContext } from "@/lib/citations";
-import { COMPUTED_FIGURES } from "@/lib/labels";
 import { isModelUnavailable } from "@/lib/model-availability";
-import { AnalyticsResults, SupportingEvidenceList } from "./answer-evidence";
+import { QuantitativeSignals, SourcesList, SupportingEvidenceList } from "./answer-evidence";
 import { ChipNumberingContext } from "./citation-numbering";
 import { SafeMarkdown } from "./safe-markdown";
 
 /** Section title for the computed results an answer cites, and its hint. */
-export const COMPUTED_FIGURES_TITLE = COMPUTED_FIGURES;
+export const COMPUTED_FIGURES_TITLE = "Quantitative signals";
 export const COMPUTED_FIGURES_HINT = "Calculated from workspace datasets";
+
+/** Reading-column section label: small, quiet, uppercase meta, never a giant header. */
+const SECTION_LABEL = "flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium uppercase tracking-wide text-muted";
 
 /** Dataset codes named by the cited results (`knit_upper_durability`) and their plain wording. */
 const TermsContext = createContext<ReadonlyMap<string, string>>(new Map());
@@ -27,13 +30,14 @@ function usePlainText(text: string): string {
 }
 
 /** One titled block of the answer. Order and visibility are decided by `AnswerView`. */
-function AnswerSection({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
+function AnswerSection({ title, hint, tag, children }: { title: string; hint?: string; tag?: ReactNode; children: ReactNode }) {
   const id = useId();
   return (
-    <section aria-labelledby={id} className="flex flex-col gap-2">
-      <h3 id={id} className="flex flex-wrap items-baseline gap-2 text-sm font-semibold text-primary">
+    <section aria-labelledby={id} className="flex flex-col gap-2.5">
+      <h3 id={id} className={SECTION_LABEL}>
         {title}
-        {hint && <span className="font-normal text-muted">{hint}</span>}
+        {tag}
+        {hint && <span className="font-normal normal-case tracking-normal">{hint}</span>}
       </h3>
       <div className="text-base leading-relaxed text-primary">{children}</div>
     </section>
@@ -69,7 +73,7 @@ function PlainUnit({ unit, ws }: { unit: string; ws: string }) {
 
 function GapList({ units, ws }: { units: readonly string[]; ws: string }) {
   return (
-    <ul className="flex flex-col gap-1.5 rounded-lg border border-dashed border-border-strong bg-surface-muted px-4 py-3 text-secondary">
+    <ul className="flex list-disc flex-col gap-1.5 pl-5 text-secondary marker:text-border-strong">
       {units.map((unit, i) => (
         <li key={i}>
           <PlainUnit unit={unit} ws={ws} />
@@ -116,8 +120,8 @@ function EvidenceOnlyBody({ parsed, ws, ctx, evidence, figures }: BodyProps & { 
           <UnitList units={parsed.units} ws={ws} ctx={ctx} />
         </AnswerSection>
       )}
-      {evidence}
       {figures}
+      {evidence}
     </>
   );
 }
@@ -153,9 +157,9 @@ function GeneratedBody({ parsed, ws, ctx, evidence, figures }: BodyProps & { par
   return (
     <>
       {(answer.length > 0 || parsed.interpretation.length > 0) && (
-        <AnswerSection title="Answer">
+        <AnswerSection title="Executive answer">
           {answer.length > 0 && (
-            <p>
+            <p className="text-md leading-relaxed">
               {answer.map((unit, i) => (
                 <span key={i}>
                   <Unit unit={unit} ws={ws} ctx={ctx} />{" "}
@@ -164,9 +168,9 @@ function GeneratedBody({ parsed, ws, ctx, evidence, figures }: BodyProps & { par
             </p>
           )}
           {parsed.interpretation.length > 0 && (
-            <div className="mt-3 border-l-2 border-dashed border-border-strong pl-3">
-              <p className="mb-1 flex items-center gap-1 text-sm font-medium text-secondary">
-                Interpretation <InferenceTag />
+            <div className="mt-3 border-l-2 border-dashed border-claim-inference/40 pl-3">
+              <p className="mb-1 flex items-center gap-2 text-sm font-medium text-secondary">
+                Interpretation <ClaimTag type="inference" size="sm" explain />
               </p>
               <UnitList units={parsed.interpretation} ws={ws} ctx={ctx} />
             </div>
@@ -178,13 +182,13 @@ function GeneratedBody({ parsed, ws, ctx, evidence, figures }: BodyProps & { par
           <UnitList units={parsed.findings} ws={ws} ctx={ctx} />
         </AnswerSection>
       )}
+      {figures}
       {evidence}
       {parsed.conflicts.length > 0 && (
         <AnswerSection title="Conflicting evidence">
           <UnitList units={parsed.conflicts} ws={ws} ctx={ctx} />
         </AnswerSection>
       )}
-      {figures}
       {gaps.length > 0 && (
         <AnswerSection title="Evidence gaps">
           <GapList units={gaps} ws={ws} />
@@ -197,11 +201,11 @@ function GeneratedBody({ parsed, ws, ctx, evidence, figures }: BodyProps & { par
 function PlainBody({ content, ws, ctx, evidence, figures }: BodyProps & { content: string }) {
   return (
     <>
-      <AnswerSection title="Answer">
+      <AnswerSection title="Executive answer">
         <SafeMarkdown text={usePlainText(content)} ws={ws} citations={ctx} />
       </AnswerSection>
-      {evidence}
       {figures}
+      {evidence}
     </>
   );
 }
@@ -213,7 +217,7 @@ export interface AnswerViewProps {
   sections: unknown;
   /** Source code → title, used to name the dataset behind a computed result. */
   sourceTitles?: Readonly<Record<string, string>>;
-  /** Rendered last ("Suggested next step"); deterministic UI actions only. */
+  /** Rendered after the sections ("Recommended next step"); deterministic UI actions only. */
   nextSteps?: ReactNode;
 }
 
@@ -225,8 +229,9 @@ function sourceTitleMap(citations: readonly AnyCitationCard[], sourceTitles?: Re
 
 /**
  * Verified answer renderer, shared by the live `final` event and saved answers. Sections follow a
- * fixed order and empty ones are hidden: Answer, Key findings, Supporting evidence, Conflicting
- * evidence, Computed figures, Evidence gaps, Suggested next step.
+ * fixed order and empty ones are hidden: Executive answer, Key findings, Quantitative signals,
+ * Supporting evidence, Conflicting evidence, Evidence gaps, Recommended next step, Sources. There is
+ * no "Risks / blockers" section: the answer contract has no such field, so none is invented.
  */
 export function AnswerView({ ws, content, citations, sections, sourceTitles, nextSteps }: AnswerViewProps) {
   const parsed = useMemo(() => parseSections(sections), [sections]);
@@ -245,8 +250,8 @@ export function AnswerView({ ws, content, citations, sections, sourceTitles, nex
     </AnswerSection>
   );
   const figures = numbering.results.length > 0 && (
-    <AnswerSection title={COMPUTED_FIGURES_TITLE} hint={COMPUTED_FIGURES_HINT}>
-      <AnalyticsResults ws={ws} cards={numbering.results} sourceTitles={titles} />
+    <AnswerSection title={COMPUTED_FIGURES_TITLE} hint={COMPUTED_FIGURES_HINT} tag={<ClaimTag type="derived" size="sm" />}>
+      <QuantitativeSignals ws={ws} cards={numbering.results} sourceTitles={titles} />
     </AnswerSection>
   );
   const body = { ws, ctx, evidence, figures };
@@ -254,7 +259,7 @@ export function AnswerView({ ws, content, citations, sections, sourceTitles, nex
   return (
     <TermsContext.Provider value={terms}>
       <ChipNumberingContext.Provider value={numbering}>
-        <div className="flex flex-col gap-6">
+        <div className="flex max-w-[46rem] flex-col gap-7">
           {parsed.kind === "evidence_only" ? (
             <EvidenceOnlyBody parsed={parsed} {...body} />
           ) : parsed.kind === "abstained" ? (
@@ -264,7 +269,12 @@ export function AnswerView({ ws, content, citations, sections, sourceTitles, nex
           ) : (
             <PlainBody content={content} {...body} />
           )}
-          {nextSteps && <AnswerSection title="Suggested next step">{nextSteps}</AnswerSection>}
+          {nextSteps && <AnswerSection title="Recommended next step">{nextSteps}</AnswerSection>}
+          {evidenceCards.length > 0 && (
+            <AnswerSection title="Sources">
+              <SourcesList ws={ws} cards={evidenceCards} />
+            </AnswerSection>
+          )}
         </div>
       </ChipNumberingContext.Provider>
     </TermsContext.Provider>

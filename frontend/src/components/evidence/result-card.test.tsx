@@ -55,7 +55,10 @@ describe("ResultCardView", () => {
     expect(shown).toContain("Share with top pain point: Delivery speed");
     expect(shown).toContain("From Northstar Customer Survey 2026 · Version 1");
     expect(shown).toContain("Empty cells were left out of the calculation");
-    for (const raw of ["SURVEY-2026", "half_even", "NULLS_EXCLUDED", "region =", "top_pain_point", "deterministic"]) {
+    // "deterministic" is no longer banned here: the product-wide Derived claim tag (ui/claim-tag) defines
+    // itself as "computed … by the deterministic analytics engine" for screen readers.
+    expect(shown).toContain("Derived");
+    for (const raw of ["SURVEY-2026", "half_even", "NULLS_EXCLUDED", "region =", "top_pain_point"]) {
       expect(shown).not.toContain(raw);
     }
     expect(html).toContain("SURVEY-2026:1");

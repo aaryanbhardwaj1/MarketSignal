@@ -9,8 +9,7 @@ import type { Evidence, Tombstone } from "@/lib/api/types";
 import { businessLocator, formatDate, parseRowPassage } from "@/lib/format";
 import { isUuid } from "@/lib/handles";
 import { resolveActiveSpan, segmentHighlight, type ActiveSpan } from "@/lib/highlight";
-import { errorMessage, isTabularSource, sourceClass, sourceType } from "@/lib/labels";
-import { Badge } from "../ui/badge";
+import { errorMessage, isTabularSource, sourceClass } from "@/lib/labels";
 import { RowFields } from "../ui/row-fields";
 import { Callout } from "../ui/callout";
 import { DevDetails, Disclosure } from "../ui/disclosure";
@@ -18,6 +17,7 @@ import { ErrorState, LoadingRegion } from "../ui/states";
 import { ChildSpanList } from "./child-span-list";
 import { ContextExcerpts } from "./context-excerpts";
 import { HighlightedText } from "./highlighted-text";
+import { sourceKind } from "./source-kind";
 import { VersionNotice } from "./version-notice";
 import { sourceHref } from "@/lib/routes";
 
@@ -97,14 +97,45 @@ function PassageError({ error, handle, onRetry }: { error: unknown; handle: stri
   );
 }
 
+/** Source title, then its plain kind ("Survey", "Strategy memo"…) and class. */
 function SourceSummary({ evidence }: { evidence: Evidence }) {
   const s = evidence.source;
+  const cls = sourceClass(s.source_class);
+  const kind = sourceKind({ title: s.title, source_type: s.source_type, source_class: s.source_class });
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-secondary">
-      <Badge tone="neutral">{sourceClass(s.source_class).known ? sourceClass(s.source_class).label : "Source"}</Badge>
-      {sourceType(s.source_type).known && <span>{sourceType(s.source_type).label}</span>}
-      {!s.is_latest && <span>Earlier version of this source</span>}
-    </div>
+    <header className="flex flex-col gap-1">
+      <h3 className="text-lg font-semibold leading-snug text-primary">{s.title}</h3>
+      <p className="text-sm text-secondary">{[kind, cls.known ? cls.label : null].filter(Boolean).join(" · ")}</p>
+    </header>
+  );
+}
+
+/** Version, ingestion date and whether this is the current version; superseded passages get the notice. */
+function Provenance({ ws, evidence }: { ws: string; evidence: Evidence }) {
+  const s = evidence.source;
+  const items = [
+    { label: "Version", value: `Version ${s.version}` },
+    ...(s.ingested_at ? [{ label: "Ingested", value: formatDate(s.ingested_at) }] : []),
+    { label: "Status", value: s.is_latest ? "Current version" : "Earlier version of this source" },
+  ];
+  return (
+    <section aria-label="Provenance" className="flex flex-col gap-3 border-t border-border pt-4">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted">Provenance</p>
+      <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-sm">
+        {items.map((item) => (
+          <div key={item.label} className="contents">
+            <dt className="text-muted">{item.label}</dt>
+            <dd className="tabular-nums text-primary">{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+      <VersionNotice ws={ws} handle={evidence.handle} source={s} />
+      <p className="text-sm">
+        <Link href={sourceHref(ws, s.source_id)} className="font-medium text-accent-text hover:underline">
+          View source in Evidence Library
+        </Link>
+      </p>
+    </section>
   );
 }
 
@@ -133,22 +164,29 @@ export function EvidencePassageView({
   onSelectChild?: (childId: string | null) => void;
 }) {
   const headings = evidence.heading_path.filter(Boolean);
+  const hasContext = Boolean(evidence.context.previous_excerpt || evidence.context.next_excerpt);
   return (
     <div className="flex flex-col gap-5">
       <SourceSummary evidence={evidence} />
-      <VersionNotice ws={ws} handle={evidence.handle} source={evidence.source} />
 
       <section aria-labelledby="evidence-passage-label" className="flex flex-col gap-2">
         <div>
-          <h3 id="evidence-passage-label" className="text-base font-semibold text-primary">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted">Cited passage</p>
+          <h4 id="evidence-passage-label" className="mt-0.5 text-sm font-semibold text-primary">
             {businessLocator(evidence.locator_label) || "Passage"}
-          </h3>
+          </h4>
           {headings.length > 0 && <p className="text-sm text-muted">{headings.join(" / ")}</p>}
         </div>
         <PassageBody evidence={evidence} span={span} />
       </section>
 
-      <ContextExcerpts previous={evidence.context.previous_excerpt} next={evidence.context.next_excerpt} />
+      {hasContext && (
+        <Disclosure variant="plain" summary="Show surrounding text">
+          <div className="mt-2">
+            <ContextExcerpts previous={evidence.context.previous_excerpt} next={evidence.context.next_excerpt} />
+          </div>
+        </Disclosure>
+      )}
 
       {onSelectChild && evidence.children.length > 1 && (
         <Disclosure variant="plain" summary={`Parts of this passage (${evidence.children.length})`}>
@@ -160,6 +198,8 @@ export function EvidencePassageView({
           />
         </Disclosure>
       )}
+
+      <Provenance ws={ws} evidence={evidence} />
 
       <DevDetails
         data={{
@@ -199,16 +239,8 @@ export function EvidenceDrawerBody({
   if (query.isError) return <PassageError error={query.error} handle={handle} onRetry={() => void query.refetch()} />;
   const evidence = query.data;
   return (
-    <div className="flex flex-col gap-5">
+    <div className="ms-fade-in">
       <EvidencePassageView ws={ws} evidence={evidence} span={pickSpan(evidence, childId, hint)} onSelectChild={onSelectChild} />
-      <p className="border-t border-border pt-3 text-sm">
-        <Link
-          href={sourceHref(ws, evidence.source.source_id)}
-          className="font-medium text-accent-text hover:underline"
-        >
-          View source in Evidence Library
-        </Link>
-      </p>
     </div>
   );
 }

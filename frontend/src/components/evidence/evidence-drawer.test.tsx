@@ -170,7 +170,10 @@ describe("EvidencePassageView", () => {
 
     const visible = visibleText(host);
     expect(visible).not.toContain("block 2");
-    expect(visible).not.toContain("Version 1");
+    // Provenance states the version in plain words; ids stay in Technical details.
+    expect(visible).toContain("Version 1");
+    expect(visible).toContain("Current version");
+    expect(visible).toContain("Brand Strategy 2026");
     for (const technical of [HANDLE, CHILD, "sha256-abc123", "BRAND-STRATEGY"]) {
       expect(visible).not.toContain(technical);
     }

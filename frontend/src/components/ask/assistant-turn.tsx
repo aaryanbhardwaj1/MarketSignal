@@ -7,6 +7,7 @@ import { ErrorState, Skeleton } from "@/components/ui/states";
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { useRun, useRunVerification } from "@/lib/api/hooks/core";
 import { isResultCard, type AnyCitationCard, type ChatMessage } from "@/lib/api/types";
+import { formatCount, formatMs } from "@/lib/format";
 import { modeLabel } from "@/lib/run-mode";
 import { toSavedRunView, type SavedRunView } from "@/lib/saved-run";
 import { AnswerView } from "./answer-view";
@@ -47,7 +48,28 @@ function NextSteps({ ws, question, citations, view }: { ws: string; question: st
   );
 }
 
-/** One saved answer: the answer sections, then "Research details" for its run. */
+/** Plain run meta line under an answer: mode, verified status, duration and sources count. */
+export function RunMeta({ view, sources }: { view: SavedRunView; sources: number }) {
+  const parts = [
+    view.mode,
+    view.verifiedText,
+    view.durationMs !== null ? formatMs(view.durationMs) : null,
+    sources > 0 ? formatCount(sources, "source") : null,
+  ].filter((p): p is string => Boolean(p));
+  return (
+    <p className="flex flex-wrap items-center gap-x-2 text-xs tabular-nums text-muted">
+      <span className="sr-only">About this answer: </span>
+      {parts.map((part, i) => (
+        <span key={part} className="flex items-center gap-2">
+          {i > 0 && <span aria-hidden className="h-0.5 w-0.5 rounded-full bg-border-strong" />}
+          {part}
+        </span>
+      ))}
+    </p>
+  );
+}
+
+/** One saved answer: the report sections, its run meta line, then "Research steps" for its run. */
 export function AssistantTurn({
   ws,
   message,
@@ -102,9 +124,15 @@ export function AssistantTurn({
     );
   }
 
+  const answered = !view?.cancelled && message.status !== "failed";
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       {body}
+      {view && answered && (
+        <div className="max-w-[46rem] border-t border-border pt-3">
+          <RunMeta view={view} sources={citedSourceCount(citations)} />
+        </div>
+      )}
       {view ? (
         <ResearchDetails ws={ws} view={view} />
       ) : (

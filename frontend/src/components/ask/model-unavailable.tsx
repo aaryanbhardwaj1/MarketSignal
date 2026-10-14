@@ -1,12 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { Callout } from "@/components/ui/callout";
 import { useCapabilities } from "@/lib/api/hooks/core";
+import { askHref } from "@/lib/routes";
 import { useAskSession } from "./ask-session";
 
 export const MODEL_UNAVAILABLE_TITLE = "Live model unavailable";
 export const MODEL_UNAVAILABLE_BODY = "Existing insights, saved answers and the Evidence Library remain available.";
+/** One calm line under the composer while new questions cannot be answered. */
+export const MODEL_UNAVAILABLE_INLINE = "Live model unavailable — saved research, evidence, analytics and insights still work.";
+/** Anchor of the saved-research strip on the empty Chat page. */
+export const SAVED_RESEARCH_ANCHOR = "saved-research";
 
 const noopSubscribe = () => () => {};
 
@@ -40,5 +46,18 @@ export function ModelUnavailableCallout() {
     <Callout tone="neutral" title={MODEL_UNAVAILABLE_TITLE}>
       {MODEL_UNAVAILABLE_BODY}
     </Callout>
+  );
+}
+
+/** Inline offline notice for the composer, linking to the saved research on the Chat start page. */
+export function ModelUnavailableInline({ ws }: { ws: string }) {
+  return (
+    <p role="status" className="flex flex-wrap items-center gap-x-2 px-1 text-sm text-muted">
+      <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-text-disabled" />
+      <span>{MODEL_UNAVAILABLE_INLINE}</span>
+      <Link href={`${askHref(ws)}#${SAVED_RESEARCH_ANCHOR}`} className="font-medium text-accent-text hover:underline">
+        Open saved research
+      </Link>
+    </p>
   );
 }

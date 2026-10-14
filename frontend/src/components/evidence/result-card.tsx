@@ -9,13 +9,15 @@ import { queryKeys } from "@/lib/api/query-keys";
 import type { AnalyticsResult } from "@/lib/api/types";
 import { formatNumber, tableLabel } from "@/lib/format";
 import { evidenceViewerHref } from "@/lib/handles";
+import { HBarChart } from "../charts/hbar-chart";
+import { ClaimTag } from "../ui/claim-tag";
 import { DevDetails } from "../ui/disclosure";
 import { KeyValueList } from "../ui/key-value";
 import { ResultPanel } from "../ui/result-panel";
 import { ErrorState, LoadingRegion } from "../ui/states";
 import { Table, type Column } from "../ui/table";
 import { useOptionalEvidenceDrawer } from "./drawer-context";
-import { describeResult, plainMetrics, plainResultTable } from "./result-display";
+import { describeResult, plainMetrics, plainResultTable, resultBars } from "./result-display";
 
 /** Every value below is rendered as a React text node: never as Markdown or HTML. */
 
@@ -76,9 +78,13 @@ export function ResultCardView({ ws, result, sourceTitle }: { ws: string; result
     ...(view.notes.length > 0 ? [{ label: "Calculation notes", value: view.notes.join("; ") }] : []),
   ];
   const computed = plainMetrics(result.spec);
+  const bars = resultBars(result);
   return (
     <div className="flex flex-col gap-3 text-sm">
-      <p className="text-xs text-muted">Computed from a workspace dataset, not a quoted source.</p>
+      <p className="flex flex-wrap items-center gap-2 text-xs text-muted">
+        <ClaimTag type="derived" size="sm" />
+        Computed from a workspace dataset, not a quoted source.
+      </p>
       <ResultPanel
         title={view.title}
         value={view.value}
@@ -88,6 +94,14 @@ export function ResultCardView({ ws, result, sourceTitle }: { ws: string; result
         groupBy={view.groupBy}
         provenance={{ sourceTitle: title, sourceCode: result.source_code, version: result.source_version, table: result.table }}
       >
+        {bars && (
+          <HBarChart
+            className="mb-3"
+            ariaLabel={view.title}
+            data={bars.map((b) => ({ label: b.label, value: b.value }))}
+            format={(v) => bars.find((b) => b.value === v)?.display ?? formatNumber(v)}
+          />
+        )}
         {result.rows.length === 0 ? (
           <p className="text-secondary">No records matched, so nothing was computed.</p>
         ) : (

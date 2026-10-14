@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useMemo, useState, type ReactNode } from "react";
+import { businessLocator } from "@/lib/format";
 import { Drawer } from "../ui/drawer";
 import { EvidenceDrawerContext, type EvidenceDrawerApi } from "./drawer-context";
 import { drawerHref, parseDrawerParams, type DrawerTarget } from "./drawer-params";
@@ -87,7 +88,7 @@ function DrawerHost({
       open={target !== null}
       onClose={onClose}
       title={target?.kind === "result" ? "Computed result" : "Evidence passage"}
-      subtitle={evidence && passage.data ? passage.data.source.title : undefined}
+      subtitle={evidence && passage.data ? businessLocator(passage.data.locator_label) || undefined : undefined}
     >
       {evidence && (
         <EvidenceDrawerBody

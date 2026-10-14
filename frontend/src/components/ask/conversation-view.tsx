@@ -33,12 +33,37 @@ function toTurns(messages: readonly ChatMessage[]): Turn[] {
   return turns;
 }
 
-function Question({ children }: { children: ReactNode }) {
+/**
+ * The user's question as a quiet query header: small "You asked" meta with the time, then the
+ * question in 16px medium. The first question is the page heading (focus target after a new run).
+ */
+function QueryHeader({
+  children,
+  at,
+  level = 2,
+  headingRef,
+}: {
+  children: ReactNode;
+  at?: string | null;
+  level?: 1 | 2;
+  headingRef?: RefObject<HTMLHeadingElement | null>;
+}) {
+  const Heading = level === 1 ? "h1" : "h2";
   return (
-    <div className="rounded-lg border border-border bg-surface-muted px-4 py-3">
-      <p className="text-xs font-medium text-muted">Question</p>
-      <p className="mt-0.5 whitespace-pre-wrap text-base text-primary">{children}</p>
-    </div>
+    <header className="flex flex-col gap-1">
+      <p className="flex items-center gap-2 text-xs text-muted">
+        <span className="font-medium uppercase tracking-wide">You asked</span>
+        {at && (
+          <>
+            <span aria-hidden className="h-0.5 w-0.5 rounded-full bg-border-strong" />
+            <time dateTime={at} className="tabular-nums">{formatDateTime(at)}</time>
+          </>
+        )}
+      </p>
+      <Heading ref={headingRef} tabIndex={headingRef ? -1 : undefined} className="whitespace-pre-wrap text-base font-medium leading-snug text-primary focus:outline-none">
+        {children}
+      </Heading>
+    </header>
   );
 }
 
@@ -54,18 +79,6 @@ function NotFound({ ws }: { ws: string }) {
 
 const TITLE_MAX = 80;
 const FOCUS_GAP_PX = 16;
-
-function Header({ title, meta, headingRef }: { title: string; meta?: string; headingRef: RefObject<HTMLHeadingElement | null> }) {
-  return (
-    <header className="border-b border-border pb-4">
-      <p className="text-sm text-muted">Ask MarketSignal</p>
-      <h1 ref={headingRef} tabIndex={-1} className="mt-1 text-lg font-semibold leading-snug text-primary focus:outline-none">
-        {title}
-      </h1>
-      {meta && <p className="mt-1 text-sm text-muted">{meta}</p>}
-    </header>
-  );
-}
 
 /**
  * Keeps keyboard focus clear of the sticky composer (WCAG 2.4.11): sets scroll-padding-bottom to
@@ -160,21 +173,27 @@ export function ConversationView({ ws, conversationId }: { ws: string; conversat
   const turns = toTurns(messages);
   const title = turns.find((t) => t.question)?.question?.content ?? active?.question ?? "Conversation";
   const unansweredTail = !active && turns.length > 0 && turns[turns.length - 1].answer === null;
-  const first = history.data[0];
-  const meta = first ? `Asked ${formatDateTime(first.created_at)}` : undefined;
-
   return (
-    <div className="flex flex-col gap-8">
-      <Header title={title} meta={meta} headingRef={headingRef} />
+    <div className="mx-auto flex w-full max-w-[46rem] flex-col gap-12">
+      {turns.length === 0 && (
+        <QueryHeader level={1} headingRef={headingRef} at={null}>
+          {title}
+        </QueryHeader>
+      )}
       {turns.length === 0 && !active && (
         <EmptyState title="No questions yet" description="Ask a question below to start this conversation." />
       )}
       {turns.map((turn, i) => {
         const question = turn.question?.content ?? "";
         return (
-          <article key={turn.question?.message_id ?? turn.answer?.message_id} className="flex flex-col gap-5">
-            <h2 className="sr-only">{i === 0 ? "Answer" : `Follow-up question ${i}`}</h2>
-            {turn.question && i > 0 && <Question>{question}</Question>}
+          <article key={turn.question?.message_id ?? turn.answer?.message_id} className="flex flex-col gap-6">
+            {turn.question ? (
+              <QueryHeader level={i === 0 ? 1 : 2} headingRef={i === 0 ? headingRef : undefined} at={turn.question.created_at}>
+                {question}
+              </QueryHeader>
+            ) : (
+              <h2 className="sr-only">Answer</h2>
+            )}
             {turn.answer && <AssistantTurn ws={ws} message={turn.answer} question={question} sourceTitles={sourceTitles} />}
           </article>
         );
@@ -188,9 +207,8 @@ export function ConversationView({ ws, conversationId }: { ws: string; conversat
         </div>
       )}
       {active && (
-        <article className="flex flex-col gap-5">
-          <h2 className="sr-only">{turns.length > 0 ? "Latest question" : "Answer"}</h2>
-          {turns.length > 0 && <Question>{active.question}</Question>}
+        <article className="flex flex-col gap-6">
+          {turns.length > 0 && <QueryHeader at={null}>{active.question}</QueryHeader>}
           <RunPanel
             ws={ws}
             state={session.state}
