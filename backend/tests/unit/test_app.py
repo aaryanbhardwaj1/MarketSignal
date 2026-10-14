@@ -159,3 +159,12 @@ def test_test_workspace_codes_are_reserved_outside_tests(env: str) -> None:
         response = client.post("/api/workspaces", json={"code": "TABCDEF0123", "name": "Real"})
     assert response.status_code == 422
     assert response.json()["error"]["fields"][0]["location"] == "body.code"
+
+
+def test_cors_exposes_download_filename_and_request_id() -> None:
+    origin = "http://localhost:3000"
+    with TestClient(create_app(_settings(cors_allowed_origins=[origin]))) as client:
+        response = client.get("/healthz", headers={"Origin": origin})
+    header = response.headers["access-control-expose-headers"]
+    exposed = {h.strip().lower() for h in header.split(",")}
+    assert {"content-disposition", "x-request-id"} <= exposed

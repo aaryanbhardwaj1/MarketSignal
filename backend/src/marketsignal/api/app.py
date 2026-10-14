@@ -349,6 +349,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_origins=settings.cors_allowed_origins,
         allow_methods=["GET", "POST", "PATCH", "DELETE"],
         allow_headers=["Authorization", "Content-Type", "Last-Event-ID"],
+        # The browser may read the deck download filename and the correlation id.
+        expose_headers=["Content-Disposition", "X-Request-ID"],
         allow_credentials=False,  # bearer tokens, not cookies (ADR-0014)
     )
 
