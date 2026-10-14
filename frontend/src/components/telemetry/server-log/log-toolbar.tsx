@@ -31,7 +31,7 @@ function DebouncedSearch({ value, onChange }: { value: string; onChange: (q: str
     return () => window.clearTimeout(id);
   }, [draft, value, onChange]);
   return (
-    <span className="relative block min-w-80 flex-1">
+    <span className="relative block min-w-48 flex-1">
       <label htmlFor="server-log-search" className="sr-only">
         Search events, routes, paths and ids
       </label>
@@ -91,7 +91,7 @@ export function LogToolbar({ filters, routes, live, onChange, onLiveChange, onRe
         <Select
           aria-label="Route"
           controlSize="sm"
-          className="max-w-72"
+          className="w-48"
           value={filters.route}
           options={routeOptions}
           onChange={(e) => set("route", e.target.value)}

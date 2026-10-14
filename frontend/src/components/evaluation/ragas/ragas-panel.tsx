@@ -57,7 +57,7 @@ function ModelJudged({ section, defs }: { section: RagasSection; defs: RagasMetr
           These metrics are wired but call a judge model. They would run with the command below, which this demo does not
           execute.
         </p>
-        <pre className="mt-2 overflow-x-auto rounded-md border border-border bg-sunken px-3 py-2 font-mono text-xs text-muted">
+        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-md border border-border bg-sunken px-3 py-2 font-mono text-xs text-muted">
           <code>{RAGAS_LLM_COMMAND}</code>
         </pre>
       </div>

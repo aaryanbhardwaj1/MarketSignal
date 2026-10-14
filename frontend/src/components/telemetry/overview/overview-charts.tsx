@@ -8,6 +8,9 @@ import { formatMs, formatNumber } from "@/lib/format";
 import { countByValue, latencyDots, modeStageMedians, outcomeBuckets, toolProblems } from "@/lib/telemetry-view";
 import { LatencyScatter, type ModeReference } from "./latency-scatter";
 
+/** Bar labels sit over ~30px bars, so drop the unit's space ("104ms", "5.13s") to keep neighbours apart. */
+const compactMs = (ms: number) => formatMs(ms).replace(" ", "");
+
 /** One chart answering one question: a small heading, the chart, and its caption. */
 function ChartBlock({ title, description, children, className }: { title: string; description: ReactNode; children: ReactNode; className?: string }) {
   return (
@@ -58,7 +61,7 @@ export function StageChart({ points }: { points: readonly TelemetrySeriesPoint[]
           categories={categories}
           series={series}
           ariaLabel="Median stage latency by mode"
-          format={formatMs}
+          format={compactMs}
           caption="Medians are not additive, so the stages need not sum to the median run time. Time to first token is listed under More metrics."
         />
       )}

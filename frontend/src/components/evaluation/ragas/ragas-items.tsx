@@ -18,7 +18,7 @@ const PAGE_LIMIT = 50;
 const LOW_LABEL = `Below ${RAGAS_LOW_SCORE}`;
 
 export function ScoreValue({ value, strong = false }: { value: number | null | undefined; strong?: boolean }) {
-  if (value == null) return <span className="text-muted">Undefined</span>;
+  if (value == null) return <span className="text-muted">Not scorable</span>;
   const low = isLowScore(value);
   return (
     <span
@@ -64,7 +64,7 @@ export function RagasItemDetail({ item, defs }: { item: RagasItem; defs: RagasMe
           })}
         </ul>
         <p className="mt-2 text-xs text-muted">
-          Undefined means the metric has no value for this item, for example when the answer cites nothing. Model-judged
+          Not scorable means the metric has no value for this item, for example when the answer cites nothing. Model-judged
           metrics were not run for any item.
         </p>
       </div>
@@ -96,7 +96,7 @@ function ItemsTable({ run, defs }: { run: RagasRun; defs: RagasMetricDefinition[
       key: "question",
       header: "Question",
       cell: (i) => (
-        <span className="flex flex-col gap-0.5">
+        <span className="flex min-w-56 flex-col gap-0.5">
           <span className="line-clamp-2 text-sm text-primary">{i.question}</span>
           <span className="font-mono text-xs text-muted">{i.item_id}</span>
         </span>
@@ -109,7 +109,18 @@ function ItemsTable({ run, defs }: { run: RagasRun; defs: RagasMetricDefinition[
     ...defs.map(
       (d): Column<RagasItem> => ({
         key: d.key,
-        header: <span className={cx(d.key === sortKey && "text-primary")}>{shortMetricLabel(d)}</span>,
+        // Two short lines ("Recall" / "IDs, pack") keep six metric columns inside the page width.
+        header: (
+          <span className={cx("inline-flex flex-col items-end", d.key === sortKey && "text-primary")}>
+            {shortMetricLabel(d)
+              .split(" · ")
+              .map((part) => (
+                <span key={part} className="whitespace-nowrap">
+                  {part}
+                </span>
+              ))}
+          </span>
+        ),
         align: "right",
         cell: (i) => <ScoreValue value={i.scores[d.key]} strong={d.key === sortKey} />,
       }),
@@ -145,7 +156,7 @@ function ItemsTable({ run, defs }: { run: RagasRun; defs: RagasMetricDefinition[
           />
         </label>
         <p className="pb-1.5 text-xs text-muted">
-          Scores {LOW_LABEL.toLowerCase()} are highlighted; undefined scores sort last.
+          Scores {LOW_LABEL.toLowerCase()} are highlighted; items that are not scorable sort last.
         </p>
       </div>
       {pending ? (

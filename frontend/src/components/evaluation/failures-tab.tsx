@@ -108,7 +108,7 @@ export function FailuresTab({ catalog, ws }: { catalog: EvalCatalog; ws: string 
       align: "right",
       cell: (r) => (
         <span className="tabular-nums">
-          {r.bucket ? `${formatNumber(r.bucket.n)} of ${formatNumber(r.run.item_count)}` : `None of ${formatNumber(r.run.item_count)}`}
+          {r.bucket ? `${formatNumber(r.bucket.n)} of ${formatNumber(r.run.item_count)}` : `0 of ${formatNumber(r.run.item_count)}`}
         </span>
       ),
     },

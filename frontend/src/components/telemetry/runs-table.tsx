@@ -95,12 +95,20 @@ const columns = (href: (row: TelemetryRunRow) => string): Column<TelemetryRunRow
     align: "right",
     cell: (r) => (
       <span className="whitespace-nowrap text-sm" title={rowTokens(r) ?? "No model tokens"}>
-        {r.tokens_in === 0 && r.tokens_out === 0 ? muted("None") : `${formatNumber(r.tokens_in)} / ${formatNumber(r.tokens_out)}`}
+        {r.tokens_in === 0 && r.tokens_out === 0 ? muted("—") : `${formatNumber(r.tokens_in)} / ${formatNumber(r.tokens_out)}`}
       </span>
     ),
   },
-  { key: "model", header: "Model calls", align: "right", cell: (r) => (r.model_calls == null ? muted("n/a") : formatNumber(r.model_calls)) },
-  { key: "tools", header: "Tool calls", align: "right", cell: (r) => formatNumber(r.tool_calls) },
+  {
+    key: "calls",
+    header: "Model / tool calls",
+    align: "right",
+    cell: (r) => (
+      <span className="whitespace-nowrap text-sm" title={`${r.model_calls == null ? "Model calls not recorded" : `${r.model_calls} model calls`}, ${r.tool_calls} tool calls`}>
+        {r.model_calls == null ? muted("—") : formatNumber(r.model_calls)} / {formatNumber(r.tool_calls)}
+      </span>
+    ),
+  },
   { key: "cost", header: "Cost (est.)", align: "right", cell: (r) => <span className="whitespace-nowrap text-sm">{formatUsd(r.est_cost_usd)}</span> },
   {
     key: "evidence",

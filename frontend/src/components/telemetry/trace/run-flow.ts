@@ -340,11 +340,13 @@ function completedStage(d: Detail): FlowStage | null {
 
 /** Ordered stages that actually occurred in this run. */
 export function deriveRunFlow(detail: Detail): FlowStage[] {
+  // A fallback search runs after research planning gave up, so it follows tool execution.
+  const fallbackSearch = detail.agent?.flags.includes("PLANNER_UNAVAILABLE_FALLBACK") ?? false;
+  const search = fallbackSearch ? [toolsStage(detail), retrievalStage(detail)] : [retrievalStage(detail), toolsStage(detail)];
   return [
     requestStage(detail),
     routingStage(detail),
-    retrievalStage(detail),
-    toolsStage(detail),
+    ...search,
     analyticsStage(detail),
     evidenceStage(detail),
     generationStage(detail),

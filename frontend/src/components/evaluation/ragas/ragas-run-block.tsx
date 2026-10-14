@@ -71,12 +71,12 @@ function ConfigValue({ config, def, multi }: { config: RagasConfiguration; def: 
           <p className="text-xl font-semibold tabular-nums text-primary" data-metric-mean={def.key}>
             {ratio(summary.mean)}
           </p>
-          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs tabular-nums text-muted">
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs tabular-nums text-muted">
             <span>median {ratio(summary.median)}</span>
             <span>n {count(summary.n)}</span>
-            {summary.n_nan > 0 && <span>undefined {count(summary.n_nan)}</span>}
+            {summary.n_nan > 0 && <span title="Items where this metric is undefined, for example an answer that cites nothing">{count(summary.n_nan)} not scorable</span>}
             {result && <RagasSource path={result.source.path} locator={result.source.pointer} />}
-          </p>
+          </div>
         </>
       ) : (
         <p className="text-sm text-muted">Not computed</p>
@@ -173,11 +173,11 @@ function ReconciliationCard({ caveat }: { caveat: RagasCaveat }) {
         {caveat.metrics.map((m) => (
           <li key={m.id} className="min-w-0">
             <p className="text-xs text-muted">{m.label}</p>
-            <p className="flex flex-wrap items-baseline gap-x-2">
+            <div className="flex flex-wrap items-baseline gap-x-2">
               <span className="text-md font-semibold tabular-nums text-primary">{formatEvalValue(m.value, m.unit)}</span>
               {m.n != null && <span className="text-xs tabular-nums text-muted">n {formatNumber(m.n)}</span>}
               <RagasSource path={m.source.path} locator={sourceLocator(m.source)} />
-            </p>
+            </div>
           </li>
         ))}
       </ul>

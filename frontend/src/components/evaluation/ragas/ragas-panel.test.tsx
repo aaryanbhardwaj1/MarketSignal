@@ -105,7 +105,7 @@ describe("RagasPanel", () => {
     expect(order.every((i) => i > -1)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
     expect(table).toContain('data-low="true"');
-    expect(textOf(table)).toContain("Undefined");
+    expect(textOf(table)).toContain("Not scorable");
   });
 
   it("drawer detail shows question, category, configuration and all scores", () => {

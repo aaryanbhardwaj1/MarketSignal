@@ -19,6 +19,8 @@ export function OverviewStats({ summary, points }: { summary: TelemetrySummaryWi
   const total = summary.runs.total;
   const completed = summary.runs.by_status.completed ?? 0;
   const success = summary.rates.success ?? (total ? completed / total : null);
+  // "Completed" is the run status; a completed run may still have had no live model to answer.
+  const noModel = summary.runs.by_termination_state.generation_unavailable ?? 0;
   const std = summary.latency_ms.total_by_mode.standard;
   const res = summary.latency_ms.total_by_mode.research;
   const tokens = summary.tokens;
@@ -37,7 +39,7 @@ export function OverviewStats({ summary, points }: { summary: TelemetrySummaryWi
       <Stat
         label="Success rate"
         value={<span className="whitespace-nowrap">{formatPercent(success)}</span>}
-        sub={`${formatNumber(completed)} of ${formatNumber(total)} completed`}
+        sub={`${formatNumber(completed)} of ${formatNumber(total)} completed${noModel ? ` · ${formatNumber(noModel)} without a live model` : ""}`}
         trend={<Trend values={binRate(pts, (p) => p.status === "completed")} what="Share of runs completed" format={(v) => formatPercent(v)} />}
       />
       <Stat

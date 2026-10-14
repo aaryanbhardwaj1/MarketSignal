@@ -43,7 +43,7 @@ describe("deriveRunFlow", () => {
 
   it("shows the evidence-only fallback honestly", () => {
     const flow = deriveRunFlow(fallback);
-    expect(ids(flow)).toEqual(["request", "routing", "retrieval", "tools", "evidence", "generation", "final", "completed"]);
+    expect(ids(flow)).toEqual(["request", "routing", "tools", "retrieval", "evidence", "generation", "final", "completed"]);
     expect(ids(flow)).not.toContain("verification");
     const retrieval = stage(flow, "retrieval");
     expect(retrieval.duration_ms).toBeCloseTo(116.2);

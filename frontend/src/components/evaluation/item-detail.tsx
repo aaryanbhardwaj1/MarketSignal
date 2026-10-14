@@ -12,6 +12,8 @@ import { formatDateTime, formatNumber, humanize } from "@/lib/format";
 import { AnswerText, HandleChip, InlineText } from "./answer-text";
 import { failureBucketLabel } from "./failures-tab";
 
+const sentenceCase = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+
 const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 type Of<P extends EvalItem["phase"]> = Extract<EvalItem, { phase: P }>;
@@ -231,7 +233,7 @@ function Configuration({ provenance }: { provenance: EvalProvenance | null }) {
                 : provenance.dataset.name,
           },
           { label: "Split", value: provenance.split ?? "Not recorded" },
-          { label: "Model", value: <span className="font-mono text-sm">{provenance.model ?? "Not applicable"}</span> },
+          { label: "Model", value: provenance.model ? <span className="font-mono text-sm">{provenance.model}</span> : "Not applicable" },
           { label: "Config hash", value: <span className="font-mono text-sm">{provenance.config_hash ?? "Not recorded"}</span> },
           { label: "Commit", value: <span className="font-mono text-sm">{provenance.git ?? "Not recorded"}</span> },
           { label: "Recorded", value: formatDateTime(provenance.at) },
@@ -281,7 +283,7 @@ export function ItemDetail({
       <header>
         <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
           <span className="font-mono">{item.item_id}</span>
-          {category && <Badge tone="neutral">{humanize(category)}</Badge>}
+          {category && <Badge tone="neutral">{sentenceCase(humanize(category))}</Badge>}
           {item.phase === "retrieval" && item.bucket && <Badge tone="warn">{failureBucketLabel(item.bucket)}</Badge>}
         </p>
         <p className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted" data-testid="item-configuration">

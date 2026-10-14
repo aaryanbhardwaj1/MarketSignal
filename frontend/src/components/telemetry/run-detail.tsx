@@ -60,7 +60,12 @@ function RunHeadline({ run }: { run: TelemetryRunDetail["run"] }) {
         label="Outcome"
         tone={outcome.tone ?? "neutral"}
         value={<span className="text-base">{outcome.known ? outcome.label : outcome.code || run.status}</span>}
-        sub={run.termination_state ? <span className="font-mono text-xs">{run.termination_state}</span> : undefined}
+        sub={
+          // The recorded code adds information only when it is not just the label in snake_case.
+          run.termination_state && run.termination_state !== outcome.label.toLowerCase().replaceAll(" ", "_") ? (
+            <span className="font-mono text-xs">{run.termination_state}</span>
+          ) : undefined
+        }
       />
       <Stat size="sm" label="Total time" value={formatMs(run.total_ms)} />
       <Stat
