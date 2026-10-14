@@ -1,6 +1,6 @@
 # Grounded answering deep dive (Phase 3, verifier precision updated in Phase 4, computed results added in Phase 5)
 
-**Last updated:** 2026-10-06 · **Code:** `backend/src/marketsignal/generation/`, `providers/llm/`, `runs/`, `api/routers/runs.py`, `api/routers/results.py`, `ingestion/purge.py`, `frontend/src/lib/run-stream.ts`, `frontend/src/components/chat/` · **Decisions:** ADR-0004 (handles and aliases), ADR-0007 (bounds), ADR-0008 (SSE), ADR-0015 (modes), ADR-0016 (purge), ADR-0020 (deterministic analytics)
+**Last updated:** 2026-10-06 · **Code:** `backend/src/marketsignal/generation/`, `providers/llm/`, `runs/`, `api/routers/runs.py`, `api/routers/results.py`, `ingestion/purge.py`, `frontend/src/lib/run-stream.ts`, `frontend/src/components/ask/` · **Decisions:** ADR-0004 (handles and aliases), ADR-0007 (bounds), ADR-0008 (SSE), ADR-0015 (modes), ADR-0016 (purge), ADR-0020 (deterministic analytics)
 
 This document describes how a run turns ranked evidence into a verified, cited answer and streams it, as the code does it today. Standard and research runs share everything described here; they differ only in how the ranked evidence is gathered (see [Research mode](#research-mode)). The system-level view (components, tables, termination, configuration) is in [`SYSTEM_DESIGN.md`](SYSTEM_DESIGN.md).
 
@@ -81,7 +81,7 @@ The model answers in Markdown with fixed level-3 headings (no JSON mode). `gener
 | **Interpretation** | Optional; every sentence `[inference]` | Tagged `[inference]` if not already; numbers must be in the cited items (if cited) or the pack. |
 | **Gaps & unknowns** | No citations, no numbers | Citations removed, units with numbers dropped. A unit that does not state missing evidence (`states_gap`) is tagged `[inference]`. Required (`gaps_missing`) when the pack was truncated. |
 
-**Evidence, inference, unknown.** These are three visibly different kinds of statement in the final answer: evidence-backed units carry canonical citations; inferences carry the `[inference]` tag and are styled apart (`frontend/src/components/chat/answer-view.tsx`, tone `inference`); gaps live in their own section and carry neither citations nor numbers. `final.sections` carries the parsed structure so the UI does not re-parse prose.
+**Evidence, inference, unknown.** These are three visibly different kinds of statement in the final answer: evidence-backed units carry canonical citations; inferences carry the `[inference]` tag and are shown apart, in an Interpretation block tagged Inference (`frontend/src/components/ask/answer-view.tsx`); gaps live in their own section and carry neither citations nor numbers. `final.sections` carries the parsed structure so the UI does not re-parse prose.
 
 **Units.** `split_units` produces one unit per bullet and one per sentence elsewhere. The splitter is conservative: decimals, abbreviations, citations and inline code never split a sentence, and a lowercase continuation never starts one, because a false split would strand a citation away from its claim.
 
@@ -200,7 +200,7 @@ Research runs can hand synthesis the persisted `AnalyticsResult` dicts of the ag
 
 These rules were tightened after the first valid live dev run: 7 of 36 dev answers fell back to evidence only on verifier false positives (labels such as "Trail Starters", the metric's own column words, "versus", a parenthesised gap word, digits in SKU codes, filter_rows percent cells). Three adversarial review rounds of that fix found false negatives it introduced (16, then 5, then 2; for example a column named `price_change_pct` hiding "change", "Over 65" exempting 65, "600 of the Trail Starters"). All are closed by the rules above and kept as tests (`tests/unit/test_result_claims_dev_regressions.py`). Known limits, unchanged from before the fix: a difference stated like a level ("App 0.03 versus Marketplace") a level stated with "beat", "advantage over" or "margin over", and a count stated in a different role (a denominator or matched-row count presented as the measured value) are accepted.
 
-The frontend renders `[[result:<id>]]` as a result chip and a result card (`components/chat/result-chip.tsx`, `result-card.tsx`, formatting in `lib/analytics.ts`), which loads the stored result from `GET /api/workspaces/{ws}/results/{result_id}` and shows values, units, denominators, filters, grouping, dataset, source version and rounding as plain text.
+The frontend renders `[[result:<id>]]` as a result chip and a result card (`components/ask/result-chip.tsx`, `components/evidence/result-card.tsx`, formatting in `lib/analytics.ts`), which loads the stored result from `GET /api/workspaces/{ws}/results/{result_id}` and shows values, units, denominators, filters, grouping, dataset, source version and rounding as plain text.
 
 ### 5.9 Phase 4 regression fixes (Phase 5, workstream W1)
 

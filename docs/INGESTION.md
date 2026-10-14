@@ -20,7 +20,7 @@ worker (queue "ingestion")
 GET /api/workspaces/{ws}/evidence/{handle}?child_id=  → exact parent text, locator, provenance, highlight
 ```
 
-Each status change is committed, so the Sources page shows progress while a job runs.
+Each status change is committed, so the Evidence library shows each source's status while a job runs (files attached in chat are uploaded through the same endpoint).
 
 ## Upload validation (`ingestion/validation.py`)
 

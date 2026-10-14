@@ -169,3 +169,7 @@ The project's claims (hybrid beats dense-only, reranking helps, the agent is wor
 - `scripts/phase3_inspect_run.py` rebuilds any run (stored drafts, the identical pack, verifier re-run). `scripts/phase3_numeric_recheck.py` independently re-checks the numbers in stored answers against the resolved cited evidence.
 - **Not tuned on this set.** The verifier precision problems found here are fixed against a new dev split, and `live-v0` stays the Phase 3 baseline, as the Phase 2 rule for the reranker requires.
 - Approximate cost is computed from returned usage and the list prices in `config.py` (`llm_price_*`).
+
+## Addendum (2026-10-14): RAGAS via an isolated runner
+
+The decision above to implement metric definitions in-house stands, and the in-house gates remain the measurements of record. RAGAS is now integrated alongside them, not as a backend dependency: the backend exports persisted evaluation outputs as samples (`evaluation/ragas_export.py`, no model call), a separate uv project (`eval/ragas_runner/`, its own lockfile) scores them, and the results are committed under `eval/baselines/ragas/` and shown in the evaluation catalog. Only the non-LLM metrics (ID-based and text-similarity context precision and recall) were computed. The model-judged metrics are wired behind an explicit opt-in and were not run. See [ADR-0021](0021-ragas-isolated-runner.md).

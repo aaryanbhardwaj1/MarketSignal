@@ -24,12 +24,12 @@ Internal plan, written after a read-only audit of the frontend, the persisted ru
    - Shared primitives cover the shell, page header, card, metric card, table, badge, status indicator, form controls, tabs, filter bar, citation chip, evidence card, result panel, bar list, callout, states, drawer and disclosure.
    - A design-rules test rejects banned classes (gradients, blur, ad hoc sizes, raw palettes).
    - No UI framework and no new runtime dependencies.
-2. **Information architecture.** A persistent sidebar with two groups.
+2. **Information architecture.** A persistent sidebar with two groups (superseded by the chat-first layout in [Final redesign](#final-redesign)).
    - **Workspace:** Overview, Ask MarketSignal, Growth Opportunities, Analytics, Evidence Library.
    - **Developer Tools:** Telemetry, RAG Evaluation.
    - Old routes redirect to the new ones. Workspace creation, uploads and deletes leave the UI; the backend endpoints stay.
 3. **Business surfaces.**
-   - **Overview** and **Growth Opportunities** come from a versioned **curated analyst brief**. Its evidence is re-resolved and its figures recomputed deterministically on every request, and anything that no longer verifies is hidden. Statuses are qualitative, with no scores.
+   - **Overview** and **Growth Opportunities** come from a versioned **curated analyst brief**. Its evidence is re-resolved and its figures recomputed deterministically on every request. An item that no longer verifies stays visible, marked "Could not be re-verified", with its figures withheld; decks exclude it. (Corrected 2026-10-14: an earlier version of this plan said such items are hidden.) Statuses are qualitative, with no scores.
    - **Analytics** shows named business analyses recomputed by the existing deterministic engine. These are never persisted and never touch an LLM.
 4. **Ask MarketSignal.**
    - Saved conversations, with honest Standard/Research/Auto copy.
@@ -46,9 +46,36 @@ Internal plan, written after a read-only audit of the frontend, the persisted ru
    - Featured saved conversations come from a committed demo snapshot that imports after seeding, with integrity guards.
    - Test-harness runs are excluded from product views by default.
 
+## Final redesign
+
+Decisions taken in the last round of work, after the plan above was built.
+
+1. **Chat-first information architecture.**
+   - The landing page is Chat, with a conversation sidebar (saved and featured conversations).
+   - A top bar carries the business navigation: **Chat · Insights · Growth Opportunities · Analytics**. Overview became Insights.
+   - Developer tools (Telemetry, RAG Evaluation) are icon buttons on the right of the top bar. The Evidence library has no nav entry; it is reached from the workspace control and provenance links.
+   - Old routes (`/overview`, `/chat`, `/sources`, `/search`) answer with real redirects.
+   - Files can be attached in chat; they are uploaded through the same sources endpoint.
+2. **Claim-type contract.** Every brief claim is typed **Observed**, **Derived**, **Inference**, **Hypothesis** or **Forecast**. The curated brief (schema v2) enforces the grounding each type needs when it loads, and re-checks it on every request:
+   - Observed needs a supporting quote; Derived needs a computed metric; Inference and Hypothesis need a quote or a metric.
+   - A Forecast needs a cited passage that states the projection. If that passage stops verifying, the item becomes unverified and its figures are withheld.
+   - An analysis summary or interpretation is shown only when every number in it equals a computed figure.
+   - Opportunity risks are re-verified like any other claim.
+   - Inference, Hypothesis and Forecast are tagged visibly; Observed and Derived are not.
+3. **Insights, Growth Opportunities and Analytics are distinct.**
+   - **Insights:** what the evidence shows now. Typed signals (emerging signals, risks and blockers, competitor findings, optimizations, future outlook) with an evidence balance and qualitative statuses.
+   - **Growth Opportunities:** what to act on. Curated opportunities with supporting and contradicting evidence, risks, and links to the signals and analyses behind them.
+   - **Analytics:** the numbers. Named analyses grouped by business area, each recomputed by the deterministic engine with one real visual.
+4. **Motion and charts are now allowed** under the design rules. Charts are hand-rolled SVG components (no charting library) and show only computed or persisted values. Motion is short and functional, and `prefers-reduced-motion` is respected.
+5. **RAGAS.** Standard RAG metrics through an isolated runner over the persisted evaluation outputs. Only the non-LLM metrics were computed; the model-judged ones are wired behind an opt-in and were not run ([ADR-0021](adr/0021-ragas-isolated-runner.md)).
+6. **Decks.** Selected Insights, opportunities and analyses become a PowerPoint deck, composed on the server from the re-verified brief with no model call. Items that do not re-verify are excluded and listed ([ADR-0022](adr/0022-grounded-deck-generation.md)).
+7. **Server log.** Telemetry gains a live view of the API process's log: sanitized, in memory, developer-only ([ADR-0023](adr/0023-developer-server-log.md)).
+
+The as-built behaviour is in [`SYSTEM_DESIGN.md` §10](SYSTEM_DESIGN.md#10-product-and-developer-surfaces-final-phase).
+
 ## Not built
 
 - New retrieval, agent or verifier logic.
 - Auth, deployment, billing.
-- AI-generated opportunities, opportunity scores, a charting library, dark mode, animation.
-- Any live model call.
+- AI-generated opportunities, opportunity scores, dark mode.
+- Any live model call, including the model-judged RAGAS metrics.

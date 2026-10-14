@@ -5,6 +5,8 @@
 **Primary purpose:** Build an interview-ready, technically deep full-stack AI system that applies enterprise research-RAG architecture patterns to a growth-strategy / management-consulting domain.  
 **Status:** Public product specification. Approved implementation deviations D1–D11 are recorded in `docs/ARCHITECTURE_PLAN.md` §0.3 and `docs/adr/`; where they differ, the plan and ADRs take precedence.  
 
+> **Note (2026-10-14):** the user-interface sections of this document are historical; the UI as built is described in [`PRODUCTIZATION_PLAN.md`](PRODUCTIZATION_PLAN.md), which supersedes them.
+
 ---
 
 # 0. Executive Summary

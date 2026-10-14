@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-Each ADR records one significant decision: context, decision, alternatives, tradeoffs, consequences and verification. ADR-0001 to ADR-0019 were accepted on 2026-10-05 with the architecture plan (`docs/ARCHITECTURE_PLAN.md`); ADR-0020 was added in Phase 5. Each one is updated with measurements when its component is built.
+Each ADR records one significant decision: context, decision, alternatives, tradeoffs, consequences and verification. ADR-0001 to ADR-0019 were accepted on 2026-10-05 with the architecture plan (`docs/ARCHITECTURE_PLAN.md`); ADR-0020 was added in Phase 5, and ADR-0021 to ADR-0023 in the final phase. Each one is updated with measurements when its component is built.
 
 ## Index
 
@@ -26,6 +26,9 @@ Each ADR records one significant decision: context, decision, alternatives, trad
 | [0018](0018-personas-as-policy-configuration.md) | Personas as policy configuration, not tool restriction | Accepted | 4 (default modes only); priors and prompt policy deferred |
 | [0019](0019-testing-and-load-testing.md) | Testing strategy and load testing | Accepted | 0, extended every phase; 8 (load test) |
 | [0020](0020-deterministic-structured-analytics.md) | Deterministic structured analytics: the model chooses what to compute, code computes it; results cited as `[R#]` | Accepted | 5 |
+| [0021](0021-ragas-isolated-runner.md) | RAGAS as an isolated runner over persisted outputs; non-LLM metrics computed, model-judged metrics gated and not run | Accepted | Final |
+| [0022](0022-grounded-deck-generation.md) | Grounded deck generation from the verified brief, composed and rendered on the server | Accepted | Final |
+| [0023](0023-developer-server-log.md) | Developer server log as a sanitized, process-local ring buffer | Accepted | Final |
 
 ## Spec deviation register
 

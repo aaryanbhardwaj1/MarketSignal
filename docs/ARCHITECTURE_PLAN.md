@@ -1,5 +1,7 @@
 # MarketSignal — Architecture Plan
 
+> **Note (2026-10-14):** the user-interface sections of this document are historical; the UI as built is described in [`PRODUCTIZATION_PLAN.md`](PRODUCTIZATION_PLAN.md), which supersedes them.
+
 | | |
 |---|---|
 | Version | 1.1 (approved; v1.0 was revised after a 7-lens adversarial review: 91 findings, 35 critical/high independently verified) |

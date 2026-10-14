@@ -92,3 +92,10 @@ Persona is part of the run record (`conversations.persona`, `query_runs.persona`
 - **Deferred:** the YAML persona files in `agent/personas/`, the persona prompt-policy blocks, and source-class priors. The priors depend on balancing, which is disabled by default since the Phase 2 measurement (`balance_enabled=False`). The agent's user message states the persona name only, with no policy text.
 - **Same tool set for every persona**, as decided. The capability token carries `persona` and `tools` (all four), and the `claims.tools` check is built and tested (`test_tool_not_granted_is_policy_denied`).
 - Persona is recorded in `query_runs.persona`, `run_started` and the token. The request accepts any persona string up to 40 characters; unknown values route like the generalist.
+
+## Addendum (2026-10-14)
+
+Two statements in the Phase 4 notes above are out of date:
+
+- **Unknown personas are rejected.** `POST /api/workspaces/{ws}/conversations` validates `persona` against `PERSONA_DEFAULT_MODES` (`api/routers/runs.py`), so an unknown value is a validation error rather than routing like the generalist.
+- **The token carries eight tools, not four.** Since Phase 5 the shared tool set is the four evidence tools plus the four analytics tools (ADR-0020); `claims.tools` is `TOOL_NAMES`. Every persona still gets the same set.

@@ -1,8 +1,8 @@
-# System design (as built through Phase 5)
+# System design (as built through the final phase)
 
-**Last updated:** 2026-10-06 · **Scope:** what the code does today, through Phase 5 (standard and research modes, governed tools, verifier precision, deterministic structured analytics). Anything planned but not built is listed under [Deferred](#9-deferred). The approved target design is [`ARCHITECTURE_PLAN.md`](ARCHITECTURE_PLAN.md); where the two differ, the plan's §0.4 deviation register records why.
+**Last updated:** 2026-10-14 · **Scope:** what the code does today: through Phase 5 (standard and research modes, governed tools, verifier precision, deterministic structured analytics), plus the productization and final phases (product and developer APIs, curated brief v2, decks, server log, RAGAS; [§10](#10-product-and-developer-surfaces-final-phase)). Anything planned but not built is listed under [Deferred](#9-deferred). The approved target design is [`ARCHITECTURE_PLAN.md`](ARCHITECTURE_PLAN.md); where the two differ, the plan's §0.4 deviation register records why.
 
-> **Live validation status.** Phase 5 (structured analytics, computed results in answers, task routing) is implemented and tested; its analytics-v0 measurements are in the Phase 5 report (`docs/phase-reports/phase-5.md`). Phase 4 (research mode, governed tools, verifier precision) is implemented and tested against scripted models. For its live results, see [`docs/phase-reports/phase-4.md`](phase-reports/phase-4.md). Phase 3: the live Anthropic spike and the live grounded evaluation ran on 2026-10-06. All six hard gates passed; end-to-end p50/p95 was 4.8 s / 9.6 s and the 76-item run cost about $1.00. Live results (2026-10-06, `claude-sonnet-5-5`, effort low, no thinking): [`docs/phase-reports/phase-3.md`](phase-reports/phase-3.md), [spike 0002](spikes/0002-anthropic-live.md), and `eval/baselines/phase3/live-v0/`.
+> **Live validation status.** Phase 5 (structured analytics, computed results in answers, task routing) is implemented and tested; its analytics-v0 measurements are in the Phase 5 report (`docs/phase-reports/phase-5.md`). Phase 4 (research mode, governed tools, verifier precision) is implemented and tested against scripted models. For its live results, see [`docs/phase-reports/phase-4.md`](phase-reports/phase-4.md). Phase 3: the live Anthropic spike and the live grounded evaluation ran on 2026-10-06. All six hard gates passed; end-to-end p50/p95 was 4.8 s / 9.6 s and the 76-item run cost about $1.00. Live results (2026-10-06, `claude-sonnet-5-5`, effort low, no thinking): [`docs/phase-reports/phase-3.md`](phase-reports/phase-3.md), [spike 0002](spikes/0002-anthropic-live.md), and `eval/baselines/phase3/live-v0/`. The final phase made no live model calls: the demo runs with generation switched off, and RAGAS scored only persisted outputs with non-LLM metrics (§10.6).
 
 Companion documents:
 - [`GROUNDED_ANSWERING.md`](GROUNDED_ANSWERING.md): generation and streaming in depth (pack, prompt, alias gate, verifier and its Phase 4 precision rules, SSE, purge during a run, evaluation).
@@ -10,6 +10,7 @@ Companion documents:
 - [`GOVERNED_TOOLS_AND_MCP.md`](GOVERNED_TOOLS_AND_MCP.md): the eight governed tools (four evidence, four analytics), capability tokens, the governance pipeline, audit, the in-process and MCP Streamable HTTP transports, and the threat model.
 - [`RETRIEVAL_DEEP_DIVE.md`](RETRIEVAL_DEEP_DIVE.md): the retrieval pipeline and its measurements.
 - [`INGESTION.md`](INGESTION.md): how a file becomes citable evidence.
+- [`PRODUCTIZATION_PLAN.md`](PRODUCTIZATION_PLAN.md): the product and developer UI and the decisions behind it.
 
 ---
 
@@ -18,10 +19,10 @@ Companion documents:
 ```
  Browser (Next.js)                          FastAPI process (backend/src/marketsignal)
  ┌──────────────────────────┐   POST   ┌───────────────────────────────────────────────────┐
- │ components/chat/*        │ ───────▶ │ api/routers/runs.py                               │
- │  chat-view, question-form│          │   create run row + user message, spawn task       │
+ │ components/ask/*         │ ───────▶ │ api/routers/runs.py                               │
+ │  conversation-view,      │          │   create run row + user message, spawn task       │
  │  answer-view, safe-md    │ ◀─ SSE ─ │   GET /runs/{rid}/events (replay + live tail)     │
- │  citation-chip, notices  │          │ runs/router.py    deterministic mode router       │
+ │  composer, citation-chip │          │ runs/router.py    deterministic mode router       │
  │ lib/run-stream.ts        │          │ runs/executor.py  StandardRunExecutor (asyncio)   │
  │  (pure event reducer)    │          │   standard: retrieval/pipeline.py hybrid RRF      │
  └──────────────────────────┘          │   research: runs/research.py → agent/* (bounded)  │
@@ -51,6 +52,7 @@ Companion documents:
                                        │   run_events                    (migration 0004)   │
                                        │  tool_runs, verification_attempts (0005, 0006)     │
                                        │  analytics_results              (migration 0007)   │
+                                       │  list indexes                   (migration 0008)   │
                                        │  retrieval_traces               (migration 0003)   │
                                        └────────────────────────────────────────────────────┘
 ```
@@ -83,8 +85,17 @@ Companion documents:
 | `evaluation/grounded.py` | End-to-end grounded evaluation through the in-process API (either mode) | `evaluate`, `summarize` |
 | `evaluation/analytics_eval.py` | Structured-analytics evaluation (analytics-v0) through the in-process API | `evaluate`, `score` |
 | `evaluation/grounded_stats.py`, `grounded_compare.py`, `numeric_recheck.py`, `verifier_eval.py` | Pipeline statistics (incl. `route`/`agent`), paired standard-vs-research comparison, independent numeric re-check, verifier precision harness | — |
+| `api/routers/capabilities.py` | `GET /api/capabilities`: whether live generation is available, as an allowlisted `{generation: {available, reason}}`; never calls a provider | `get_capabilities`, `current_generation_status` |
+| `insights/*` | Curated analyst brief v2: strict fixture schema and loader (`fixture`), request-time quote re-resolution (`evidence`), analysis recomputation (`analyses`), the summary number gate (`summary`), assembly and cache (`service`) | `load_fixture`, `check_claim`, `build_bundle`, `numbers_in` |
+| `api/routers/insights.py` | `GET /insights`, `GET /analytics/analyses`, `GET /analytics/analyses/{id}` | `get_insights`, `list_analyses`, `get_analysis` |
+| `decks/*` | Grounded deck composition from the re-verified brief (`composer`, `grounding`, `quant`, `sources`) and deterministic `.pptx` rendering (`render*`, `theme`) | `compose`, `render_pptx` |
+| `api/routers/decks.py` | `POST /decks/preview`, `POST /decks/pptx` | `preview_deck`, `download_deck` |
+| `devtools/run_telemetry*.py` | Read-only run telemetry: summary, runs, run detail, per-run series, cost estimate | `telemetry_summary`, `list_runs`, `run_detail`, `telemetry_series`, `estimate_cost_usd` |
+| `devtools/server_log.py`, `telemetry/server_log_capture.py`, `telemetry/access_log.py` | Process-local server log ring buffer, its sanitizing capture, and one access event per request | `get_server_log`, `query_logs`, `capture_server_log`, `AccessLogMiddleware` |
+| `devtools/eval_catalog.py` | Serves the precomputed evaluation catalog and per-run item pages (closed run-id set) | `load_catalog`, `load_items`, `EVAL_RUN_IDS` |
+| `evaluation/ragas_export.py` | Exports persisted evaluation runs as RAGAS samples for the isolated runner (no RAGAS, no model) | CLI `ragas-export` |
 
-## 2. Data model (migrations 0004–0007)
+## 2. Data model (migrations 0004–0008)
 
 All six run-side tables are tenant tables: `workspace_id` on every row, composite `(workspace_id, id)` foreign keys, and **ENABLE + FORCE row-level security** with the policy `workspace_id = app.current_workspace()` for both `USING` and `WITH CHECK` (`backend/migrations/versions/0004_runs_and_conversations.py`, `0005_agent_tools_verification.py`, `0006_tool_runs_args_redaction.py`).
 
@@ -99,7 +110,7 @@ All six run-side tables are tenant tables: `workspace_id` on every row, composit
 | `analytics_results` (0007) | one row per computing analytics call: `id` (the cited `result_id`), `query_run_id`, `source_version_id`, `table_id`, `tool` (`aggregate`, `group_compare`, `filter_rows`), normalized `spec`, the `AnalyticsResult` as `result` jsonb, `created_at` | RLS forced; `UPDATE` revoked from `ms_app`. `ON DELETE CASCADE` from the source version and the dataset table, `SET NULL` on `query_run_id`. Read by `GET /api/workspaces/{ws}/results/{result_id}` (`{kind: "result", tool, query_run_id, created_at, result}`; `404 RESULT_NOT_FOUND` for unknown, foreign or purged ids) |
 | `run_events` | the SSE event log: `(workspace_id, run_id, seq)` primary key, `type`, `payload` jsonb | Append-only for the runtime role (`REVOKE UPDATE … FROM ms_app`). Replayed on reconnect. Retention (30 days) is the Phase 8 nightly job. |
 
-Indexes: `tool_runs_run (workspace_id, query_run_id, step)`, `analytics_results_version (workspace_id, source_version_id)`, `analytics_results_run (workspace_id, query_run_id)`, `query_runs_ws_time (workspace_id, created_at)`, the partial `query_runs_running (status) WHERE status = 'running'` (the reaper's scan) and `messages_conversation (workspace_id, conversation_id, created_at)`.
+Indexes: `tool_runs_run (workspace_id, query_run_id, step)`, `analytics_results_version (workspace_id, source_version_id)`, `analytics_results_run (workspace_id, query_run_id)`, `query_runs_ws_time (workspace_id, created_at)`, the partial `query_runs_running (status) WHERE status = 'running'` (the reaper's scan) and `messages_conversation (workspace_id, conversation_id, created_at)`. Migration 0008 (final phase) adds `conversations_ws_updated (workspace_id, updated_at DESC, id DESC)` for the conversation list's keyset order and `query_runs_ws_conversation (workspace_id, conversation_id, created_at DESC, id DESC)` for each conversation's latest run and the test-run filter; without them the list scanned every run once per conversation. No table was added after 0007: the brief, decks, telemetry, server log and evaluation catalog are computed on request or held in memory.
 
 ## 3. Request flow
 
@@ -306,6 +317,16 @@ The research agent uses the synthesis provider and model (`llm_model`, `llm_thin
 
 Every run records `config_hash` (retrieval configuration) and `prompt_version` (`synth-v1-` + a hash of the system prompt bytes).
 
+Productization and final-phase knobs:
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `llm_enabled` | `true` | `MS_LLM_ENABLED=false` switches live generation off (the offline demo). `POST …/runs` and `POST …/conversations` are refused with `503 PROVIDER_UNAVAILABLE` before any row is written or any provider call; saved runs stay browsable |
+| `provider_latch_ttl_s` | 600 | A non-retryable provider rejection (billing, auth) latches the same unavailable state for this long; runs are refused, conversations can still be created |
+| `dev_endpoints_enabled` | `true` | Mounts the developer routers (`/dev/search`, telemetry, `/api/dev/logs`, `/api/dev/eval/*`) and turns server-log capture on. Both require `env != "prod"`, so production never mounts them whatever this says |
+| `hide_test_workspaces` | `false` | `MS_HIDE_TEST_WORKSPACES=true` omits test-harness workspaces (codes `T` + 10 hex) from `GET /api/workspaces` |
+| `server_log_capacity` | 2000 (10–10,000) | `MS_SERVER_LOG_CAPACITY`: entries kept in the in-memory server log ring (API process only) |
+
 ## 9. Deferred
 
 | Item | Status today | Planned |
@@ -321,3 +342,102 @@ Every run records `config_hash` (retrieval configuration) and `prompt_version` (
 | Follow-up query rewriting | `standalone_query` = the question; the router's follow-up cue sends such questions to research mode, whose agent sees the conversation context | Open |
 | Persisting partial answers as `incomplete` | Not written; a run without `final` stores no assistant message | Open |
 | `run_events` 30-day retention job | Not built | Phase 8 |
+| Model-judged RAGAS metrics (faithfulness, answer relevancy, LLM context precision and recall) | Wired in `eval/ragas_runner` behind an explicit opt-in; not run (no live model calls in the final phase) | When a judge budget exists; needs calibration (ADR-0013) |
+| Role checks on developer endpoints | Developer routes are gated by environment only (§10.1) | With principals (ADR-0014) |
+
+## 10. Product and developer surfaces (final phase)
+
+The productization and final phases added read-only product APIs, developer tools and an evaluation add-on. None of them adds retrieval, agent or verifier logic, and none calls a model. The UI is described in [`PRODUCTIZATION_PLAN.md`](PRODUCTIZATION_PLAN.md).
+
+### 10.1 API surface and gating
+
+**Business routes** are always mounted and are workspace-scoped (RLS) unless noted.
+
+| Endpoint | Returns | Notes |
+|---|---|---|
+| `GET /api/capabilities` | `{generation: {available, reason}}` | Not workspace-scoped. `reason ∈ DISABLED, NOT_CONFIGURED, PROVIDER_REJECTED` or null. An allowlist: no settings, model names, keys or provider text. Never builds or calls a provider |
+| `GET /api/workspaces/{ws}/conversations` | `{items, next_cursor}` | Newest activity first, keyset pages on `(updated_at, id)` (`limit` ≤ 100, `cursor`, `q`). `featured=true` returns the curated demo list in display order. A conversation with any test-harness run (`fake-llm`) is hidden unless `include_test_runs=true`. Indexed by migration 0008 |
+| `GET /api/workspaces/{ws}/runs/{rid}/verification` | verification summary | Attempts and dispositions without rejected spans |
+| `GET /api/workspaces/{ws}/insights` | `InsightsBrief` | Curated brief v2 (§10.3). A workspace without a fixture gets an empty brief (`fixture_version: null`) |
+| `GET /api/workspaces/{ws}/analytics/analyses`, `…/analyses/{id}` | `AnalysesResponse`, `Analysis` | Named analyses, recomputed per request; `404 ANALYSIS_NOT_FOUND` |
+| `GET /api/workspaces/{ws}/analytics/datasets`, `…/datasets/{id}`, `…/analytics/results` | datasets, result summaries | Analysable dataset versions and persisted computed results (keyset-paged; test-harness results hidden unless asked) |
+| `POST /api/workspaces/{ws}/decks/preview` | `{deck}` | Composed deck as JSON (§10.4) |
+| `POST /api/workspaces/{ws}/decks/pptx` | `.pptx` download | `422 DECK_ITEMS_NOT_FOUND`, `DECK_EMPTY`, `DECK_TOO_LARGE`; `Cache-Control: no-store` |
+
+**Developer routes** are mounted only when `env != "prod"` **and** `dev_endpoints_enabled` (`api/app.py`). They return raw tool arguments, route cues, model names, token usage and cost estimates, and no role check exists yet (ADR-0014), so they are developer tools, never product endpoints.
+
+| Endpoint | Returns | Notes |
+|---|---|---|
+| `GET /api/workspaces/{ws}/dev/search` | smoke search lanes | Pre-existing (Phase 2) |
+| `GET /api/workspaces/{ws}/telemetry/summary` | `TelemetrySummary` | Filters `since`, `until` (timezone required), `mode`, `include_test_runs` |
+| `GET /api/workspaces/{ws}/telemetry/series` | `TelemetrySeries` | One compact point per run, oldest first; `limit` ≤ 2000, the most recent runs kept when more match (`truncated`). Unrecorded values stay `null`, never filled in |
+| `GET /api/workspaces/{ws}/telemetry/runs` | keyset page of `TelemetryRunRow` | Newest first; filters for mode, status, termination state, degraded, model, final disposition, time window |
+| `GET /api/workspaces/{ws}/telemetry/runs/{run_id}` | `TelemetryRunDetail` | Stage timeline, tool calls, verification attempts, retrieval lanes. Another workspace's run, an unknown id and a missing one are all `404 RUN_NOT_FOUND`. Model reasoning is never shown (it is not recorded) |
+| `GET /api/dev/logs` | `ServerLogResponse` | Not workspace-scoped; process-level (§10.5) |
+| `GET /api/dev/eval/catalog` | `EvalCatalog` | Precomputed from committed artifacts; ETag (sha256 of the file) and `304`; `503 EVAL_CATALOG_UNAVAILABLE` if the generated file is missing |
+| `GET /api/dev/eval/runs/{run_id}/items` | `EvalItemsPage` | Run ids are a closed set (`EVAL_RUN_IDS`), including the RAGAS runs `ragas-p3-live-v0` and `ragas-p4-research-test`; anything else is `404 EVAL_RUN_NOT_FOUND`. `bucket` filters by failure bucket (for RAGAS runs, by configuration) |
+
+Telemetry cost is an estimate from persisted token usage at the list prices in `config.py`. Test-harness runs (`fake-llm`) are excluded from summaries, series and lists unless `include_test_runs=true`.
+
+### 10.2 Generation switch
+
+`MS_LLM_ENABLED=false` makes `POST …/runs` and `POST …/conversations` return `503 PROVIDER_UNAVAILABLE` (`retryable: false`, with `reason`) before any row is written or any provider is built. A non-retryable provider rejection latches the same state for `provider_latch_ttl_s`; while latched, runs are refused but conversations can still be created. The UI reads `GET /api/capabilities` and shows "Live model unavailable" instead of a provider error. Saved conversations, the brief, analyses, decks and all developer tools work with generation off.
+
+### 10.3 Curated brief v2
+
+The brief behind Insights and Growth Opportunities is a hand-authored, versioned fixture per workspace (`insights/fixtures/<WORKSPACE>.v<N>.json`, now schema v2). It is not generated: every quote is an exact sentence of an evidence passage, and every number is a named analysis that the deterministic engine recomputes.
+
+**Load-time checks (fail closed).** An unknown field, a handle outside the fixture's workspace, a superseded or planted (prompt-injection) handle, an unpinned metric value, a duplicate id or a dangling `related` link makes the fixture invalid (`FixtureError`). In v2 every claim carries a type and must have the grounding that type needs (`insights/fixture.py::check_claim`):
+
+| Claim type | Required grounding |
+|---|---|
+| `observed` | at least one supporting quote |
+| `derived` | at least one metric |
+| `inference`, `hypothesis` | a quote or a metric |
+| `forecast` | a supporting quote that states the projection (`states_projection`) |
+
+**Request-time checks.** Every request re-resolves each quote against the current source versions and recomputes each analysis; nothing is written and no model is called.
+- Item integrity rolls up as `verified` (all evidence verified and all metrics computed), `partial` (at least one verified passage) or `unverified`. A derived metric (`diff`, `pct_change`) exists only when all its inputs computed.
+- **Forecasts are re-checked on every request.** An item or risk with a `forecast` claim whose cited projection no longer verifies becomes `unverified`, and the item's metric values are withheld.
+- **Opportunity risks are re-verified** like the opportunity's own evidence and count towards its integrity.
+- **Analysis summary and interpretation number gate** (`insights/summary.py`). Each is shown only when the analysis computed and every number in it equals a computed row's value or display string, a row's denominator, or the analysis denominator; otherwise it is withheld (`summary_status` / `interpretation_status` = `unverified`). Period labels (`Q1`–`Q4`, `H1`/`H2`, `FY…`) are not numbers; any other digits glued to letters still count, so unknown labels fail closed. Signs must match when written. Quantities spelled in words are not checked.
+- Unverified items **stay visible**, marked "Could not be re-verified", with their figures withheld in the UI. Decks exclude them.
+
+Results are cached in process for 300 s, keyed by workspace, fixture version and a fingerprint of the referenced sources' current versions, so an upload, supersession or purge of a referenced source invalidates the entry at once. The response also reports `corpus_check.drifted_sources`.
+
+### 10.4 Decks
+
+`decks/` composes a deck from the same re-verified brief and analyses as `GET /insights` and renders it with python-pptx ([ADR-0022](adr/0022-grounded-deck-generation.md)). Guarantees:
+
+- **Only selected, known items.** The request names signal, opportunity and analysis ids (at most 30, 10 and 10); ids not in this workspace's brief are `422 DECK_ITEMS_NOT_FOUND`. The workspace comes from the trusted scope only.
+- **Exclusion, not softening.** Unverified items, analyses that did not recompute and items whose main claim lost its grounding are left out and listed in `excluded` with a reason. A claim keeps its grounding when: observed or forecast → a verified supporting passage; derived → a computed metric; inference or hypothesis → either. A forecast on an item that is not fully verified is shown as a hypothesis. If nothing survives, the download is `422 DECK_EMPTY`.
+- **No new prose.** Slide text is copied from the brief, except fixed section titles, status labels and evidence counts. Inference, Hypothesis and Forecast claims are tagged. Bullets cite numbered sources; speaker notes carry the handles for audit; slide text never shows a handle or internal id; an appendix lists every source.
+- **Deterministic and bounded.** Fixed section order, empty sections omitted, long ones continued on `(cont.)` slides. Fixed zip timestamps and document properties, so the same deck gives the same bytes. At most 150 slides and 15 MB (`422 DECK_TOO_LARGE`). Nothing is persisted.
+
+### 10.5 Server log
+
+`GET /api/dev/logs` reads an in-memory ring buffer of the API process's structured log events ([ADR-0023](adr/0023-developer-server-log.md)).
+
+- **Never captured:** questions, queries, answers, passages, prompts, tool arguments, request bodies, headers, query strings, tokens, keys, DSNs and URLs, tracebacks, and non-scalar values. Entries keep ids, enums, counts and durations; strings are truncated, the field count is capped and the shared credential scrubber runs over everything kept.
+- **Linear-time scrubbing:** each string is cut to a fixed 512-character window before it is scrubbed, so the work per value is bounded whatever the client sends.
+- **Access events:** `AccessLogMiddleware` logs one `http.request` per request when the response (or SSE stream) ends: method, route template, path without query string, status, duration, request id. Control characters in the path are replaced and long paths are cut. Health, metrics and log polling are noise, held in a separate small ring so they never evict real entries.
+- **Process-local:** capacity `MS_SERVER_LOG_CAPACITY` (default 2,000, at most 10,000); a monotonic `seq` and a `dropped` count let a poller detect gaps (`after_seq`). The ingestion worker runs in another process and is not included (`scope: "api_process"`). Nothing is written to disk or the database, and the buffer is lost on restart.
+- **Capture only where the routes mount:** capture is switched on only when the developer routers are mounted (`env != "prod"` and `dev_endpoints_enabled`); otherwise the processor is a no-op and stdout logging is unchanged.
+
+### 10.6 RAGAS
+
+```
+ backend (no ragas, no model)          eval/ragas_runner (own uv project)       catalog
+ ┌──────────────────────────────┐      ┌──────────────────────────────┐      ┌────────────────────────────┐
+ │ ragas-export                 │ JSON │ ragas-eval offline           │ JSON │ scripts/build_eval_catalog │
+ │  committed run + gold        │ ───▶ │  non-LLM context precision / │ ───▶ │  ragas section, pointers,  │
+ │  passages resolved per item  │      │  recall (ID and text)        │      │  caveats → /api/dev/eval/* │
+ │  workspace (RLS, read-only)  │      │ ragas-eval llm (gated)       │      │                            │
+ └──────────────────────────────┘      └──────────────────────────────┘      └────────────────────────────┘
+   eval/reports/ragas-inputs/            eval/baselines/ragas/*/results.json, report.md
+```
+
+- **Exporter** (`evaluation/ragas_export.py`): reads a committed run's results and gold dataset read-only, resolves passage texts in the RLS scope of each item's own workspace, never resolves a foreign handle, and records why any item is excluded. `reference` is null: the gold sets hold facts, not reference answers.
+- **Runner** (`eval/ragas_runner/`): a separate uv project with its own lockfile, so RAGAS and its dependency tree never enter the backend lockfile; it does not import `marketsignal` and disables RAGAS usage tracking. It writes to a new directory only, so recorded artifacts are never overwritten. Undefined scores are `null` and counted, never replaced. CI runs its lint, types and tests offline.
+- **Artifacts and catalog:** `results.json` records input sha256s, the RAGAS version and the git sha. The catalog builder reads it read-only, gives every number a JSON pointer, recomputes exclusions from the gold datasets and requires them to match. Pre-existing catalog sections are unchanged.
+- **Not run:** the model-judged metrics (faithfulness, answer relevancy, LLM context precision and recall, factual correctness) are wired behind `ragas-eval llm`, which needs an explicit flag, `MS_LIVE_LLM=1`, a key and `--confirm-cost`. They were not run ([ADR-0021](adr/0021-ragas-isolated-runner.md)).
