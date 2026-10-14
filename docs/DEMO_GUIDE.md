@@ -1,6 +1,8 @@
 # MarketSignal demo guide
 
-A 3 to 5 minute walkthrough of MarketSignal, run fully offline against saved runs. No model is called during the demo: the API runs with `MS_LLM_ENABLED=false`, so new questions are refused before any provider call and the UI says **Live model unavailable**. Everything shown comes from persisted runs, the deterministic analytics engine, or committed evaluation artifacts.
+A 5 to 8 minute interview walkthrough of MarketSignal, run fully offline. The business story comes first (Chat, Evidence, Analytics, Insights, Growth Opportunities, a presentation), then the trust story (Telemetry and RAG Evaluation).
+
+No model is called during the demo. The API runs with `MS_LLM_ENABLED=false`, so new questions are refused before any provider call and the UI says **Live model unavailable**. That is by design, not a fault. Everything shown comes from persisted runs, the curated brief re-verified on each request, the deterministic analytics engine, or committed evaluation artifacts.
 
 All URLs assume the frontend on `http://localhost:3000` and the Northstar workspace. Shorthand: `W = http://localhost:3000/w/NORTHSTAR`.
 
@@ -10,28 +12,27 @@ Do this 10 minutes before.
 
 1. `make up`: Postgres and Redis are healthy.
 2. `make api-demo`: API on `:8000` with the live model off and test workspaces hidden. Check that `curl -s localhost:8000/readyz` reports `"status":"ready"`.
-3. Frontend on `:3000`. **Recommended for the interview:** run a production build with
-   `pnpm --dir frontend build && pnpm --dir frontend start`. It has no compile pauses
-   and no development badge over the sidebar. `pnpm --dir frontend dev` also works.
-4. **Fresh database only:** `make worker`, `make seed` and `make demo-seed`. An existing local database already holds the corpus and the saved runs.
+3. Frontend on `:3000`. **Recommended for the interview:** a production build,
+   `pnpm --dir frontend build && pnpm --dir frontend start`. It has no compile pauses and no
+   development badge. `pnpm --dir frontend dev` also works.
+4. **Fresh database only:** `make worker`, `make seed` and `make demo-seed`. An existing local database already holds the corpus and the saved runs; do not re-seed it.
 5. Optional: `make demo-verify` re-verifies every curated insight number and citation against the corpus.
-6. **Warm the caches.** Open every URL in the table below once, in order. This matters most with the dev server, which compiles each route on first visit.
-7. Check the sidebar footer: it says **Live model unavailable**. That is by design, not a fault. Say so if anyone asks.
+6. **Warm the pages.** Open every URL in the table below once, in order. This matters most with the dev server, which compiles each route on first visit. It also fills the server log you show in step 7.
+7. Check the notice in Chat: it says **Live model unavailable**. Say so if anyone asks.
 8. Browser at 1440 px or wider, zoom 100%, one tab per step if you want instant switching.
 
 | Step | URL |
 |---|---|
-| 1. Overview | `W/overview` |
-| 2. Ask MarketSignal | `W/ask/0ec3ca8c-5a3d-41c4-aca2-6f0967dacb51` |
-| 2b. Same question, standard mode | `W/ask/7c8c6da4-1551-4a53-bbcd-9018de5957ba` |
-| 2c. Same question, research mode | `W/ask/97c28be3-392b-46b3-aa5d-4cf86bcc45da` |
-| 3. Evidence drawer | `W/evidence?ev=NORTHSTAR%2FBRAND-STRATEGY%40v1%3AP4.B2` |
-| 4. Analytics | `W/analytics/genz-top-pain-points` |
+| 1. Chat | `W/ask`, then `W/ask/0ec3ca8c-5a3d-41c4-aca2-6f0967dacb51` |
+| 2. Evidence | `W/evidence?ev=NORTHSTAR%2FBRAND-STRATEGY%40v1%3AP4.B2` |
+| 3. Analytics | `W/analytics/genz-top-pain-points` |
+| 4. Insights | `W/insights` |
 | 5. Growth Opportunities | `W/opportunities/O2` |
-| 6. Telemetry run trace | `W/dev/telemetry/runs/6f18725e-3095-4aab-a90f-ae8505d7dc55` |
-| 6b. Evidence-only fallback | `W/dev/telemetry/runs/288b6e18-8682-4d67-b35d-2a62edd76bb5` |
-| 7. RAG Evaluation | `W/dev/evaluation?tab=retrieval`, then `?tab=grounded` and `?tab=research` |
-| 8. Evidence Library | `W/evidence` |
+| 6. Create presentation | `W/insights/deck?s=premium-ceiling,personalization-lead-time,personalization-status-signal,personalization-niche-outlook,kinetic-return-claim&o=O2&a=pain-points-by-cohort,fit-and-personalization-by-segment,price-sensitivity-by-cohort` |
+| 7. Telemetry | `W/dev/telemetry`, `W/dev/telemetry/runs/6f18725e-3095-4aab-a90f-ae8505d7dc55`, `W/dev/telemetry/runs/288b6e18-8682-4d67-b35d-2a62edd76bb5`, `W/dev/telemetry?tab=logs` |
+| 8. RAG Evaluation | `W/dev/evaluation?tab=overview`, then `retrieval`, `grounded`, `research`, `ragas`, `failures` |
+
+The step 6 URL is exactly what the **Create presentation** button on O2 opens: the opportunity plus its related insights and analyses.
 
 ## Opening line (10 s)
 
@@ -39,121 +40,126 @@ Do this 10 minutes before.
 
 ## Walkthrough
 
-### 1. Overview (30 s)
+### 1. Chat (75 s)
 
-**Go to** `W/overview` (or click **Overview** in the sidebar).
+**Go to** `W/ask`, then open the first entry under **Saved research** in the sidebar: *"How many survey respondents call knit upper durability their biggest problem, and what kinds of wear do they report?"* (`W/ask/0ec3ca8c-5a3d-41c4-aca2-6f0967dacb51`).
 
-**You will see** the Northstar Athletics header and a workspace summary: evidence sources, structured datasets, customer evidence, research runs and saved results. Below that are **Key signals** from the curated analyst brief, each with figures, numbered evidence chips and a **Verified against current evidence** status, plus a line saying when the brief was re-verified.
+**You will see**
+- A clean start page, with saved research listed first and the question box showing the **Live model unavailable** notice.
+- The answer laid out as a short research report: an executive answer with an interpretation tagged **Inference**, key findings, computed figures, supporting evidence grouped by source, and evidence gaps.
+- The headline count (68 of the 600 survey rows) carries a **Computed** chip, separate from the numbered evidence citations.
+- **Research steps** for the run, with a replay that plays the saved stages back at their recorded timings.
 
 **Say:**
 - "Northstar is a fictional apparel company. Everything here is synthetic."
-- "The first signal is fit inconsistency: 27.0% of 400 Gen Z respondents name it as their top frustration, against 19.0% of the 200 respondents aged 28 and over."
-- "These signals are curated, not generated. On every page load the figures are recomputed from the survey dataset and each citation is re-resolved. Anything that stops verifying is hidden."
+- "This question needs a number and customer language. The router saw the numeric cue and sent it to research mode. The agent asked a governed analytics tool to count rows, and code computed 68. That figure is cited as a computed result, not as evidence."
+- "The wear descriptions are cited to exact survey rows, and the verifier corrected the draft before accepting it."
 
-### 2. Ask MarketSignal (75 s)
+### 2. Evidence (30 s)
 
-**Go to** `W/ask/0ec3ca8c-5a3d-41c4-aca2-6f0967dacb51`, or click **Ask MarketSignal** and pick the first **Featured** conversation: *"How many survey respondents call knit upper durability their biggest problem, and what kinds of wear do they report?"*
+**Click** citation **1** in the answer. For the canonical example, open `W/evidence?ev=NORTHSTAR%2FBRAND-STRATEGY%40v1%3AP4.B2`.
 
-**You will see**
-- The answer in fixed sections: **Answer**, **Interpretation** (labelled *Inference*), **Key findings**, then **Supporting evidence** grouped by source.
-- The headline count (68 of the 600 survey rows) carries a **Computed** chip, separate from the numbered evidence citations.
-- Numbered citations on every finding. The supporting evidence shows the survey rows quoted verbatim, plus a support-themes page and the brand strategy document.
-- Further down: the computed result panel (a count on the customer survey dataset, version 1) and **Research details** for the run.
-- At the bottom, the question box is disabled with the **Live model unavailable** notice.
+**You will see** the evidence panel: source title, class and format, the page and section path, the full passage with the text before and after it, and a **Technical details** disclosure.
 
 **Say:**
-- "This is a mixed question: one part needs a number, the other needs customer language. The router saw the numeric cue and sent it to research mode."
-- "The agent didn't do the arithmetic. It asked a governed analytics tool to count rows, and code computed 68. That result is cited as a computed figure, not as evidence."
-- "The wear descriptions are cited to exact survey rows. Inference is labelled as inference."
-- "The verifier made corrections before accepting it: it removed numbers that had slipped into the gaps section."
-
-**Then show the mode tradeoff** (optional, 20 s). In the conversation list, open the two featured entries that ask *"How much do young shoppers care about fast delivery…"*. The standard one is marked *Same question as above, answered for comparison*.
-- Standard (`7c8c6da4`): one model call, no tool calls, about 9.4 s.
-- Research (`97c28be3`): four model calls and four tool calls, about 16.4 s.
-- "Same question; both answers cite five passages. Research mode is slower and costs more. I'll show the measured tradeoff in the evaluation page."
-
-These run figures come from the Telemetry pages for runs `a17ab246` and `f63a469f`.
-
-### 3. Evidence drawer (20 s)
-
-**Click** citation **1** in the answer, or any **Open passage** link. For the canonical example, open `W/evidence?ev=NORTHSTAR%2FBRAND-STRATEGY%40v1%3AP4.B2`.
-
-**You will see** the **Evidence passage** drawer: source title, class and format, the page and section path, the full passage, the text **Before this passage** and **After this passage**, the passage parts, and a **Technical details** disclosure.
-
-**Say:**
-- "Every citation in the product opens this drawer at the exact passage in the exact source version. This one is page 4 of the brand strategy: it says fit is named by 27% of Gen Z respondents, the same figure the Overview recomputed from the raw survey."
+- "Every citation opens the exact passage in the exact source version. This is page 4 of the brand strategy: fit inconsistency is named by 27% of Gen Z survey respondents as their top frustration."
 - Open **Technical details**: "Underneath is an immutable handle, `NORTHSTAR/BRAND-STRATEGY@v1:P4.B2`: workspace, source, version, locator. A new upload creates a new version, so old citations still resolve."
 
-### 4. Analytics (25 s)
+### 3. Analytics (30 s)
 
-**Go to** **Analytics** in the sidebar and open **Top pain points among Gen Z respondents** (`W/analytics/genz-top-pain-points`).
+**Go to** **Analytics** and open **Top pain points among Gen Z respondents** (`W/analytics/genz-top-pain-points`).
 
-**You will see** **What was measured** (question, filters, grouped by, base of 400 Gen Z respondents), a **Result** bar list headed *Computed from structured data* (fit inconsistency 108, price vs value 72, sizing across categories 56, knit upper durability 48, and so on), **Provenance** (dataset, version 1, table, 400 rows matched, recomputed time) and **Caveats**.
+**You will see** the question, the filter (age groups 18-21, 22-24 and 25-27), a base of 400 Gen Z respondents, and a bar chart: fit inconsistency 108, price vs value 72, sizing across categories 56, knit upper durability 48, sustainability transparency 36, delivery speed 32, lack of personalization 28, community and social proof 20. Below are the provenance (Northstar Customer Survey 2026, version 1, 400 rows matched), an interpretation labelled **Inference**, caveats, and **used by** links to the insights and the opportunity that rely on it.
 
 **Say:**
-- "These analyses run on the same deterministic engine the agent uses. No model is involved and nothing is cached: the numbers are recomputed from the versioned dataset on each load."
-- "108 of 400 is the 27.0% on the Overview."
+- "No model here. The deterministic engine recomputes this from the versioned dataset on every load; nothing is cached."
+- "108 of 400 is the same 27% the brand strategy states. The **used by** links show which insights depend on this number."
 
-### 5. Growth Opportunities (40 s)
+### 4. Insights (50 s)
+
+**Go to** **Insights** (`W/insights`).
+
+**You will see** the curated brief in six categories: Strategic Opportunities, Emerging Signals, Risks / Blockers, Competitor Findings, Optimization Opportunities and Future Outlook. Each item has a status, a claim type, evidence counts for and against, and a verification indicator.
+
+Point at three items:
+- **Observed:** *Fit inconsistency is the top Gen Z frustration*: 27.0% of Gen Z respondents against 19.0% of respondents aged 28+, recomputed.
+- **Forecast:** under Future Outlook, *Personalization expected to stay niche through 2028*. It is labelled **Projection stated by Northstar Consumer Panel Analyst Call Notes**, and its implication is tagged as Inference.
+- **Contradiction indicator:** *Stated premium tolerance tops out around 15%* shows mixed evidence, with three supporting passages and one contradicting.
+
+**Say:**
+- "Every statement has a claim type: Observed, Derived, Inference, Hypothesis or Forecast. The schema rejects a claim without the support its type needs. A forecast must be stated by a cited source; we never forecast on our own."
+- "This brief is written by an analyst, not generated. On every request each passage is re-resolved and each figure recomputed, and the page shows the result."
+
+### 5. Growth Opportunities (50 s)
 
 **Go to** **Growth Opportunities** and open **Personalization as a premium tier** (`W/opportunities/O2`).
 
-**You will see** a **Mixed evidence** status, the thesis and the status rationale, then **Supporting evidence (6)** and **Contradicting evidence (7)** side by side, with analyst notes on some passages. Further down: quantitative signals recomputed from the datasets, gaps, the next step and caveats.
+**You will see** a **Mixed evidence** status, the thesis (tagged Inference), why it matters, then **Supporting evidence (6)** and **Contradicting evidence (7)** side by side. Further down: risks with their evidence, recomputed figures, gaps, the next step and the next question to investigate.
 
 **Say:**
-- "This is the strongest strategy story. Stated demand: 38% of Gen Z respondents say they'd pay a 15% premium for personalized fit."
-- "Revealed behaviour disagrees: only 9% of pilot shoppers picked the 15% premium tier, pilot buyers repurchased at 18% against 24% for the control group, and the average lead time was 12 days."
-- "So the status is Mixed evidence, not a score. The gaps are explicit: no cohort dataset for the pilot, no unit economics. The next step is to test personalization at standard lead time while the national rollout stays paused."
-- "There are no opportunity scores anywhere. Status is qualitative, and every quoted number is re-verified against its passage."
+- "This is the strongest strategy story. Stated demand: 38% of Gen Z respondents say they would pay a 15% premium for personalized fit."
+- "What shoppers actually did disagrees: only 9% of pilot shoppers chose the 15% premium tier, pilot buyers repurchased at 18% against 24% for the matched control group, and lead time averaged 12 days."
+- "So the status is Mixed evidence, not a score. The gaps are explicit: the pilot exists only as prose with no cohort dataset, and there are no unit economics. The next question: does personalization at standard lead time change repeat purchase against a matched control?"
 
-### 6. Telemetry (35 s)
+### 6. Create presentation (50 s)
 
-**Go to** **Telemetry** (`W/dev/telemetry`), then open the knit-durability run (`W/dev/telemetry/runs/6f18725e-3095-4aab-a90f-ae8505d7dc55`). This is the same run as the Ask demo.
+**Click** **Create presentation** on O2. It opens the deck builder with the opportunity, its five related insights and three related analyses preselected (step 6 URL).
 
-**On the summary page, you will see** runs by mode, latency p50/p95 by mode and by stage, mean tokens, model and tool calls per run, **Estimated cost (list prices)**, regeneration and fallback rates, and an audited table of research tool calls. The **Include test-harness runs** checkbox is off, and the count of excluded runs is shown under it.
-
-**On the run page, you will see**
-- **Outcome**: completed, 17.8 s. Calls: 5 model / 5 tool.
-- Tokens: 21,725. Estimated cost about $0.06 at list prices, not billed.
-- Passages cited: 12, of 13 in the pack, including 1 computed. **Verification**: verified after corrections.
-- **Route decision**: requested Automatic, decided Research, because *the question needed computed figures* (cues: numeric, analytics).
-- **Research steps**: 4 steps, 5 tool calls, stopped by `finish_research`, 22 passages in the evidence pool.
-- **Stage timing**: research steps 9.31 s, evidence pack 8 ms, synthesis 8.24 s, verification 26 ms.
-- **Timeline**: each tool call (describe_dataset, search_evidence, the count on the survey dataset, get_evidence) with its status and duration.
-- A notice: *Model reasoning is not recorded*.
+**You will see**
+- The selection and a live outline in fixed sections: title, executive summary, key customer findings, quantitative evidence, competitor and market findings, growth opportunities, risks and blockers, next steps. Empty sections are left out.
+- On generate, the stages *Structuring findings*, *Selecting supporting evidence*, *Creating narrative*, *Building slides* and *Finalizing presentation*.
+- A slide preview in the browser (arrow keys move between slides), each slide with its numbered sources, and a `.pptx` download.
+- An excluded list for any selected item that failed re-verification, each with a plain reason. With the seeded corpus every item verifies, so this list stays empty; say what it is for.
 
 **Say:**
-- "This is all persisted run data: route decision, stage timings, every governed tool call with its duration, and the verification attempt. Verification costs tens of milliseconds; the time goes into the agent and synthesis."
-- "We record observable actions, not model reasoning. Cost is an estimate from stored token counts at list prices."
+- "The deck is built on the server from the same re-verified brief, with no model. Slide text is copied from the verified findings; only section titles, status labels and counts are fixed text. Inference, Hypothesis and Forecast claims keep their tags."
+- "It fails closed: an item whose main claim lost its support is excluded and reported, never padded. The same input renders the same file."
 
-**Optional (15 s):** open `W/dev/telemetry/runs/288b6e18-8682-4d67-b35d-2a62edd76bb5`. It shows **Evidence only (live model unavailable)**, a **Degraded run** callout (*Research planning unavailable*, *Live model unavailable*), 0 tokens, and 8 passages still cited. "When the model was unavailable, the run fell back to retrieved evidence and said so. It never fabricated an answer."
+### 7. Telemetry (50 s)
 
-### 7. RAG Evaluation (45 s)
+**Go to** the **Telemetry** icon in the top bar (`W/dev/telemetry`).
 
-**Go to** **RAG Evaluation** (`W/dev/evaluation?tab=retrieval`).
+**On Overview, you will see** charts titled *How did runs end?*, *How long does a run take?*, *Where does the time go?*, *How many model calls per run?* and *Which research tools run?*, plus estimated cost at list prices. **Include test-harness runs** is off by default.
 
-**Retrieval tab, you will see** two callouts: hybrid recovered more expected evidence than vector-only on the held-out split (ΔRecall@10 +0.324, 95% CI +0.118 to +0.529, n = 17), and a **Negative finding**: the reranker lowered held-out recall (ΔRecall@10 −0.167, CI −0.343 to −0.020). Below are dense, lexical, hybrid and hybrid + reranker compared with intervals and latency, paired comparisons, and **Decisions**.
+**Open the run trace** for the Chat demo (`W/dev/telemetry/runs/6f18725e-3095-4aab-a90f-ae8505d7dc55`):
+- Completed in 17.8 s, 5 model calls and 5 tool calls, 21,725 tokens, an estimated $0.06 at list prices.
+- 12 of 13 passages in the pack cited; verified after corrections.
+- Route: requested Automatic, decided Research (cues: numeric, analytics).
+- Research: 4 steps, stopped by `finish_research`, 22 passages in the pool.
+- Stage timing: research steps 9.31 s, evidence pack 8 ms, synthesis 8.24 s, verification 26 ms.
+- *Model reasoning is not recorded.*
+
+**Optional:** the evidence-only fallback (`W/dev/telemetry/runs/288b6e18-8682-4d67-b35d-2a62edd76bb5`): research planning and synthesis were unavailable, 0 tokens, and 8 passages still cited. "When the model was unavailable, the run fell back to retrieved evidence and said so. It never made up an answer."
+
+**Then open Server logs** (`W/dev/telemetry?tab=logs`): the API's own requests from this demo, each with method, route, status, duration and request id. Health checks are hidden unless you switch them on.
 
 **Say:**
-- "Held-out Recall@10: dense 0.549, lexical 0.814, hybrid 0.873. Hybrid is the production default."
-- "The reranker is my favourite result. On dev it improved MRR, so it looked like a win. On the held-out split it lost recall, and its p50 latency is 670 ms against 27 ms for hybrid, so we rejected it." Toggle **Split** to *Dev* to show the dev numbers, then back.
-- "Two other ideas, a BGE query prefix and source balancing, also lost on dev and weren't adopted. Each **Source** link points to the committed artifact."
+- "This is persisted run data: route decision, stage timings, every governed tool call, and the verification attempt. Verification costs tens of milliseconds; the time goes into the agent and synthesis."
+- "The server log is sanitized at capture. It keeps ids, statuses and durations and drops questions, answers, bodies, headers and query strings. It lives in memory in this API process and is mounted only in development."
 
-**Grounded answers tab** (`?tab=grounded`): **Safety gates** all pass: 256/256 citations resolve, 256/256 sit in the evidence pack, 76/76 runs with no cross-workspace leak. "The weakest category is called out: conflict questions."
+### 8. RAG Evaluation (60 s)
 
-**Standard vs Research tab** (`?tab=research`, *Held-out test*): research retrieves more gold evidence (0.794 to 0.906) and cites more (0.822 to 0.937), but states gold values no better (not distinguishable). It uses about 5,212 against 20,393 tokens per run, and p50 latency goes from 5.78 s to 14.4 s. "Research isn't better on every measure; it's a cost and latency trade. That's why a deterministic router picks the mode."
+**Go to** the **RAG Evaluation** icon (`W/dev/evaluation?tab=overview`).
 
-### 8. Evidence Library (15 s)
+**Overview** shows four story cards: *Hybrid beats dense on held-out recall*, *Reranker rejected*, *Every citation resolves and stays in the evidence pack*, and *Standard vs Research trade-off*. Each links to its tab.
 
-**Go to** **Evidence Library** (`W/evidence`).
+**Retrieval** (`?tab=retrieval`): held-out Recall@10 is dense 0.549, lexical 0.814, hybrid 0.873 (n = 17). Hybrid vs dense ΔRecall@10 +0.324 (95% CI +0.118 to +0.529). **Negative finding:** the reranker improved MRR on dev but lowered held-out Recall@10 by 0.167 (CI −0.343 to −0.020), with a p50 latency of 670 ms against 27 ms for hybrid.
+- "The reranker is my favourite result. On dev it looked like a win; on held-out it lost recall and cost latency, so we rejected it."
 
-**You will see** the source count, how many are ready and the number of evidence passages; a passage search box; filters for type, category and status; an *Include superseded versions* toggle; and the sources table.
+**Grounding & safety** (`?tab=grounded`): the safety gates pass: 256/256 citations resolve, 256/256 sit in the evidence pack, 76/76 runs with no cross-workspace leak.
 
-**Say:** "Seven formats come in through one ingestion pipeline: PDF, Word, PowerPoint, Excel, CSV, Markdown and plain text. Each becomes versioned parent and child passages with exact character spans. That's what makes the citations exact."
+**Standard vs Research** (`?tab=research`): research retrieves more gold evidence (0.794 to 0.906) and cites more (0.822 to 0.937), but states gold values no better. It uses 20,393 tokens per run against 5,212, and p50 latency rises from 5.78 s to 14.40 s.
+- "Research isn't better on every measure; it's a cost and latency trade. That's why a deterministic router picks the mode."
+
+**RAGAS** (`?tab=ragas`): metrics computed offline on persisted outputs, with no model calls. ID-based context recall over the evidence pack: 0.894 on Phase 3 grounded answers (n = 59), and 0.736 standard vs 0.864 research on the Phase 4 test split (n = 30 each). Model-judged metrics are listed as not run.
+- "RAGAS runs in an isolated runner with its own lockfile. Its recall reads lower than our historical figure (0.736 vs 0.794 for standard) because it counts every alternate gold handle; recomputing our per-fact rule on the same items reproduces the historical numbers exactly."
+- "Faithfulness and answer relevancy are wired but not run: no model credits. I'd rather show 'not run' than a number I didn't measure."
+
+**Failure analysis** (`?tab=failures`): *Failed cases are preserved, not discarded*, with failure buckets by run.
 
 ### Close (10 s)
 
-> "In short: hybrid retrieval, deterministic analytics, a bounded agent behind governed tools, and a verifier, all measured, including the things that didn't work."
+> "In short: hybrid retrieval, deterministic analytics, a bounded agent behind governed tools, a verifier, and curated insights and decks that are re-verified on every request. All measured, including what didn't work."
 
 ## Architecture talking points
 
@@ -163,38 +169,45 @@ Use these for follow-up questions.
 - **Parent-level RRF.** Children are embedded for recall; fusion and citation happen on the parent passage. ([ADR-0002](adr/0002-hybrid-retrieval-parent-level-rrf.md), [ADR-0003](adr/0003-parent-child-chunks-parent-citation-unit.md))
 - **Aliases, not handles, in the prompt.** The model cites run-local aliases that map deterministically to canonical handles, and a streaming gate holds back text until its citations are known. ([ADR-0004](adr/0004-evidence-handle-grammar-and-alias-citations.md))
 - **Governed tools.** Eight read-only tools (four evidence, four analytics), each call carrying a run-scoped capability token. The workspace comes from trusted context, never from the model. The same tools are served in-process and over MCP Streamable HTTP, with a parity test. ([ADR-0006](adr/0006-governed-mcp-tool-boundary.md), [governed tools and MCP](GOVERNED_TOOLS_AND_MCP.md))
-- **Bounded agent.** An explicit state machine with a fixed order of bound checks (time, tool errors, pool size, steps, tool calls, tokens, context), each with its own stop reason. ([ADR-0007](adr/0007-bounded-agent-state-machine.md), [research agent](RESEARCH_AGENT.md))
+- **Bounded agent.** An explicit state machine with a fixed order of bound checks, each with its own stop reason. ([ADR-0007](adr/0007-bounded-agent-state-machine.md), [research agent](RESEARCH_AGENT.md))
 - **The model chooses, code computes.** Analytics tools accept only closed enums and bounded values: no SQL and no code execution. ([ADR-0020](adr/0020-deterministic-structured-analytics.md))
+- **Claim types.** Observed, Derived, Inference, Hypothesis and Forecast, each with a support rule the brief's schema enforces; a forecast needs a cited passage that states the projection.
+- **RAGAS in isolation.** The runner has its own lockfile, never imports the backend, switches off RAGAS usage tracking and scores exported persisted outputs. ([ADR-0021](adr/0021-ragas-isolated-runner.md))
+- **Grounded decks.** Composed on the server from the re-verified brief, fail-closed per item, rendered with python-pptx to identical bytes for the same input. ([ADR-0022](adr/0022-grounded-deck-generation.md))
+- **Server log.** A sanitized, bounded ring buffer in the API process; nothing written to disk or the database; mounted only outside production. ([ADR-0023](adr/0023-developer-server-log.md))
 - **Isolation.** The API connects as a non-privileged role, and Postgres RLS guards every tenant table. ([ADR-0009](adr/0009-workspace-isolation.md))
-- **Honest limits.** Analytics routing held up on dev (36/36) but not on holdout (31/54). The verifier still misses non-numeric hallucinations. The research-summary hand-off was not measured live. ([Phase 5 report](phase-reports/phase-5.md))
+- **Honest limits.** Analytics routing held up on dev (36/36) but not on holdout (31/54). The verifier still misses non-numeric hallucinations. RAGAS model-judged metrics were not run. The developer tools have no role checks yet. ([Phase 5 report](phase-reports/phase-5.md))
 
 ## Fallback plan
 
 | Problem | What to do |
 |---|---|
 | The frontend shows an API error or empty pages | Check `curl -s localhost:8000/readyz`. Restart with `make api-demo`. If Postgres is down, run `make up`. |
-| A page is slow on first open | That's dev-mode compilation. Keep talking; next time warm the caches. |
-| A citation click doesn't open the drawer | Use the direct URL from step 3, or **Open passage** on a supporting-evidence card. |
-| Featured conversations are missing | The database wasn't seeded with the demo snapshot. Run `make demo-seed` (it needs `make seed` on a fresh database). Meanwhile, demo Overview, Opportunities, Analytics and Evaluation, which don't depend on saved runs. |
-| A curated signal or opportunity is hidden | It failed re-verification against the corpus. Run `make demo-verify` to see why, and use a different signal. |
-| Someone asks you to ask a new question | "Live generation is turned off for this offline demo; it needs an API key. Here is a saved run of the same kind." Open backup conversation `42719cd8-909b-4997-a25e-2b08508a029e` (Gen Z cart abandonment over size charts, plus competitor gait scanning; research run `1d6c6de2`) or `75577600-577c-4ae7-aaa2-964175d647f6` (a clean standard run accepted with no repairs; run `fbffdd6b`, which has retrieval traces in Telemetry). |
+| A page is slow on first open | That's dev-mode compilation. Keep talking; next time use the production build and warm the pages. |
+| A citation click doesn't open the evidence panel | Use the step 2 URL: `W/evidence?ev=NORTHSTAR%2FBRAND-STRATEGY%40v1%3AP4.B2`. |
+| Saved research is missing from the sidebar | The database wasn't seeded with the demo snapshot. Run `make demo-seed` (it needs `make seed` on a fresh database). Meanwhile, demo Insights, Growth Opportunities, Analytics, the deck and RAG Evaluation, which don't depend on saved runs. |
+| An insight or opportunity shows as stale or withdrawn | It failed re-verification against the corpus. Run `make demo-verify` to see why, and use a different item. |
+| The deck download fails | Show the in-browser preview; it comes from the same composed deck. Restart the API if the error repeats. |
+| Server logs are empty | The log is in memory in the API process, so it starts empty after an API restart. It fills as pages load: open two or three pages and come back. |
+| Someone asks you to ask a new question | "Live generation is turned off for this offline demo; it needs an API key. Here is a saved run of the same kind." Open backup conversation `W/ask/42719cd8-909b-4997-a25e-2b08508a029e` (Gen Z cart abandonment over size charts, plus competitor gait scanning) or `W/ask/75577600-577c-4ae7-aaa2-964175d647f6` (a clean standard run accepted with no repairs). |
+| Someone attaches a file | It uploads through the real source API but is processed only while `make worker` runs. Attachments join the workspace evidence; they don't scope a single answer. |
 | Nothing works | Walk through the measured results in the README and this guide's talking points, and pivot to the architecture discussion. |
 
 ## Short and long versions
 
-**3-minute version.** Keep steps 1, 2 (skip the mode pair), 5, 6 (run trace only) and 7 (Retrieval tab only, with the reranker finding). Skip 3 (mention the drawer in step 2 with one citation click), 4 and 8.
+**5-minute version.** Keep steps 1, 4 (one claim-type example), 5, 6 (preview only), 7 (run trace only) and 8 (Overview and Retrieval, with the reranker finding). Merge step 2 into step 1 with one citation click and skip step 3.
 
-| Step | 3 min | 5 min |
+| Step | 5 min | 8 min |
 |---|---|---|
 | Opening | 10 s | 10 s |
-| 1. Overview | 20 s | 30 s |
-| 2. Ask MarketSignal | 50 s (one citation click) | 75 s (with the mode pair) |
-| 3. Evidence drawer | merged into step 2 | 20 s |
-| 4. Analytics | skip | 25 s |
-| 5. Growth Opportunities | 35 s | 40 s |
-| 6. Telemetry | 25 s (run trace) | 35 s (summary, trace, fallback) |
-| 7. RAG Evaluation | 30 s (Retrieval tab) | 45 s (three tabs) |
-| 8. Evidence Library | skip | 15 s |
+| 1. Chat | 50 s (one citation click) | 75 s |
+| 2. Evidence | merged into step 1 | 30 s |
+| 3. Analytics | skip | 30 s |
+| 4. Insights | 35 s | 50 s |
+| 5. Growth Opportunities | 45 s | 50 s |
+| 6. Create presentation | 35 s (preview) | 50 s (stages, preview, download) |
+| 7. Telemetry | 35 s (run trace) | 50 s (overview, trace, fallback, server logs) |
+| 8. RAG Evaluation | 50 s (Overview, Retrieval) | 60 s (all listed tabs) |
 | Close | 10 s | 10 s |
 
-**If time runs short mid-demo,** drop in this order: Evidence Library, the evidence-only fallback run, the Standard vs Research tab, Analytics, the mode pair. Always keep the O2 opportunity and the reranker negative finding: they carry the product story and the engineering story.
+**If time runs short mid-demo,** drop in this order: the evidence-only fallback run, Failure analysis, Server logs, Standard vs Research, Analytics, the deck download. Always keep the O2 opportunity and the reranker negative finding: they carry the product story and the engineering story.
