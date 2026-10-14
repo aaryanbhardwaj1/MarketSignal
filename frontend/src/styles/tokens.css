@@ -1,96 +1,161 @@
 /*
- * MarketSignal design tokens (light theme). Declared inside Tailwind 4 `@theme`, so each
- * token also generates utilities: `bg-surface`, `border-border`, `text-accent`,
- * `rounded-md`, `shadow-overlay`, `max-w-reading`, `text-sm` (13px) and so on.
+ * MarketSignal design tokens v2 (light theme). Declared inside Tailwind 4 `@theme`, so each
+ * token also generates utilities: `bg-surface`, `bg-raised`, `border-border`, `text-accent`,
+ * `rounded-md`, `shadow-raised`, `shadow-overlay`, `max-w-reading`, `text-sm` (13px) and so on.
  * Text colours additionally get short aliases through the `--text-color-*` namespace:
  * `text-primary`, `text-secondary`, `text-muted`, `text-disabled`.
- * Tokens are semantic, so a dark set can be added later by redefining the same names.
+ *
+ * Language: cool neutral canvas, white surfaces, hairline borders, ink text, ONE signal-blue
+ * accent. Semantic tones for status, claim-type tones for the grounding contract, and a chart
+ * palette that is accent + neutral greys. v1 names are kept as aliases so nothing breaks.
  */
 @theme static {
-  /* surfaces */
-  --color-canvas: #f7f7f5;
+  /* ---- neutrals: cool, layered ---- */
+  --color-canvas: #f6f7f9;
   --color-surface: #ffffff;
-  --color-surface-muted: #f2f2ef;
-  --color-surface-sunken: #ecece8;
-  --color-border: #e3e3de;
-  --color-border-strong: #cfcfc8;
+  --color-raised: #ffffff; /* + hairline + shadow-raised */
+  --color-sunken: #eef0f3;
+  --color-surface-muted: #f1f3f5; /* hover / quiet fill */
+  --color-surface-sunken: var(--color-sunken);
+  --color-border: #e4e7ec; /* hairline */
+  --color-border-strong: #cdd2da;
   /* form-control boundaries: at least 3:1 on surface and canvas (WCAG 1.4.11) */
-  --color-border-control: #8c8c84;
+  --color-border-control: #868d99;
 
-  /* text */
-  --color-text: #1b1c1e;
-  --color-text-secondary: #4a4d52;
-  --color-text-muted: #63676e; /* >= 4.5:1 on every surface and subtle tint */
-  --color-text-disabled: #9a9ea5;
+  /* ---- ink text scale ---- */
+  --color-ink: #12161d;
+  --color-text: var(--color-ink);
+  --color-text-secondary: #434a56;
+  --color-text-muted: #5f6674; /* >= 4.5:1 on canvas, surface and subtle tints */
+  --color-text-disabled: #9aa1ad;
   --text-color-primary: var(--color-text);
   --text-color-secondary: var(--color-text-secondary);
   --text-color-muted: var(--color-text-muted);
   --text-color-disabled: var(--color-text-disabled);
 
-  /* accent (single, controlled) */
-  --color-accent: #2b4c9b;
-  --color-accent-hover: #223d7e;
-  --color-accent-subtle: #ebf0fa;
-  --color-accent-text: #24418a;
+  /* ---- accent: one signal blue ---- */
+  --color-accent: #2357d9;
+  --color-accent-hover: #1b47b8;
+  --color-accent-subtle: #edf2fd;
+  --color-accent-muted: #d6e1fa; /* active indicator tracks, selection */
+  --color-accent-text: #1c4ab9;
+  --color-accent-ring: rgb(35 87 217 / 0.28);
 
-  /* status */
-  --color-success: #1f7a4d;
-  --color-success-subtle: #e7f3ec;
-  --color-warn: #8f5b00;
-  --color-warn-subtle: #fbf1de;
+  /* ---- semantic tones ---- */
+  --color-success: #17784a;
+  --color-success-subtle: #e8f4ee;
+  --color-warn: #8a5a00;
+  --color-warn-subtle: #fbf2df;
   --color-danger: #b42318;
-  --color-danger-subtle: #fbeae8;
-  --color-info: #3a5a8c;
-  --color-info-subtle: #edf2f8;
+  --color-danger-subtle: #fcecea;
+  --color-info: #2f5b9a;
+  --color-info-subtle: #edf2f9;
+  --color-neutral: #5f6674;
+  --color-neutral-subtle: #f0f2f5;
 
-  /* citation kinds */
+  /* ---- claim types (grounding contract) ---- */
+  --color-claim-observed: #2a313c;
+  --color-claim-observed-bg: #eef0f3;
+  --color-claim-derived: #0e6b68;
+  --color-claim-derived-bg: #e5f3f2;
+  --color-claim-inference: #6240b8;
+  --color-claim-inference-bg: #f3effc;
+  --color-claim-hypothesis: #8a5a00;
+  --color-claim-hypothesis-bg: #fbf4e4;
+  --color-claim-forecast: var(--color-claim-hypothesis);
+  --color-claim-forecast-bg: var(--color-claim-hypothesis-bg);
+
+  /* ---- qualitative statuses (insights / opportunities) ---- */
+  --color-status-strong: #17784a;
+  --color-status-strong-bg: #e8f4ee;
+  --color-status-supported: #1c4ab9;
+  --color-status-supported-bg: #edf2fd;
+  --color-status-emerging: #0e6b68;
+  --color-status-emerging-bg: #e5f3f2;
+  --color-status-mixed: #8a5a00;
+  --color-status-mixed-bg: #fbf2df;
+  --color-status-validation: #5f6674;
+  --color-status-validation-bg: #f0f2f5;
+
+  /* ---- citation kinds ---- */
   --color-cite-evidence: var(--color-accent-text);
   --color-cite-evidence-bg: var(--color-accent-subtle);
-  --color-cite-result: #0f6466;
-  --color-cite-result-bg: #e4f1f0;
+  --color-cite-result: var(--color-claim-derived);
+  --color-cite-result-bg: var(--color-claim-derived-bg);
   --color-cite-inference: var(--color-text-muted);
-  --color-mark: #fce8a6;
+  --color-mark: #fde9a8;
 
-  /* charts */
-  --color-chart-bar: #5b6b8c;
+  /* ---- charts: accent + neutral greys; emphasis only for the series that matters ---- */
+  --color-chart-1: var(--color-accent);
+  /* greys separated by lightness (CVD/normal-vision checked); identity also via legend/labels */
+  --color-chart-2: #6b7686;
+  --color-chart-3: #a4acb9;
+  --color-chart-4: #2b323d;
+  --color-chart-bar: #8f99a8;
   --color-chart-bar-emphasis: var(--color-accent);
-  --color-chart-track: var(--color-surface-sunken);
+  --color-chart-track: var(--color-sunken);
+  --color-chart-grid: #e9ecf0;
+  --color-chart-axis: #c9ced6;
+  --color-chart-label: var(--color-text-muted);
+  --color-chart-band: rgb(35 87 217 / 0.1);
+  --color-chart-positive: var(--color-success);
+  --color-chart-negative: var(--color-danger);
+  --color-chart-reference: #5f6674;
 
-  /* focus */
-  --color-focus: #2b4c9b;
+  /* ---- focus ---- */
+  --color-focus: var(--color-accent);
 
-  /* radii */
+  /* ---- radii: 6 / 8 / 12 (12 only for floating elements) ---- */
+  --radius-xs: 3px;
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
+  --radius-float: 12px;
   --radius-full: 9999px;
 
-  /* shadows: overlays only (drawer, dialog, popover) */
-  --shadow-overlay: 0 8px 24px rgb(17 17 17 / 0.12), 0 1px 2px rgb(17 17 17 / 0.06);
+  /* ---- depth: two subtle shadows ---- */
+  --shadow-raised: 0 1px 2px rgb(18 22 29 / 0.04), 0 1px 1px rgb(18 22 29 / 0.02);
+  --shadow-overlay: 0 12px 32px -8px rgb(18 22 29 / 0.16), 0 2px 6px rgb(18 22 29 / 0.06);
+  --shadow-floating: var(--shadow-overlay);
 
-  /* type scale (overrides Tailwind defaults) */
+  /* ---- type scale (overrides Tailwind defaults) ---- */
+  --text-2xs: 11px;
+  --text-2xs--line-height: 14px;
   --text-xs: 12px;
   --text-xs--line-height: 16px;
   --text-sm: 13px;
   --text-sm--line-height: 20px;
   --text-base: 14px;
   --text-base--line-height: 22px;
-  --text-md: 16px;
-  --text-md--line-height: 24px;
-  --text-lg: 20px;
-  --text-lg--line-height: 28px;
+  --text-md: 15px;
+  --text-md--line-height: 22px;
+  --text-lg: 18px;
+  --text-lg--line-height: 26px;
   --text-xl: 24px;
-  --text-xl--line-height: 32px;
+  --text-xl--line-height: 28px;
+  --text-xl--letter-spacing: -0.01em;
+  --text-display: 30px;
+  --text-display--line-height: 36px;
+  --text-display--letter-spacing: -0.02em;
 
-  /* layout widths */
+  /* ---- motion ---- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ---- layout widths ---- */
   --width-reading: 46rem;
   --width-content: 72rem;
   --width-wide: 84rem;
-  --width-sidebar: 15rem;
+  --width-sidebar: 16.5rem; /* 264px */
+  --width-rail: 3.5rem; /* 56px */
   --width-panel: 17rem;
-  --width-drawer: 34rem;
+  --width-drawer: 35rem;
+  --height-topbar: 3.25rem; /* 52px */
   --container-reading: 46rem;
   --container-content: 72rem;
   --container-wide: 84rem;
-  --container-drawer: 34rem;
+  --container-drawer: 35rem;
 }

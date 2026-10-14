@@ -10,8 +10,19 @@ export function workspaceHref(ws: string): string {
   return `/w/${enc(ws)}`;
 }
 
+/** Legacy overview URL; it now redirects to Insights. Prefer `insightsHref` in new links. */
 export function overviewHref(ws: string): string {
   return `${workspaceHref(ws)}/overview`;
+}
+
+/** Insights: what the evidence means. */
+export function insightsHref(ws: string): string {
+  return `${workspaceHref(ws)}/insights`;
+}
+
+/** The presentation deck built from Insights. */
+export function insightsDeckHref(ws: string): string {
+  return `${insightsHref(ws)}/deck`;
 }
 
 /** Ask MarketSignal; with a conversation id, that saved conversation (`/ask/{conversationId}`). */

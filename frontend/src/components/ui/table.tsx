@@ -19,8 +19,10 @@ function fromInnerControl(target: EventTarget, row: Element): boolean {
 }
 
 /**
- * Data table with a caption (visually hidden unless `showCaption`), sticky-free header and
- * optional row activation. Rows with `onRowClick` are also reachable by keyboard (Enter/Space).
+ * Data table with a caption (visually hidden unless `showCaption`) and optional row activation.
+ * Rows with `onRowClick` are also reachable by keyboard (Enter/Space). Right-aligned columns use
+ * tabular numerals. `stickyHeader` keeps the header visible while the table body scrolls inside
+ * its own frame (`maxHeight`, default 28rem).
  */
 export function Table<T>({
   columns,
@@ -31,6 +33,8 @@ export function Table<T>({
   onRowClick,
   empty,
   density = "comfortable",
+  stickyHeader = false,
+  maxHeight = "28rem",
 }: {
   columns: Column<T>[];
   rows: T[];
@@ -40,20 +44,30 @@ export function Table<T>({
   onRowClick?: (row: T) => void;
   empty?: ReactNode;
   density?: "compact" | "comfortable";
+  stickyHeader?: boolean;
+  /** Scroll-frame height when `stickyHeader` is on (CSS length). */
+  maxHeight?: string;
 }) {
   const pad = density === "compact" ? "px-3 py-1.5" : "px-4 py-2.5";
   return (
-    <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+    <div
+      className={cx("rounded-lg border border-border bg-surface", stickyHeader ? "ms-scroll overflow-auto" : "overflow-x-auto")}
+      style={stickyHeader ? { maxHeight } : undefined}
+    >
       <table className="w-full border-collapse text-left text-base">
         <caption className={showCaption ? "px-4 pt-3 pb-1 text-left text-sm text-muted" : "sr-only"}>{caption}</caption>
-        <thead className="bg-surface-muted">
+        <thead className={cx("bg-canvas", stickyHeader && "sticky top-0 z-10 shadow-[inset_0_-1px_0_var(--color-border)]")}>
           <tr className="border-b border-border">
             {columns.map((col) => (
               <th
                 key={col.key}
                 scope="col"
                 style={col.width ? { width: col.width } : undefined}
-                className={cx(pad, "text-sm font-medium text-secondary", col.align === "right" && "text-right")}
+                className={cx(
+                  pad,
+                  "whitespace-nowrap text-xs font-medium text-muted",
+                  col.align === "right" && "text-right",
+                )}
               >
                 {col.header}
               </th>
@@ -93,8 +107,8 @@ export function Table<T>({
                     : undefined
                 }
                 className={cx(
-                  "border-b border-border last:border-b-0",
-                  onRowClick && "cursor-pointer hover:bg-surface-muted/60 focus-visible:outline-offset-[-2px]",
+                  "border-b border-border transition-colors duration-(--duration-fast) ease-standard last:border-b-0 hover:bg-surface-muted/50",
+                  onRowClick && "cursor-pointer hover:bg-surface-muted focus-visible:outline-offset-[-2px]",
                 )}
               >
                 {columns.map((col) => (

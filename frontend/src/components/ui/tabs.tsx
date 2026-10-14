@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useId, useRef, type KeyboardEvent, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { cx } from "@/lib/cx";
 
 export interface TabItem {
@@ -23,10 +23,56 @@ interface TabListProps {
   idPrefix?: string;
 }
 
+/**
+ * Positions one underline under the selected tab so it can slide between tabs. Writes straight to
+ * the DOM (no state): until it has measured (server render, jsdom) the selected tab draws its own
+ * line, and the list gets `data-indicator="on"` once the sliding line takes over.
+ */
+function useIndicator(
+  listRef: { current: HTMLDivElement | null },
+  barRef: { current: HTMLSpanElement | null },
+  refs: { current: Array<HTMLButtonElement | null> },
+  index: number,
+  labels: string,
+) {
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    const bar = barRef.current;
+    const tab = refs.current[index];
+    if (!list || !bar || !tab) return;
+    const place = () => {
+      if (tab.offsetWidth === 0) return;
+      bar.style.width = `${tab.offsetWidth}px`;
+      bar.style.transform = `translateX(${tab.offsetLeft}px)`;
+      if (list.dataset.indicator !== "on") {
+        list.dataset.indicator = "on";
+        // Enable the slide only after the first placement, so it does not sweep in from the left.
+        requestAnimationFrame(() => {
+          bar.dataset.ready = "true";
+        });
+      }
+    };
+    place();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(place);
+    observer.observe(tab);
+    return () => observer.disconnect();
+  }, [listRef, barRef, refs, index, labels]);
+}
+
 function TabList({ tabs, value, onChange, label, idPrefix }: TabListProps) {
   const generated = useId();
   const prefix = idPrefix ?? generated;
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
+  const listRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLSpanElement>(null);
+  useIndicator(
+    listRef,
+    barRef,
+    refs,
+    tabs.findIndex((t) => t.id === value),
+    tabs.map((t) => `${t.label}${t.count ?? ""}`).join("|"),
+  );
 
   const move = (event: KeyboardEvent<HTMLDivElement>) => {
     const current = tabs.findIndex((t) => t.id === value);
@@ -44,7 +90,13 @@ function TabList({ tabs, value, onChange, label, idPrefix }: TabListProps) {
   };
 
   return (
-    <div role="tablist" aria-label={label} onKeyDown={move} className="flex gap-1 overflow-x-auto border-b border-border">
+    <div
+      ref={listRef}
+      role="tablist"
+      aria-label={label}
+      onKeyDown={move}
+      className="group/tabs relative flex gap-1 overflow-x-auto border-b border-border"
+    >
       {tabs.map((tab, index) => {
         const selected = tab.id === value;
         return (
@@ -63,17 +115,35 @@ function TabList({ tabs, value, onChange, label, idPrefix }: TabListProps) {
             onClick={() => onChange?.(tab.id)}
             className={cx(
               // Inset focus ring: the scrolling tab list would clip an outset one.
-              "-mb-px inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-base font-medium transition-colors focus-visible:outline-offset-[-2px]",
-              selected ? "border-accent text-primary" : "border-transparent text-muted hover:text-primary",
+              "-mb-px inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2 text-base font-medium",
+              "transition-colors duration-(--duration-fast) ease-standard focus-visible:outline-offset-[-2px]",
+              // Until the sliding indicator is measured (server render), the selected tab draws its own line.
+              selected ? "border-accent group-data-[indicator=on]/tabs:border-transparent" : "border-transparent",
+              selected ? "text-primary" : "text-muted hover:text-primary",
             )}
           >
             {tab.label}
             {tab.count != null && (
-              <span className="rounded-sm bg-surface-muted px-1.5 text-xs tabular-nums text-secondary">{tab.count}</span>
+              <span
+                className={cx(
+                  "rounded-md px-1.5 text-xs tabular-nums",
+                  selected ? "bg-accent-subtle text-accent-text" : "bg-surface-muted text-secondary",
+                )}
+              >
+                {tab.count}
+              </span>
             )}
           </button>
         );
       })}
+      <span
+        ref={barRef}
+        aria-hidden
+        className={cx(
+          "pointer-events-none absolute bottom-0 left-0 h-0.5 w-0 bg-accent opacity-0 group-data-[indicator=on]/tabs:opacity-100",
+          "data-[ready=true]:transition-[transform,width] data-[ready=true]:duration-(--duration-base) data-[ready=true]:ease-standard motion-reduce:transition-none",
+        )}
+      />
     </div>
   );
 }

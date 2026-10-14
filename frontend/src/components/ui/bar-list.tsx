@@ -15,9 +15,12 @@ function barPercent(value: number, top: number): number {
 
 function Bar({ pct, emphasis, className }: { pct: number; emphasis?: boolean; className?: string }) {
   return (
-    <span aria-hidden className={cx("h-2 overflow-hidden rounded-sm bg-chart-track", className)}>
+    <span aria-hidden className={cx("h-1.5 overflow-hidden rounded-full bg-chart-track", className)}>
       <span
-        className={cx("block h-full rounded-sm", emphasis ? "bg-chart-bar-emphasis" : "bg-chart-bar")}
+        className={cx(
+          "block h-full rounded-full transition-[width] duration-(--duration-slow) ease-standard motion-reduce:transition-none",
+          emphasis ? "bg-chart-bar-emphasis" : "bg-chart-bar",
+        )}
         style={{ width: `${pct}%` }}
       />
     </span>

@@ -1,9 +1,8 @@
-import type { Metadata } from "next";
-import { OverviewPage } from "@/components/overview/overview-page";
+import { redirect } from "next/navigation";
+import { overviewRedirectTarget } from "@/components/shell/routes";
 
-export const metadata: Metadata = { title: "Overview" };
-
-export default async function Page({ params }: PageProps<"/w/[ws]/overview">) {
+/** The former Overview is now Insights. */
+export default async function OverviewRedirect({ params }: PageProps<"/w/[ws]/overview">) {
   const { ws } = await params;
-  return <OverviewPage ws={ws} />;
+  redirect(overviewRedirectTarget(ws));
 }

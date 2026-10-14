@@ -34,11 +34,11 @@ export function EvidenceCard({
   const fields = isTabularSource(source.type) ? parseRowPassage(quote) : null;
   const Heading = headingLevel === 4 ? "h4" : "h3";
   return (
-    <article className="rounded-lg border border-border bg-surface p-4">
+    <article className="rounded-lg border border-border bg-surface px-4 py-3.5">
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <Heading className="truncate text-base font-medium text-primary">{source.title}</Heading>
-          <p className="mt-0.5 text-sm text-muted">
+          <p className="mt-0.5 text-xs text-muted">
             {[source.classLabel, source.type, where].filter(Boolean).join(" · ")}
           </p>
         </div>
@@ -55,7 +55,7 @@ export function EvidenceCard({
       ) : (
         <blockquote
           className={cx(
-            "mt-3 border-l-2 pl-3 text-base text-secondary",
+            "mt-3 border-l-2 pl-3 text-base leading-relaxed text-secondary",
             role === "contradict" ? "border-warn" : "border-border-strong",
           )}
         >
@@ -67,7 +67,7 @@ export function EvidenceCard({
           type="button"
           onClick={onOpen}
           aria-label={`Open passage: ${[source.title, where].filter(Boolean).join(", ")}`}
-          className="mt-3 rounded-sm text-sm font-medium text-accent-text hover:underline"
+          className="mt-2.5 rounded-sm text-sm font-medium text-accent-text underline-offset-2 transition-colors duration-(--duration-fast) ease-standard hover:text-accent-hover hover:underline"
         >
           Open passage
         </button>

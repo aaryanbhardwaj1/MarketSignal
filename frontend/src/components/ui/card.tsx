@@ -3,26 +3,41 @@ import { cx } from "@/lib/cx";
 
 const PADDING = { none: "", sm: "p-4", md: "p-5" } as const;
 
-/** Bordered surface. No shadow (overlays only get one). Use `<CardHeader>` for a titled card. */
+/**
+ * `default` is a white surface with a hairline (no heavy chrome); `raised` adds the soft raised
+ * shadow for the one element that should lift; `plain` is just a section, no border or fill,
+ * for content that hierarchy and whitespace already separate. Use `<CardHeader>` for a titled card.
+ */
+export type CardVariant = "default" | "raised" | "plain";
+
+const VARIANT: Record<CardVariant, string> = {
+  default: "rounded-lg border border-border bg-surface",
+  raised: "rounded-lg border border-border bg-raised shadow-raised",
+  plain: "",
+};
+
 export function Card({
   padding = "md",
   interactive = false,
+  variant = "default",
   as: Tag = "div",
   className,
   children,
 }: {
   padding?: keyof typeof PADDING;
   interactive?: boolean;
+  variant?: CardVariant;
   as?: "div" | "article" | "li" | "section";
   className?: string;
   children: ReactNode;
 }) {
   const surface = cx(
-    "rounded-lg border border-border bg-surface",
-    interactive && "transition-colors hover:border-border-strong hover:bg-surface-muted/40",
+    VARIANT[variant],
+    interactive &&
+      "transition-colors duration-(--duration-fast) ease-standard hover:border-border-strong hover:bg-surface-muted/50",
     className,
   );
-  return <Tag className={cx(surface, PADDING[padding])}>{children}</Tag>;
+  return <Tag className={cx(surface, variant === "plain" ? "" : PADDING[padding])}>{children}</Tag>;
 }
 
 export function CardHeader({

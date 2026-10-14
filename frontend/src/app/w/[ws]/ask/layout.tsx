@@ -5,7 +5,7 @@ export default async function AskLayout({ children, params }: LayoutProps<"/w/[w
   const { ws } = await params;
   return (
     <AskSessionProvider ws={ws}>
-      <AskFrame ws={ws}>{children}</AskFrame>
+      <AskFrame>{children}</AskFrame>
     </AskSessionProvider>
   );
 }

@@ -5,12 +5,12 @@ import { normalizeTone, type LegacyTone, type StatusTone } from "./tone";
 export type BadgeTone = StatusTone | LegacyTone | "accent";
 
 const TONE: Record<StatusTone | "accent", string> = {
-  success: "bg-success-subtle text-success border-success/20",
-  warn: "bg-warn-subtle text-warn border-warn/20",
-  danger: "bg-danger-subtle text-danger border-danger/20",
-  info: "bg-info-subtle text-info border-info/20",
-  neutral: "bg-surface-muted text-secondary border-border",
-  accent: "bg-accent-subtle text-accent-text border-accent/20",
+  success: "bg-success-subtle text-success border-success/15",
+  warn: "bg-warn-subtle text-warn border-warn/15",
+  danger: "bg-danger-subtle text-danger border-danger/15",
+  info: "bg-info-subtle text-info border-info/15",
+  neutral: "bg-neutral-subtle text-secondary border-border",
+  accent: "bg-accent-subtle text-accent-text border-accent/15",
 };
 
 /** Small label. Tone adds meaning only alongside the text, never instead of it. */
@@ -30,8 +30,8 @@ export function Badge({
     <span
       title={title}
       className={cx(
-        "inline-flex items-center gap-1 whitespace-nowrap rounded-sm border font-medium",
-        size === "sm" ? "px-1.5 py-px text-xs" : "px-2 py-0.5 text-sm",
+        "inline-flex items-center gap-1 whitespace-nowrap rounded-md border font-medium tabular-nums [&_svg]:size-3",
+        size === "sm" ? "h-5 px-1.5 text-xs" : "h-6 px-2 text-sm",
         TONE[key],
       )}
     >

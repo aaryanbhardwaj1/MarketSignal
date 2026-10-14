@@ -14,7 +14,7 @@ export default function WorkspaceNotFound() {
         <EmptyState
           title="Nothing to show here"
           description="Use the navigation to choose another page."
-          action={<LinkButton href="/">Go to the overview</LinkButton>}
+          action={<LinkButton href="/">Go to Chat</LinkButton>}
         />
       </div>
     </PageContainer>

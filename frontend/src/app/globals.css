@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
+@import "../styles/motion.css";
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
@@ -19,6 +20,7 @@ body {
   color: var(--color-text);
   font-size: var(--text-base);
   line-height: var(--text-base--line-height);
+  font-feature-settings: "cv11", "ss01";
 }
 
 /* One focus treatment for every interactive element (keyboard only). */
@@ -28,7 +30,7 @@ body {
 }
 
 ::selection {
-  background: var(--color-accent-subtle);
+  background: var(--color-accent-muted);
 }
 
 /* Evidence highlight inside passages. */
@@ -41,43 +43,11 @@ mark.evidence-mark {
 
 /* Native <dialog> backdrop for Dialog and Drawer. */
 dialog.ms-overlay::backdrop {
-  background: rgb(27 28 30 / 0.32);
+  background: rgb(18 22 29 / 0.28);
 }
 
-/* Drawer: the only slide motion in the product (150ms). */
-@keyframes ms-drawer-in {
-  from {
-    transform: translateX(16px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-dialog.ms-drawer[open] {
-  animation: ms-drawer-in 150ms ease-out;
-}
-
-/* Skeleton: a calm opacity pulse. */
-@keyframes ms-skeleton {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.55;
-  }
-}
-
-.ms-skeleton {
-  animation: ms-skeleton 1.6s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  dialog.ms-drawer[open],
-  .ms-skeleton {
-    animation: none;
-  }
+/* Thin, quiet scrollbars for the sidebar and drawers. */
+.ms-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
 }

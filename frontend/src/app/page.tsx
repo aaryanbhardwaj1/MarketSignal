@@ -5,7 +5,7 @@ import { listWorkspaces } from "@/lib/api/endpoints";
 
 const LOOKUP_TIMEOUT_MS = 2_000;
 
-/** `/` opens NORTHSTAR's overview, or the first visible workspace when NORTHSTAR is absent. */
+/** `/` opens Chat in NORTHSTAR, or in the first visible workspace when NORTHSTAR is absent. */
 export default async function Home() {
   await connection(); // resolve at request time, never at build time
   let workspaces: { code: string }[] | null = null;

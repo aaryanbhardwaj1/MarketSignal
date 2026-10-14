@@ -1,0 +1,270 @@
+/*
+ * Motion system. Purposeful and quiet: 120 / 200 / 320 ms on one standard easing.
+ * Every movement is removed under `prefers-reduced-motion`; only opacity changes remain.
+ * Components in `components/motion/` apply these classes; pages should not invent keyframes.
+ */
+
+@keyframes ms-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ms-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ms-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ms-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ms-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Skeleton: a faint sheen travelling across a sunken block. */
+@keyframes ms-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+/* SignalLoader: a highlight travelling along the waveform. */
+@keyframes ms-signal-travel {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+
+@keyframes ms-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ScanLine: a thin accent line sweeping across its container. */
+@keyframes ms-scan {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* PulseNode: a soft ring expanding from a node. */
+@keyframes ms-pulse-ring {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.6);
+  }
+  80%,
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+/* StageProgress: the connector fills toward the active stage. */
+@keyframes ms-connector-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes ms-connector-fill-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.ms-page-enter {
+  animation: ms-enter var(--duration-base) var(--ease-standard) both;
+}
+
+.ms-fade-in {
+  animation: ms-fade var(--duration-base) var(--ease-standard) both;
+}
+
+.ms-panel-in {
+  animation: ms-panel-in var(--duration-base) var(--ease-standard) both;
+}
+
+.ms-sheet-in {
+  animation: ms-sheet-in var(--duration-base) var(--ease-standard) both;
+}
+
+.ms-pop-in {
+  animation: ms-pop-in var(--duration-fast) var(--ease-standard) both;
+  transform-origin: top center;
+}
+
+/* Staggered list reveal: children carry `--ms-i` (index) from <Stagger>. */
+.ms-stagger > * {
+  animation: ms-enter var(--duration-base) var(--ease-standard) both;
+  animation-delay: calc(min(var(--ms-i, 0), 10) * 40ms);
+}
+
+/* Collapse: animates height through grid rows (no measuring). */
+.ms-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.ms-collapse[data-open="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.ms-collapse > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ms-skeleton {
+  background-color: var(--color-sunken);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.55) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: ms-shimmer 1.6s var(--ease-standard) infinite;
+}
+
+.ms-signal-travel {
+  stroke-dasharray: 22 98;
+  animation: ms-signal-travel 1.4s linear infinite;
+}
+
+.ms-breathe {
+  animation: ms-breathe 1.6s var(--ease-standard) infinite;
+}
+
+.ms-scan {
+  animation: ms-scan 2.2s var(--ease-standard) infinite;
+}
+
+.ms-pulse-ring {
+  animation: ms-pulse-ring 1.8s var(--ease-standard) infinite;
+}
+
+.ms-connector-fill {
+  transform-origin: top;
+  animation: ms-connector-fill var(--duration-slow) var(--ease-standard) both;
+}
+
+.ms-connector-fill-x {
+  transform-origin: left;
+  animation: ms-connector-fill-x var(--duration-slow) var(--ease-standard) both;
+}
+
+/* Drawer (native <dialog>): the panel slides in from the right. */
+dialog.ms-drawer[open] {
+  animation: ms-panel-in var(--duration-base) var(--ease-standard);
+}
+
+dialog.ms-overlay[open]::backdrop {
+  animation: ms-fade var(--duration-base) var(--ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-page-enter,
+  .ms-panel-in,
+  .ms-sheet-in,
+  .ms-pop-in,
+  .ms-stagger > *,
+  dialog.ms-drawer[open] {
+    animation-name: ms-fade;
+  }
+
+  .ms-collapse {
+    transition: opacity var(--duration-fast) linear;
+  }
+
+  .ms-skeleton,
+  .ms-signal-travel,
+  .ms-scan,
+  .ms-connector-fill,
+  .ms-connector-fill-x {
+    animation: none;
+  }
+
+  .ms-signal-travel {
+    stroke-dasharray: none;
+  }
+
+  .ms-scan {
+    opacity: 0;
+  }
+
+  .ms-pulse-ring {
+    animation: ms-breathe 2s linear infinite;
+    transform: none;
+  }
+
+  .ms-breathe {
+    animation-duration: 2.4s;
+  }
+
+  .ms-motion-safe {
+    transition-property: opacity, color, background-color, border-color !important;
+  }
+}

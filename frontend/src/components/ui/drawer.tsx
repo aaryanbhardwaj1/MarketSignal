@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { cx } from "@/lib/cx";
 
@@ -44,11 +45,9 @@ function CloseButton({ onClose }: { onClose: () => void }) {
       type="button"
       onClick={onClose}
       aria-label="Close"
-      className="-mr-1.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted hover:bg-surface-muted hover:text-primary"
+      className="-mt-1 -mr-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted transition-colors duration-(--duration-fast) ease-standard hover:bg-surface-muted hover:text-primary active:bg-sunken"
     >
-      <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.75">
-        <path d="m4 4 8 8M12 4l-8 8" strokeLinecap="round" />
-      </svg>
+      <X aria-hidden size={16} strokeWidth={1.75} />
     </button>
   );
 }
@@ -56,7 +55,11 @@ function CloseButton({ onClose }: { onClose: () => void }) {
 /** Full width below 1024px (laptop-first layout); a fixed side panel from `lg` up. */
 const DRAWER_WIDTH = { md: "max-w-none lg:max-w-drawer", lg: "max-w-none lg:max-w-content" } as const;
 
-/** Right-hand side panel (evidence, result detail). */
+/**
+ * Right-hand side panel (evidence, result detail) on a native <dialog>: slides in (`ms-panel-in`
+ * via `ms-drawer`), header with title, subtitle and close, a scrolling body and an optional
+ * footer slot for the panel's actions.
+ */
 export function Drawer({
   open,
   onClose,
@@ -94,7 +97,7 @@ export function Drawer({
     >
       {open && (
         <div className="flex h-full flex-col">
-          <header className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+          <header className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-5 pt-4 pb-3.5">
             <div className="min-w-0">
               <h2 id={titleId} className="text-md font-semibold text-primary">
                 {title}
@@ -103,8 +106,12 @@ export function Drawer({
             </div>
             <CloseButton onClose={onClose} />
           </header>
-          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
-          {footer && <footer className="border-t border-border bg-surface-muted px-5 py-3">{footer}</footer>}
+          <div className="ms-scroll min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
+          {footer && (
+            <footer className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-border bg-surface px-5 py-3">
+              {footer}
+            </footer>
+          )}
         </div>
       )}
     </dialog>
@@ -140,7 +147,7 @@ export function Dialog({
         event.preventDefault();
         if (dismissible) onClose();
       }}
-      className="ms-overlay m-auto w-full max-w-md rounded-lg border border-border bg-surface p-0 text-primary shadow-overlay"
+      className="ms-overlay ms-pop-in m-auto w-full max-w-md rounded-float border border-border bg-surface p-0 text-primary shadow-overlay"
     >
       {open && (
         <>
@@ -152,7 +159,7 @@ export function Dialog({
             {children && <div className="mt-3 text-base text-primary">{children}</div>}
           </div>
           {footer && (
-            <div className="flex justify-end gap-2 border-t border-border bg-surface-muted px-5 py-3">{footer}</div>
+            <div className="flex justify-end gap-2 border-t border-border bg-canvas px-5 py-3">{footer}</div>
           )}
         </>
       )}

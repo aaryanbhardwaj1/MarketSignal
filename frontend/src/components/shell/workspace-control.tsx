@@ -1,13 +1,14 @@
 "use client";
 
+import { BookOpenText, Check, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
 import { useWorkspaces } from "@/lib/api/hooks/core";
 import type { Workspace } from "@/lib/api/types";
 import { cx } from "@/lib/cx";
 import { splitWorkspaceName } from "@/lib/format";
-import { Skeleton } from "../ui/states";
+import { evidenceLibraryHref } from "@/lib/routes";
+import { Popover } from "../ui/popover";
 import { isTestWorkspace, switchWorkspaceHref } from "./nav";
 
 /** Workspaces a person may switch to: never the test-harness codes. */
@@ -15,63 +16,34 @@ export function visibleWorkspaces(workspaces: readonly Workspace[] | undefined):
   return (workspaces ?? []).filter((w) => !isTestWorkspace(w.code));
 }
 
-const CHEVRON = (
-  <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0 text-muted" fill="none" stroke="currentColor" strokeWidth="1.75">
-    <path d="m4.5 6.5 3.5 3.5 3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 function WorkspaceName({ full }: { full: string }) {
   const { name, detail } = splitWorkspaceName(full);
   return (
     <>
-      <span className="block">{name}</span>
-      {detail && <span className="block text-xs font-normal text-muted">{detail}</span>}
+      <span className="block truncate">{name}</span>
+      {detail && <span className="block truncate text-xs font-normal text-muted">{detail}</span>}
     </>
   );
 }
 
+const ROW = "flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm";
+
 /**
- * Shows the current workspace by name; a small popover switches among the visible ones.
- * While the list is loading or unavailable, it degrades to a neutral label (no switching).
+ * Quiet top-bar control naming the current workspace. Its popover shows the full name and
+ * engagement, a switcher when more than one workspace is visible (keeping the current section),
+ * and the link to the Evidence library. Never shows a workspace code.
  */
-export function WorkspaceControl({ ws }: { ws: string }) {
+export function WorkspaceControl({ ws, onNavigate }: { ws: string; onNavigate?: () => void }) {
   const pathname = usePathname() ?? "";
   const workspaces = useWorkspaces();
-  const [open, setOpen] = useState(false);
-  const wrapper = useRef<HTMLDivElement>(null);
-  const trigger = useRef<HTMLButtonElement>(null);
-  const menuId = useId();
-
   const visible = visibleWorkspaces(workspaces.data);
   const current = workspaces.data?.find((w) => w.code === ws);
-  const others = visible.filter((w) => w.code !== ws);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointer = (event: PointerEvent) => {
-      if (wrapper.current && !wrapper.current.contains(event.target as Node)) setOpen(false);
-    };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-        trigger.current?.focus();
-      }
-    };
-    document.addEventListener("pointerdown", onPointer);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", onPointer);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
 
   if (workspaces.isPending) {
     return (
-      <div className="px-2 py-1.5" aria-busy="true">
+      <span className="ms-skeleton block h-5 w-28 rounded-md" aria-busy="true">
         <span className="sr-only">Loading workspace</span>
-        <Skeleton lines={1} />
-      </div>
+      </span>
     );
   }
 
@@ -79,62 +51,71 @@ export function WorkspaceControl({ ws }: { ws: string }) {
   const { name, detail } = splitWorkspaceName(full);
 
   return (
-    <div
-      ref={wrapper}
-      className="relative"
-      onBlur={(event) => {
-        // Disclosure pattern: close when focus leaves the control and its list.
-        // A null relatedTarget (pointer outside, or Safari not focusing a clicked link) is left to
-        // the pointerdown handler, so a click on a list link is never swallowed.
-        const next = event.relatedTarget as Node | null;
-        if (open && next && !event.currentTarget.contains(next)) setOpen(false);
-      }}
-    >
-      <button
-        ref={trigger}
-        type="button"
-        aria-expanded={others.length > 0 ? open : undefined}
-        aria-controls={open ? menuId : undefined}
-        disabled={others.length === 0}
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-start justify-between gap-2 rounded-md border border-border bg-surface-muted px-2.5 py-2 text-left hover:border-border-strong disabled:cursor-default disabled:hover:border-border"
-      >
-        <span className="min-w-0" title={current?.name}>
-          <span className="sr-only">Current workspace: </span>
-          <span className="block truncate text-sm font-medium text-primary">{name}</span>
-          {detail && <span className="block truncate text-xs text-muted">{detail}</span>}
-        </span>
-        {others.length > 0 && <span className="mt-1">{CHEVRON}</span>}
-      </button>
-      {open && (
-        <div
-          id={menuId}
-          className="absolute top-full right-0 left-0 z-40 mt-1 rounded-md border border-border bg-surface p-1 shadow-overlay"
+    <Popover
+      label="Workspace"
+      trigger={
+        <button
+          type="button"
+          title={current?.name}
+          className="flex h-8 max-w-56 min-w-0 items-center gap-1 rounded-md px-2 text-sm font-medium text-secondary transition-colors duration-(--duration-fast) hover:bg-surface-muted hover:text-primary"
         >
-          <p className="px-2 py-1 text-xs text-muted">Switch workspace</p>
-          <ul>
-            {visible.map((w) => {
-              const isCurrent = w.code === ws;
-              return (
-                <li key={w.code}>
-                  <Link
-                    href={switchWorkspaceHref(pathname, ws, w.code)}
-                    aria-current={isCurrent ? "true" : undefined}
-                    onClick={() => setOpen(false)}
-                    className={cx(
-                      "block rounded-sm px-2 py-1.5 text-base",
-                      isCurrent ? "bg-accent-subtle font-medium text-accent-text" : "text-primary hover:bg-surface-muted",
-                    )}
-                  >
-                    <WorkspaceName full={w.name} />
-                    {isCurrent && <span className="sr-only"> (current)</span>}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+          <span className="sr-only">Current workspace: </span>
+          <span className="truncate">{name}</span>
+          <ChevronDown aria-hidden className="size-3.5 shrink-0 text-muted" />
+        </button>
+      }
+      panelClassName="w-72"
+    >
+      {(close) => (
+        <>
+          <div className="px-2.5 pt-2 pb-2.5">
+            <p className="text-sm font-semibold text-primary">{name}</p>
+            {detail && <p className="mt-0.5 text-xs text-muted">{detail}</p>}
+          </div>
+          {visible.length > 1 && (
+            <div className="border-t border-border py-1">
+              <p className="px-2.5 pt-1 pb-1 text-xs text-muted">Switch workspace</p>
+              <ul>
+                {visible.map((w) => {
+                  const isCurrent = w.code === ws;
+                  return (
+                    <li key={w.code}>
+                      <Link
+                        href={switchWorkspaceHref(pathname, ws, w.code)}
+                        aria-current={isCurrent ? "true" : undefined}
+                        onClick={() => {
+                          close();
+                          onNavigate?.();
+                        }}
+                        className={cx(ROW, "items-start", isCurrent ? "font-medium text-primary" : "text-secondary hover:bg-surface-muted hover:text-primary")}
+                      >
+                        <span className="min-w-0 flex-1">
+                          <WorkspaceName full={w.name} />
+                        </span>
+                        {isCurrent && <Check aria-hidden className="mt-0.5 size-3.5 shrink-0 text-accent-text" />}
+                        {isCurrent && <span className="sr-only"> (current)</span>}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+          <div className="border-t border-border pt-1">
+            <Link
+              href={evidenceLibraryHref(ws)}
+              onClick={() => {
+                close();
+                onNavigate?.();
+              }}
+              className={cx(ROW, "text-secondary hover:bg-surface-muted hover:text-primary")}
+            >
+              <BookOpenText aria-hidden className="size-4 text-muted" />
+              Evidence library
+            </Link>
+          </div>
+        </>
       )}
-    </div>
+    </Popover>
   );
 }

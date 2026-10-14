@@ -5,6 +5,8 @@ import {
   askHref,
   evaluationHref,
   evidenceLibraryHref,
+  insightsDeckHref,
+  insightsHref,
   opportunitiesHref,
   opportunityHref,
   overviewHref,
@@ -18,6 +20,8 @@ describe("route builders", () => {
   it("build every workspace route", () => {
     expect(workspaceHref("NORTHSTAR")).toBe("/w/NORTHSTAR");
     expect(overviewHref("NORTHSTAR")).toBe("/w/NORTHSTAR/overview");
+    expect(insightsHref("NORTHSTAR")).toBe("/w/NORTHSTAR/insights");
+    expect(insightsDeckHref("NORTHSTAR")).toBe("/w/NORTHSTAR/insights/deck");
     expect(askHref("NORTHSTAR")).toBe("/w/NORTHSTAR/ask");
     expect(askHref("NORTHSTAR", null)).toBe("/w/NORTHSTAR/ask");
     expect(askHref("NORTHSTAR", "c1")).toBe("/w/NORTHSTAR/ask/c1");

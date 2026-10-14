@@ -46,15 +46,18 @@ export function Segmented<T extends string>({
           {caption}
         </span>
       )}
-      <div className="inline-flex rounded-md border border-border bg-surface-muted p-0.5">
+      <div className="inline-flex rounded-md border border-border bg-sunken p-0.5">
         {options.map((option) => {
           const selected = option.value === value;
           return (
             <label
               key={option.value}
               className={cx(
-                "relative cursor-pointer rounded-sm px-2.5 py-1 text-sm font-medium transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
-                selected ? "bg-surface text-primary shadow-sm" : "text-secondary hover:text-primary",
+                "relative cursor-pointer select-none rounded-sm px-2.5 py-1 text-sm font-medium",
+                "transition-[background-color,color,box-shadow] duration-(--duration-fast) ease-standard",
+                "has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
+                "has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60",
+                selected ? "bg-surface text-primary shadow-raised" : "text-secondary hover:text-primary",
               )}
             >
               <input

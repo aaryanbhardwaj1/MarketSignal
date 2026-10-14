@@ -44,7 +44,7 @@ export function ResultPanel({
   ];
   const Heading = headingLevel === 4 ? "h4" : "h3";
   return (
-    <section className="rounded-lg border border-border border-l-[3px] border-l-cite-result bg-surface p-4">
+    <section className="rounded-lg border border-border border-l-2 border-l-cite-result bg-surface px-4 py-3.5">
       <p className="text-xs font-medium text-cite-result">Computed</p>
       <Heading className="mt-0.5 text-base font-semibold text-primary">{title}</Heading>
       {value != null && (
@@ -59,7 +59,7 @@ export function ResultPanel({
         </div>
       )}
       {children && <div className="mt-3">{children}</div>}
-      <p className="mt-3 border-t border-border pt-2 text-xs text-muted">
+      <p className="mt-3 border-t border-border pt-2.5 text-xs text-muted">
         {provenanceLine(provenance)}
       </p>
     </section>
