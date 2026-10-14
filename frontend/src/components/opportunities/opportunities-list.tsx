@@ -1,73 +1,85 @@
 "use client";
 
-import { Fragment } from "react";
+import { Lightbulb } from "lucide-react";
+import { staggerStyle } from "@/components/motion/stagger";
+import { LinkButton } from "@/components/ui/button";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
-import { CardGridSkeleton, ErrorState } from "@/components/ui/states";
-import { useInsights, useAnalyses } from "@/lib/api/hooks/insights";
-import { indexAnalyses } from "@/lib/insights-view";
-import { BriefMeta, DriftCallout, NoBriefState } from "./brief-parts";
+import { CardGridSkeleton, EmptyState, ErrorState } from "@/components/ui/states";
+import type { InsightsBrief } from "@/lib/api/contracts";
+import { useAnalyses, useInsights } from "@/lib/api/hooks/insights";
+import { indexAnalyses, type AnalysisIndex } from "@/lib/insights-view";
+import { askHref, evidenceLibraryHref } from "@/lib/routes";
+import { orderOpportunities } from "@/lib/views/opportunities";
+import { DriftCallout } from "./brief-parts";
 import { OpportunityCard } from "./opportunity-card";
 
-const WORKFLOW = ["Evidence", "Synthesis", "Hypothesis", "Strategic implication", "Next action"];
+export const LIST_DESCRIPTION = "Potential growth directions, with the evidence for and against each.";
+export const LIST_NOTE =
+  "Curated from the analyst brief and re-verified against current evidence. Statuses are qualitative; there are no scores.";
 
-/** How an opportunity is built, in one quiet line. */
-export function WorkflowStrip() {
+/** Teaching empty state for a workspace without a curated brief. */
+function NoOpportunities({ ws }: { ws: string }) {
   return (
-    <ol aria-label="How an opportunity is built" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-secondary">
-      {WORKFLOW.map((step, i) => (
-        <Fragment key={step}>
-          {i > 0 && (
-            <li aria-hidden className="text-disabled">
-              →
-            </li>
-          )}
-          <li>{step}</li>
-        </Fragment>
-      ))}
-    </ol>
+    <EmptyState
+      icon={Lightbulb}
+      title="No growth opportunities yet"
+      description="Evaluate potential growth directions supported, or challenged, by the evidence. They appear here once an analyst has prepared a brief for this workspace."
+      action={
+        <div className="flex flex-wrap justify-center gap-2">
+          <LinkButton href={askHref(ws)}>Ask a research question</LinkButton>
+          <LinkButton href={evidenceLibraryHref(ws)} variant="ghost">
+            Open the Evidence Library
+          </LinkButton>
+        </div>
+      }
+    />
+  );
+}
+
+/** The ordered list body, separated from data loading so it renders from fixtures in tests. */
+export function OpportunitiesListView({ ws, brief, analyses }: { ws: string; brief: InsightsBrief; analyses: AnalysisIndex }) {
+  const opportunities = orderOpportunities(brief.opportunities);
+  return (
+    <div className="flex flex-col gap-4">
+      <DriftCallout brief={brief} />
+      <ol aria-label="Growth opportunities" className="ms-stagger divide-y divide-border border-y border-border">
+        {opportunities.map((o, i) => (
+          <li key={o.id} style={staggerStyle(i)}>
+            <OpportunityCard ws={ws} opportunity={o} analyses={analyses} />
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 
 export function OpportunitiesList({ ws }: { ws: string }) {
   const brief = useInsights(ws);
   const analyses = useAnalyses(ws);
-  const index = indexAnalyses(analyses.data?.analyses);
 
   return (
-    <PageContainer>
+    <PageContainer className="ms-page-enter">
       <PageHeader
         title="Growth Opportunities"
-        description="Hypotheses for where the client could grow, each weighed against the evidence for and against it. Decision support for the engagement team, not a recommendation."
-        meta={brief.data?.fixture_version ? <BriefMeta brief={brief.data} /> : undefined}
+        description={LIST_DESCRIPTION}
+        meta={brief.data?.fixture_version ? <span>{LIST_NOTE}</span> : undefined}
+        divider={false}
       />
-      <div className="mt-6 flex flex-col gap-6">
+      <div className="mt-2">
         {brief.isPending ? (
-          <CardGridSkeleton label="Loading growth opportunities" count={4} lines={5} columns="lg:grid-cols-2" padding="md" />
+          <CardGridSkeleton label="Loading growth opportunities" count={4} lines={4} columns="lg:grid-cols-1" padding="md" />
         ) : brief.isError ? (
           <ErrorState
             title="Growth opportunities could not be loaded"
             description="The brief is temporarily unavailable. Try again in a moment."
+            error={brief.error}
             retry={() => void brief.refetch()}
           />
         ) : !brief.data.fixture_version || brief.data.opportunities.length === 0 ? (
-          <NoBriefState ws={ws} subject="Growth opportunities" />
+          <NoOpportunities ws={ws} />
         ) : (
-          <>
-            <div className="flex flex-col gap-2">
-              <p className="text-sm text-muted">
-                Each opportunity moves from cited evidence to a testable hypothesis and a next research step. Status
-                reflects the balance of evidence; opportunities are not scored or ranked.
-              </p>
-              <WorkflowStrip />
-            </div>
-            <DriftCallout brief={brief.data} />
-            <div className="grid gap-4 lg:grid-cols-2">
-              {brief.data.opportunities.map((o) => (
-                <OpportunityCard key={o.id} ws={ws} opportunity={o} analyses={index} />
-              ))}
-            </div>
-          </>
+          <OpportunitiesListView ws={ws} brief={brief.data} analyses={indexAnalyses(analyses.data?.analyses)} />
         )}
       </div>
     </PageContainer>

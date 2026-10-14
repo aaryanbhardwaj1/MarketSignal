@@ -1,78 +1,102 @@
 "use client";
 
+import { Presentation } from "lucide-react";
+import { EvidenceBalance } from "@/components/charts";
 import { LinkButton } from "@/components/ui/button";
 import { Callout } from "@/components/ui/callout";
-import { Card } from "@/components/ui/card";
+import { ClaimTag } from "@/components/ui/claim-tag";
+import { DevDetails } from "@/components/ui/disclosure";
+import { Divider } from "@/components/ui/divider";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
-import { ResultPanel } from "@/components/ui/result-panel";
-import { Section } from "@/components/ui/section";
+import { EVIDENCE_STATUS_LABEL, StatusPill } from "@/components/ui/status-pill";
 import { EmptyState, ErrorState, LoadingRegion, Skeleton } from "@/components/ui/states";
 import type { EvidenceRef, InsightsBrief, Opportunity } from "@/lib/api/contracts";
 import { useAnalyses, useInsights } from "@/lib/api/hooks/insights";
-import { formatNumber } from "@/lib/format";
-import { indexAnalyses, metricViews, numbersAllowed, type AnalysisIndex, type MetricView } from "@/lib/insights-view";
-import { BriefMeta, DriftCallout, ItemIntegrityIndicator, MetricFigure, NoBriefState, OpportunityStatusBadge, useOpenEvidence } from "./brief-parts";
-import { EvidenceItem } from "./evidence-item";
-import { useDocumentTitle } from "@/lib/use-document-title";
+import { evidenceBalance, indexAnalyses, numbersAllowed, type AnalysisIndex } from "@/lib/insights-view";
 import { opportunitiesHref } from "@/lib/routes";
+import { useDocumentTitle } from "@/lib/use-document-title";
+import { gapLabel, opportunityDeckHref, relatedLinks, sourceMix } from "@/lib/views/opportunities";
+import { BriefMeta, DriftCallout, ItemIntegrityIndicator, NoBriefState, useOpenEvidence } from "./brief-parts";
+import { DetailSection, EvidenceColumns, GapList, NextInvestigation, QuantSignals, RelatedSection, RiskList } from "./detail-sections";
+import { FieldLabel, GapCount, SourceMix } from "./opportunity-parts";
 
-function EvidenceColumn({
-  title,
-  description,
-  items,
-  empty,
-  onOpen,
-}: {
-  title: string;
-  description: string;
-  items: EvidenceRef[];
-  empty: string;
-  onOpen?: (ref: EvidenceRef) => void;
-}) {
+/** Strategic thesis and why it matters, each with the kind of claim it is. */
+function ThesisBlock({ opportunity }: { opportunity: Opportunity }) {
   return (
-    <div className="min-w-0">
-      <h3 className="text-base font-semibold text-primary">
-        {title} <span className="font-normal tabular-nums text-muted">({items.length})</span>
-      </h3>
-      <p className="mt-0.5 text-sm text-muted">{description}</p>
-      {items.length === 0 ? (
-        <p className="mt-3 rounded-lg border border-dashed border-border-strong px-4 py-3 text-sm text-muted">{empty}</p>
-      ) : (
-        <ul className="mt-3 flex flex-col gap-3">
-          {items.map((e, i) => (
-            <EvidenceItem key={`${e.handle}-${i}`} evidence={e} onOpen={onOpen} />
-          ))}
-        </ul>
+    <div className="flex min-w-0 flex-col gap-6">
+      <DetailSection
+        id="thesis"
+        title={
+          <span className="inline-flex items-center gap-2">
+            Strategic thesis
+            {opportunity.thesis_claim_type && <ClaimTag type={opportunity.thesis_claim_type} size="sm" explain />}
+          </span>
+        }
+      >
+        <p className="max-w-reading text-lg text-primary">{opportunity.thesis}</p>
+      </DetailSection>
+      {opportunity.why_it_matters && (
+        <DetailSection
+          id="why"
+          title={
+            <span className="inline-flex items-center gap-2">
+              Why it matters <ClaimTag type={opportunity.why_it_matters.claim_type} size="sm" explain />
+            </span>
+          }
+        >
+          <p className="max-w-reading text-base text-secondary">{opportunity.why_it_matters.text}</p>
+        </DetailSection>
       )}
     </div>
   );
 }
 
-function QuantPanel({ metric }: { metric: MetricView }) {
-  if (!metric.provenance) return <MetricFigure metric={metric} />;
-  const denominator = !metric.visible
-    ? undefined
-    : metric.base
-      ? { label: metric.baseLabel, value: metric.base }
-      : metric.provenance.rowsMatched != null
-        ? { label: "Based on", value: `${formatNumber(metric.provenance.rowsMatched)} records` }
-        : undefined;
+/** Visual evidence summary: the support/contradiction balance, why the status, open gaps and source mix. */
+function EvidenceSummary({ opportunity }: { opportunity: Opportunity }) {
+  const balance = evidenceBalance(opportunity);
   return (
-    <ResultPanel
-      title={metric.label}
-      value={metric.visible ? metric.display : undefined}
-      unit=""
-      denominator={denominator}
-      provenance={{
-        sourceTitle: metric.provenance.sourceTitle,
-        sourceCode: metric.provenance.sourceCode,
-        version: metric.provenance.version,
-        table: metric.provenance.table,
-      }}
-    >
-      {!metric.visible && <p className="text-sm text-muted">Could not be re-verified against the current data.</p>}
-    </ResultPanel>
+    <aside aria-label="Evidence summary" className="flex flex-col gap-4 rounded-lg bg-sunken/60 p-4">
+      <EvidenceBalance supporting={balance.supporting} contradicting={balance.contradicting} />
+      <div>
+        <FieldLabel>{`Why ${EVIDENCE_STATUS_LABEL[opportunity.status].toLowerCase()}`}</FieldLabel>
+        <p className="mt-1 text-sm text-primary">{opportunity.status_rationale}</p>
+      </div>
+      <div className="flex flex-wrap gap-x-8 gap-y-3">
+        <div>
+          <FieldLabel>Open questions</FieldLabel>
+          <div className="mt-1">
+            <GapCount count={balance.gaps} label={gapLabel(balance.gaps)} />
+          </div>
+        </div>
+        <div>
+          <FieldLabel>Sources</FieldLabel>
+          <div className="mt-1.5">
+            <SourceMix mix={sourceMix(opportunity)} />
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function IntegrityCallouts({ brief, opportunity }: { brief: InsightsBrief; opportunity: Opportunity }) {
+  return (
+    <>
+      <DriftCallout brief={brief} />
+      {opportunity.integrity === "unverified" && (
+        <Callout tone="warn" title="Could not be re-verified">
+          The cited evidence for this opportunity no longer matches the current sources, so its figures are withheld.
+          The passages below show what changed.
+        </Callout>
+      )}
+      {opportunity.integrity === "partial" && (
+        <Callout tone="warn" title="Some evidence changed">
+          Some cited passages changed or are no longer available since this brief was prepared. They are marked below;
+          review them before relying on this opportunity.
+        </Callout>
+      )}
+    </>
   );
 }
 
@@ -90,107 +114,67 @@ export function OpportunityDetailView({
   analyses: AnalysisIndex;
   onOpen?: (ref: EvidenceRef) => void;
 }) {
-  const metrics = metricViews(opportunity, analyses);
   const showNumbers = numbersAllowed(opportunity.integrity);
+  const related = relatedLinks(ws, opportunity, brief.signals, analyses);
+  const handles = [...opportunity.supporting, ...opportunity.contradicting, ...opportunity.risks.flatMap((r) => r.evidence)].map(
+    (r) => r.handle,
+  );
   return (
     <>
       <PageHeader
         breadcrumb={[{ label: "Growth Opportunities", href: opportunitiesHref(ws) }]}
-        title={
-          <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span>{opportunity.title}</span>
-            <OpportunityStatusBadge status={opportunity.status} size="md" />
-          </span>
+        title={opportunity.title}
+        meta={
+          <>
+            <StatusPill status={opportunity.status} />
+            <ItemIntegrityIndicator value={opportunity.integrity} />
+            <BriefMeta brief={brief} />
+          </>
         }
-        description={opportunity.thesis}
-        meta={<span className="text-secondary">{opportunity.status_rationale}</span>}
-      />
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm text-muted">
-        <ItemIntegrityIndicator value={opportunity.integrity} />
-        <BriefMeta brief={brief} />
-      </div>
-      <div className="mt-6 flex flex-col gap-4">
-        <DriftCallout brief={brief} />
-        {!showNumbers && (
-          <Callout tone="warn" title="Could not be re-verified">
-            The cited evidence for this opportunity no longer matches the current sources, so its figures are hidden.
-          </Callout>
-        )}
-      </div>
-
-      <div className="mt-8">
-        <Section title="Evidence" description="Cited passages for and against the hypothesis. Open a passage to read it in context.">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <EvidenceColumn
-              title="Supporting evidence"
-              description="Passages consistent with the hypothesis."
-              items={opportunity.supporting}
-              empty="No supporting passages cited."
-              onOpen={onOpen}
-            />
-            <EvidenceColumn
-              title="Contradicting evidence"
-              description="Passages that weaken or complicate it."
-              items={opportunity.contradicting}
-              empty="No contradicting passages cited. Absence of counter-evidence is not proof."
-              onOpen={onOpen}
-            />
-          </div>
-        </Section>
-
-        {metrics.length > 0 && (
-          <Section
-            title="Quantitative signals"
-            description="Figures recomputed from the structured datasets each time this page loads."
+        actions={
+          <LinkButton
+            href={opportunityDeckHref(ws, opportunity)}
+            variant="primary"
+            iconLeft={<Presentation aria-hidden size={16} strokeWidth={1.75} />}
           >
-            {showNumbers ? (
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {metrics.map((m) => (
-                  <QuantPanel key={m.key} metric={m} />
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted">Figures are hidden until this opportunity can be re-verified.</p>
-            )}
-          </Section>
-        )}
+            Create presentation
+          </LinkButton>
+        }
+      />
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <Card as="div">
-            <section aria-labelledby="gaps-heading">
-            <h2 id="gaps-heading" className="text-md font-semibold text-primary">
-              Evidence gaps
-            </h2>
-            {opportunity.gaps.length === 0 ? (
-              <p className="mt-2 text-sm text-muted">No gaps recorded.</p>
-            ) : (
-              <ul className="mt-2 flex list-disc flex-col gap-1.5 pl-5 text-base text-secondary">
-                {opportunity.gaps.map((g) => (
-                  <li key={g}>{g}</li>
-                ))}
-              </ul>
-            )}
-            </section>
-          </Card>
-          <Card as="div">
-            <section aria-labelledby="next-heading">
-            <h2 id="next-heading" className="text-md font-semibold text-primary">
-              Next research step
-            </h2>
-            <p className="mt-2 text-base text-primary">{opportunity.next_step}</p>
-            </section>
-          </Card>
+      <div className="mt-6 flex flex-col gap-10">
+        <div className="flex flex-col gap-3 empty:hidden">
+          <IntegrityCallouts brief={brief} opportunity={opportunity} />
         </div>
 
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+          <ThesisBlock opportunity={opportunity} />
+          <EvidenceSummary opportunity={opportunity} />
+        </div>
+
+        <Divider />
+        <EvidenceColumns opportunity={opportunity} onOpen={onOpen} />
+        <QuantSignals opportunity={opportunity} analyses={analyses} showNumbers={showNumbers} />
+        <RiskList risks={opportunity.risks} onOpen={onOpen} />
+
+        <div className="grid gap-8 lg:grid-cols-2">
+          <GapList gaps={opportunity.gaps} />
+          <NextInvestigation ws={ws} opportunity={opportunity} />
+        </div>
+
+        <RelatedSection insights={related.insights} analyses={related.analyses} />
+
         {opportunity.caveats.length > 0 && (
-          <Section title="Caveats" description="Limits to keep in mind before acting on this opportunity.">
+          <DetailSection id="caveats" title="Caveats" description="Limits to keep in mind before acting on this opportunity.">
             <ul className="flex list-disc flex-col gap-1.5 pl-5 text-base text-secondary">
               {opportunity.caveats.map((c) => (
                 <li key={c}>{c}</li>
               ))}
             </ul>
-          </Section>
+          </DetailSection>
         )}
+
+        <DevDetails data={{ opportunity_id: opportunity.id, fixture_version: brief.fixture_version, evidence_handles: handles }} />
       </div>
     </>
   );
@@ -257,7 +241,7 @@ export function OpportunityDetail({ ws, opportunityId }: { ws: string; opportuni
     );
   }
   return (
-    <PageContainer>
+    <PageContainer className="ms-page-enter">
       <OpportunityDetailView
         ws={ws}
         brief={brief.data}
