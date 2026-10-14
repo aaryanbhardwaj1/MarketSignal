@@ -1,112 +1,107 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { BarChart3, RefreshCw } from "lucide-react";
+import type { Analysis } from "@/lib/api/contracts";
 import { useDatasets } from "@/lib/api/hooks/core";
 import { useAnalyses } from "@/lib/api/hooks/insights";
-import { formatDateTime, formatNumber, tableLabel } from "@/lib/format";
-import { FilterBar, FilterSelect } from "../ui/filter-bar";
+import { formatDateTime, formatNumber } from "@/lib/format";
+import { groupByArea } from "@/lib/views/analytics";
 import { PageContainer } from "../ui/page-container";
 import { PageHeader } from "../ui/page-header";
-import { Section } from "../ui/section";
+import { SectionHeader } from "../ui/section-header";
 import { CardGridSkeleton, EmptyState, ErrorState, LoadingRegion } from "../ui/states";
 import { AnalysisCard } from "./analysis-card";
-import { categoryLabel } from "./analysis-format";
 import { DatasetsList } from "./datasets-list";
 import { SavedResults } from "./saved-results";
+import { SecondarySection } from "./secondary-section";
 
+export const ANALYTICS_DESCRIPTION =
+  "Explore quantitative signals across customer, market and business data — computed directly from structured datasets.";
+export const TRUST_LINE = "Every figure is recomputed from the source data on each visit. No model is involved.";
+
+/** Analyses grouped by business area, two tiles per row on wide screens. Presentational. */
+export function AnalysisAreas({ ws, analyses }: { ws: string; analyses: readonly Analysis[] }) {
+  const groups = groupByArea(analyses);
+  return (
+    <div className="flex flex-col gap-10">
+      {groups.map((group) => {
+        const headingId = `area-${group.area.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+        return (
+          <section key={group.area} aria-labelledby={headingId} className="flex flex-col gap-4">
+            <SectionHeader
+              id={headingId}
+              title={group.area}
+              description={`${formatNumber(group.analyses.length)} ${group.analyses.length === 1 ? "analysis" : "analyses"}`}
+            />
+            <ul aria-label={group.area} className="ms-stagger grid gap-4 lg:grid-cols-2">
+              {group.analyses.map((a) => (
+                <AnalysisCard key={a.id} ws={ws} analysis={a} />
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+/** "What does the data show?": named analyses by business area, then saved results and datasets. */
 export function AnalyticsView({ ws }: { ws: string }) {
   const analyses = useAnalyses(ws);
   const datasets = useDatasets(ws);
-  const [category, setCategory] = useState("");
-  const [dataset, setDataset] = useState("");
-
   const all = useMemo(() => analyses.data?.analyses ?? [], [analyses.data]);
-  const categories = useMemo(() => [...new Set(all.map((a) => a.category))].sort(), [all]);
-  const datasetOptions = useMemo(
-    () => [...new Map(all.map((a) => [a.provenance.dataset, a.provenance.source_title])).entries()],
-    [all],
-  );
-  const shown = all.filter((a) => (!category || a.category === category) && (!dataset || a.provenance.dataset === dataset));
   const datasetList = useMemo(() => datasets.data?.datasets ?? [], [datasets.data]);
-  const datasetLabel = (id: string, title: string): string => {
-    const table = datasetList.find((d) => d.dataset === id)?.table;
-    const plain = table ? tableLabel(table) : null;
-    return plain && plain.toLowerCase() !== title.toLowerCase() ? `${title} · ${plain}` : title;
-  };
 
   return (
     <PageContainer width="wide">
       <PageHeader
         title="Analytics"
-        description="Figures computed directly from the workspace's structured datasets, each with its filters, base and source table."
+        description={ANALYTICS_DESCRIPTION}
         meta={
-          analyses.data?.fixture_version ? (
+          <span className="inline-flex items-center gap-1.5 text-sm text-muted">
+            <RefreshCw aria-hidden className="size-3.5" />
             <span>
-              {formatNumber(all.length)} named analyses · recomputed {formatDateTime(analyses.data.computed_at)}
+              {TRUST_LINE}
+              {analyses.data?.computed_at && ` Last recomputed ${formatDateTime(analyses.data.computed_at)}.`}
             </span>
-          ) : undefined
+          </span>
         }
       />
 
-      <div className="mt-6 flex flex-col">
-        <Section
-          title="Named analyses"
-          description="Curated questions recomputed from the source data on every visit. A figure is shown only when it still matches what was reviewed."
-        >
-          {analyses.isPending ? (
-            <CardGridSkeleton label="Loading analyses" count={4} lines={4} columns="md:grid-cols-2" gap="sm" />
-          ) : analyses.isError ? (
-            <ErrorState
-              title="Analyses could not be loaded"
-              error={analyses.error}
-              retry={() => void analyses.refetch()}
-            />
-          ) : all.length === 0 ? (
-            <EmptyState title="No named analyses for this workspace" description="Curated analyses have not been set up here yet. Saved research results and datasets are listed below." />
-          ) : (
-            <div className="flex flex-col gap-4">
-              <FilterBar onReset={category || dataset ? () => { setCategory(""); setDataset(""); } : undefined}>
-                <FilterSelect
-                  id="analysis-category"
-                  label="Category"
-                  value={category}
-                  onChange={setCategory}
-                  options={[{ value: "", label: "All categories" }, ...categories.map((c) => ({ value: c, label: categoryLabel(c) }))]}
-                />
-                <FilterSelect
-                  id="analysis-dataset"
-                  label="Dataset"
-                  value={dataset}
-                  onChange={setDataset}
-                  options={[{ value: "", label: "All datasets" }, ...datasetOptions.map(([value, title]) => ({ value, label: datasetLabel(value, title) }))]}
-                />
-              </FilterBar>
-              {shown.length === 0 ? (
-                <EmptyState title="No analyses match these filters" />
-              ) : (
-                <ul aria-label="Named analyses" className="grid gap-3 md:grid-cols-2">
-                  {shown.map((a) => (
-                    <AnalysisCard key={a.id} ws={ws} analysis={a} />
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </Section>
+      <div className="ms-page-enter mt-8 flex flex-col gap-12">
+        {analyses.isPending ? (
+          <CardGridSkeleton label="Loading analyses" count={4} lines={5} columns="lg:grid-cols-2" gap="sm" />
+        ) : analyses.isError ? (
+          <ErrorState title="Analyses could not be loaded" error={analyses.error} retry={() => void analyses.refetch()} />
+        ) : all.length === 0 ? (
+          <EmptyState
+            icon={BarChart3}
+            title="No analyses for this workspace yet"
+            description="Explore quantitative signals across customer, market and business data. Curated analyses appear here once they are set up; datasets and saved research results are listed below."
+          />
+        ) : (
+          <AnalysisAreas ws={ws} analyses={all} />
+        )}
 
-        <SavedResults ws={ws} datasets={datasetList} />
-
-        <Section id="datasets" title="Datasets" description="Structured tables MarketSignal can compute from. Expand a dataset to see its columns.">
-          {datasets.isPending ? (
-            <LoadingRegion label="Loading datasets" lines={5} />
-          ) : datasets.isError ? (
-            <ErrorState title="Datasets could not be loaded" description="Try again in a moment." error={datasets.error} retry={() => void datasets.refetch()} />
-          ) : datasetList.length === 0 ? (
-            <EmptyState title="No datasets yet" description="Spreadsheets and data tables added to the Evidence Library appear here once processed." />
-          ) : (
-            <DatasetsList ws={ws} datasets={datasetList} truncated={datasets.data.truncated} />
-          )}
-        </Section>
+        <div className="flex flex-col gap-3">
+          <SavedResults ws={ws} datasets={datasetList} />
+          <SecondarySection
+            id="datasets"
+            title="Datasets"
+            description="Structured tables these figures are computed from. Expand a dataset to see its columns."
+          >
+            {datasets.isPending ? (
+              <LoadingRegion label="Loading datasets" lines={5} />
+            ) : datasets.isError ? (
+              <ErrorState title="Datasets could not be loaded" description="Try again in a moment." error={datasets.error} retry={() => void datasets.refetch()} />
+            ) : datasetList.length === 0 ? (
+              <EmptyState title="No datasets yet" description="Spreadsheets and data tables added to the Evidence library appear here once processed." />
+            ) : (
+              <DatasetsList ws={ws} datasets={datasetList} truncated={datasets.data.truncated} />
+            )}
+          </SecondarySection>
+        </div>
       </div>
     </PageContainer>
   );

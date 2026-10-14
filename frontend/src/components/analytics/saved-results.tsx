@@ -8,7 +8,7 @@ import { useEvidenceDrawer } from "../evidence/drawer-context";
 import { formatDate, tableLabel } from "@/lib/format";
 import { EmptyState, ErrorState, LoadingRegion } from "../ui/states";
 import { LoadMore } from "../ui/load-more";
-import { Section } from "../ui/section";
+import { SecondarySection } from "./secondary-section";
 import { Table, type Column } from "../ui/table";
 import { collapseRepeats, describeResult, resultTitle } from "@/lib/result-summary";
 import { askHref } from "@/lib/routes";
@@ -23,7 +23,7 @@ function tableNote(title: string, table: string): string | null {
 }
 
 /** Persisted computed results from research conversations; a row opens the result in the drawer. */
-export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly DatasetInfo[] }) {
+export function SavedResults({ ws, datasets, defaultOpen = false }: { ws: string; datasets: readonly DatasetInfo[]; defaultOpen?: boolean }) {
   const query = useAnalyticsResults(ws, { includeTestRuns: false });
   const drawer = useEvidenceDrawer();
   const titles = useMemo(() => new Map(datasets.map((d) => [d.dataset, d])), [datasets]);
@@ -67,14 +67,7 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
         );
       },
     },
-    {
-      key: "rows",
-      header: "Records used",
-      align: "right",
-      width: "9rem",
-      cell: (r) => <span className="whitespace-nowrap tabular-nums text-secondary">{describeResult(r).rowsMatched ?? "-"}</span>,
-    },
-    { key: "date", header: "Saved", width: "8rem", cell: (r) => <span className="whitespace-nowrap text-secondary">{formatDate(r.created_at)}</span> },
+    { key: "date", header: "Computed", width: "8rem", cell: (r) => <span className="whitespace-nowrap text-secondary">{formatDate(r.created_at)}</span> },
     {
       key: "conversation",
       header: "Conversation",
@@ -96,10 +89,11 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
   ];
 
   return (
-    <Section
+    <SecondarySection
       id="saved-results"
-      title="Saved results"
+      title="Saved results from research"
       description="Figures computed while answering research questions, saved with the conversation they came from. Select a row to see the full result."
+      defaultOpen={defaultOpen}
     >
       {query.isPending ? (
         <LoadingRegion label="Loading saved results" lines={4} />
@@ -119,6 +113,6 @@ export function SavedResults({ ws, datasets }: { ws: string; datasets: readonly 
           <LoadMore hasMore={hasMore} loading={query.isFetchingNextPage} onLoadMore={showMore} label="Show more results" />
         </>
       )}
-    </Section>
+    </SecondarySection>
   );
 }
