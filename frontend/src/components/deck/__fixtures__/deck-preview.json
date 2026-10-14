@@ -1,0 +1,134 @@
+{
+  "deck": {
+    "title": "Strategic findings",
+    "question": "Should Northstar launch personalization as a premium tier for Gen Z?",
+    "workspace": { "code": "NORTHSTAR", "name": "Northstar" },
+    "generated_at": "2026-10-14T09:30:00+00:00",
+    "fixture_version": "NORTHSTAR.v2",
+    "slides": [
+      {
+        "index": 1,
+        "kind": "title",
+        "title": "Strategic findings",
+        "subtitle": "Should Northstar launch personalization as a premium tier for Gen Z?",
+        "meta": ["Northstar", "14 October 2026", "Built from 3 verified findings"],
+        "blocks": [],
+        "notes": []
+      },
+      {
+        "index": 2,
+        "kind": "summary",
+        "title": "Executive summary",
+        "subtitle": null,
+        "blocks": [
+          {
+            "type": "statuses",
+            "items": [
+              { "title": "Price ceiling for add-ons", "kind_label": "Emerging signal", "status": "strong_evidence", "status_label": "Strong evidence", "claim_type": "observed", "label": null, "cites": [1] },
+              { "title": "Premium personalization tier", "kind_label": "Growth opportunity", "status": "supported", "status_label": "Supported", "claim_type": "inference", "label": "Inference", "cites": [1, 2] }
+            ]
+          }
+        ],
+        "notes": [
+          { "n": 1, "source_title": "Gen Z shopper interviews", "locator": "p. 4", "quote": "I would pay a little more if it felt made for me.", "handle": "NORTHSTAR:interviews#p4" }
+        ]
+      },
+      {
+        "index": 3,
+        "kind": "customer_findings",
+        "title": "Key customer findings",
+        "subtitle": null,
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              { "heading": "Price ceiling for add-ons", "text": "Shoppers cap add-on spend at a small premium.", "claim_type": "observed", "label": null, "cites": [1], "level": 0 },
+              { "heading": null, "text": "A paid tier may need a visible personal benefit.", "claim_type": "inference", "label": "Inference", "cites": [1], "level": 1 }
+            ]
+          }
+        ],
+        "notes": [
+          { "n": 1, "source_title": "Gen Z shopper interviews", "locator": "p. 4", "quote": "I would pay a little more if it felt made for me.", "handle": "NORTHSTAR:interviews#p4" }
+        ]
+      },
+      {
+        "index": 4,
+        "kind": "quantitative",
+        "title": "Key figures",
+        "subtitle": null,
+        "blocks": [
+          { "type": "metrics", "items": [ { "label": "Willing to pay more", "display": "38%", "base": "of 412 respondents", "cites": [3] } ] }
+        ],
+        "notes": [
+          { "n": 3, "source_title": "Survey: willingness to pay", "locator": "Analysis wtp_by_segment", "quote": null, "handle": "analysis:wtp_by_segment" }
+        ]
+      },
+      {
+        "index": 5,
+        "kind": "quantitative",
+        "title": "Willingness to pay by segment",
+        "subtitle": "Quantitative evidence",
+        "blocks": [
+          { "type": "chart", "chart": "bar", "title": "Share willing to pay more", "unit": "percent", "categories": ["Gen Z", "Millennial", "Gen X"], "values": [0.38, 0.27, 0.15], "displays": ["38%", "27%", "15%"], "emphasis": 0, "base": "of 412 respondents", "cites": [3] },
+          { "type": "table", "title": "Respondents by segment", "columns": ["Segment", "Respondents"], "rows": [["Gen Z", "160"], ["Millennial", "152"]], "truncated": true, "note": "First 2 rows of 3", "base": null, "cites": [3] }
+        ],
+        "notes": [
+          { "n": 3, "source_title": "Survey: willingness to pay", "locator": "Analysis wtp_by_segment", "quote": null, "handle": "analysis:wtp_by_segment" }
+        ]
+      },
+      {
+        "index": 6,
+        "kind": "opportunity",
+        "title": "Premium personalization tier",
+        "subtitle": "Growth opportunity · Supported",
+        "blocks": [
+          {
+            "type": "bullets",
+            "items": [
+              { "heading": null, "text": "A personalization tier could lift revenue per Gen Z shopper.", "claim_type": "hypothesis", "label": "Hypothesis", "cites": [1, 2], "level": 0 },
+              { "heading": "Evidence", "text": "2 supporting and 0 contradicting passages", "claim_type": null, "label": null, "cites": [1, 2], "level": 0 }
+            ]
+          }
+        ],
+        "notes": [
+          { "n": 1, "source_title": "Gen Z shopper interviews", "locator": "p. 4", "quote": "I would pay a little more if it felt made for me.", "handle": "NORTHSTAR:interviews#p4" },
+          { "n": 2, "source_title": "Competitor teardown", "locator": "Section 2", "quote": "Rivals bundle styling advice into paid plans.", "handle": "NORTHSTAR:teardown#s2" }
+        ]
+      },
+      {
+        "index": 7,
+        "kind": "next_steps",
+        "title": "Recommended next steps",
+        "subtitle": "From the analyst brief",
+        "blocks": [
+          { "type": "bullets", "items": [ { "heading": "Premium personalization tier", "text": "Run a priced concept test with Gen Z members.", "claim_type": null, "label": null, "cites": [], "level": 0 } ] }
+        ],
+        "notes": []
+      },
+      {
+        "index": 8,
+        "kind": "appendix",
+        "title": "Appendix: Sources",
+        "subtitle": null,
+        "blocks": [
+          {
+            "type": "sources",
+            "items": [
+              { "n": 1, "source_title": "Gen Z shopper interviews", "locator": "p. 4", "quote": "I would pay a little more if it felt made for me." },
+              { "n": 2, "source_title": "Competitor teardown", "locator": "Section 2", "quote": "Rivals bundle styling advice into paid plans." },
+              { "n": 3, "source_title": "Survey: willingness to pay", "locator": "Analysis wtp_by_segment", "quote": null }
+            ]
+          }
+        ],
+        "notes": []
+      }
+    ],
+    "sources": [
+      { "n": 1, "kind": "passage", "source_title": "Gen Z shopper interviews", "locator": "p. 4", "quote": "I would pay a little more if it felt made for me.", "handle": "NORTHSTAR:interviews#p4" },
+      { "n": 2, "kind": "passage", "source_title": "Competitor teardown", "locator": "Section 2", "quote": "Rivals bundle styling advice into paid plans.", "handle": "NORTHSTAR:teardown#s2" },
+      { "n": 3, "kind": "analysis", "source_title": "Survey: willingness to pay", "locator": "Analysis wtp_by_segment", "quote": null, "handle": "analysis:wtp_by_segment" }
+    ],
+    "excluded": [ { "id": "loyalty-lapse", "reason": "Its main claim no longer has verified support." } ],
+    "counts": { "items": 3, "sources": 3, "slides": 8 }
+  }
+}
