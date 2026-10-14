@@ -21,7 +21,10 @@ from typing import Any, Final
 DATA_DIR: Final = Path(__file__).resolve().parent / "eval_catalog_data"
 CATALOG_FILE: Final = DATA_DIR / "catalog.v1.json"
 
-# Mirrors ``EvalRunId`` in frontend/src/lib/api/contracts.ts.
+# Mirrors ``RagasRunId`` in frontend/src/lib/api/contracts.ts (E13). Their items carry
+# ``phase: "ragas"`` and ``buckets: [configuration]``, so ``bucket`` filters by configuration.
+RAGAS_RUN_IDS: Final[tuple[str, ...]] = ("ragas-p3-live-v0", "ragas-p4-research-test")
+# Mirrors ``EvalRunId`` (plus ``RagasRunId``) in frontend/src/lib/api/contracts.ts.
 EVAL_RUN_IDS: Final[tuple[str, ...]] = (
     "p2-dev-final",
     "p2-test-c3",
@@ -30,6 +33,7 @@ EVAL_RUN_IDS: Final[tuple[str, ...]] = (
     "p4-research-test",
     "p5-analytics-dev",
     "p5-analytics-holdout",
+    *RAGAS_RUN_IDS,
 )
 _ITEM_FILES: Final[dict[str, Path]] = {
     rid: DATA_DIR / "items" / f"{rid}.json" for rid in EVAL_RUN_IDS
@@ -86,7 +90,8 @@ def _load_rows(run_id: str) -> tuple[dict[str, Any], ...]:
 def load_items(
     run_id: str, *, offset: int = 0, limit: int = 20, bucket: str | None = None
 ) -> dict[str, Any]:
-    """One ``EvalItemsPage`` for ``run_id``, optionally filtered by a failure bucket id."""
+    """One ``EvalItemsPage`` for ``run_id``, optionally filtered by a failure bucket id (for a
+    RAGAS run, by configuration name)."""
     if not is_known_run(run_id):
         raise UnknownEvalRunError(run_id)
     rows = _load_rows(run_id)

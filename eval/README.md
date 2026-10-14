@@ -1,6 +1,6 @@
 # Evaluation
 
-Retrieval evaluation for MarketSignal (plan §26–27, ADR-0013). The harness lives in `backend/src/marketsignal/evaluation/` and is run with `python -m marketsignal.evaluation`. Phase 2 uses no LLM judge.
+Evaluation for MarketSignal (plan §26–27, ADR-0013): retrieval (Phase 2), grounded answers (Phase 3), Standard vs Research (Phase 4), analytics (Phase 5) and model-free RAGAS heuristics over persisted outputs. The harness lives in `backend/src/marketsignal/evaluation/` and is run with `python -m marketsignal.evaluation`; the RAGAS runner is a separate project in `ragas_runner/`. No LLM judge has been run. This page documents the Phase 2 retrieval set in detail; recorded runs for every phase are in `baselines/` and are summarised, with a pointer to the source of every number, in the developer evaluation catalog (`scripts/build_eval_catalog.py`).
 
 ## `datasets/retrieval-v0/`: the Phase 2 curated retrieval set
 
@@ -60,3 +60,16 @@ Every arm maps child hits to **distinct parents** (first occurrence wins) before
 - **Intervals:** Wilson 95% CIs for hit rates, percentile bootstrap (10,000 resamples, fixed seed) for recall and MRR.
 - **Paired comparisons:** exact McNemar for hit@k, paired bootstrap for ΔMRR and Δrecall@10.
 - **Overlap hardness:** each item's question is scored against its anchors with a retriever-independent normaliser. Bins: low < 0.34 ≤ mid < 0.67 ≤ high.
+
+## RAGAS (model-free heuristics, `ragas_runner/`)
+
+RAGAS scores are computed on **persisted** live outputs (no new model calls, nothing tuned on them) by an isolated uv project, so ragas and its dependency tree never enter the backend lockfile.
+
+1. `python -m marketsignal.evaluation ragas-export --run <p3-live-v0|p4-research-test>` (backend) joins persisted results to the gold dataset, resolves passage texts read-only and writes a samples file to `reports/ragas-inputs/` (gitignored scratch). Items that expect an abstention or have no gold handles are excluded and counted.
+2. `ragas-eval offline` (in `ragas_runner/`, with `RAGAS_DO_NOT_TRACK=true`) scores ID-based context recall and precision (evidence pack and cited passages) and text-similarity context recall and precision, and writes `baselines/ragas/<run>/results.json` + `report.md`. It refuses to overwrite a recorded run.
+3. `make eval-catalog` adds the results to the catalog's `ragas` section (every number carries a JSON pointer into `results.json`) and to per-item files served by the items endpoint.
+
+Read with care:
+
+- These are heuristics, not ground truth. ID-based context recall counts **every distinct gold handle, alternates included**, so it reads lower than the Phase 4 `gold_handle_recall`, which counts a fact as found when any accepted handle was retrieved; each `report.md` reconciles the two.
+- Model-judged metrics (faithfulness, answer relevancy) are wired but **not run** (no model credits). Reference-answer metrics need authored reference answers, which the gold sets do not contain, so they are **not run** either. Neither is ever shown as a number.

@@ -97,7 +97,9 @@ def test_catalog_shape_and_run_ids() -> None:
         "failure_runs",
     ):
         assert key in cat
-    assert {f["run_id"] for f in cat["failure_runs"]} == set(eval_catalog.EVAL_RUN_IDS)
+    assert {f["run_id"] for f in cat["failure_runs"]} == set(eval_catalog.EVAL_RUN_IDS) - set(
+        eval_catalog.RAGAS_RUN_IDS
+    )
     caveats = {c["id"] for c in cat["caveats"]}
     assert {
         "small-test-n",

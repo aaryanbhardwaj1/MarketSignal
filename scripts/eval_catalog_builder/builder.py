@@ -10,6 +10,7 @@ from .analytics import AnalyticsSections
 from .common import Sources
 from .grounded import GroundedSections
 from .items import ItemSections
+from .ragas import RagasSections
 from .research import ResearchSections
 from .retrieval import RetrievalSections
 from .summary import SummarySections
@@ -22,6 +23,7 @@ class Builder(
     AnalyticsSections,
     SummarySections,
     ItemSections,
+    RagasSections,
 ):
     """All catalog sections; each mixin owns one area of the catalog."""
 
@@ -36,6 +38,7 @@ def build(root: Path, built_at: str) -> tuple[dict[str, Any], dict[str, Any]]:
     superseded = b.superseded()
     caveats = b.caveats()
     items, failure_runs = b.items_and_failures()
+    ragas, ragas_items = b.ragas_section()
     catalog = {
         "schema_version": 1,
         "built_at": built_at,
@@ -48,8 +51,9 @@ def build(root: Path, built_at: str) -> tuple[dict[str, Any], dict[str, Any]]:
         "analytics": analytics,
         "superseded": superseded,
         "failure_runs": failure_runs,
+        "ragas": ragas,
     }
-    files = {rid: {"run_id": rid, "items": rows} for rid, rows in items.items()}
+    files = {rid: {"run_id": rid, "items": rows} for rid, rows in (items | ragas_items).items()}
     return catalog, files
 
 

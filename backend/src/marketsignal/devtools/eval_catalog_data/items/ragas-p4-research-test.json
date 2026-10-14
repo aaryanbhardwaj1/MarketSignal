@@ -1,0 +1,1205 @@
+{
+ "run_id": "ragas-p4-research-test",
+ "items": [
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CC-01",
+    "configuration": "standard",
+    "category": "customer_competitor",
+    "question": "An interviewee put a number on how much extra they would pay for a shoe built from a scan of their foot. How does that compare with what Kinetic Lab charges for its custom runner?",
+    "scores": {
+     "id_context_precision_cited": 1.0,
+     "id_context_precision_pack": 0.4166666666666667,
+     "id_context_recall_cited": 0.8,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.7277777777632222,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CC-02",
+    "configuration": "standard",
+    "category": "customer_competitor",
+    "question": "One interviewee wants everyday trainers delivered within two days. How far is the leading made-to-order competitor from meeting that expectation?",
+    "scores": {
+     "id_context_precision_cited": 0.3333333333333333,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 0.3333333333333333,
+     "id_context_recall_pack": 0.3333333333333333,
+     "nonllm_context_precision_pack": 0.699999999965,
+     "nonllm_context_recall_pack": 0.3333333333333333
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CC-04",
+    "configuration": "standard",
+    "category": "customer_competitor",
+    "question": "How common was cart abandonment over mismatched size charts among the Gen Z focus-group participants, and how widely has Vantage rolled out in-store gait scanning as its answer to fit?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.699999999965,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CF-02",
+    "configuration": "standard",
+    "category": "conflict_search",
+    "question": "The Q3 strategy review slides cite an encouraging early repeat-purchase number for personalized buyers. Does the pilot's final readout confirm it?",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.3333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.624999999984375,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CF-04",
+    "configuration": "standard",
+    "category": "conflict_search",
+    "question": "Kinetic Lab's annual report touts a low return rate on customized midsoles. Is there independent evidence on that figure, and how does either number compare with returns on Northstar's own personalized pilot items?",
+    "scores": {
+     "id_context_precision_cited": 1.0,
+     "id_context_precision_pack": 0.5,
+     "id_context_recall_cited": 0.8333333333333334,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.8968253968104498,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CI-01",
+    "configuration": "standard",
+    "category": "customer_internal",
+    "question": "An interviewee's Knit Runners frayed after about two months of walking to class. What did Northstar estimate that durability issue cost in Q2 returns and replacements?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.7499999999625,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CI-03",
+    "configuration": "standard",
+    "category": "customer_internal",
+    "question": "One interviewee wears different sizes across Northstar's joggers, hoodies and shoe lines. What remedy does next year's plan propose for that, and in which quarter would it launch?",
+    "scores": {
+     "id_context_precision_cited": 0.4,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.12878787878143938,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CI-04",
+    "configuration": "standard",
+    "category": "customer_internal",
+    "question": "What does the external panel analyst expect personalization's share of US athletic footwear units to be through 2028, and is the FY27 memo's stance on personalization consistent with that view?",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.5909090908795455,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-FP-01",
+    "configuration": "standard",
+    "category": "first_pass_insufficient",
+    "question": "How quickly is Pace & Co. expanding its physical presence through partner retailers, and how affordable is its range overall?",
+    "scores": {
+     "id_context_precision_cited": 0.375,
+     "id_context_precision_pack": 0.25,
+     "id_context_recall_cited": 0.75,
+     "id_context_recall_pack": 0.75,
+     "nonllm_context_precision_pack": 0.766666666641111,
+     "nonllm_context_recall_pack": 0.75
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-FP-02",
+    "configuration": "standard",
+    "category": "first_pass_insufficient",
+    "question": "How healthy is the made-to-order shoe start-up commercially: how fast are its sales growing, how profitable is it, and how loyal are its customers?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 0.3333333333333333,
+     "id_context_recall_pack": 0.3333333333333333,
+     "nonllm_context_precision_pack": 0.4166666666458333,
+     "nonllm_context_recall_pack": 0.3333333333333333
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-FP-03",
+    "configuration": "standard",
+    "category": "first_pass_insufficient",
+    "question": "How big is the US custom-sneaker market among young consumers in 2026, and what is the most recent estimate of the whole Gen Z athletic apparel market?",
+    "scores": {
+     "id_context_precision_cited": 0.3333333333333333,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.6570655534847383,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-FP-06",
+    "configuration": "standard",
+    "category": "first_pass_insufficient",
+    "question": "Which Southpeak product drew a comfort complaint in the customer interviews, and what sales goal is set for the jacket meant to showcase the brand refresh?",
+    "scores": {
+     "id_context_precision_cited": 0.3333333333333333,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.3333333333,
+     "nonllm_context_recall_pack": 0.5
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-IT-01",
+    "configuration": "standard",
+    "category": "identifier_then_semantic",
+    "question": "What did survey respondent R0521 complain about, and how many Knit Runner 2 returns in Q3 2026 were logged for that same kind of failure?",
+    "scores": {
+     "id_context_precision_cited": 0.25,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.4799999999904,
+     "nonllm_context_recall_pack": 0.5
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-IT-02",
+    "configuration": "standard",
+    "category": "identifier_then_semantic",
+    "question": "Review RV-00233 is a five-star review. Which product is it for, and how many units of that product has Northstar sold so far in FY26?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.8790123456692456,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-IT-03",
+    "configuration": "standard",
+    "category": "identifier_then_semantic",
+    "question": "What did the customer who wrote review RV-00655 complain about, and what did the personalization pilot find about average lead time and its effect on reordering?",
+    "scores": {
+     "id_context_precision_cited": 0.125,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 0.5
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-IT-04",
+    "configuration": "standard",
+    "category": "identifier_then_semantic",
+    "question": "What average order value does record CP-2026-09-APP-GENZ show, and how does it compare with the average order value of Northstar's largest Gen Z segment, and how large is that segment?",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 0.6666666666666666,
+     "id_context_recall_pack": 0.6666666666666666,
+     "nonllm_context_precision_pack": 0.8333333332916666,
+     "nonllm_context_recall_pack": 0.6666666666666666
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-MC-02",
+    "configuration": "standard",
+    "category": "multi_class",
+    "question": "Quantify Northstar's fit problem from three angles: the share of under-28 support contacts in Q3 about sizing and fit, the share of Gen Z survey respondents who call fit inconsistency their top frustration, and the share of Switchback Trail's Q3 2026 returns put down to running small.",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.8333333332916666,
+     "nonllm_context_recall_pack": 0.5
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-MC-04",
+    "configuration": "standard",
+    "category": "multi_class",
+    "question": "The panel analyst argues that an exchange promise would help Northstar more than a longer refund window. How much more often do Gen Z shoppers return athletic apparel than shoppers over 35 according to the panel, and what exchange guarantee does the FY27 memo propose, and for when?",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-MC-06",
+    "configuration": "standard",
+    "category": "multi_class",
+    "question": "How much do young shoppers care about fast delivery, and is Northstar's personalization offer creating delivery friction? Give the trend panel's share of Gen Z rating three-day delivery essential and how much more likely personalized orders were to trigger order-status tickets.",
+    "scores": {
+     "id_context_precision_cited": 0.4,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-RF-02",
+    "configuration": "standard",
+    "category": "reformulation",
+    "question": "What GM% does the FY26 LE carry, and what was the Q2 top line?",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.4166666666458333,
+     "nonllm_context_recall_pack": 0.5
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-RF-04",
+    "configuration": "standard",
+    "category": "reformulation",
+    "question": "What does a Vantage performance running shoe typically go for at the till these days?",
+    "scores": {
+     "id_context_precision_cited": 1.0,
+     "id_context_precision_pack": 0.25,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.5499999999816666,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-RF-05",
+    "configuration": "standard",
+    "category": "reformulation",
+    "question": "How do younger shoppers react to eco-friendly marketing that lacks specifics, according to the one-on-one conversations?",
+    "scores": {
+     "id_context_precision_cited": 0.0,
+     "id_context_precision_pack": 0.0,
+     "id_context_recall_cited": 0.0,
+     "id_context_recall_pack": 0.0,
+     "nonllm_context_precision_pack": 0.0,
+     "nonllm_context_recall_pack": 0.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-RF-06",
+    "configuration": "standard",
+    "category": "reformulation",
+    "question": "What was Northstar's company-wide promoter score across all age groups in Q2?",
+    "scores": {
+     "id_context_precision_cited": 0.0,
+     "id_context_precision_pack": 0.0,
+     "id_context_recall_cited": 0.0,
+     "id_context_recall_pack": 0.0,
+     "nonllm_context_precision_pack": 0.0,
+     "nonllm_context_recall_pack": 0.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-02",
+    "configuration": "standard",
+    "category": "simple_control",
+    "question": "What net revenue did Kinetic Lab book in fiscal 2024?",
+    "scores": {
+     "id_context_precision_cited": 1.0,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-04",
+    "configuration": "standard",
+    "category": "simple_control",
+    "question": "What conversion rate did millennial shoppers have on the Social Shop in September 2026?",
+    "scores": {
+     "id_context_precision_cited": 0.0,
+     "id_context_precision_pack": 0.0,
+     "id_context_recall_cited": 0.0,
+     "id_context_recall_pack": 0.0,
+     "nonllm_context_precision_pack": 0.0,
+     "nonllm_context_recall_pack": 0.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-06",
+    "configuration": "standard",
+    "category": "simple_control",
+    "question": "What was repeat purchase among personalized buyers at the pilot's 60 day checkpoint?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-07",
+    "configuration": "standard",
+    "category": "simple_control",
+    "question": "Among survey respondents aged 28 and older, where does fit inconsistency rank as a frustration, and at what share?",
+    "scores": {
+     "id_context_precision_cited": 0.3333333333333333,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-09",
+    "configuration": "standard",
+    "category": "simple_control",
+    "question": "How many members did Southpeak's Basecamp Rewards programme have at the close of the quarter?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-11",
+    "configuration": "standard",
+    "category": "simple_control",
+    "question": "What does Kinetic Lab charge for its custom runner, and for a rescan fitting?",
+    "scores": {
+     "id_context_precision_cited": 0.2,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "standard"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-12",
+    "configuration": "standard",
+    "category": "simple_control",
+    "question": "How long is the free returns window at Pace & Co., and what share of its range is priced under $50?",
+    "scores": {
+     "id_context_precision_cited": 0.25,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CC-01",
+    "configuration": "research",
+    "category": "customer_competitor",
+    "question": "An interviewee put a number on how much extra they would pay for a shoe built from a scan of their foot. How does that compare with what Kinetic Lab charges for its custom runner?",
+    "scores": {
+     "id_context_precision_cited": 0.8,
+     "id_context_precision_pack": 0.4166666666666667,
+     "id_context_recall_cited": 0.8,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.8083333333171667,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CC-02",
+    "configuration": "research",
+    "category": "customer_competitor",
+    "question": "One interviewee wants everyday trainers delivered within two days. How far is the leading made-to-order competitor from meeting that expectation?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.25,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.4027777777643518,
+     "nonllm_context_recall_pack": 0.5
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CC-04",
+    "configuration": "research",
+    "category": "customer_competitor",
+    "question": "How common was cart abandonment over mismatched size charts among the Gen Z focus-group participants, and how widely has Vantage rolled out in-store gait scanning as its answer to fit?",
+    "scores": {
+     "id_context_precision_cited": 0.2857142857142857,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CF-02",
+    "configuration": "research",
+    "category": "conflict_search",
+    "question": "The Q3 strategy review slides cite an encouraging early repeat-purchase number for personalized buyers. Does the pilot's final readout confirm it?",
+    "scores": {
+     "id_context_precision_cited": 0.8,
+     "id_context_precision_pack": 0.4,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.874999999978125,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CF-04",
+    "configuration": "research",
+    "category": "conflict_search",
+    "question": "Kinetic Lab's annual report touts a low return rate on customized midsoles. Is there independent evidence on that figure, and how does either number compare with returns on Northstar's own personalized pilot items?",
+    "scores": {
+     "id_context_precision_cited": 1.0,
+     "id_context_precision_pack": 0.5,
+     "id_context_recall_cited": 0.8333333333333334,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.8773809523663294,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CI-01",
+    "configuration": "research",
+    "category": "customer_internal",
+    "question": "An interviewee's Knit Runners frayed after about two months of walking to class. What did Northstar estimate that durability issue cost in Q2 returns and replacements?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.2222222222222222,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CI-03",
+    "configuration": "research",
+    "category": "customer_internal",
+    "question": "One interviewee wears different sizes across Northstar's joggers, hoodies and shoe lines. What remedy does next year's plan propose for that, and in which quarter would it launch?",
+    "scores": {
+     "id_context_precision_cited": 0.2857142857142857,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.36111111109305555,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-CI-04",
+    "configuration": "research",
+    "category": "customer_internal",
+    "question": "What does the external panel analyst expect personalization's share of US athletic footwear units to be through 2028, and is the FY27 memo's stance on personalization consistent with that view?",
+    "scores": {
+     "id_context_precision_cited": 0.2857142857142857,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-FP-01",
+    "configuration": "research",
+    "category": "first_pass_insufficient",
+    "question": "How quickly is Pace & Co. expanding its physical presence through partner retailers, and how affordable is its range overall?",
+    "scores": {
+     "id_context_precision_cited": 0.42857142857142855,
+     "id_context_precision_pack": 0.25,
+     "id_context_recall_cited": 0.75,
+     "id_context_recall_pack": 0.75,
+     "nonllm_context_precision_pack": 0.6388888888675925,
+     "nonllm_context_recall_pack": 0.75
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-FP-02",
+    "configuration": "research",
+    "category": "first_pass_insufficient",
+    "question": "How healthy is the made-to-order shoe start-up commercially: how fast are its sales growing, how profitable is it, and how loyal are its customers?",
+    "scores": {
+     "id_context_precision_cited": 0.375,
+     "id_context_precision_pack": 0.25,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.5277777777601852,
+     "nonllm_context_recall_pack": 0.5
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-FP-03",
+    "configuration": "research",
+    "category": "first_pass_insufficient",
+    "question": "How big is the US custom-sneaker market among young consumers in 2026, and what is the most recent estimate of the whole Gen Z athletic apparel market?",
+    "scores": {
+     "id_context_precision_cited": 0.2857142857142857,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.6372895622824812,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-FP-06",
+    "configuration": "research",
+    "category": "first_pass_insufficient",
+    "question": "Which Southpeak product drew a comfort complaint in the customer interviews, and what sales goal is set for the jacket meant to showcase the brand refresh?",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.2916666666520833,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-IT-01",
+    "configuration": "research",
+    "category": "identifier_then_semantic",
+    "question": "What did survey respondent R0521 complain about, and how many Knit Runner 2 returns in Q3 2026 were logged for that same kind of failure?",
+    "scores": {
+     "id_context_precision_cited": 0.2,
+     "id_context_precision_pack": 0.1,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 0.5
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-IT-02",
+    "configuration": "research",
+    "category": "identifier_then_semantic",
+    "question": "Review RV-00233 is a five-star review. Which product is it for, and how many units of that product has Northstar sold so far in FY26?",
+    "scores": {
+     "id_context_precision_cited": 0.3333333333333333,
+     "id_context_precision_pack": 0.1111111111111111,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.5,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-IT-03",
+    "configuration": "research",
+    "category": "identifier_then_semantic",
+    "question": "What did the customer who wrote review RV-00655 complain about, and what did the personalization pilot find about average lead time and its effect on reordering?",
+    "scores": {
+     "id_context_precision_cited": 0.2857142857142857,
+     "id_context_precision_pack": 0.2222222222222222,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.8333333332916666,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-IT-04",
+    "configuration": "research",
+    "category": "identifier_then_semantic",
+    "question": "What average order value does record CP-2026-09-APP-GENZ show, and how does it compare with the average order value of Northstar's largest Gen Z segment, and how large is that segment?",
+    "scores": {
+     "id_context_precision_cited": 0.5,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 0.6666666666666666,
+     "id_context_recall_pack": 0.6666666666666666,
+     "nonllm_context_precision_pack": 0.8333333332916666,
+     "nonllm_context_recall_pack": 0.6666666666666666
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-MC-02",
+    "configuration": "research",
+    "category": "multi_class",
+    "question": "Quantify Northstar's fit problem from three angles: the share of under-28 support contacts in Q3 about sizing and fit, the share of Gen Z survey respondents who call fit inconsistency their top frustration, and the share of Switchback Trail's Q3 2026 returns put down to running small.",
+    "scores": {
+     "id_context_precision_cited": 0.42857142857142855,
+     "id_context_precision_pack": 0.25,
+     "id_context_recall_cited": 0.75,
+     "id_context_recall_pack": 0.75,
+     "nonllm_context_precision_pack": 0.5575757575571717,
+     "nonllm_context_recall_pack": 0.75
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-MC-04",
+    "configuration": "research",
+    "category": "multi_class",
+    "question": "The panel analyst argues that an exchange promise would help Northstar more than a longer refund window. How much more often do Gen Z shoppers return athletic apparel than shoppers over 35 according to the panel, and what exchange guarantee does the FY27 memo propose, and for when?",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-MC-06",
+    "configuration": "research",
+    "category": "multi_class",
+    "question": "How much do young shoppers care about fast delivery, and is Northstar's personalization offer creating delivery friction? Give the trend panel's share of Gen Z rating three-day delivery essential and how much more likely personalized orders were to trigger order-status tickets.",
+    "scores": {
+     "id_context_precision_cited": 0.4,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.99999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-RF-02",
+    "configuration": "research",
+    "category": "reformulation",
+    "question": "What GM% does the FY26 LE carry, and what was the Q2 top line?",
+    "scores": {
+     "id_context_precision_cited": 0.6666666666666666,
+     "id_context_precision_pack": 0.3,
+     "id_context_recall_cited": 0.5,
+     "id_context_recall_pack": 0.75,
+     "nonllm_context_precision_pack": 0.5916666666469445,
+     "nonllm_context_recall_pack": 0.75
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-RF-04",
+    "configuration": "research",
+    "category": "reformulation",
+    "question": "What does a Vantage performance running shoe typically go for at the till these days?",
+    "scores": {
+     "id_context_precision_cited": 1.0,
+     "id_context_precision_pack": 0.3,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.6999999999766667,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-RF-05",
+    "configuration": "research",
+    "category": "reformulation",
+    "question": "How do younger shoppers react to eco-friendly marketing that lacks specifics, according to the one-on-one conversations?",
+    "scores": {
+     "id_context_precision_cited": 0.2,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.49999999995,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-RF-06",
+    "configuration": "research",
+    "category": "reformulation",
+    "question": "What was Northstar's company-wide promoter score across all age groups in Q2?",
+    "scores": {
+     "id_context_precision_cited": 0.3333333333333333,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.249999999975,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-02",
+    "configuration": "research",
+    "category": "simple_control",
+    "question": "What net revenue did Kinetic Lab book in fiscal 2024?",
+    "scores": {
+     "id_context_precision_cited": 1.0,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.8333333332916666,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-04",
+    "configuration": "research",
+    "category": "simple_control",
+    "question": "What conversion rate did millennial shoppers have on the Social Shop in September 2026?",
+    "scores": {
+     "id_context_precision_cited": null,
+     "id_context_precision_pack": 0.0,
+     "id_context_recall_cited": 0.0,
+     "id_context_recall_pack": 0.0,
+     "nonllm_context_precision_pack": 0.0,
+     "nonllm_context_recall_pack": 0.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-06",
+    "configuration": "research",
+    "category": "simple_control",
+    "question": "What was repeat purchase among personalized buyers at the pilot's 60 day checkpoint?",
+    "scores": {
+     "id_context_precision_cited": 1.0,
+     "id_context_precision_pack": 0.16666666666666666,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.8333333332916666,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-07",
+    "configuration": "research",
+    "category": "simple_control",
+    "question": "Among survey respondents aged 28 and older, where does fit inconsistency rank as a frustration, and at what share?",
+    "scores": {
+     "id_context_precision_cited": 0.2,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-09",
+    "configuration": "research",
+    "category": "simple_control",
+    "question": "How many members did Southpeak's Basecamp Rewards programme have at the close of the quarter?",
+    "scores": {
+     "id_context_precision_cited": 0.3333333333333333,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-11",
+    "configuration": "research",
+    "category": "simple_control",
+    "question": "What does Kinetic Lab charge for its custom runner, and for a rescan fitting?",
+    "scores": {
+     "id_context_precision_cited": 0.25,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  },
+  {
+   "buckets": [
+    "research"
+   ],
+   "item": {
+    "phase": "ragas",
+    "item_id": "R-SC-12",
+    "configuration": "research",
+    "category": "simple_control",
+    "question": "How long is the free returns window at Pace & Co., and what share of its range is priced under $50?",
+    "scores": {
+     "id_context_precision_cited": 0.3333333333333333,
+     "id_context_precision_pack": 0.08333333333333333,
+     "id_context_recall_cited": 1.0,
+     "id_context_recall_pack": 1.0,
+     "nonllm_context_precision_pack": 0.9999999999,
+     "nonllm_context_recall_pack": 1.0
+    }
+   }
+  }
+ ]
+}

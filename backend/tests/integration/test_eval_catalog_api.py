@@ -69,6 +69,21 @@ def test_items_page_and_bucket_filter(client: TestClient) -> None:
     )
 
 
+def test_ragas_section_and_items_by_configuration(client: TestClient) -> None:
+    ragas = client.get("/api/dev/eval/catalog").json()["ragas"]
+    assert [r["id"] for r in ragas["runs"]] == ["ragas-p3-live-v0", "ragas-p4-research-test"]
+    res = client.get(
+        "/api/dev/eval/runs/ragas-p4-research-test/items",
+        params={"bucket": "research", "limit": 50},
+    )
+    assert res.status_code == 200
+    page = res.json()
+    assert page["run_id"] == "ragas-p4-research-test"
+    assert page["total"] == 30
+    assert {i["phase"] for i in page["items"]} == {"ragas"}
+    assert {i["configuration"] for i in page["items"]} == {"research"}
+
+
 def test_limit_above_fifty_is_a_validation_error(client: TestClient) -> None:
     res = client.get("/api/dev/eval/runs/p2-test-c3/items", params={"limit": 51})
     assert res.status_code == 422
