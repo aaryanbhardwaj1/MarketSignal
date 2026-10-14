@@ -79,6 +79,16 @@ describe("metric denominators", () => {
     expect(resolveDenominator(growth, analysis("social-shop-sales-by-quarter"))).toBeNull();
     expect(buildMetricView(growth, index).basis).toBe("Based on monthly channel records");
   });
+  it("prefers a share's own segment base over the analysis-wide base", () => {
+    const a: Analysis = {
+      ...analysis("pain-points-by-cohort"),
+      unit: "percent",
+      denominator: { label: "respondents", value: 600 },
+      rows: [{ group: { segment: "Value Seekers" }, value: 10.6, display: "10.6%", denominator: 104 }],
+    };
+    const m: MetricRef = { ...signal("fit-friction").metrics[0], value: 10.6, display: "10.6%" };
+    expect(resolveDenominator(m, a)).toBe(104);
+  });
   it("returns null when the row match is ambiguous", () => {
     const a: Analysis = {
       ...analysis("pain-points-by-cohort"),

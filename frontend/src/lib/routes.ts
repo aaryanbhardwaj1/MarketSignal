@@ -20,9 +20,29 @@ export function insightsHref(ws: string): string {
   return `${workspaceHref(ws)}/insights`;
 }
 
-/** The presentation deck built from Insights. */
-export function insightsDeckHref(ws: string): string {
-  return `${insightsHref(ws)}/deck`;
+/** Items preselected for a presentation deck: signal (insight), opportunity and analysis ids. */
+export interface DeckSelection {
+  signals?: readonly string[];
+  opportunities?: readonly string[];
+  analyses?: readonly string[];
+}
+
+/** Query keys of a deck selection: `s` signals, `o` opportunities, `a` analyses. */
+export const DECK_PARAM = { signals: "s", opportunities: "o", analyses: "a" } as const;
+
+/**
+ * The presentation deck built from Insights. With a selection, the ids go in the query as
+ * comma-separated, URL-encoded lists (`?s=a,b&o=O1&a=x`); empty and duplicate ids are dropped.
+ * Parse it back with `parseDeckSelection` (`lib/views/insights`).
+ */
+export function insightsDeckHref(ws: string, selection?: DeckSelection): string {
+  const base = `${insightsHref(ws)}/deck`;
+  if (!selection) return base;
+  const parts = (Object.keys(DECK_PARAM) as (keyof typeof DECK_PARAM)[]).flatMap((key) => {
+    const ids = [...new Set((selection[key] ?? []).filter((id) => id.length > 0))];
+    return ids.length > 0 ? [`${DECK_PARAM[key]}=${ids.map(enc).join(",")}`] : [];
+  });
+  return parts.length > 0 ? `${base}?${parts.join("&")}` : base;
 }
 
 /** Ask MarketSignal; with a conversation id, that saved conversation (`/ask/{conversationId}`). */

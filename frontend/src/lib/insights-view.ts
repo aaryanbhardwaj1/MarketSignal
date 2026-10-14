@@ -108,16 +108,20 @@ export function inputsComputed(metric: MetricRef, analysis: Analysis | undefined
  */
 export function resolveDenominator(metric: MetricRef, analysis: Analysis | undefined): number | null {
   if (!analysis || metric.value == null || analysis.status !== "computed") return null;
-  if (analysis.denominator) return analysis.denominator.value;
+  // For shares, a row's own base wins over the analysis-wide one: a segment's percentage is out of
+  // that segment. For counts and sums a row's denominator is its matched-record count, not a base.
+  const overall = analysis.denominator?.value ?? null;
+  if (analysis.unit !== "percent" && overall != null) return overall;
   if (metric.derived) {
     if (metric.derived.op !== "diff") return null;
-    const bases = metric.derived.of.map((key) => rowFor(analysis, key)?.denominator ?? null);
+    const bases = metric.derived.of.map((key) => rowFor(analysis, key)?.denominator ?? overall);
     const first = bases[0];
     return first != null && bases.every((b) => b === first) ? first : null;
   }
   const matches = analysis.rows.filter((row) => row.value === metric.value && row.display === metric.display);
-  const bases = new Set(matches.map((row) => row.denominator ?? null));
-  if (matches.length === 0 || bases.size !== 1) return null;
+  if (matches.length === 0) return overall;
+  const bases = new Set(matches.map((row) => row.denominator ?? overall));
+  if (bases.size !== 1) return null;
   return [...bases][0] ?? null;
 }
 
