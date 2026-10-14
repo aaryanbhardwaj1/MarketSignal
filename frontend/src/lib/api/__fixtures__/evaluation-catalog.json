@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "built_at": "2026-10-12T20:39:53+00:00",
+ "built_at": "2026-10-14T17:13:03+00:00",
  "sources": [
   {
    "path": "docs/phase-reports/phase-2.md",
@@ -126,6 +126,26 @@
    "path": "eval/baselines/phase5/research-dev-p5-summary-off/results.json",
    "sha256": "1c35a51ea734389983ad1b82068da08e802b692fa6e18338feef310c2c32965b",
    "bytes": 120482
+  },
+  {
+   "path": "eval/baselines/ragas/p3-live-v0-nonllm/report.md",
+   "sha256": "74e0db203db3706993ef8d2df94eaabb2c16a9bca85a9f247fcb87a516bcfbb0",
+   "bytes": 4558
+  },
+  {
+   "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+   "sha256": "5183fb05a0b58d4fed3d567b97a9a256b282b9ff6a9fbabab331f93939829026",
+   "bytes": 42939
+  },
+  {
+   "path": "eval/baselines/ragas/p4-research-test-nonllm/report.md",
+   "sha256": "cfb5d8600ec4fa0e1e6b207199f63aee06f0341728ea64cc3df14ca8b398fb2f",
+   "bytes": 5715
+  },
+  {
+   "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+   "sha256": "a572ce7b6596e0fbd0cd60ab30d8f1e978f016ab39c4017df5723aea2ff81999",
+   "bytes": 52431
   },
   {
    "path": "eval/datasets/analytics-v0/items.json",
@@ -4150,5 +4170,1750 @@
     }
    ]
   }
- ]
+ ],
+ "ragas": {
+  "ragas_version": "0.4.3",
+  "telemetry_disabled": true,
+  "definitions": [
+   {
+    "key": "id_context_recall_pack",
+    "label": "Context recall (IDs, evidence pack)",
+    "family": "ragas_non_llm",
+    "needs_llm": false,
+    "needs_reference_answer": false,
+    "what_it_measures": "Share of distinct gold passage handles that appear in the evidence pack.",
+    "ragas_class": "IDBasedContextRecall"
+   },
+   {
+    "key": "id_context_precision_pack",
+    "label": "Context precision (IDs, evidence pack)",
+    "family": "ragas_non_llm",
+    "needs_llm": false,
+    "needs_reference_answer": false,
+    "what_it_measures": "Share of distinct evidence-pack handles that are gold handles. Undefined for an empty pack.",
+    "ragas_class": "IDBasedContextPrecision"
+   },
+   {
+    "key": "id_context_recall_cited",
+    "label": "Context recall (IDs, cited passages)",
+    "family": "ragas_non_llm",
+    "needs_llm": false,
+    "needs_reference_answer": false,
+    "what_it_measures": "Share of distinct gold passage handles that the answer actually cites.",
+    "ragas_class": "IDBasedContextRecall"
+   },
+   {
+    "key": "id_context_precision_cited",
+    "label": "Context precision (IDs, cited passages)",
+    "family": "ragas_non_llm",
+    "needs_llm": false,
+    "needs_reference_answer": false,
+    "what_it_measures": "Share of distinct cited handles that are gold handles. Undefined when the answer cites nothing.",
+    "ragas_class": "IDBasedContextPrecision"
+   },
+   {
+    "key": "nonllm_context_recall_pack",
+    "label": "Context recall (text similarity, evidence pack)",
+    "family": "ragas_non_llm",
+    "needs_llm": false,
+    "needs_reference_answer": false,
+    "what_it_measures": "Share of gold passages whose best normalised string similarity to any pack passage exceeds 0.5. A lexical heuristic, not a judgement of meaning.",
+    "ragas_class": "NonLLMContextRecall"
+   },
+   {
+    "key": "nonllm_context_precision_pack",
+    "label": "Context precision (text similarity, evidence pack)",
+    "family": "ragas_non_llm",
+    "needs_llm": false,
+    "needs_reference_answer": false,
+    "what_it_measures": "Rank-weighted average precision of pack passages, where a pack passage counts as relevant when its best string similarity to a gold passage is at least 0.5.",
+    "ragas_class": "NonLLMContextPrecisionWithReference"
+   },
+   {
+    "key": "faithfulness",
+    "label": "Faithfulness (model-judged)",
+    "family": "ragas_llm_judge",
+    "needs_llm": true,
+    "needs_reference_answer": false,
+    "what_it_measures": "Share of the answer's claims that a judge model finds supported by the evidence pack.",
+    "ragas_class": "Faithfulness"
+   },
+   {
+    "key": "answer_relevancy",
+    "label": "Answer relevancy (model-judged)",
+    "family": "ragas_llm_judge",
+    "needs_llm": true,
+    "needs_reference_answer": false,
+    "what_it_measures": "Mean embedding similarity between the question and questions a judge model generates from the answer; zero when the answer is non-committal.",
+    "ragas_class": "AnswerRelevancy"
+   },
+   {
+    "key": "llm_context_precision_with_reference",
+    "label": "Context precision vs reference (model-judged)",
+    "family": "ragas_llm_judge",
+    "needs_llm": true,
+    "needs_reference_answer": true,
+    "what_it_measures": "Rank-weighted precision of pack passages judged useful for an authored reference answer.",
+    "ragas_class": "ContextPrecisionWithReference"
+   },
+   {
+    "key": "llm_context_recall",
+    "label": "Context recall vs reference (model-judged)",
+    "family": "ragas_llm_judge",
+    "needs_llm": true,
+    "needs_reference_answer": true,
+    "what_it_measures": "Share of an authored reference answer's statements that a judge model attributes to the evidence pack.",
+    "ragas_class": "ContextRecall"
+   },
+   {
+    "key": "factual_correctness",
+    "label": "Factual correctness vs reference (model-judged)",
+    "family": "ragas_llm_judge",
+    "needs_llm": true,
+    "needs_reference_answer": true,
+    "what_it_measures": "Claim-level F1 between the answer and an authored reference answer, as judged by a model.",
+    "ragas_class": "FactualCorrectness"
+   }
+  ],
+  "runs": [
+   {
+    "id": "ragas-p3-live-v0",
+    "title": "RAGAS heuristics on grounded answers, live-v0",
+    "source_run": "p3-grounded-live",
+    "dataset": {
+     "name": "grounded-v0",
+     "version": "grounded-v0",
+     "sha256": "558ee3cff7ffea7d85fb5c52850bb139c33a361744ff3405ec780ab89011370e"
+    },
+    "split": null,
+    "configurations": [
+     {
+      "name": "standard",
+      "n_samples": 59,
+      "n_excluded": 17,
+      "excluded_reasons": [
+       {
+        "reason": "abstention_expected",
+        "n": 11
+       },
+       {
+        "reason": "no_gold_handles",
+        "n": 6
+       }
+      ],
+      "metrics": [
+       {
+        "key": "id_context_recall_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.8940677966101694,
+         "median": 1.0,
+         "p25": 1.0,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 59,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 2
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 1
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 6
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 1
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 48
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/id_context_recall_pack"
+        }
+       },
+       {
+        "key": "id_context_precision_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.09745762711864407,
+         "median": 0.08333333333333333,
+         "p25": 0.08333333333333333,
+         "p75": 0.08333333333333333,
+         "min": 0.0,
+         "max": 0.3333333333333333,
+         "n": 59,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 51
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 5
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 2
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 1
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 0
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 0
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 0
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 0
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/id_context_precision_pack"
+        }
+       },
+       {
+        "key": "id_context_recall_cited",
+        "status": "computed",
+        "summary": {
+         "mean": 0.885593220338983,
+         "median": 1.0,
+         "p25": 1.0,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 59,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 3
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 1
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 5
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 1
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 48
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/id_context_recall_cited"
+        }
+       },
+       {
+        "key": "id_context_precision_cited",
+        "status": "computed",
+        "summary": {
+         "mean": 0.4633440947000269,
+         "median": 0.3333333333333333,
+         "p25": 0.25,
+         "p75": 0.5,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 59,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 3
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 5
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 8
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 14
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 2
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 15
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 0
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 11
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/id_context_precision_cited"
+        }
+       },
+       {
+        "key": "nonllm_context_recall_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.902542372881356,
+         "median": 1.0,
+         "p25": 1.0,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 59,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 2
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 1
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 5
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 1
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 49
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/nonllm_context_recall_pack"
+        }
+       },
+       {
+        "key": "nonllm_context_precision_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.7132663076050091,
+         "median": 0.9406172110632054,
+         "p25": 0.48426677488080255,
+         "p75": 0.9999999999,
+         "min": 0.0,
+         "max": 0.9999999999916667,
+         "n": 59,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 4
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 3
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 1
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 5
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 7
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 2
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 4
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 0
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 3
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 30
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/nonllm_context_precision_pack"
+        }
+       },
+       {
+        "key": "faithfulness",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "model_credits_unavailable",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/faithfulness"
+        }
+       },
+       {
+        "key": "answer_relevancy",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "model_credits_unavailable",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/answer_relevancy"
+        }
+       },
+       {
+        "key": "llm_context_precision_with_reference",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/llm_context_precision_with_reference"
+        }
+       },
+       {
+        "key": "llm_context_recall",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/llm_context_recall"
+        }
+       },
+       {
+        "key": "factual_correctness",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p3-live-v0-nonllm/results.json",
+         "pointer": "/runs/0/summary/factual_correctness"
+        }
+       }
+      ]
+     }
+    ],
+    "created_at": "2026-10-14T17:07:28+00:00"
+   },
+   {
+    "id": "ragas-p4-research-test",
+    "title": "RAGAS heuristics on Standard vs Research, test",
+    "source_run": "p4-research-test",
+    "dataset": {
+     "name": "research-v0",
+     "version": "research-v0",
+     "sha256": "e0d55532ffd1ea9ca697a0c88541b7908e28a4936d9342f4b5c8f0647f79a966"
+    },
+    "split": "test",
+    "configurations": [
+     {
+      "name": "standard",
+      "n_samples": 30,
+      "n_excluded": 4,
+      "excluded_reasons": [
+       {
+        "reason": "abstention_expected",
+        "n": 4
+       }
+      ],
+      "metrics": [
+       {
+        "key": "id_context_recall_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.736111111111111,
+         "median": 1.0,
+         "p25": 0.5,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 3
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 2
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 6
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 1
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 17
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/id_context_recall_pack"
+        }
+       },
+       {
+        "key": "id_context_precision_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.15833333333333333,
+         "median": 0.16666666666666666,
+         "p25": 0.08333333333333333,
+         "p75": 0.16666666666666666,
+         "min": 0.0,
+         "max": 0.5,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 11
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 14
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 2
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 1
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 1
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 1
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 0
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 0
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 0
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/id_context_precision_pack"
+        }
+       },
+       {
+        "key": "id_context_recall_cited",
+        "status": "computed",
+        "summary": {
+         "mean": 0.7238888888888888,
+         "median": 0.9166666666666667,
+         "p25": 0.5,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 3
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 2
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 6
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 1
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 2
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 15
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/id_context_recall_cited"
+        }
+       },
+       {
+        "key": "id_context_precision_cited",
+        "status": "computed",
+        "summary": {
+         "mean": 0.4777777777777778,
+         "median": 0.5,
+         "p25": 0.3333333333333333,
+         "p75": 0.6666666666666666,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 3
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 1
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 3
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 5
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 2
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 6
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 6
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 0
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 4
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/id_context_precision_cited"
+        }
+       },
+       {
+        "key": "nonllm_context_recall_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.7527777777777778,
+         "median": 1.0,
+         "p25": 0.5,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 3
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 2
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 5
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 1
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 18
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/nonllm_context_recall_pack"
+        }
+       },
+       {
+        "key": "nonllm_context_precision_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.6761792680784564,
+         "median": 0.7388888888628611,
+         "p25": 0.49749999998821665,
+         "p75": 0.9999999999,
+         "min": 0.0,
+         "max": 0.99999999995,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 3
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 1
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 1
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 3
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 2
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 4
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 3
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 4
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 9
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/nonllm_context_precision_pack"
+        }
+       },
+       {
+        "key": "faithfulness",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "model_credits_unavailable",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/faithfulness"
+        }
+       },
+       {
+        "key": "answer_relevancy",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "model_credits_unavailable",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/answer_relevancy"
+        }
+       },
+       {
+        "key": "llm_context_precision_with_reference",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/llm_context_precision_with_reference"
+        }
+       },
+       {
+        "key": "llm_context_recall",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/llm_context_recall"
+        }
+       },
+       {
+        "key": "factual_correctness",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/0/summary/factual_correctness"
+        }
+       }
+      ]
+     },
+     {
+      "name": "research",
+      "n_samples": 30,
+      "n_excluded": 4,
+      "excluded_reasons": [
+       {
+        "reason": "abstention_expected",
+        "n": 4
+       }
+      ],
+      "metrics": [
+       {
+        "key": "id_context_recall_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.8638888888888889,
+         "median": 1.0,
+         "p25": 0.75,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 1
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 0
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 4
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 3
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 21
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/id_context_recall_pack"
+        }
+       },
+       {
+        "key": "id_context_precision_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.1912962962962963,
+         "median": 0.16666666666666666,
+         "p25": 0.10277777777777777,
+         "p75": 0.25,
+         "min": 0.0,
+         "max": 0.5,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 7
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 12
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 8
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 0
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 2
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 1
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 0
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 0
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 0
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/id_context_precision_pack"
+        }
+       },
+       {
+        "key": "id_context_recall_cited",
+        "status": "computed",
+        "summary": {
+         "mean": 0.8433333333333334,
+         "median": 1.0,
+         "p25": 0.75,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 1
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 0
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 5
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 2
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 2
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 19
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/id_context_recall_cited"
+        }
+       },
+       {
+        "key": "id_context_precision_cited",
+        "status": "computed",
+        "summary": {
+         "mean": 0.49462233169129716,
+         "median": 0.4,
+         "p25": 0.2857142857142857,
+         "p75": 0.6666666666666666,
+         "min": 0.2,
+         "max": 1.0,
+         "n": 29,
+         "n_nan": 1,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 0
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 9
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 5
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 3
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 3
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 3
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 0
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 2
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 4
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/id_context_precision_cited"
+        }
+       },
+       {
+        "key": "nonllm_context_recall_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.8805555555555556,
+         "median": 1.0,
+         "p25": 0.8125,
+         "p75": 1.0,
+         "min": 0.0,
+         "max": 1.0,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 1
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 0
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 0
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 0
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 3
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 1
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 3
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 0
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 22
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/nonllm_context_recall_pack"
+        }
+       },
+       {
+        "key": "nonllm_context_precision_pack",
+        "status": "computed",
+        "summary": {
+         "mean": 0.745093394216794,
+         "median": 0.8333333332916666,
+         "p25": 0.5660984848296149,
+         "p75": 0.9999999999,
+         "min": 0.0,
+         "max": 0.99999999995,
+         "n": 30,
+         "n_nan": 0,
+         "histogram": [
+          {
+           "lo": 0.0,
+           "hi": 0.1,
+           "n": 1
+          },
+          {
+           "lo": 0.1,
+           "hi": 0.2,
+           "n": 0
+          },
+          {
+           "lo": 0.2,
+           "hi": 0.3,
+           "n": 2
+          },
+          {
+           "lo": 0.3,
+           "hi": 0.4,
+           "n": 1
+          },
+          {
+           "lo": 0.4,
+           "hi": 0.5,
+           "n": 2
+          },
+          {
+           "lo": 0.5,
+           "hi": 0.6,
+           "n": 3
+          },
+          {
+           "lo": 0.6,
+           "hi": 0.7,
+           "n": 3
+          },
+          {
+           "lo": 0.7,
+           "hi": 0.8,
+           "n": 0
+          },
+          {
+           "lo": 0.8,
+           "hi": 0.9,
+           "n": 7
+          },
+          {
+           "lo": 0.9,
+           "hi": 1.0,
+           "n": 11
+          }
+         ]
+        },
+        "not_run_reason": null,
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/nonllm_context_precision_pack"
+        }
+       },
+       {
+        "key": "faithfulness",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "model_credits_unavailable",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/faithfulness"
+        }
+       },
+       {
+        "key": "answer_relevancy",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "model_credits_unavailable",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/answer_relevancy"
+        }
+       },
+       {
+        "key": "llm_context_precision_with_reference",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/llm_context_precision_with_reference"
+        }
+       },
+       {
+        "key": "llm_context_recall",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/llm_context_recall"
+        }
+       },
+       {
+        "key": "factual_correctness",
+        "status": "not_run",
+        "summary": null,
+        "not_run_reason": "no_reference_answers",
+        "source": {
+         "kind": "json",
+         "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+         "pointer": "/runs/1/summary/factual_correctness"
+        }
+       }
+      ]
+     }
+    ],
+    "created_at": "2026-10-14T17:07:29+00:00"
+   }
+  ],
+  "caveats": [
+   {
+    "id": "ragas-heuristics-not-truth",
+    "applies_to": [
+     "ragas-p3-live-v0",
+     "ragas-p4-research-test"
+    ],
+    "text": "RAGAS scores are heuristics computed by the ragas library, not objective truth. ID-based scores depend on the gold handles being complete; text-similarity scores are lexical and can miss paraphrases or reward surface overlap.",
+    "metrics": [],
+    "source": {
+     "kind": "report_md",
+     "path": "eval/baselines/ragas/p3-live-v0-nonllm/report.md",
+     "anchor": "caveat"
+    }
+   },
+   {
+    "id": "ragas-id-recall-counts-alternates",
+    "applies_to": [
+     "ragas-p4-research-test"
+    ],
+    "text": "RAGAS ID-based context recall counts every distinct gold handle, alternates included, so it reads lower than the historical Standard vs Research figure, which counts a gold fact as found when any of its accepted handles was retrieved. Recomputing the per-fact rule over the same items reproduces the historical figures exactly; the gap is definitional.",
+    "metrics": [
+     {
+      "id": "ragas.p4.test.standard.id_context_recall_pack",
+      "label": "RAGAS context recall (IDs, every gold handle), standard",
+      "value": 0.736111111111111,
+      "unit": "ratio",
+      "n": 30,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+       "pointer": "/runs/0/summary/id_context_recall_pack/mean"
+      }
+     },
+     {
+      "id": "p4.test.gold_handle_recall.standard",
+      "label": "Historical gold evidence retrieved (any accepted handle per fact), standard",
+      "value": 0.7944,
+      "unit": "ratio",
+      "n": 30,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/gold_handle_recall/standard_mean"
+      }
+     },
+     {
+      "id": "ragas.p4.test.research.id_context_recall_pack",
+      "label": "RAGAS context recall (IDs, every gold handle), research",
+      "value": 0.8638888888888889,
+      "unit": "ratio",
+      "n": 30,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/ragas/p4-research-test-nonllm/results.json",
+       "pointer": "/runs/1/summary/id_context_recall_pack/mean"
+      }
+     },
+     {
+      "id": "p4.test.gold_handle_recall.research",
+      "label": "Historical gold evidence retrieved (any accepted handle per fact), research",
+      "value": 0.9056,
+      "unit": "ratio",
+      "n": 30,
+      "source": {
+       "kind": "json",
+       "path": "eval/baselines/phase4/research-v0-test-live/compare.json",
+       "pointer": "/metrics/gold_handle_recall/research_mean"
+      }
+     }
+    ],
+    "source": {
+     "kind": "report_md",
+     "path": "eval/baselines/ragas/p4-research-test-nonllm/report.md",
+     "anchor": "reconciliation-with-historical-metrics"
+    }
+   },
+   {
+    "id": "ragas-llm-metrics-not-run",
+    "applies_to": [
+     "ragas-p3-live-v0",
+     "ragas-p4-research-test"
+    ],
+    "text": "Model-judged metrics (faithfulness, answer relevancy) are wired but were not run: no model credits were available. Reference-answer metrics need authored reference answers; the gold sets hold short gold facts and handles, so they are not runnable yet.",
+    "metrics": [],
+    "source": {
+     "kind": "report_md",
+     "path": "eval/baselines/ragas/p4-research-test-nonllm/report.md",
+     "anchor": "not-measured"
+    }
+   },
+   {
+    "id": "ragas-offline-persisted-outputs",
+    "applies_to": [
+     "ragas-p3-live-v0",
+     "ragas-p4-research-test"
+    ],
+    "text": "Computed on persisted live outputs and the committed gold datasets: no new model calls, and nothing was tuned on these scores. The runs recorded the base commit while the working tree held uncommitted changes.",
+    "metrics": [],
+    "source": {
+     "kind": "report_md",
+     "path": "eval/baselines/ragas/p4-research-test-nonllm/report.md",
+     "anchor": "provenance-note"
+    }
+   }
+  ]
+ }
 }

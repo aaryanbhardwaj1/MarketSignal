@@ -56,15 +56,16 @@ describe("insights getters", () => {
 
 describe("captured NORTHSTAR brief", () => {
   it("is fully verified with the planned shape", () => {
-    expect(typedBrief.fixture_version).toBe("NORTHSTAR.v1");
+    expect(typedBrief.fixture_version).toBe("NORTHSTAR.v2");
     expect(typedBrief.corpus_check.status).toBe("ok");
-    expect(typedBrief.signals).toHaveLength(6);
+    expect(typedBrief.signals).toHaveLength(21);
     expect(typedBrief.opportunities.map((o) => o.id)).toEqual(["O1", "O2", "O3", "O4"]);
     const items = [...typedBrief.signals, ...typedBrief.opportunities];
     expect(items.every((i) => i.integrity === "verified")).toBe(true);
     const refs = [
       ...typedBrief.signals.flatMap((s) => s.evidence),
       ...typedBrief.opportunities.flatMap((o) => [...o.supporting, ...o.contradicting]),
+      ...typedBrief.opportunities.flatMap((o) => o.risks.flatMap((r) => r.evidence)),
     ];
     expect(refs.every((r) => r.integrity === "verified" && r.quote && r.char_start !== null)).toBe(true);
   });
@@ -75,6 +76,7 @@ describe("captured NORTHSTAR brief", () => {
       expect(a.status).toBe("computed");
       expect(a.rows.length).toBeGreaterThan(0);
       expect(a.provenance.rows_matched).not.toBeNull();
+      expect(a.summary_status).toBe("verified");
     }
   });
 });

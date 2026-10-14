@@ -20,9 +20,12 @@ import type {
   Cursor,
   Disposition,
   Page,
+  ServerLogParams,
+  ServerLogResponse,
   TelemetryRunDetail,
   TelemetryRunRow,
-  TelemetrySummary,
+  TelemetrySeries,
+  TelemetrySummaryWithOutcomes,
 } from "../contracts";
 
 export type TelemetryMode = "standard" | "research";
@@ -72,6 +75,31 @@ function runsQuery(filters: TelemetryRunFilters, cursor: Cursor): Query {
   };
 }
 
+/** Series filters: the summary window plus `limit` (1..2000, server default 500). */
+export interface TelemetrySeriesFilters extends TelemetrySummaryFilters {
+  limit?: number;
+}
+
+export function seriesQuery(filters: TelemetrySeriesFilters): Query {
+  return { ...summaryQuery(filters), limit: filters.limit };
+}
+
+/** Query parameters for `GET /api/dev/logs` (unset values are omitted). */
+export function serverLogQuery(params: ServerLogParams): Query {
+  const q = params.q?.trim();
+  return {
+    level: params.level,
+    kind: params.kind,
+    method: params.method,
+    status_class: params.status_class,
+    route: params.route,
+    q: q ? q : undefined,
+    include_noise: flag(params.include_noise),
+    after_seq: params.after_seq,
+    limit: params.limit,
+  };
+}
+
 const base = (ws: string): string => `/api/workspaces/${encodeURIComponent(ws)}/telemetry`;
 
 export const telemetryKeys = {
@@ -81,14 +109,16 @@ export const telemetryKeys = {
   runs: (ws: string, filters: TelemetryRunFilters) =>
     ["workspace", ws, "telemetry", "runs", runsQuery(filters, null)] as const,
   run: (ws: string, runId: string) => ["workspace", ws, "telemetry", "run", runId] as const,
+  series: (ws: string, filters: TelemetrySeriesFilters) =>
+    ["workspace", ws, "telemetry", "series", seriesQuery(filters)] as const,
 };
 
 export const getTelemetrySummary = (
   ws: string,
   filters: TelemetrySummaryFilters = {},
   signal?: AbortSignal,
-): Promise<TelemetrySummary> =>
-  apiGet<TelemetrySummary>(`${base(ws)}/summary`, { query: summaryQuery(filters), signal });
+): Promise<TelemetrySummaryWithOutcomes> =>
+  apiGet<TelemetrySummaryWithOutcomes>(`${base(ws)}/summary`, { query: summaryQuery(filters), signal });
 
 export const getTelemetryRuns = (
   ws: string,
@@ -108,7 +138,7 @@ export const getTelemetryRun = (
 export function useTelemetrySummary(
   ws: string,
   filters: TelemetrySummaryFilters = {},
-): UseQueryResult<TelemetrySummary> {
+): UseQueryResult<TelemetrySummaryWithOutcomes> {
   return useQuery({
     queryKey: telemetryKeys.summary(ws, filters),
     queryFn: ({ signal }) => getTelemetrySummary(ws, filters, signal),
@@ -142,5 +172,59 @@ export function useTelemetryRun(
     queryFn: ({ signal }) => getTelemetryRun(ws, runId as string, signal),
     enabled: Boolean(ws && runId),
     staleTime: 60_000,
+  });
+}
+
+// --- E12: telemetry series + server log --------------------------------------------------------
+
+export const serverLogKeys = {
+  all: ["dev", "server-logs"] as const,
+  list: (params: ServerLogParams) => ["dev", "server-logs", serverLogQuery(params)] as const,
+};
+
+export const getTelemetrySeries = (
+  ws: string,
+  filters: TelemetrySeriesFilters = {},
+  signal?: AbortSignal,
+): Promise<TelemetrySeries> =>
+  apiGet<TelemetrySeries>(`${base(ws)}/series`, { query: seriesQuery(filters), signal });
+
+export const getServerLogs = (
+  params: ServerLogParams = {},
+  signal?: AbortSignal,
+): Promise<ServerLogResponse> =>
+  apiGet<ServerLogResponse>("/api/dev/logs", { query: serverLogQuery(params), signal });
+
+/** Per-run points for the Telemetry charts, oldest first; nulls are "not recorded". */
+export function useTelemetrySeries(
+  ws: string,
+  filters: TelemetrySeriesFilters = {},
+): UseQueryResult<TelemetrySeries> {
+  return useQuery({
+    queryKey: telemetryKeys.series(ws, filters),
+    queryFn: ({ signal }) => getTelemetrySeries(ws, filters, signal),
+    enabled: Boolean(ws),
+    staleTime: 30_000,
+  });
+}
+
+export interface ServerLogOptions {
+  /** Poll interval in ms; omitted, 0 or false: no polling. Paused while the tab is hidden. */
+  pollMs?: number | false;
+  enabled?: boolean;
+}
+
+/** The API process's recent log entries (dev only; a 404 means the endpoint is not mounted). */
+export function useServerLogs(
+  params: ServerLogParams = {},
+  { pollMs, enabled = true }: ServerLogOptions = {},
+): UseQueryResult<ServerLogResponse> {
+  return useQuery({
+    queryKey: serverLogKeys.list(params),
+    queryFn: ({ signal }) => getServerLogs(params, signal),
+    enabled,
+    staleTime: 0,
+    refetchInterval: pollMs ? pollMs : false,
+    refetchIntervalInBackground: false,
   });
 }

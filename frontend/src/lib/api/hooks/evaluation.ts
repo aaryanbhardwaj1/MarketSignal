@@ -8,7 +8,7 @@
 
 import { keepPreviousData, useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { apiGet } from "../client";
-import type { EvalCatalog, EvalItemsPage, EvalRunId } from "../contracts";
+import type { EvalCatalog, EvalItemsPage, EvalRunId, RagasItemsPage, RagasRunId } from "../contracts";
 
 export const EVAL_ITEMS_MAX_LIMIT = 50;
 
@@ -65,6 +65,55 @@ export function useEvalItems(
   return useQuery({
     queryKey: runId ? evaluationKeys.items(runId, normalised) : [...evaluationKeys.all, "runs", "none"],
     queryFn: ({ signal }) => getEvalItems(runId as EvalRunId, normalised, signal),
+    enabled: runId !== null,
+    staleTime: Infinity,
+    retry: false,
+    placeholderData: keepPreviousData,
+  });
+}
+
+// ── E13 RAGAS items (same paged endpoint; `bucket` is the configuration name) ──────────────
+
+export interface RagasItemsParams {
+  offset?: number;
+  limit?: number;
+  configuration?: string | null;
+}
+
+export const ragasKeys = {
+  items: (runId: RagasRunId, params: Required<EvalItemsParams>) =>
+    ["dev-eval", "ragas", runId, "items", params] as const,
+};
+
+const ragasParams = ({ configuration, ...rest }: RagasItemsParams = {}): Required<EvalItemsParams> =>
+  normalise({ ...rest, bucket: configuration ?? null });
+
+export const getRagasItems = (
+  runId: RagasRunId,
+  params: RagasItemsParams = {},
+  signal?: AbortSignal,
+): Promise<RagasItemsPage> => {
+  const { offset, limit, bucket } = ragasParams(params);
+  return apiGet<RagasItemsPage>(`/api/dev/eval/runs/${encodeURIComponent(runId)}/items`, {
+    query: { offset, limit, bucket },
+    signal,
+  });
+};
+
+/** One page of per-item RAGAS scores, optionally for one configuration (standard/research). */
+export function useRagasItems(
+  runId: RagasRunId | null,
+  params: RagasItemsParams = {},
+): UseQueryResult<RagasItemsPage> {
+  const normalised = ragasParams(params);
+  return useQuery({
+    queryKey: runId ? ragasKeys.items(runId, normalised) : [...evaluationKeys.all, "ragas", "none"],
+    queryFn: ({ signal }) =>
+      getRagasItems(
+        runId as RagasRunId,
+        { offset: normalised.offset, limit: normalised.limit, configuration: normalised.bucket },
+        signal,
+      ),
     enabled: runId !== null,
     staleTime: Infinity,
     retry: false,

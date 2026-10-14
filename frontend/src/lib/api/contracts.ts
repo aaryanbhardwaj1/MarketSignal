@@ -179,6 +179,7 @@ export interface EvidenceRef {
   source: { code: string; title: string; source_type: string; source_class: string; version: number };
   locator_label: string;
   note: string | null;
+  states_projection: boolean; // the quoted passage itself states a forward projection
 }
 export interface AnalysisFilter {
   column: string;
@@ -221,6 +222,13 @@ export interface Analysis {
   };
   caveats: string[];
   spec: unknown; // shown only in developer details
+  // curated brief v2 (null / "absent" for a v1 brief)
+  business_area: BusinessArea | null;
+  summary: string | null; // null unless every number in it is a computed figure
+  summary_status: "verified" | "unverified" | "absent";
+  interpretation: ClaimText | null; // always an inference; null unless computed and every number checks
+  interpretation_status?: "verified" | "unverified" | "absent"; // always sent; optional for older captures
+  used_by:{ signals: string[]; opportunities: string[] };
 }
 export interface MetricRef {
   analysis_id: string;
@@ -232,6 +240,35 @@ export interface MetricRef {
   derived: null | { op: "diff" | "pct_change"; of: string[] };
 }
 export type ItemIntegrity = "verified" | "partial" | "unverified";
+export type ClaimType = "observed" | "derived" | "inference" | "hypothesis" | "forecast";
+export interface ClaimText {
+  text: string;
+  claim_type: ClaimType;
+}
+export interface Related {
+  analyses: string[];
+  opportunities: string[];
+  signals: string[];
+}
+export type BusinessArea =
+  | "Customer friction"
+  | "Willingness to pay"
+  | "Customer satisfaction"
+  | "Product performance"
+  | "Channels and growth";
+export type SignalKind =
+  | "emerging_signal"
+  | "risk_blocker"
+  | "competitor_finding"
+  | "optimization"
+  | "future_outlook";
+export type SignalStatus = "strong_evidence" | "emerging" | "mixed_evidence" | "needs_validation";
+export interface OpportunityRisk {
+  text: string;
+  claim_type: ClaimType;
+  evidence: EvidenceRef[];
+  integrity: ItemIntegrity;
+}
 export interface Signal {
   id: string;
   category: string;
@@ -241,6 +278,15 @@ export interface Signal {
   evidence: EvidenceRef[];
   metrics: MetricRef[];
   caveats: string[];
+  // curated brief v2 (null / empty for a v1 brief)
+  kind: SignalKind | null;
+  status: SignalStatus | null;
+  claim_type: ClaimType | null; // of `statement`
+  implication: ClaimText | null;
+  gaps: string[];
+  related: Related;
+  support_count: number; // verified supporting references
+  contradiction_count: number; // verified contradicting references
 }
 export type OpportunityStatus = "supported" | "mixed_evidence" | "emerging" | "needs_research";
 export interface Opportunity {
@@ -255,7 +301,15 @@ export interface Opportunity {
   gaps: string[];
   next_step: string;
   caveats: string[];
-  integrity: ItemIntegrity;
+  integrity: ItemIntegrity; // includes risk evidence
+  // curated brief v2 (null / empty for a v1 brief)
+  thesis_claim_type: ClaimType | null;
+  why_it_matters: ClaimText | null;
+  risks: OpportunityRisk[];
+  next_investigation: string | null;
+  related: Related;
+  support_count: number;
+  contradiction_count: number;
 }
 // E9 GET /api/workspaces/{ws}/insights
 export interface InsightsBrief {
@@ -607,3 +661,329 @@ export const PRODUCT_ERROR_CODES = [
   "VALIDATION_ERROR",
   "PROVIDER_UNAVAILABLE",
 ] as const;
+
+// ============================================================================================
+// E12 server log + telemetry series (developer tools; dev-only, not mounted in prod)
+// ============================================================================================
+
+export type ServerLogLevel = "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL";
+export type ServerLogKind =
+  | "http"
+  | "run"
+  | "tool"
+  | "verification"
+  | "ingestion"
+  | "analytics"
+  | "app";
+export type ServerLogStatusClass = "2xx" | "3xx" | "4xx" | "5xx";
+
+/** HTTP access details of an `http.request` entry: route *template*, path without query. */
+export interface ServerLogHttp {
+  method: string;
+  route: string | null; // e.g. "/api/workspaces/{ws}/runs/{run_id}"; null when unmatched
+  path: string; // raw path, never the query string
+  status: number | null;
+  duration_ms: number | null; // SSE streams: the stream's lifetime
+}
+
+/** One sanitized log event. `fields` holds scalars only (ids, enums, counts, durations): never
+ * questions, answers, passages, tool arguments, prompts, headers or credentials.
+ * `fields.noise === true` marks health/metrics/log-polling requests (hidden by default). */
+export interface ServerLogEntry {
+  seq: number;
+  ts: string;
+  level: ServerLogLevel;
+  logger: string | null;
+  event: string;
+  kind: ServerLogKind;
+  request_id: string | null;
+  run_id: string | null;
+  workspace: string | null;
+  http: ServerLogHttp | null;
+  fields: Record<string, string | number | boolean | null>;
+}
+
+// GET /api/dev/logs ?level(minimum)&kind&method&status_class&route&q&include_noise&after_seq
+//                   &limit(1..500, default 200)
+export interface ServerLogParams {
+  level?: ServerLogLevel;
+  kind?: ServerLogKind;
+  method?: string;
+  status_class?: ServerLogStatusClass;
+  route?: string;
+  q?: string;
+  include_noise?: boolean;
+  /** Incremental polling: entries with seq > after_seq, ascending. Omitted: newest first. */
+  after_seq?: number;
+  limit?: number;
+}
+
+/** In-memory ring buffer of the API process only (the ingestion worker logs elsewhere).
+ * `dropped` counts evicted entries; `levels` counts entries matching every filter but `level`. */
+export interface ServerLogResponse {
+  entries: ServerLogEntry[];
+  capacity: number;
+  size: number;
+  dropped: number;
+  capture_errors: number;
+  oldest_seq: number | null;
+  latest_seq: number | null;
+  process_started_at: string;
+  scope: "api_process";
+  routes: string[];
+  levels: Record<ServerLogLevel, number>;
+}
+
+// GET /api/workspaces/{ws}/telemetry/series ?since&until&mode&include_test_runs&limit<=2000
+/** One run as a chart point. Anything not recorded is null, never zero. */
+export interface TelemetrySeriesPoint {
+  id: string;
+  created_at: string;
+  mode: string;
+  status: string;
+  termination_state: string | null;
+  degraded: boolean;
+  total_ms: number | null;
+  stages: Record<StageKey, number | null>;
+  tokens_in: number | null;
+  tokens_out: number | null;
+  est_cost_usd: number | null; // estimate from persisted usage at list prices
+  model_calls: number | null;
+  tool_calls: number;
+  evidence_count: number;
+  cited_count: number;
+  disposition: Disposition | null;
+  regenerated: boolean;
+}
+
+/** Oldest first; when more runs match than `limit`, the most recent are kept (`truncated`). */
+export interface TelemetrySeries {
+  window: { since: string | null; until: string | null };
+  points: TelemetrySeriesPoint[];
+  n: number;
+  truncated: boolean;
+  test_runs_excluded: number;
+}
+
+/** Additive summary fields (E12). Optional in the type so older payloads still fit. */
+export interface TelemetryOutcomeRates {
+  success: number; // fraction of runs.total with status "completed"
+  failed: number;
+  cancelled: number;
+}
+export type TelemetrySummaryWithOutcomes = TelemetrySummary & {
+  rates: TelemetrySummary["rates"] & Partial<TelemetryOutcomeRates>;
+  errors?: { error_class: string | null; n: number }[]; // failed runs by error class
+  evidence_pack?: { size: Pct; cited: Pct }; // pack size and cited handles per run
+};
+
+// ============================================================================================
+// E13 RAGAS (developer tools; additive `ragas` section of GET /api/dev/eval/catalog)
+// Model-free heuristics computed on persisted outputs. Every computed summary carries a JSON
+// pointer into its results.json; not-run metrics carry no numbers.
+// ============================================================================================
+export type RagasRunId = "ragas-p3-live-v0" | "ragas-p4-research-test";
+export type RagasMetricFamily = "ragas_non_llm" | "ragas_llm_judge";
+export type RagasNotRunReason = "model_credits_unavailable" | "no_reference_answers";
+export interface RagasMetricDefinition {
+  key: string;
+  label: string;
+  family: RagasMetricFamily;
+  needs_llm: boolean;
+  needs_reference_answer: boolean;
+  what_it_measures: string;
+  ragas_class: string;
+}
+export interface RagasSummary {
+  mean: number;
+  median: number;
+  p25: number;
+  p75: number;
+  min: number;
+  max: number;
+  n: number; // scored samples with a defined value
+  n_nan: number; // samples where the metric is undefined (e.g. nothing cited)
+  histogram: { lo: number; hi: number; n: number }[];
+}
+export type RagasMetricResult =
+  | {
+      key: string;
+      status: "computed";
+      summary: RagasSummary;
+      not_run_reason: null;
+      source: { kind: "json"; path: string; pointer: string };
+    }
+  | {
+      key: string;
+      status: "not_run";
+      summary: null;
+      not_run_reason: RagasNotRunReason;
+      source: { kind: "json"; path: string; pointer: string };
+    };
+export interface RagasConfiguration {
+  name: string; // "standard" | "research"; also the items `bucket` filter
+  n_samples: number;
+  n_excluded: number;
+  excluded_reasons: { reason: string; n: number }[];
+  metrics: RagasMetricResult[];
+}
+export interface RagasRun {
+  id: RagasRunId;
+  title: string;
+  source_run: EvalRunId; // the catalog run whose persisted outputs were scored
+  dataset: { name: string; version: string | null; sha256: string | null };
+  split: string | null;
+  configurations: RagasConfiguration[];
+  created_at: string;
+}
+export interface RagasCaveat {
+  id: string;
+  applies_to: RagasRunId[];
+  text: string;
+  metrics: EvalMetric[]; // e.g. RAGAS ID recall beside the historical per-fact recall
+  source: EvalSource;
+}
+export interface RagasSection {
+  ragas_version: string;
+  telemetry_disabled: boolean;
+  definitions: RagasMetricDefinition[];
+  runs: RagasRun[];
+  caveats: RagasCaveat[];
+}
+// Declaration merge: optional so catalogs built before E13 still fit.
+export interface EvalCatalog {
+  ragas?: RagasSection;
+}
+// GET /api/dev/eval/runs/{RagasRunId}/items ?offset&limit<=50&bucket=<configuration name>
+export interface RagasItem {
+  phase: "ragas";
+  item_id: string;
+  configuration: string;
+  category: string;
+  question: string;
+  scores: Record<string, number | null>; // null: undefined for this sample
+}
+export interface RagasItemsPage {
+  run_id: RagasRunId;
+  total: number;
+  items: RagasItem[];
+}
+
+// E14 decks (business route)
+// POST /api/workspaces/{ws}/decks/preview -> DeckPreviewResponse
+// POST /api/workspaces/{ws}/decks/pptx    -> .pptx binary (Content-Disposition: attachment)
+// Errors: 422 VALIDATION_ERROR (empty selection, extra fields, limits),
+//         422 DECK_ITEMS_NOT_FOUND (`unknown: string[]`), 422 DECK_EMPTY (pptx only; `excluded`).
+/** At least one id; ≤ 30 signals, ≤ 10 opportunities, ≤ 10 analyses; title ≤ 120, question ≤ 300. */
+export interface DeckRequest {
+  title?: string;
+  question?: string;
+  signal_ids?: string[];
+  opportunity_ids?: string[];
+  analysis_ids?: string[];
+}
+export type DeckSlideKind =
+  | "title"
+  | "summary"
+  | "customer_findings"
+  | "quantitative"
+  | "market_findings"
+  | "opportunity"
+  | "risks"
+  | "next_steps"
+  | "appendix";
+/** `label` is the visible claim tag ("Inference" | "Hypothesis" | "Forecast"); null for facts. */
+export interface DeckBullet {
+  heading: string | null;
+  text: string;
+  claim_type: ClaimType | null;
+  label: string | null;
+  cites: number[]; // DeckSource.n
+  level: 0 | 1;
+}
+export interface DeckStatusRow {
+  title: string;
+  kind_label: string;
+  status: string | null;
+  status_label: string | null;
+  claim_type: ClaimType | null;
+  label: string | null;
+  cites: number[];
+}
+export interface DeckMetric {
+  label: string;
+  display: string;
+  base: string | null;
+  cites: number[];
+}
+export interface DeckSourceItem {
+  n: number;
+  source_title: string;
+  locator: string;
+  quote: string | null;
+}
+export type DeckBlock =
+  | { type: "bullets"; items: DeckBullet[] }
+  | { type: "statuses"; items: DeckStatusRow[] }
+  | { type: "metrics"; items: DeckMetric[] }
+  | { type: "sources"; items: DeckSourceItem[] }
+  | {
+      type: "chart";
+      chart: "bar";
+      title: string;
+      unit: AnalysisUnit | null;
+      categories: string[];
+      values: number[];
+      displays: string[];
+      emphasis: number; // index of the accent bar
+      base: string | null;
+      cites: number[];
+    }
+  | {
+      type: "table";
+      title: string;
+      columns: string[];
+      rows: string[][];
+      truncated: boolean;
+      note: string | null;
+      base: string | null;
+      cites: number[];
+    };
+/** Speaker-note entry; `handle` is for audit only and never shown on a slide. */
+export interface DeckNote {
+  n: number;
+  source_title: string;
+  locator: string;
+  quote: string | null;
+  handle: string;
+}
+export interface DeckSlide {
+  index: number;
+  kind: DeckSlideKind;
+  title: string;
+  subtitle: string | null;
+  meta?: string[]; // title slide only
+  blocks: DeckBlock[];
+  notes: DeckNote[];
+}
+export interface DeckSource extends DeckNote {
+  kind: "passage" | "analysis";
+}
+export interface DeckExclusion {
+  id: string;
+  reason: string;
+}
+export interface Deck {
+  title: string;
+  question: string | null;
+  workspace: { code: string; name: string };
+  generated_at: string;
+  fixture_version: string | null;
+  slides: DeckSlide[];
+  sources: DeckSource[];
+  excluded: DeckExclusion[];
+  counts: { items: number; sources: number; slides: number };
+}
+export interface DeckPreviewResponse {
+  deck: Deck;
+}

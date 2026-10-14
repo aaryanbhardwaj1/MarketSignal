@@ -1,6 +1,6 @@
 {
-    "fixture_version": "NORTHSTAR.v1",
-    "computed_at": "2026-10-12T20:44:28.713769+00:00",
+    "fixture_version": "NORTHSTAR.v2",
+    "computed_at": "2026-10-14T17:07:24.102131+00:00",
     "analyses": [
         {
             "id": "genz-top-pain-points",
@@ -105,7 +105,7 @@
                 "version": 1,
                 "table": "Northstar Customer Survey 2026",
                 "rows_matched": 400,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [
                 "Each respondent names one top frustration; counts are out of the Gen Z respondents matched."
@@ -135,6 +135,25 @@
                     "by": "value",
                     "direction": "desc"
                 }
+            },
+            "business_area": "Customer friction",
+            "summary": "Fit inconsistency is the most common top frustration, named by 108 of 400 Gen Z respondents, ahead of price versus value at 72.",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "Fit, sizing and durability together outweigh price as the frustrations Gen Z respondents name first.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "fit-friction",
+                    "service-speed",
+                    "sustainability-proof",
+                    "knit-runner-durability",
+                    "fit-and-delivery-outlook"
+                ],
+                "opportunities": [
+                    "O4"
+                ]
             }
         },
         {
@@ -203,7 +222,7 @@
                 "version": 1,
                 "table": "Northstar Customer Survey 2026",
                 "rows_matched": 600,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [],
             "spec": [
@@ -285,7 +304,24 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "business_area": "Customer friction",
+            "summary": "Fit inconsistency is the top frustration for 27.0% of Gen Z respondents against 19.0% of older respondents; lack of personalization is named by 7.0% and 4.0%.",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "Fit friction is broader and sharper among Gen Z respondents, while personalization is a minority concern in both groups.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "fit-friction",
+                    "personalization-status-signal"
+                ],
+                "opportunities": [
+                    "O1",
+                    "O2"
+                ]
+            }
         },
         {
             "id": "nps-by-cohort",
@@ -353,7 +389,7 @@
                 "version": 1,
                 "table": "Northstar Customer Survey 2026",
                 "rows_matched": 600,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [
                 "NPS is promoters minus detractors, computed from these shares."
@@ -437,7 +473,20 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "business_area": "Customer satisfaction",
+            "summary": "Among Gen Z respondents 40.0% are promoters and 18.0% are detractors, against 58.0% and 9.0% among older respondents.",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "Gen Z respondents are both less enthusiastic and more critical, so the gap is not explained by one group alone.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "genz-nps-gap"
+                ],
+                "opportunities": []
+            }
         },
         {
             "id": "fit-and-personalization-by-segment",
@@ -568,7 +617,7 @@
                 "version": 1,
                 "table": "Northstar Customer Survey 2026",
                 "rows_matched": 600,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [
                 "All survey respondents, all ages; segments differ in size."
@@ -603,6 +652,21 @@
                     "metric_index": 0,
                     "direction": "desc"
                 }
+            },
+            "business_area": "Customer friction",
+            "summary": "Value Seekers name fit inconsistency (28.8%) and lack of personalization (10.6%) more often than any other segment; Established Active name fit least often (19.0%).",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "Fit friction is concentrated in the younger, value-minded segments rather than spread evenly.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "fit-friction"
+                ],
+                "opportunities": [
+                    "O2"
+                ]
             }
         },
         {
@@ -646,7 +710,7 @@
                 "version": 1,
                 "table": "Northstar Customer Survey 2026",
                 "rows_matched": 600,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [
                 "Stated sensitivity on a five point scale, not observed price response."
@@ -702,7 +766,22 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "business_area": "Willingness to pay",
+            "summary": "Gen Z respondents rate their price sensitivity 3.90 on average, against 3.20 for older respondents.",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "A premium-priced proposition faces a more price-sensitive Gen Z audience than older customers.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "premium-ceiling"
+                ],
+                "opportunities": [
+                    "O2"
+                ]
+            }
         },
         {
             "id": "price-sensitivity-by-segment",
@@ -772,7 +851,7 @@
                 "version": 1,
                 "table": "Northstar Customer Survey 2026",
                 "rows_matched": 600,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [
                 "Stated sensitivity on a five point scale, not observed price response."
@@ -792,6 +871,16 @@
                     "by": "value",
                     "direction": "desc"
                 }
+            },
+            "business_area": "Willingness to pay",
+            "summary": "Campus Competitors are the most price-sensitive segment at 4.02 on average and Established Active the least at 3.20.",
+            "summary_status": "verified",
+            "interpretation": null,
+            "used_by": {
+                "signals": [
+                    "premium-ceiling"
+                ],
+                "opportunities": []
             }
         },
         {
@@ -887,7 +976,7 @@
                 "version": 1,
                 "table": "Returns",
                 "rows_matched": 30,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [
                 "Return counts only: some per-product reason shares in the returns sheet do not add up, so shares are not shown."
@@ -914,6 +1003,22 @@
                     "by": "value",
                     "direction": "desc"
                 }
+            },
+            "business_area": "Product performance",
+            "summary": "Changed mind is the largest single return reason (7,301 returns), but fit running large (5,085) and fit running small (4,449) together exceed it.",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "Fit-related returns are a larger cost pool than any other controllable reason, including durability.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "knit-runner-durability",
+                    "fit-returns"
+                ],
+                "opportunities": [
+                    "O1"
+                ]
             }
         },
         {
@@ -994,7 +1099,7 @@
                 "version": 1,
                 "table": "SKU_Performance",
                 "rows_matched": 32,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [],
             "spec": {
@@ -1016,7 +1121,23 @@
                 "return_rate_pct",
                 "avg_rating",
                 "genz_share_pct"
-            ]
+            ],
+            "business_area": "Product performance",
+            "summary": "The highest return rate this year to date is 16.8%, followed by 14.6% and 13.8%; the table names each product.",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "The two products with the highest return rates are the same footwear lines named in durability and fit-related evidence.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "knit-runner-durability",
+                    "fit-returns"
+                ],
+                "opportunities": [
+                    "O1"
+                ]
+            }
         },
         {
             "id": "genz-channel-scorecard-sep-2026",
@@ -1113,7 +1234,7 @@
                 "version": 1,
                 "table": "Northstar Channel Performance",
                 "rows_matched": 5,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [
                 "A single month; monthly return rates should not be averaged across months."
@@ -1148,7 +1269,23 @@
                 "aov_usd",
                 "return_rate_pct",
                 "net_sales_usd"
-            ]
+            ],
+            "business_area": "Channels and growth",
+            "summary": "Stores convert Gen Z shoppers at 18.2%, far above Marketplace at 4.0%, Social Shop at 3.4% and Brand Site at 2.2%.",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "Online channels bring reach but convert Gen Z shoppers much less efficiently than stores.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "social-discovery",
+                    "channel-shift"
+                ],
+                "opportunities": [
+                    "O3"
+                ]
+            }
         },
         {
             "id": "social-shop-sales-by-quarter",
@@ -1200,7 +1337,7 @@
                 "version": 1,
                 "table": "Northstar Channel Performance",
                 "rows_matched": 12,
-                "computed_at": "2026-10-12T20:44:28.713769+00:00"
+                "computed_at": "2026-10-14T17:07:24.102131+00:00"
             },
             "caveats": [
                 "All customer segments combined."
@@ -1264,7 +1401,23 @@
                         ]
                     }
                 }
-            ]
+            ],
+            "business_area": "Channels and growth",
+            "summary": "Social Shop net sales rose from $886,762 in Jan-Mar to $2,146,098 in Apr-Jun.",
+            "summary_status": "verified",
+            "interpretation": {
+                "text": "Social Shop is growing quickly from a small base.",
+                "claim_type": "inference"
+            },
+            "used_by": {
+                "signals": [
+                    "social-discovery",
+                    "creator-discovery-outlook"
+                ],
+                "opportunities": [
+                    "O3"
+                ]
+            }
         }
     ]
 }
