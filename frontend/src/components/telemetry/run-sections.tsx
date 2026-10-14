@@ -7,10 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { KeyValueList } from "@/components/ui/key-value";
 import { Table, type Column } from "@/components/ui/table";
-import { cx } from "@/lib/cx";
 import { formatMs, formatNumber, formatUsd } from "@/lib/format";
 import { degradationFlag, routeReason, runMode, stopReason, type Humanized } from "@/lib/labels";
-import { USAGE_KEYS, formatShare, shortId, stageSegments, usageValue } from "@/lib/telemetry-view";
+import { USAGE_KEYS, shortId, usageValue } from "@/lib/telemetry-view";
 import { NotRecorded, Panel } from "./stat-tile";
 
 type Detail = TelemetryRunDetail;
@@ -174,67 +173,6 @@ export function UsageCard({ detail }: { detail: Detail }) {
         </p>
       )}
     </Panel>
-  );
-}
-
-/** Accent shades for consecutive segments; the table carries the labels, so colour is never the only cue. */
-const SHADES = ["bg-accent", "bg-accent/70", "bg-accent/45", "bg-accent/30", "bg-accent/85", "bg-accent/55"];
-
-interface StageTimingRow {
-  key: string;
-  label: string;
-  ms: number | null;
-  pct: number | null;
-  index: number;
-}
-
-/** Segments plus a final "Total" row (emphasized) so the table needs no separate footer. */
-function stageRows(segments: ReturnType<typeof stageSegments>, total: number | null): StageTimingRow[] {
-  return [...segments.map((s, index) => ({ key: s.key, label: s.label, ms: s.ms, pct: s.pct, index })), { key: "__total", label: "Total", ms: total, pct: null, index: -1 }];
-}
-
-function stageColumns(shade: (i: number, key: string) => string): Column<StageTimingRow>[] {
-  const total = (r: StageTimingRow) => r.key === "__total";
-  return [
-    {
-      key: "stage",
-      header: "Stage",
-      cell: (r) =>
-        total(r) ? (
-          <span className="font-medium">Total</span>
-        ) : (
-          <span className="flex items-center gap-2 text-secondary">
-            <span aria-hidden className={cx("h-2.5 w-2.5 shrink-0 rounded-sm", shade(r.index, r.key))} />
-            {r.label}
-          </span>
-        ),
-    },
-    { key: "ms", header: "Duration", align: "right", cell: (r) => <span className={total(r) ? "font-medium" : undefined}>{formatMs(r.ms)}</span> },
-    { key: "share", header: "Share", align: "right", cell: (r) => (r.pct == null ? "" : <span className="text-muted">{formatShare(r.pct)}</span>) },
-  ];
-}
-
-export function StageTiming({ detail }: { detail: Detail }) {
-  const { timings, mode, total_ms } = detail.run;
-  const segments = stageSegments(mode, timings ?? {});
-  const firstToken = usageValue(timings, "first_token_ms");
-  if (segments.length === 0) return <NotRecorded>No stage timings were recorded for this run.</NotRecorded>;
-  const shade = (i: number, key: string) => (key === "other" ? "bg-border-strong" : SHADES[i % SHADES.length]);
-  return (
-    <div>
-      <div className="flex h-3 w-full overflow-hidden rounded-sm bg-surface-sunken" role="img" aria-label="Stage timing bar; values in the table below">
-        {segments.map((s, i) => (
-          <div key={s.key} className={cx("h-full border-r border-surface last:border-r-0", shade(i, s.key))} style={{ width: `${s.pct}%` }} title={`${s.label}: ${formatMs(s.ms)}`} />
-        ))}
-      </div>
-      <div className="mt-3">
-        <Table caption="Stage timings for this run" columns={stageColumns(shade)} rows={stageRows(segments, total_ms)} rowKey={(r) => r.key} density="compact" />
-      </div>
-      <p className="mt-2 text-xs text-muted">
-        {firstToken == null ? "First token: not recorded." : `First token ${formatMs(firstToken)} after synthesis started.`} Stages a run did not
-        record are omitted, not shown as zero.
-      </p>
-    </div>
   );
 }
 

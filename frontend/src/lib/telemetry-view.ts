@@ -7,6 +7,7 @@ import type {
   Disposition,
   StageKey,
   TelemetryRunRow,
+  TelemetrySeriesPoint,
   TelemetryToolCall,
   TimelineEntry,
 } from "@/lib/api/contracts";
@@ -502,4 +503,228 @@ const TOOL_STATUS_LABELS: Record<string, string> = {
 
 export function toolStatusLabel(status: string): string {
   return TOOL_STATUS_LABELS[status] ?? status;
+}
+
+// ── page tabs ────────────────────────────────────────────────────────────────────────────────
+
+export type TelemetryTab = "overview" | "runs" | "logs";
+
+export const TELEMETRY_TABS: { id: TelemetryTab; label: string }[] = [
+  { id: "overview", label: "Overview" },
+  { id: "runs", label: "Runs" },
+  { id: "logs", label: "Server logs" },
+];
+
+/** Tab from `?tab=`; anything unknown is the overview. */
+export function parseTab(params: ParamReader): TelemetryTab {
+  const tab = params.get("tab");
+  return tab === "runs" || tab === "logs" ? tab : "overview";
+}
+
+// ── series → chart data (overview) ───────────────────────────────────────────────────────────
+
+type SeriesPoint = TelemetrySeriesPoint;
+
+const finite = (v: number | null | undefined): v is number => typeof v === "number" && Number.isFinite(v);
+
+/** Median of the recorded values; null when none were recorded (never 0). */
+export function median(values: readonly (number | null | undefined)[]): number | null {
+  const xs = values.filter(finite).sort((a, b) => a - b);
+  if (xs.length === 0) return null;
+  const mid = Math.floor(xs.length / 2);
+  return xs.length % 2 ? xs[mid] : (xs[mid - 1] + xs[mid]) / 2;
+}
+
+export interface LatencyDot {
+  /** 1-based position among runs in the window, in the order they were recorded. */
+  seq: number;
+  id: string;
+  created_at: string;
+  mode: string;
+  ms: number;
+}
+
+/** One dot per run with a recorded total latency; the sequence still counts runs without one. */
+export function latencyDots(points: readonly SeriesPoint[]): LatencyDot[] {
+  return points.flatMap((p, i) =>
+    finite(p.total_ms) ? [{ seq: i + 1, id: p.id, created_at: p.created_at, mode: p.mode, ms: p.total_ms }] : [],
+  );
+}
+
+/** Time span of the series in plain words, e.g. "Oct 6, 2026, 16:30–23:06 UTC" or a date range. */
+export function seriesSpan(points: readonly Pick<SeriesPoint, "created_at">[]): string | null {
+  if (points.length === 0) return null;
+  const first = new Date(points[0].created_at);
+  const last = new Date(points[points.length - 1].created_at);
+  if (Number.isNaN(first.getTime()) || Number.isNaN(last.getTime())) return null;
+  const day = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const time = (d: Date) => d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
+  return day(first) === day(last) ? `${day(first)}, ${time(first)}–${time(last)} UTC` : `${day(first)} – ${day(last)}`;
+}
+
+/**
+ * Splits values into `bins` consecutive, equal-count groups (in recorded order) and reduces each
+ * group; groups with nothing recorded are skipped, so a sparkline never shows invented zeros.
+ */
+export function binSeries(
+  values: readonly (number | null)[],
+  reduce: (group: number[]) => number | null,
+  bins = 20,
+): number[] {
+  if (values.length === 0 || bins <= 0) return [];
+  const n = Math.min(bins, values.length);
+  const out: number[] = [];
+  for (let b = 0; b < n; b++) {
+    const group = values.slice(Math.floor((b * values.length) / n), Math.floor(((b + 1) * values.length) / n)).filter(finite);
+    const v = group.length ? reduce(group) : null;
+    if (finite(v)) out.push(v);
+  }
+  return out;
+}
+
+export const mean = (xs: readonly number[]): number | null => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+
+export interface ModeStage {
+  key: StageKey;
+  label: string;
+  /** Median over runs of this mode that recorded the stage. */
+  ms: number;
+  n: number;
+}
+
+const MODE_STAGES: Record<"standard" | "research", { key: StageKey; label: string }[]> = {
+  standard: [
+    { key: "retrieval", label: "Retrieval" },
+    { key: "pack", label: "Evidence pack" },
+    { key: "synthesis", label: "Generation" },
+    { key: "verification", label: "Verification" },
+  ],
+  research: [
+    { key: "agent", label: "Research steps" },
+    { key: "retrieval", label: "Retrieval" },
+    { key: "pack", label: "Evidence pack" },
+    { key: "synthesis", label: "Generation" },
+    { key: "verification", label: "Verification" },
+  ],
+};
+
+/** Median stage timings for one mode, in pipeline order; stages no run recorded are omitted. */
+export function modeStageMedians(points: readonly SeriesPoint[], mode: "standard" | "research"): ModeStage[] {
+  const runs = points.filter((p) => p.mode === mode);
+  return MODE_STAGES[mode].flatMap((s) => {
+    const vals = runs.map((p) => p.stages?.[s.key]).filter(finite);
+    const m = median(vals);
+    return m == null ? [] : [{ key: s.key, label: s.label, ms: m, n: vals.length }];
+  });
+}
+
+export type OutcomeKey =
+  | "completed"
+  | "verification_fallback"
+  | "limited"
+  | "generation_unavailable"
+  | "no_relevant_evidence"
+  | "tool_failure"
+  | "failed"
+  | "cancelled"
+  | "running";
+
+export const OUTCOMES: { key: OutcomeKey; label: string; tone: "success" | "warn" | "danger" | "neutral" | "info"; color: string }[] = [
+  { key: "completed", label: "Completed", tone: "success", color: "var(--color-success)" },
+  { key: "verification_fallback", label: "Evidence-only fallback", tone: "warn", color: "var(--color-warn)" },
+  { key: "limited", label: "Completed with limits", tone: "warn", color: "var(--color-status-mixed)" },
+  { key: "generation_unavailable", label: "Live model unavailable", tone: "warn", color: "var(--color-chart-3)" },
+  { key: "no_relevant_evidence", label: "No relevant evidence", tone: "neutral", color: "var(--color-neutral)" },
+  { key: "tool_failure", label: "Research step failed", tone: "danger", color: "var(--color-chart-negative)" },
+  { key: "failed", label: "Failed", tone: "danger", color: "var(--color-danger)" },
+  { key: "cancelled", label: "Cancelled", tone: "neutral", color: "var(--color-border-strong)" },
+  { key: "running", label: "Running", tone: "info", color: "var(--color-info)" },
+];
+
+const OUTCOME_BY_KEY = new Map(OUTCOMES.map((o) => [o.key, o]));
+
+export function outcomeMeta(key: OutcomeKey) {
+  return OUTCOME_BY_KEY.get(key) ?? OUTCOMES[0];
+}
+
+/**
+ * One outcome per run. The run status wins (failed, cancelled, running), then a non-completed
+ * termination state, then a completed run whose answer fell back to the evidence-only form
+ * after failing citation checks.
+ */
+export function outcomeOf(run: { status: string; termination_state: string | null; disposition: Disposition | null }): OutcomeKey {
+  if (run.status === "failed") return "failed";
+  if (run.status === "cancelled" || run.status === "interrupted") return "cancelled";
+  if (run.status === "running") return "running";
+  switch (run.termination_state) {
+    case "generation_unavailable":
+      return "generation_unavailable";
+    case "no_relevant_evidence":
+      return "no_relevant_evidence";
+    case "tool_failure":
+      return "tool_failure";
+    case "timeout":
+    case "error":
+      return "failed";
+    case "cancelled":
+    case "interrupted":
+      return "cancelled";
+    case "completed_with_limited_evidence":
+    case "retrieval_degraded":
+      return "limited";
+    default:
+      return run.disposition === "fallback" ? "verification_fallback" : "completed";
+  }
+}
+
+export interface OutcomeBucket {
+  key: OutcomeKey;
+  label: string;
+  color: string;
+  n: number;
+}
+
+/**
+ * Outcome counts in fixed order; `present` has the non-empty buckets, `absent` the labels of empty
+ * ones, and `fallbackElsewhere` counts fallback answers filed under another outcome (for example
+ * when the live model was also unavailable), so the chart can say where they went.
+ */
+export function outcomeBuckets(points: readonly SeriesPoint[]): { present: OutcomeBucket[]; absent: string[]; fallbackElsewhere: number } {
+  const counts = new Map<OutcomeKey, number>();
+  for (const p of points) {
+    const k = outcomeOf(p);
+    counts.set(k, (counts.get(k) ?? 0) + 1);
+  }
+  const all = OUTCOMES.filter((o) => o.key !== "running" || counts.has("running")).map((o) => ({ key: o.key, label: o.label, color: o.color, n: counts.get(o.key) ?? 0 }));
+  const fallbackElsewhere = points.filter((p) => p.disposition === "fallback" && outcomeOf(p) !== "verification_fallback").length;
+  return { present: all.filter((b) => b.n > 0), absent: all.filter((b) => b.n === 0).map((b) => b.label), fallbackElsewhere };
+}
+
+/** Runs per distinct value (e.g. model calls per run), ascending; unrecorded values are not counted. */
+export function countByValue(values: readonly (number | null)[]): { value: number; n: number }[] {
+  const counts = new Map<number, number>();
+  for (const v of values) if (finite(v)) counts.set(v, (counts.get(v) ?? 0) + 1);
+  return [...counts.entries()].sort((a, b) => a[0] - b[0]).map(([value, n]) => ({ value, n }));
+}
+
+/** Share of points matching `test`, per bin, for rate sparklines. */
+export function binRate<T>(items: readonly T[], test: (item: T) => boolean, bins = 20): number[] {
+  return binSeries(items.map((i) => (test(i) ? 1 : 0)), (g) => mean(g), bins);
+}
+
+/** Tool row problems in words ("13 truncated · 2 denied"), or null when every call succeeded. */
+export function toolProblems(row: { truncated: number; error: number; denied: number; timeout: number }): string | null {
+  const parts = [
+    row.error ? `${row.error} error${row.error === 1 ? "" : "s"}` : null,
+    row.denied ? `${row.denied} denied` : null,
+    row.timeout ? `${row.timeout} timed out` : null,
+    row.truncated ? `${row.truncated} truncated` : null,
+  ].filter(Boolean);
+  return parts.length ? parts.join(" · ") : null;
+}
+
+/** "1.2M", "86.4K", "940": compact token counts for stat values. */
+export function formatCompact(n: number | null | undefined): string {
+  if (!finite(n)) return "-";
+  return n.toLocaleString("en-US", { notation: "compact", maximumFractionDigits: 1 });
 }

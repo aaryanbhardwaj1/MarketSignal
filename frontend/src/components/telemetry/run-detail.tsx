@@ -13,12 +13,15 @@ import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Section } from "@/components/ui/section";
 import { formatDateTime, formatMs, formatNumber, formatUsd } from "@/lib/format";
-import { degradationFlag, runMode, runStatus, terminationState, verificationDisposition } from "@/lib/labels";
+import { runMode, runStatus, terminationState, verificationDisposition } from "@/lib/labels";
 import { rowTokens, shortId } from "@/lib/telemetry-view";
-import { AnalyticsResults, ResearchCard, RouteCard, StageTiming, UsageCard } from "./run-sections";
+import { AnalyticsResults, ResearchCard, RouteCard, UsageCard } from "./run-sections";
 import { RetrievalPanel, RunTimeline, ToolCalls, VerificationAttempts } from "./run-trace";
-import { StatusIndicator } from "@/components/ui/status-indicator";
-import { Panel, StatTile } from "./stat-tile";
+import { EyeOff } from "lucide-react";
+import { Stat, StatRow } from "@/components/ui/stat";
+import { Panel } from "./stat-tile";
+import { ExecutionFlow, FlowGantt } from "./trace/execution-flow";
+import { degradedInfo } from "./trace/run-flow";
 import { telemetryHref } from "@/lib/routes";
 
 export const REASONING_NOTE = "Model reasoning is not recorded; only observable actions, timings and outcomes are.";
@@ -45,63 +48,53 @@ function HeaderMeta({ run }: { run: TelemetryRunDetail["run"] }) {
   );
 }
 
-function OutcomeStrip({ run }: { run: TelemetryRunDetail["run"] }) {
+function RunHeadline({ run }: { run: TelemetryRunDetail["run"] }) {
   const term = run.termination_state ? terminationState(run.termination_state) : null;
   const status = runStatus(run.status);
+  const outcome = term ?? status;
   const disp = run.verification_disposition ? verificationDisposition(run.verification_disposition) : null;
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-      <StatTile
-        className="col-span-2"
+    <StatRow className="rounded-lg border border-border bg-surface px-4 py-3">
+      <Stat
+        size="sm"
         label="Outcome"
-        value={
-          <StatusIndicator
-            tone={(term ?? status).tone ?? "neutral"}
-            label={term ? (term.known ? term.label : term.code) : status.known ? status.label : run.status}
-            className="text-base"
-          />
-        }
-        context={
-          <span>
-            Status {status.known ? status.label.toLowerCase() : run.status}
-            {run.termination_state && run.termination_state !== run.status && <span className="block font-mono">{run.termination_state}</span>}
-          </span>
-        }
+        tone={outcome.tone ?? "neutral"}
+        value={<span className="text-base">{outcome.known ? outcome.label : outcome.code || run.status}</span>}
+        sub={run.termination_state ? <span className="font-mono text-xs">{run.termination_state}</span> : undefined}
       />
-      <StatTile label="Latency" value={formatMs(run.total_ms)} context="Run start to completion" />
-      <StatTile label="Calls" value={`${run.model_calls == null ? "n/a" : formatNumber(run.model_calls)} / ${formatNumber(run.tool_calls)}`} context="Model calls / tool calls" />
-      <StatTile label="Tokens" value={formatNumber(run.tokens_in + run.tokens_out)} context={rowTokens(run) ?? "No model tokens"} />
-      <StatTile label="Estimated cost" value={formatUsd(run.est_cost_usd)} context="List prices, not billed" />
-      <StatTile
-        label="Passages cited"
-        value={formatNumber(run.cited_count)}
-        context={`Unique pack items cited, of ${formatNumber(run.evidence_count)} in the pack${run.result_count ? ` (incl. ${formatNumber(run.result_count)} computed)` : ""}`}
+      <Stat size="sm" label="Total time" value={formatMs(run.total_ms)} />
+      <Stat
+        size="sm"
+        label="Model / tool calls"
+        value={`${run.model_calls == null ? "n/a" : formatNumber(run.model_calls)} / ${formatNumber(run.tool_calls)}`}
       />
-      <StatTile
+      <Stat size="sm" label="Tokens" value={formatNumber(run.tokens_in + run.tokens_out)} sub={rowTokens(run) ?? "No model tokens"} />
+      <Stat size="sm" label="Est. cost (estimate)" value={formatUsd(run.est_cost_usd)} sub="List prices, not billed" />
+      <Stat
+        size="sm"
         label="Verification"
+        tone={disp?.tone}
         value={<span className="text-base">{disp ? (disp.known ? disp.label : run.verification_disposition) : "Not recorded"}</span>}
-        context={run.regenerated ? "Answer was regenerated" : "No regeneration"}
+        sub={run.regenerated ? "Answer was regenerated" : undefined}
       />
-    </div>
+    </StatRow>
   );
 }
 
-function Flags({ flags }: { flags: string[] }) {
-  if (flags.length === 0) return null;
+/** "Degraded run" callout: termination state and flags, each with its plain-language reason. */
+function DegradedCallout({ detail }: { detail: TelemetryRunDetail }) {
+  const info = degradedInfo(detail);
+  if (!info.degraded) return null;
   return (
     <Callout tone="warn" title="Degraded run">
-      <ul className="mt-1 flex flex-wrap gap-1.5">
-        {flags.map((f) => {
-          const h = degradationFlag(f);
-          return (
-            <li key={f}>
-              <Badge tone="warn" title={f}>
-                {h.known ? h.label : f}
-              </Badge>
-              <span className="ml-1 font-mono text-xs text-muted">{f}</span>
-            </li>
-          );
-        })}
+      <ul className="mt-1 flex flex-col gap-1.5">
+        {info.reasons.map((r) => (
+          <li key={r.code} className="text-sm">
+            <span className="font-medium text-primary">{r.label}</span>
+            <span className="ml-1.5 font-mono text-xs text-muted">{r.code}</span>
+            {r.description && <span className="block text-secondary">{r.description}</span>}
+          </li>
+        ))}
       </ul>
     </Callout>
   );
@@ -119,20 +112,27 @@ export function RunDetailView({ ws, detail }: { ws: string; detail: TelemetryRun
         meta={<HeaderMeta run={run} />}
       />
       <div className="mt-6 flex flex-col gap-3">
-        <OutcomeStrip run={run} />
-        <Flags flags={run.flags} />
-        <Callout tone="neutral" title="What is recorded">
+        <RunHeadline run={run} />
+        <DegradedCallout detail={detail} />
+        <p className="flex items-center gap-1.5 text-xs text-muted">
+          <EyeOff aria-hidden className="size-3.5" />
           {REASONING_NOTE}
-        </Callout>
+        </p>
       </div>
+      <Section title="Execution flow" description="Stages this run recorded, in order. Stages that did not occur are omitted.">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <ExecutionFlow detail={detail} />
+          <div className="flex flex-col gap-3 lg:sticky lg:top-4 lg:self-start">
+            <h3 className="text-sm font-semibold text-primary">Where the time went</h3>
+            <FlowGantt detail={detail} />
+          </div>
+        </div>
+      </Section>
       <Section title="Routing and research" description="Why this mode was used and how the research phase ended.">
         <div className="grid gap-3 lg:grid-cols-2">
           <RouteCard route={run.route} />
           <ResearchCard detail={detail} />
         </div>
-      </Section>
-      <Section title="Stage timing" description="Sequential stages from persisted timings.">
-        <StageTiming detail={detail} />
       </Section>
       <Section title="Timeline" description="Observable events in order, relative to run start. Streamed text is aggregated, never shown.">
         <RunTimeline detail={detail} />

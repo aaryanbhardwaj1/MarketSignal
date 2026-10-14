@@ -84,4 +84,31 @@ describe("RunDetailView", () => {
     expect(html).toContain("No observable events were recorded");
     expect(html).not.toContain("Mode selected");
   });
+
+  it("renders the ordered execution flow and the stage gantt for a research run", () => {
+    const html = render(research);
+    expect(html).toContain('aria-label="Execution flow"');
+    const order = ["Request", "Routing", "Tool execution", "Analytics", "Evidence pack", "Generation", "Verification", "Final answer", "Completed"];
+    const flow = html.slice(html.indexOf('aria-label="Execution flow"'));
+    const positions = order.map((label) => flow.indexOf(`>${label}<`));
+    expect(positions.every((p) => p >= 0)).toBe(true);
+    expect([...positions].sort((a, b) => a - b)).toEqual(positions);
+    expect(html).toContain("Automatic → Research");
+    expect(html).toContain("Where the time went");
+    expect(html).toContain("Est. cost (estimate)");
+    expect(html).not.toContain("Degraded run");
+    expect(html).not.toContain(">Retrieval</h3>");
+  });
+
+  it("calls out a degraded evidence-only run with reasons", () => {
+    const html = render(unavailable);
+    expect(html).toContain("Degraded run");
+    expect(html).toContain("Evidence only (live model unavailable)");
+    expect(html).toContain("Research planning unavailable");
+    expect(html).toContain("LLM_SYNTHESIS_UNAVAILABLE");
+    expect(html).toContain("Live model unavailable; no answer text was generated");
+    expect(html).toContain("Fallback search (research planning unavailable)");
+    expect(html).toContain(">Failed<");
+    expect(html).not.toContain(">Verification</h3>");
+  });
 });
