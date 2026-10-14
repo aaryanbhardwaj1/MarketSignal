@@ -180,7 +180,8 @@ def _array_len(expr: str) -> str:
 def _with_runs(where: str) -> str:
     return (
         "WITH runs AS (SELECT r.id, r.workspace_id, r.mode, r.status, r.termination_state, "
-        "r.degradation_flags, r.timings, r.usage, r.agent, r.route, r.models "
+        "r.degradation_flags, r.timings, r.usage, r.agent, r.route, r.models, "
+        "r.pack_handles, r.cited_handles, r.error_class "
         f"FROM query_runs r WHERE {where}) "
     )
 
@@ -283,6 +284,14 @@ _RETRIEVAL_SQL = (
 )
 _BY_MODE_SQL = f"SELECT r.mode, {pct_sql(num('r.timings', 'total_ms'))} FROM runs r GROUP BY r.mode"
 _COUNTS_SQL = "SELECT r.mode, r.status, r.termination_state, count(*) FROM runs r GROUP BY 1, 2, 3"
+_ERRORS_SQL = (
+    "SELECT r.error_class, count(*) FROM runs r WHERE r.status = 'failed' "
+    "GROUP BY 1 ORDER BY 2 DESC, 1 NULLS LAST"
+)
+_PACK_SQL = (
+    f"SELECT {pct_sql('cardinality(r.pack_handles)')}, {pct_sql('cardinality(r.cited_handles)')} "
+    "FROM runs r"
+)
 
 
 def _bump(counter: dict[str, int], key: str | None, n: int) -> None:
@@ -346,6 +355,11 @@ def _retrieval_section(row: Sequence[Any]) -> dict[str, Any]:
         "candidates": candidates,
         "embedding_cache_hit_rate": None if hit_rate is None else round(float(hit_rate), 4),
     }
+
+
+def _pack_section(row: Sequence[Any]) -> dict[str, Any]:
+    """Evidence pack size and cited-handle count per run (p50/p95/n)."""
+    return {"size": pct(*row[0:3]), "cited": pct(*row[3:6])}
 
 
 async def _test_runs_excluded(session: AsyncSession, filters: RunFilters, ws: uuid.UUID) -> int:
@@ -413,7 +427,16 @@ async def telemetry_summary(
             "verification_fallback": _ratio(main[16], total),
             "planner_fallback": _ratio(main[17], total),
             "degraded": _ratio(main[18], total),
+            # additive (E12): outcome rates from the run status counts
+            "success": _ratio(counts["by_status"].get("completed"), total),
+            "failed": _ratio(counts["by_status"].get("failed"), total),
+            "cancelled": _ratio(counts["by_status"].get("cancelled"), total),
         },
+        "errors": [
+            {"error_class": c, "n": int(n)}
+            for c, n in await _rows(session, cte + _ERRORS_SQL, params)
+        ],
+        "evidence_pack": _pack_section((await _rows(session, cte + _PACK_SQL, params))[0]),
         "flags": [
             {"code": c, "n": int(n)} for c, n in await _rows(session, cte + _FLAGS_SQL, params)
         ],

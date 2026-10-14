@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import hmac
+import re
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
@@ -25,6 +26,7 @@ from marketsignal.api.routers import (
     evidence,
     health,
     insights,
+    logs,
     results,
     runs,
     search,
@@ -47,6 +49,7 @@ from marketsignal.retrieval.types import RetrievalConfig
 from marketsignal.runs.broker import RunBroker
 from marketsignal.runs.executor import StandardRunExecutor
 from marketsignal.runs.reaper import live_run_ids, orphan_after_s, reap_interrupted_runs
+from marketsignal.telemetry.access_log import AccessLogMiddleware
 from marketsignal.telemetry.logging import configure_logging, get_logger
 from marketsignal.tools.contracts import ToolTransport
 from marketsignal.tools.fallback import FallbackToolTransport
@@ -54,6 +57,15 @@ from marketsignal.tools.governance import ToolGovernor
 from marketsignal.tools.inprocess import InProcessToolTransport
 
 log = get_logger(__name__)
+# A client-supplied x-request-id is kept only when it is short and plain (it is echoed back and
+# keys log entries); anything else is replaced by a fresh id.
+_REQUEST_ID = re.compile(r"[A-Za-z0-9._:-]{1,64}")
+
+
+def _request_id(supplied: str | None) -> str:
+    if supplied is not None and _REQUEST_ID.fullmatch(supplied):
+        return supplied
+    return uuid.uuid4().hex
 
 
 class PrivilegedDatabaseRoleError(RuntimeError):
@@ -276,7 +288,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     check_production_secrets(settings)
-    configure_logging(settings.log_level, settings.log_json)
+    configure_logging(
+        settings.log_level,
+        settings.log_json,
+        server_log_capacity=settings.server_log_capacity,
+        # The server log is only readable through the dev routers mounted below.
+        server_log_capture=settings.env != "prod" and settings.dev_endpoints_enabled,
+    )
     app = FastAPI(
         title="MarketSignal API",
         version="0.1.0",
@@ -337,7 +355,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def request_context(
         request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
-        request_id = request.headers.get("x-request-id") or uuid.uuid4().hex
+        request_id = _request_id(request.headers.get("x-request-id"))
         structlog.contextvars.bind_contextvars(request_id=request_id)
         try:
             response = await call_next(request)
@@ -357,6 +375,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             response.headers["X-Accel-Buffering"] = "no"
             response.headers["Cache-Control"] = "no-cache"
         return response
+
+    # Outermost: one http.request event per request, after the response (or stream) ends.
+    app.add_middleware(AccessLogMiddleware)
 
     @app.get("/metrics", include_in_schema=False)
     async def metrics(request: Request) -> Response:
@@ -385,5 +406,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     if settings.env != "prod" and settings.dev_endpoints_enabled:
         app.include_router(dev.router)
         app.include_router(telemetry.router)
+        app.include_router(logs.router)
         app.include_router(evaluation.router)
     return app

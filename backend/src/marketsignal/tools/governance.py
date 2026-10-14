@@ -49,6 +49,7 @@ from marketsignal.db.session import SessionFactory, scoped_session
 from marketsignal.retrieval.pipeline import RetrievalService
 from marketsignal.retrieval.types import InvalidFiltersError
 from marketsignal.runs.store import _lock_run_pack, _purged_pack_codes
+from marketsignal.telemetry.logging import get_logger
 from marketsignal.tools.capability import UnauthenticatedError, verify
 from marketsignal.tools.contracts import (
     TRUNCATED,
@@ -66,6 +67,7 @@ from marketsignal.tools.observation import error_observation, render
 from marketsignal.tools.registry import OUTPUT_MAX_CHARS, ToolEntry, ToolRegistry, default_registry
 
 log = logging.getLogger(__name__)
+events = get_logger(__name__)  # structured tool.call events (ids, enums, counts only)
 
 QUERY_AUDIT_CHARS = 200
 REDACTED_ARGS: dict[str, Any] = {"redacted": True}
@@ -400,6 +402,19 @@ class ToolGovernor:
         except SQLAlchemyError as exc:
             log.error("tool audit write failed: %s", type(exc).__name__)
             return failure_result(call, "INTERNAL", transport=result.transport)
+        (events.info if result.ok else events.warning)(
+            "tool.call",
+            run_id=ctx.run_id,
+            tool=call.name[:64],
+            status=status,
+            error_code=code,
+            step=max(0, int(call.step)),
+            call_index=max(0, int(call.call_index)),
+            result_count=count,
+            truncated=result.truncated,
+            duration_ms=result.duration_ms,
+            transport=result.transport,
+        )
         return result
 
     @staticmethod

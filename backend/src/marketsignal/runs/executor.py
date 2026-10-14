@@ -121,6 +121,7 @@ class StandardRunExecutor:
         )
         state = _RunState()
         started = time.monotonic()
+        log.info("run.started", run_id=str(req.run_id), mode=req.mode)
         answer: _Answer | None = None
         outcome = _Outcome()
         try:
@@ -254,6 +255,17 @@ class StandardRunExecutor:
     ) -> None:
         state.timings["total_ms"] = round((time.monotonic() - started) * 1000, 1)
         termination = termination_state(state.states)
+        (log.warning if status == "failed" else log.info)(
+            "run.finished",
+            run_id=str(req.run_id),
+            mode=req.mode,
+            status=status,
+            termination_state=termination,
+            error_class=error,
+            degraded=bool(state.flags),
+            flag_count=len(state.flags),
+            total_ms=state.timings["total_ms"],
+        )
         if not writer.final_emitted:
             writer.discard_pending()  # unsent draft text is never streamed only to be withdrawn
         if notice is not None:

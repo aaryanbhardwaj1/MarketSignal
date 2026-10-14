@@ -124,3 +124,29 @@ def test_http_client_loggers_are_pinned_above_debug() -> None:
         assert logging.getLogger(name).getEffectiveLevel() >= logging.WARNING
     logging.getLogger().setLevel(logging.WARNING)
     configure_logging("INFO", True)
+
+
+# Adversarial inputs that made the credential regexes quadratic (64 KB took ~20 s).
+_REDOS_INPUTS = {
+    "scheme_run": "a" * 65_536,
+    "scheme_mixed_run": "a1" * 32_768,
+    "jwt_prefixes": "eyJ" * 21_846,
+    "jwt_one_dot": "eyJ" + "a" * 8 + "." + "eyJ" * 21_840,
+    "dsn_no_at": "x://" + "u:" * 32_766,
+}
+
+
+@pytest.mark.parametrize("text", list(_REDOS_INPUTS.values()), ids=list(_REDOS_INPUTS))
+def test_scrubber_is_linear_on_adversarial_64kb_strings(text: str) -> None:
+    import time
+
+    started = time.perf_counter()
+    _redact(event=text, path=text)
+    assert time.perf_counter() - started < 0.05
+
+
+def test_dsn_scheme_after_digits_is_still_scrubbed() -> None:
+    out = _redact(event="dial 9postgresql://ms_app:s3cret@db/marketsignal and x-redis://u:pw@r")
+    assert "s3cret" not in str(out["event"])
+    assert "pw@" not in str(out["event"])
+    assert "9postgresql://[REDACTED]@db/marketsignal" in str(out["event"])

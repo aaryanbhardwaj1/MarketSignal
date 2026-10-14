@@ -52,6 +52,23 @@ def test_request_id_is_propagated() -> None:
     assert response.headers["x-request-id"] == "abc123"
 
 
+@pytest.mark.parametrize("supplied", ["req-1.a:b_C", "a" * 64])
+def test_well_formed_request_id_is_kept_and_echoed(supplied: str) -> None:
+    with TestClient(create_app(_settings())) as client:
+        response = client.get("/healthz", headers={"x-request-id": supplied})
+    assert response.headers["x-request-id"] == supplied
+
+
+@pytest.mark.parametrize("supplied", ["a" * 65, "has space", "semi;colon", "slash/", "tab\there"])
+def test_malformed_request_id_is_replaced(supplied: str) -> None:
+    with TestClient(create_app(_settings())) as client:
+        response = client.get("/healthz", headers={"x-request-id": supplied})
+    echoed = response.headers["x-request-id"]
+    assert echoed != supplied
+    assert len(echoed) == 32
+    assert int(echoed, 16) >= 0
+
+
 def test_metrics_requires_token_when_configured() -> None:
     app = create_app(_settings(metrics_token=SecretStr("t0ken")))
     with TestClient(app) as client:

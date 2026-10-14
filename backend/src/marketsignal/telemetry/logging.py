@@ -37,13 +37,20 @@ _SENSITIVE_KEYS = frozenset(
 )
 _REDACTED = "[REDACTED]"
 # user:password@ in DSNs, and token-bearing query parameters in URLs.
-_DSN_CREDENTIALS = re.compile(r"(?P<scheme>[a-z][a-z0-9+.-]*://)[^/@\s:]+:[^/@\s]+@", re.I)
+# Linear time (no ReDoS): every pattern that can fail after a long scan anchors its start with a
+# negative lookbehind (one candidate start per run of scheme/token characters) and uses
+# possessive quantifiers. The scheme group keeps any leading digits of the run, so the output is
+# the same as the original ``[a-z][a-z0-9+.-]*://`` pattern.
+_DSN_CREDENTIALS = re.compile(
+    r"(?<![a-z0-9+.-])(?P<scheme>[0-9+.-]*+[a-z][a-z0-9+.-]*+://)[^/@\s:]++:[^/@\s]++@", re.I
+)
 _TOKEN_QUERY = re.compile(r"(?P<key>[?&](?:st|token|access_token|api_key)=)[^&\s]+", re.I)
 # Credential shapes, matched by pattern so the redactor never needs the secret value itself.
 _CREDENTIAL_SHAPES = re.compile(
     r"sk-ant-[A-Za-z0-9_-]{8,}"  # Anthropic API keys
     r"|(?<=Bearer )[^\s,;\"']+"  # bearer values
-    r"|eyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}",  # JWTs (stream tokens)
+    # JWTs (stream tokens), starting at a token boundary
+    r"|(?<![A-Za-z0-9_-])eyJ[A-Za-z0-9_-]{5,}+\.[A-Za-z0-9_-]{5,}+\.[A-Za-z0-9_-]{5,}+",
     re.I,
 )
 # Stdlib loggers that bypass structlog and can log request details at DEBUG.
@@ -107,8 +114,48 @@ def _install_access_log_scrubber() -> None:
         logger.addFilter(UvicornAccessScrubFilter())
 
 
-def configure_logging(level: str = "INFO", json: bool = True) -> None:
+class _NamedPrintLogger(structlog.PrintLogger):
+    """``PrintLogger`` that remembers the name passed to :func:`get_logger` (server log)."""
+
+    def __init__(self, file: Any, name: str | None) -> None:
+        super().__init__(file)
+        self.name = name
+
+
+class _NamedPrintLoggerFactory:
+    def __init__(self, file: Any) -> None:
+        self._file = file
+
+    def __call__(self, *args: Any) -> _NamedPrintLogger:
+        name = args[0] if args and isinstance(args[0], str) else None
+        return _NamedPrintLogger(self._file, name)
+
+
+def configure_logging(
+    level: str = "INFO",
+    json: bool = True,
+    *,
+    server_log_capacity: int | None = None,
+    server_log_capture: bool = False,
+) -> None:
+    """``server_log_capture`` copies events into the dev server log; only when it is readable."""
+    # Imported here: the capture module reuses this module's scrubber.
+    from marketsignal.devtools.server_log import configure_server_log
+    from marketsignal.telemetry.server_log_capture import (
+        capture_server_log,
+        install_stdlib_capture,
+        remove_stdlib_capture,
+        set_capture_enabled,
+    )
+
+    if server_log_capacity is not None:
+        configure_server_log(server_log_capacity)
     _install_access_log_scrubber()
+    set_capture_enabled(server_log_capture)
+    if server_log_capture:
+        install_stdlib_capture()
+    else:
+        remove_stdlib_capture()
     for name in _HTTP_CLIENT_LOGGERS:
         logging.getLogger(name).setLevel(logging.WARNING)
     renderer: Any = structlog.processors.JSONRenderer() if json else structlog.dev.ConsoleRenderer()
@@ -119,10 +166,12 @@ def configure_logging(level: str = "INFO", json: bool = True) -> None:
             structlog.processors.TimeStamper(fmt="iso", utc=True),
             structlog.processors.format_exc_info,
             redact_sensitive,  # after format_exc_info, so rendered tracebacks are scrubbed too
+            # dev server log: sanitized copy (inert unless enabled), event passed through unchanged
+            capture_server_log,
             renderer,
         ],
         wrapper_class=structlog.make_filtering_bound_logger(logging.getLevelNamesMapping()[level]),
-        logger_factory=structlog.PrintLoggerFactory(file=sys.stdout),
+        logger_factory=_NamedPrintLoggerFactory(sys.stdout),
         cache_logger_on_first_use=True,
     )
 

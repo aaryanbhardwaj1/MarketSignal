@@ -3,6 +3,8 @@ from persisted run records. Read-only, workspace-scoped; never exposes model rea
 answer content.
 
 * ``GET /summary`` - ``TelemetrySummary`` (``since``, ``until``, ``mode``, ``include_test_runs``).
+* ``GET /series`` - ``TelemetrySeries``: one compact point per run, oldest first (same filters as
+  the summary, ``limit`` <= 2000; the most recent runs are kept when more match).
 * ``GET /runs`` - a keyset page of ``TelemetryRunRow``, newest first, with filters.
 * ``GET /runs/{run_id}`` - ``TelemetryRunDetail``; another workspace's run, an unknown id and a
   missing one all look the same: 404 ``RUN_NOT_FOUND``.
@@ -31,6 +33,11 @@ from marketsignal.devtools.run_telemetry import (
     list_runs,
     run_detail,
     telemetry_summary,
+)
+from marketsignal.devtools.run_telemetry_series import (
+    DEFAULT_SERIES_LIMIT,
+    MAX_SERIES_LIMIT,
+    telemetry_series,
 )
 from marketsignal.devtools.run_telemetry_view import decode_cursor
 
@@ -65,6 +72,22 @@ async def get_summary(
     filters = RunFilters(since=since, until=until, mode=mode, include_test_runs=include_test_runs)
     async with scoped_session(factory, scope) as session:
         return await telemetry_summary(session, scope, filters)
+
+
+@router.get("/series")
+async def get_series(
+    scope: Scope,
+    factory: Factory,
+    since: datetime | None = None,
+    until: datetime | None = None,
+    mode: Mode | None = None,
+    include_test_runs: bool = False,
+    limit: Annotated[int, Query(ge=1, le=MAX_SERIES_LIMIT)] = DEFAULT_SERIES_LIMIT,
+) -> dict[str, Any]:
+    _window(since, until)
+    filters = RunFilters(since=since, until=until, mode=mode, include_test_runs=include_test_runs)
+    async with scoped_session(factory, scope) as session:
+        return await telemetry_series(session, scope, filters, limit=limit)
 
 
 @router.get("/runs")

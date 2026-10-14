@@ -54,6 +54,8 @@ class Settings(BaseSettings):
 
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     log_json: bool = True
+    # Developer server log (GET /api/dev/logs): in-memory ring buffer size, API process only.
+    server_log_capacity: int = Field(default=2000, ge=10, le=10_000)
 
     # ── Identity (Phase 1: single demo principal; ADR-0014 adds real sessions) ──
     demo_principal: str = "demo"

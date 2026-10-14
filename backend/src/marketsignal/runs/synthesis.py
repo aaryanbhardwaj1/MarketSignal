@@ -107,7 +107,7 @@ async def generate_and_verify(
             state.flag(SOURCE_DELETED_DURING_RUN)
             return None, report, SOURCE_DELETED_DURING_RUN
         except LLMUnavailableError as exc:
-            log.warning("llm_unavailable", run_id=str(req.run_id), reason=str(exc)[:200])
+            log.warning("llm_unavailable", run_id=str(req.run_id), error_type=type(exc).__name__)
             state.count("llm_failures")
             state.flag(LLM_SYNTHESIS_UNAVAILABLE)
             await writer.emit(
@@ -145,6 +145,14 @@ async def generate_and_verify(
         )
         if audit is not None:
             await record_attempt(audit, req.scope, req.run_id, report)
+        log.info(
+            "verification.attempt",
+            run_id=str(req.run_id),
+            attempt=attempt,
+            passed=verified.ok,
+            disposition=str(report.disposition),
+            verify_ms=state.timings.get(f"verify_ms_{attempt}"),
+        )
         if verified.ok:
             state.timings["attempts"] = attempt
             return verified, report, ""
