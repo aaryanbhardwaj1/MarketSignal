@@ -4,7 +4,18 @@ Every request re-resolves each quote (``insights.evidence``) and recomputes each
 (``insights.analyses``); nothing is written and no model is called. Metrics read only computed
 analysis rows, and a derived metric (``diff``, ``pct_change``) exists only when all its inputs
 were computed. Item integrity rolls up as: ``verified`` (all evidence verified and all metrics
-computed), ``partial`` (at least one verified passage) or ``unverified``.
+computed), ``partial`` (at least one verified passage) or ``unverified``; an opportunity's
+risk evidence counts towards its roll-up.
+
+Schema v2 fields are always present in the response (``null`` / empty for a v1 fixture). Each
+analysis also carries its ``summary`` and its ``interpretation`` only when it computed and every
+number in them matches a computed figure (``insights.summary``; ``summary_status`` and
+``interpretation_status`` say why one is ``null``), and ``used_by``: the signals and
+opportunities that read it through a metric or link to it through ``related``.
+
+A forecast is re-checked on every request, not only at load: an item (or risk) with a
+``forecast`` claim whose cited projection (a supporting ``states_projection`` reference) no
+longer verifies is ``unverified``, and the item's metric values are withheld.
 
 Results are cached in process for :data:`CACHE_TTL_S`, keyed by workspace, fixture version and
 a fingerprint of the referenced sources' current versions, so any upload, supersession or purge
@@ -16,6 +27,7 @@ from __future__ import annotations
 import hashlib
 import time
 import uuid
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -29,8 +41,18 @@ from marketsignal.config import Settings
 from marketsignal.db.scope import WorkspaceScope
 from marketsignal.insights.analyses import FlatRow, Recomputed, pick_row, recompute
 from marketsignal.insights.evidence import resolve_ref
-from marketsignal.insights.fixture import Fixture, MetricSpec, Pick
+from marketsignal.insights.fixture import (
+    ClaimText,
+    EvidenceSpec,
+    Fixture,
+    MetricSpec,
+    OpportunitySpec,
+    Pick,
+    Related,
+    SignalSpec,
+)
 from marketsignal.insights.format import format_value
+from marketsignal.insights.summary import SummaryStatus, check_summary, check_text
 
 LABEL = "Curated analyst brief"
 CACHE_TTL_S = 300.0
@@ -159,6 +181,178 @@ def _integrity(evidence: list[dict[str, Any]], metrics: list[dict[str, Any]]) ->
     return "partial" if any(verified) else "unverified"
 
 
+def _claim(claim: ClaimText | None) -> dict[str, Any] | None:
+    return None if claim is None else {"text": claim.text, "claim_type": claim.claim_type}
+
+
+def _projection_verified(evidence: list[dict[str, Any]]) -> bool:
+    return any(
+        e["role"] == "support" and e["states_projection"] and e["integrity"] == "verified"
+        for e in evidence
+    )
+
+
+def _forecast_fails(claims: Iterable[str | None], evidence: list[dict[str, Any]]) -> bool:
+    """A forecast claim whose cited projection does not verify on this request."""
+    return "forecast" in claims and not _projection_verified(evidence)
+
+
+def _withheld(metrics: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [{**m, "value": None, "display": None} for m in metrics]
+
+
+def _related(related: Related) -> dict[str, list[str]]:
+    return {
+        "analyses": list(related.analyses),
+        "opportunities": list(related.opportunities),
+        "signals": list(related.signals),
+    }
+
+
+def _counts(evidence: list[dict[str, Any]]) -> dict[str, int]:
+    verified = [e for e in evidence if e["integrity"] == "verified"]
+    return {
+        "support_count": sum(e["role"] == "support" for e in verified),
+        "contradiction_count": sum(e["role"] == "contradict" for e in verified),
+    }
+
+
+def _analysis_ids(metrics: Iterable[MetricSpec], related: Related) -> set[str]:
+    ids = set(related.analyses)
+    for m in metrics:
+        ids |= {p.analysis_id for p in ([m.pick] if m.pick else m.derive.of if m.derive else [])}
+    return ids
+
+
+def used_by_index(fixture: Fixture) -> dict[str, dict[str, list[str]]]:
+    """Analysis id -> the signals and opportunities that read it (metric picks, derived inputs)
+    or link to it (``related.analyses``), in fixture order."""
+    signals = [(s.id, _analysis_ids(s.metrics, s.related)) for s in fixture.signals]
+    opps = [(o.id, _analysis_ids(o.metrics, o.related)) for o in fixture.opportunities]
+    return {
+        a.id: {
+            "signals": [i for i, ids in signals if a.id in ids],
+            "opportunities": [i for i, ids in opps if a.id in ids],
+        }
+        for a in fixture.analyses
+    }
+
+
+class _Refs:
+    """Resolves curated references and records the sources of any that did not verify."""
+
+    def __init__(self, session: AsyncSession, scope: WorkspaceScope, drift: set[str]) -> None:
+        self.session, self.scope, self.drift = session, scope, drift
+
+    async def __call__(self, specs: Iterable[EvidenceSpec]) -> list[dict[str, Any]]:
+        out = [await resolve_ref(self.session, self.scope, e) for e in specs]
+        self.drift.update(r["source"]["code"] for r in out if r["integrity"] != "verified")
+        return out
+
+
+async def _signal(
+    s: SignalSpec, fixture: Fixture, results: dict[str, Recomputed], refs: _Refs
+) -> dict[str, Any]:
+    evidence = await refs(s.evidence)
+    metrics = [_metric(m, fixture, results) for m in s.metrics]
+    integrity = _integrity(evidence, metrics)
+    claims = (s.claim_type, s.implication.claim_type if s.implication else None)
+    if _forecast_fails(claims, evidence):
+        integrity, metrics = "unverified", _withheld(metrics)
+    return {
+        "id": s.id,
+        "category": s.category,
+        "title": s.title,
+        "statement": s.statement,
+        "integrity": integrity,
+        "evidence": evidence,
+        "metrics": metrics,
+        "caveats": list(s.caveats),
+        "kind": s.kind,
+        "status": s.status,
+        "claim_type": s.claim_type,
+        "implication": _claim(s.implication),
+        "gaps": list(s.gaps),
+        "related": _related(s.related),
+        **_counts(evidence),
+    }
+
+
+async def _opportunity(
+    o: OpportunitySpec, fixture: Fixture, results: dict[str, Recomputed], refs: _Refs
+) -> dict[str, Any]:
+    evidence = await refs(o.evidence)
+    metrics = [_metric(m, fixture, results) for m in o.metrics]
+    risks: list[dict[str, Any]] = []
+    for risk in o.risks:
+        risk_refs = await refs(risk.evidence)
+        risk_integrity = _integrity(risk_refs, [])
+        if _forecast_fails((risk.claim_type,), risk_refs):
+            risk_integrity = "unverified"
+        risks.append(
+            {
+                "text": risk.text,
+                "claim_type": risk.claim_type,
+                "evidence": risk_refs,
+                "integrity": risk_integrity,
+            }
+        )
+    every_ref = evidence + [r for risk in risks for r in risk["evidence"]]
+    integrity = _integrity(every_ref, metrics)
+    claims = (o.thesis_claim_type, o.why_it_matters.claim_type if o.why_it_matters else None)
+    if _forecast_fails(claims, evidence):
+        integrity, metrics = "unverified", _withheld(metrics)
+    return {
+        "id": o.id,
+        "title": o.title,
+        "status": o.status,
+        "status_rationale": o.status_rationale,
+        "thesis": o.thesis,
+        "supporting": [e for e in evidence if e["role"] == "support"],
+        "contradicting": [e for e in evidence if e["role"] == "contradict"],
+        "metrics": metrics,
+        "gaps": list(o.gaps),
+        "next_step": o.next_step,
+        "caveats": list(o.caveats),
+        "integrity": integrity,
+        "thesis_claim_type": o.thesis_claim_type,
+        "why_it_matters": _claim(o.why_it_matters),
+        "risks": risks,
+        "next_investigation": o.next_investigation,
+        "related": _related(o.related),
+        **_counts(evidence),
+    }
+
+
+def _interpretation(
+    claim: ClaimText | None, payload: dict[str, Any]
+) -> tuple[dict[str, Any] | None, SummaryStatus]:
+    """Gated like the summary: withheld unless computed and every number is a computed figure."""
+    text, status = check_text(claim.text if claim else None, payload)
+    return (_claim(claim) if text is not None else None), status
+
+
+def _analyses(fixture: Fixture, results: dict[str, Recomputed]) -> list[dict[str, Any]]:
+    used_by = used_by_index(fixture)
+    out = []
+    for a in fixture.analyses:
+        payload = results[a.id].payload
+        summary, summary_status = check_summary(a.summary, payload)
+        interpretation, interpretation_status = _interpretation(a.interpretation, payload)
+        out.append(
+            {
+                **payload,
+                "business_area": a.business_area,
+                "summary": summary,
+                "summary_status": summary_status,
+                "interpretation": interpretation,
+                "interpretation_status": interpretation_status,
+                "used_by": used_by[a.id],
+            }
+        )
+    return out
+
+
 async def _build(
     session: AsyncSession, scope: WorkspaceScope, settings: Settings, fixture: Fixture
 ) -> Bundle:
@@ -176,48 +370,9 @@ async def _build(
         )
     _, drifted = await _corpus_state(session, scope, fixture)
     drift = set(drifted)
-
-    async def refs(item_evidence: Any) -> list[dict[str, Any]]:
-        out = [await resolve_ref(session, scope, e) for e in item_evidence]
-        drift.update(r["source"]["code"] for r in out if r["integrity"] != "verified")
-        return out
-
-    signals = []
-    for s in fixture.signals:
-        evidence = await refs(s.evidence)
-        metrics = [_metric(m, fixture, results) for m in s.metrics]
-        signals.append(
-            {
-                "id": s.id,
-                "category": s.category,
-                "title": s.title,
-                "statement": s.statement,
-                "integrity": _integrity(evidence, metrics),
-                "evidence": evidence,
-                "metrics": metrics,
-                "caveats": list(s.caveats),
-            }
-        )
-    opportunities = []
-    for o in fixture.opportunities:
-        evidence = await refs(o.evidence)
-        metrics = [_metric(m, fixture, results) for m in o.metrics]
-        opportunities.append(
-            {
-                "id": o.id,
-                "title": o.title,
-                "status": o.status,
-                "status_rationale": o.status_rationale,
-                "thesis": o.thesis,
-                "supporting": [e for e in evidence if e["role"] == "support"],
-                "contradicting": [e for e in evidence if e["role"] == "contradict"],
-                "metrics": metrics,
-                "gaps": list(o.gaps),
-                "next_step": o.next_step,
-                "caveats": list(o.caveats),
-                "integrity": _integrity(evidence, metrics),
-            }
-        )
+    refs = _Refs(session, scope, drift)
+    signals = [await _signal(s, fixture, results, refs) for s in fixture.signals]
+    opportunities = [await _opportunity(o, fixture, results, refs) for o in fixture.opportunities]
     brief = {
         "fixture_version": fixture.fixture_version,
         "label": LABEL,
@@ -232,7 +387,7 @@ async def _build(
     analyses = {
         "fixture_version": fixture.fixture_version,
         "computed_at": computed_at,
-        "analyses": [results[a.id].payload for a in fixture.analyses],
+        "analyses": _analyses(fixture, results),
     }
     return Bundle(brief, analyses)
 

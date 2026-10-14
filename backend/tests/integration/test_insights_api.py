@@ -205,6 +205,24 @@ async def test_verified_brief_maps_quotes_and_recomputes_without_writing(
     assert [e["role"] for e in opp["supporting"]] == ["support"]
     assert [e["role"] for e in opp["contradicting"]] == ["contradict"]
     assert opp["integrity"] == "verified"
+    # schema v2 additions are always present; a v1 fixture serves their defaults
+    assert {k: fit[k] for k in ("kind", "status", "claim_type", "implication", "gaps")} == {
+        "kind": None,
+        "status": None,
+        "claim_type": None,
+        "implication": None,
+        "gaps": [],
+    }
+    assert fit["related"] == {"analyses": [], "opportunities": [], "signals": []}
+    assert (fit["support_count"], fit["contradiction_count"]) == (1, 0)
+    assert ref["states_projection"] is False
+    assert {k: opp[k] for k in ("thesis_claim_type", "why_it_matters", "next_investigation")} == {
+        "thesis_claim_type": None,
+        "why_it_matters": None,
+        "next_investigation": None,
+    }
+    assert opp["risks"] == []
+    assert (opp["support_count"], opp["contradiction_count"]) == (1, 1)
 
     listing = (await h.client.get(f"/api/workspaces/{ws}/analytics/analyses")).json()
     by_id = {a["id"]: a for a in listing["analyses"]}
@@ -217,6 +235,10 @@ async def test_verified_brief_maps_quotes_and_recomputes_without_writing(
     assert ok["denominator"] == {"label": "rows", "value": 3}
     assert ok["provenance"]["source_code"] == "SURV"
     assert ok["provenance"]["rows_matched"] == 3
+    assert (ok["business_area"], ok["summary"], ok["interpretation"]) == (None, None, None)
+    assert ok["summary_status"] == "absent"
+    assert ok["used_by"] == {"signals": ["fit"], "opportunities": []}
+    assert bad["used_by"] == {"signals": ["delivery"], "opportunities": []}
     assert bad["status"] == "mismatch"
     assert bad["rows"] == []
     assert bad["value"] is None
@@ -267,6 +289,7 @@ async def test_superseded_and_purged_evidence_is_stale_or_withdrawn(
     assert withdrawn["integrity"] == "withdrawn"
     assert withdrawn["quote"] is None
     assert withdrawn["source"]["code"] == "GONE"
+    assert stale["states_projection"] is withdrawn["states_projection"] is False
     assert delivery["integrity"] == "unverified"
     assert brief["corpus_check"]["status"] == "drift"
     assert {"MEMO", "GONE"} <= set(brief["corpus_check"]["drifted_sources"])

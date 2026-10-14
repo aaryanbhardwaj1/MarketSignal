@@ -37,9 +37,8 @@ def _raw() -> dict[str, Any]:
 
 @pytest.fixture(scope="module")
 def fixture() -> Fixture:
-    loaded = load_fixture("NORTHSTAR")
-    assert loaded is not None
-    return loaded
+    """Pinned to the v1 file; the committed v2 brief is covered by ``test_insights_v2``."""
+    return parse_fixture(_raw())
 
 
 def _numbers(text: str) -> set[Decimal]:

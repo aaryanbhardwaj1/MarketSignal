@@ -6,6 +6,7 @@
   withdrawn).
 * ``analyses``  - recomputes every named analysis with the deterministic analytics engine and
   compares it to the curated value (computed, mismatch or unavailable). Never persists.
+* ``summary``   - shows an analysis summary only when every number in it is a computed figure.
 * ``service``   - assembles the brief and the analyses responses, with a small in-process cache.
 
 Nothing here calls a language model or writes to the database.

@@ -5,13 +5,17 @@ an exact sentence of an evidence passage, and every number is a named analysis t
 deterministic engine recomputes on request. Loading fails closed: an unknown field, a handle
 outside the fixture's workspace, a superseded or planted handle, or a metric that points at a
 value the fixture does not pin, is a :class:`FixtureError`.
+
+Schema v2 adds claim types, signal kinds and statuses, opportunity risks and ``related`` links,
+and analysis summaries. Its fields default for a v1 file (which may not carry them) and are
+required in a v2 file, where every claim is checked against its grounding (:func:`check_claim`).
 """
 
 from __future__ import annotations
 
 import json
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from functools import cache
 from pathlib import Path
 from typing import Any, Literal
@@ -23,7 +27,7 @@ from marketsignal.evidence.handles import parse_handle
 from marketsignal.tools.analytics_contracts import AggregateIn, FilterRowsIn, GroupCompareIn
 
 FIXTURE_DIR = Path(__file__).parent / "fixtures"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 # Handles a fixture must never cite: planted prompt-injection blocks and a superseded report.
 BANNED_HANDLE_PREFIXES = (
     "NORTHSTAR/KINETIC-WEB@v1:S1.B12",
@@ -35,6 +39,19 @@ Op = Literal["aggregate", "filter_rows", "group_compare"]
 AnalysisUnit = Literal["percent", "count", "usd", "score", "ratio"]
 Category = Literal["customer", "product", "channel", "pricing"]
 OpportunityStatus = Literal["supported", "mixed_evidence", "emerging", "needs_research"]
+ClaimType = Literal["observed", "derived", "inference", "hypothesis", "forecast"]
+SignalKind = Literal[
+    "emerging_signal", "risk_blocker", "competitor_finding", "optimization", "future_outlook"
+]
+SignalStatus = Literal["strong_evidence", "emerging", "mixed_evidence", "needs_validation"]
+BusinessArea = Literal[
+    "Customer friction",
+    "Willingness to pay",
+    "Customer satisfaction",
+    "Product performance",
+    "Channels and growth",
+]
+INTERPRETIVE = frozenset({"inference", "hypothesis", "forecast"})
 SPEC_MODELS: dict[str, type[AggregateIn] | type[FilterRowsIn] | type[GroupCompareIn]] = {
     "aggregate": AggregateIn,
     "filter_rows": FilterRowsIn,
@@ -66,6 +83,17 @@ class ExpectedRow(_Model):
     values: dict[str, float | int] = Field(default_factory=dict)
 
 
+class ClaimText(_Model):
+    text: str = Field(min_length=1)
+    claim_type: ClaimType
+
+
+class Related(_Model):
+    analyses: list[str] = Field(default_factory=list)
+    opportunities: list[str] = Field(default_factory=list)
+    signals: list[str] = Field(default_factory=list)
+
+
 class AnalysisSpec(_Model):
     id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{1,62}$")
     title: str
@@ -81,9 +109,15 @@ class AnalysisSpec(_Model):
     parts: list[Part] = Field(min_length=1, max_length=4)
     expected: list[ExpectedRow] = Field(min_length=1)
     caveats: list[str] = Field(default_factory=list)
+    # v2
+    business_area: BusinessArea | None = None
+    summary: str | None = None  # every number must match a computed row (insights.summary)
+    interpretation: ClaimText | None = None
 
     @model_validator(mode="after")
     def _check(self) -> AnalysisSpec:
+        if self.interpretation is not None and self.interpretation.claim_type != "inference":
+            raise ValueError(f"{self.id}: an interpretation must be an inference")
         if parse_dataset_id(self.dataset) is None:
             raise ValueError(f"{self.id}: invalid dataset id {self.dataset!r}")
         model = SPEC_MODELS[self.op]
@@ -128,6 +162,13 @@ class EvidenceSpec(_Model):
     quote: str = Field(min_length=8)
     role: Literal["support", "contradict"] = "support"
     note: str | None = None
+    states_projection: bool = False  # the quoted passage itself states a forward projection
+
+
+class RiskSpec(_Model):
+    text: str = Field(min_length=1)
+    claim_type: ClaimType
+    evidence: list[EvidenceSpec] = Field(min_length=1)
 
 
 class SignalSpec(_Model):
@@ -138,6 +179,13 @@ class SignalSpec(_Model):
     evidence: list[EvidenceSpec] = Field(min_length=1)
     metrics: list[MetricSpec] = Field(default_factory=list)
     caveats: list[str] = Field(default_factory=list)
+    # v2
+    kind: SignalKind | None = None
+    status: SignalStatus | None = None
+    claim_type: ClaimType | None = None  # of ``statement``
+    implication: ClaimText | None = None
+    gaps: list[str] = Field(default_factory=list)
+    related: Related = Field(default_factory=Related)
 
 
 class OpportunitySpec(_Model):
@@ -151,6 +199,12 @@ class OpportunitySpec(_Model):
     gaps: list[str] = Field(default_factory=list)
     next_step: str
     caveats: list[str] = Field(default_factory=list)
+    # v2
+    thesis_claim_type: ClaimType | None = None
+    why_it_matters: ClaimText | None = None
+    risks: list[RiskSpec] = Field(default_factory=list)
+    next_investigation: str | None = None
+    related: Related = Field(default_factory=Related)
 
 
 class CorpusEntry(_Model):
@@ -158,7 +212,7 @@ class CorpusEntry(_Model):
 
 
 class Fixture(_Model):
-    schema_version: Literal[1]
+    schema_version: Literal[1, 2]
     fixture_version: str
     workspace: str
     label: Literal["Curated analyst brief"]
@@ -168,9 +222,11 @@ class Fixture(_Model):
     opportunities: list[OpportunitySpec]
 
     def all_evidence(self) -> list[EvidenceSpec]:
-        return [e for s in self.signals for e in s.evidence] + [
-            e for o in self.opportunities for e in o.evidence
-        ]
+        return (
+            [e for s in self.signals for e in s.evidence]
+            + [e for o in self.opportunities for e in o.evidence]
+            + [e for o in self.opportunities for r in o.risks for e in r.evidence]
+        )
 
     def all_metrics(self) -> list[MetricSpec]:
         return [m for s in self.signals for m in s.metrics] + [
@@ -197,6 +253,10 @@ class Fixture(_Model):
             )
             for pick in picks:
                 _check_pick(self, pick)
+        if self.schema_version >= 2:
+            _check_v2(self)
+        else:
+            _reject_v2_fields(self)
         return self
 
 
@@ -220,6 +280,102 @@ def _check_pick(fixture: Fixture, pick: Pick) -> None:
         raise ValueError(f"{pick.analysis_id}: pick {pick.group} must match one expected row")
     if pick.column is not None and pick.column not in rows[0].values:
         raise ValueError(f"{pick.analysis_id}: column {pick.column} is not pinned")
+
+
+V2_FIELDS: dict[type[_Model], tuple[str, ...]] = {
+    SignalSpec: ("kind", "status", "claim_type", "implication", "related"),
+    OpportunitySpec: (
+        "thesis_claim_type",
+        "why_it_matters",
+        "risks",
+        "next_investigation",
+        "related",
+    ),
+    AnalysisSpec: ("business_area", "summary"),
+}
+V2_OPTIONAL: dict[type[_Model], tuple[str, ...]] = {
+    SignalSpec: ("gaps",),
+    OpportunitySpec: (),
+    AnalysisSpec: ("interpretation",),
+}
+
+
+def _items(fixture: Fixture) -> list[tuple[str, _Model]]:
+    return [
+        *((s.id, s) for s in fixture.signals),
+        *((o.id, o) for o in fixture.opportunities),
+        *((a.id, a) for a in fixture.analyses),
+    ]
+
+
+def _reject_v2_fields(fixture: Fixture) -> None:
+    """A v1 file is never claim-checked, so it may not carry v2 fields at all."""
+    for item_id, item in _items(fixture):
+        extra = item.model_fields_set & {*V2_FIELDS[type(item)], *V2_OPTIONAL[type(item)]}
+        if extra:
+            raise ValueError(f"{item_id}: schema_version 1 cannot carry {sorted(extra)}")
+
+
+def check_claim(
+    where: str, claim_type: ClaimType, evidence: Sequence[EvidenceSpec], metric_count: int
+) -> None:
+    """The grounding a claim type needs (v2 rules 1-4); ``evidence`` and ``metric_count`` are
+    what the claim's item cites."""
+    support = [e for e in evidence if e.role == "support"]
+    if claim_type == "observed" and not support:
+        raise ValueError(f"{where}: an observed claim needs a supporting quote")
+    if claim_type == "derived" and metric_count == 0:
+        raise ValueError(f"{where}: a derived claim needs a metric")
+    if claim_type in INTERPRETIVE and not evidence and metric_count == 0:
+        raise ValueError(f"{where}: a {claim_type} claim needs evidence or a metric")
+    if claim_type == "forecast" and not any(e.states_projection for e in support):
+        raise ValueError(f"{where}: a forecast needs a cited passage that states the projection")
+
+
+def _check_required(fixture: Fixture) -> None:
+    for item_id, item in _items(fixture):
+        for name in V2_FIELDS[type(item)]:
+            value = getattr(item, name)
+            if name not in item.model_fields_set or value is None or value == "":
+                raise ValueError(f"{item_id}: schema_version 2 requires {name}")
+
+
+def _check_related(fixture: Fixture, item_id: str, related: Related) -> None:
+    known = {
+        "analyses": {a.id for a in fixture.analyses},
+        "opportunities": {o.id for o in fixture.opportunities},
+        "signals": {s.id for s in fixture.signals},
+    }
+    for kind, ids in known.items():
+        missing = [i for i in getattr(related, kind) if i not in ids]
+        if missing:
+            raise ValueError(f"{item_id}: related {kind} {missing} do not exist")
+
+
+def _check_v2(fixture: Fixture) -> None:
+    _check_required(fixture)
+    for kind, ids in (
+        ("signal", [s.id for s in fixture.signals]),
+        ("opportunity", [o.id for o in fixture.opportunities]),
+    ):
+        if len(set(ids)) != len(ids):
+            raise ValueError(f"duplicate {kind} id")
+    for s in fixture.signals:
+        assert s.claim_type is not None
+        assert s.implication is not None
+        check_claim(f"{s.id} statement", s.claim_type, s.evidence, len(s.metrics))
+        check_claim(f"{s.id} implication", s.implication.claim_type, s.evidence, len(s.metrics))
+        _check_related(fixture, s.id, s.related)
+    for o in fixture.opportunities:
+        assert o.thesis_claim_type is not None
+        assert o.why_it_matters is not None
+        check_claim(f"{o.id} thesis", o.thesis_claim_type, o.evidence, len(o.metrics))
+        why = o.why_it_matters.claim_type
+        check_claim(f"{o.id} why it matters", why, o.evidence, len(o.metrics))
+        for n, risk in enumerate(o.risks, 1):
+            # a risk carries no metrics of its own, so it can never be "derived"
+            check_claim(f"{o.id} risk {n}", risk.claim_type, risk.evidence, 0)
+        _check_related(fixture, o.id, o.related)
 
 
 def parse_fixture(raw: dict[str, Any]) -> Fixture:

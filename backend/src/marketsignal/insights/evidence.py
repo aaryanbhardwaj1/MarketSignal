@@ -7,7 +7,8 @@
 * ``stale``     - the passage resolves but the version is superseded or the quote is gone.
 * ``withdrawn`` - the passage no longer exists in this workspace, or its source was purged.
 
-Only a verified reference carries the quote; the others never show text.
+Only a verified reference carries the quote; the others never show text. ``states_projection``
+echoes the curated flag: the quoted passage itself states a forward projection (a forecast).
 """
 
 from __future__ import annotations
@@ -89,6 +90,7 @@ def _ref(spec: EvidenceSpec, integrity: Integrity, **fields: Any) -> dict[str, A
         "child_id": None,
         "locator_label": "",
         "note": spec.note,
+        "states_projection": spec.states_projection,
     }
     return {**base, **fields}
 
