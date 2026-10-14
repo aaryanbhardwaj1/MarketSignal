@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import analysesFixture from "@/lib/api/__fixtures__/insights-analyses.json";
-import type { AnalysesResponse, Analysis } from "@/lib/api/contracts";
+import type { AnalysesResponse } from "@/lib/api/contracts";
 import { humanizeColumn as humanizeKey, humanizeValue } from "@/lib/format";
 import { collapseRepeats, describeMetricKey, describeResult } from "@/lib/result-summary";
-import { analysisHeadline, describeFilter, formatListingCell, rowBase } from "./analysis-format";
+import { describeFilter, formatListingCell, rowBase } from "./analysis-format";
 
 const analyses = (analysesFixture as unknown as AnalysesResponse).analyses;
 
@@ -44,7 +44,6 @@ describe("analysis wording", () => {
     const returns = byId("q3-returns-by-reason");
     expect(rowBase(returns.rows[0], returns)).toBe("Total across 7 of 30 return records");
     const pains = byId("genz-top-pain-points");
-    expect(analysisHeadline(pains)).toMatchObject({ display: "27.0%", context: "108 of 400 Gen Z respondents" });
     expect(rowBase(pains.rows[0], pains)).toBe("27.0% of 400 Gen Z respondents");
     const price = byId("price-sensitivity-by-cohort");
     expect(rowBase(price.rows[0], price)).toBe("Average of 400 respondents");
@@ -52,14 +51,6 @@ describe("analysis wording", () => {
     expect(rowBase(sales.rows[0], sales)).toBe("Total across 6 records");
     for (const a of analyses) {
       for (const r of a.rows) expect(rowBase(r, a) ?? "").not.toMatch(/n =|Base shown/);
-    }
-  });
-
-  it("only returns a headline for computed analyses", () => {
-    for (const a of analyses) {
-      const withheld: Analysis = { ...a, status: "mismatch" };
-      expect(analysisHeadline(withheld)).toBeNull();
-      if (a.status === "computed" && a.rows.length > 0) expect(analysisHeadline(a)?.display).toBeTruthy();
     }
   });
 });

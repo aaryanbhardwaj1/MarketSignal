@@ -37,6 +37,14 @@ describe("InsightCard", () => {
     expect(html).toMatch(/Gen Z respondents/);
   });
 
+  it("shows spreadsheet passages as labelled fields, not raw column names", () => {
+    const html = card(signal("fit-returns"));
+    expect(html).not.toContain("total_sku_returns");
+    expect(html).toContain("<dl");
+    // A free-text passage from a tabular source still reads as a quote.
+    expect(card(signal("sustainability-proof"))).toContain("<blockquote");
+  });
+
   it("shows supporting and contradicting counts", () => {
     const s = signal("premium-ceiling");
     const html = card(s);
@@ -49,15 +57,15 @@ describe("InsightCard", () => {
     const html = card(s);
     expect(html).toContain('data-claim="forecast"');
     const source = s.evidence.find((e) => e.states_projection)!.source.title;
-    expect(html).toContain(`Forecast stated by ${esc(source)}`);
+    expect(html).toContain(`Projection stated by ${esc(source)}`);
     expect(html).toContain("Open questions");
   });
 
   it("labels an unsourced outlook as a hypothesis", () => {
     const html = card(signal("creator-discovery-outlook"));
     expect(html).toContain('data-claim="hypothesis"');
-    expect(html).toContain("Hypothesis: no cited source states this projection");
-    expect(html).not.toContain("Forecast stated by");
+    expect(html).toContain("No cited source states this projection; treat it as a proposition to test");
+    expect(html).not.toContain("Projection stated by");
   });
 
   it("withholds every number when the item could not be re-verified", () => {

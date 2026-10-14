@@ -27,6 +27,15 @@ describe("AnalysisDetailView", () => {
     expect(html).toContain("/w/NORTHSTAR/evidence?q=");
   });
 
+  it("states the population once when it is also the base, and both when they differ", () => {
+    const shared = business(render(byId("genz-top-pain-points")));
+    expect(shared.match(/400 Gen Z respondents<\/dd>/g)).toHaveLength(1);
+    expect(shared).toContain("Population and base");
+    const perRow = business(render(byId("pain-points-by-cohort")));
+    expect(perRow).toContain("Population");
+    expect(perRow).toContain("Shown per row: each group has its own base");
+  });
+
   it("charts a categorical result with every group's value", () => {
     const a = byId("genz-top-pain-points");
     const html = business(render(a));

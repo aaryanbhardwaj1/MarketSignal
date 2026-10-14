@@ -142,14 +142,6 @@ export function recordShare(row: AnalysisRow, analysis: Pick<Analysis, "denomina
   return formatPercent(row.value / analysis.denominator.value, { digits: 1 });
 }
 
-/** Card footer: the population the analysis covers, in plain words. */
-export function coverageLine(analysis: Analysis): string | null {
-  const noun = baseNoun(analysis);
-  if (analysis.denominator) return `Based on ${formatNumber(analysis.denominator.value)} ${noun}`;
-  const matched = analysis.provenance.rows_matched;
-  return matched != null ? `Based on ${formatNumber(matched)} ${noun}` : null;
-}
-
 /** A listing cell, formatted by its column suffix; text is shown as given. */
 export function formatListingCell(column: string, raw: string | undefined): string {
   if (raw == null || raw === "") return "-";
@@ -158,39 +150,6 @@ export function formatListingCell(column: string, raw: string | undefined): stri
   if (column.endsWith("_pct")) return `${n.toFixed(1)}%`;
   if (column.endsWith("_usd")) return formatUsd(n, { digits: Number.isInteger(n) ? 0 : 2 });
   return formatNumber(n);
-}
-
-export interface Headline {
-  /** What the figure describes ("Fit inconsistency"). */
-  label: string;
-  display: string;
-  /** Base or denominator ("108 of 400 Gen Z respondents"), when the endpoint gives one. */
-  context: string | null;
-}
-
-/**
- * The figure a card leads with: the single value when there is one, otherwise the first row as the
- * endpoint ordered it. Null unless the analysis was recomputed and matched (numbers are withheld otherwise).
- */
-export function analysisHeadline(analysis: Analysis): Headline | null {
-  if (analysis.status !== "computed") return null;
-  if (analysis.value != null && analysis.display) {
-    return {
-      label: analysis.title,
-      display: analysis.display,
-      context: analysis.denominator ? `Based on ${formatNumber(analysis.denominator.value)} ${analysis.denominator.label}` : null,
-    };
-  }
-  const first = analysis.rows[0];
-  if (!first || first.display == null) return null;
-  const label =
-    analysis.op === "filter_rows" && analysis.columns
-      ? listingRowLabel(first, analysis.columns)
-      : rowLabel(first, analysis.group_by);
-  const share = recordShare(first, analysis);
-  // A count of respondents leads with its share of the population; the count becomes the base.
-  if (share) return { label, display: share, context: `${first.display} of ${formatNumber(analysis.denominator?.value ?? 0)} ${baseNoun(analysis)}` };
-  return { label, display: first.display, context: rowBase(first, analysis) };
 }
 
 export interface AnalysisState {
@@ -219,11 +178,6 @@ export function analysisState(analysis: Pick<Analysis, "status">): AnalysisState
         message: "This dataset is not currently available, so the analysis could not be recomputed.",
       };
   }
-}
-
-/** Plain-language scope line: filters, then the dataset ("Age group: 18-21, 22-24 or 25-27 · Northstar Customer Survey 2026"). */
-export function scopeLine(analysis: Pick<Analysis, "filters" | "provenance">): string {
-  return [...analysis.filters.map(describeFilter), analysis.provenance.source_title].join(" · ");
 }
 
 /** A listing column is numeric when every non-empty cell parses as a number. */

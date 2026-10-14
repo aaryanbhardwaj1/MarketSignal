@@ -69,7 +69,7 @@ export function MetricFigure({ metric, compact = false }: { metric: MetricView; 
 export function BriefMeta({ brief }: { brief: InsightsBrief }) {
   return (
     <span>
-      Curated analyst brief, re-verified against current evidence on {formatDateTime(brief.computed_at)}
+      Curated analyst brief · last re-verified {formatDateTime(brief.computed_at)}
     </span>
   );
 }

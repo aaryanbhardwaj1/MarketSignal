@@ -63,7 +63,12 @@ export function AnalyticsView({ ws }: { ws: string }) {
             <RefreshCw aria-hidden className="size-3.5" />
             <span>
               {TRUST_LINE}
-              {analyses.data?.computed_at && ` Last recomputed ${formatDateTime(analyses.data.computed_at)}.`}
+              {analyses.data?.computed_at && (
+                <>
+                  {" "}
+                  <span className="whitespace-nowrap">Last recomputed {formatDateTime(analyses.data.computed_at)}.</span>
+                </>
+              )}
             </span>
           </span>
         }

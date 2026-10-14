@@ -22,9 +22,9 @@ function OutlookLine({ signal }: { signal: Signal }) {
     <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-secondary">
       <ClaimTag type={nature.type} explain />
       {nature.type === "forecast" ? (
-        <span>Forecast stated by {nature.sources.join(", ")}</span>
+        <span>Projection stated by {nature.sources.join(", ")}</span>
       ) : (
-        <span>Hypothesis: no cited source states this projection</span>
+        <span>No cited source states this projection; treat it as a proposition to test</span>
       )}
     </p>
   );

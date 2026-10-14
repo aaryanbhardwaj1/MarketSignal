@@ -176,11 +176,14 @@ export function AnalysisDetailView({ ws, analysis, titles = NO_TITLES }: { ws: s
   const listing = analysis.op === "filter_rows";
   const chips = filterChips(analysis);
   const population = populationLine(analysis);
+  const base = baseText(analysis);
   const computed = analysis.status === "computed";
 
   const measured = [
-    ...(population ? [{ label: "Population", value: population }] : []),
-    { label: "Base", value: baseText(analysis) },
+    // When every figure is out of the whole population, say so once rather than twice.
+    ...(population === base
+      ? [{ label: "Population and base", value: base }]
+      : [...(population ? [{ label: "Population", value: population }] : []), { label: "Base", value: base }]),
     {
       label: "Groups",
       value: analysis.group_by.length > 0 ? analysis.group_by.map((k) => humanizeColumn(k)).join(" and ") : listing ? "One row per record" : "Not grouped",

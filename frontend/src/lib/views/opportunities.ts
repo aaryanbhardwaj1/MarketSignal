@@ -156,11 +156,13 @@ export function relatedLinks(
 
 // ── comparable figures ──────────────────────────────────────────────────────────────────────
 
-/** "Measure, group" -> measure and group; a label without a comma is a measure alone. */
+/** "Measure, group" -> measure and group; a label without a comma is a measure alone. The group
+ * starts a chart row, so it is sentence-cased ("aged 28+" -> "Aged 28+"). */
 export function splitMeasure(label: string): { measure: string; group: string | null } {
   const at = label.indexOf(", ");
   if (at < 0) return { measure: label, group: null };
-  return { measure: label.slice(0, at).trim(), group: label.slice(at + 2).trim() || null };
+  const group = label.slice(at + 2).trim();
+  return { measure: label.slice(0, at).trim(), group: group ? group.charAt(0).toUpperCase() + group.slice(1) : null };
 }
 
 /** A chart value label in the figure's own unit (percent values are already in percent units). */

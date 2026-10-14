@@ -146,7 +146,7 @@ describe("comparable figures", () => {
   it("splits a label into its measure and group", () => {
     expect(splitMeasure("Lack of personalization is the top frustration, aged 28+")).toEqual({
       measure: "Lack of personalization is the top frustration",
-      group: "aged 28+",
+      group: "Aged 28+",
     });
     expect(splitMeasure("Q3 returns: fit runs large")).toEqual({ measure: "Q3 returns: fit runs large", group: null });
   });
@@ -155,7 +155,7 @@ describe("comparable figures", () => {
     const { groups, singles } = comparableGroups(byId("O2"), index);
     expect(groups).toHaveLength(1);
     expect(groups[0].measure).toBe("Lack of personalization is the top frustration");
-    expect(groups[0].items.map((i) => i.group)).toEqual(["Gen Z", "aged 28+", "Value Seekers"]);
+    expect(groups[0].items.map((i) => i.group)).toEqual(["Gen Z", "Aged 28+", "Value Seekers"]);
     expect(singles).toHaveLength(0);
   });
 

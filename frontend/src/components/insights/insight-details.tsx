@@ -3,8 +3,10 @@
 import type { ReactNode } from "react";
 import type { EvidenceRef, Signal } from "@/lib/api/contracts";
 import { cx } from "@/lib/cx";
-import { businessLocator } from "@/lib/format";
+import { RowFields } from "@/components/ui/row-fields";
+import { businessLocator, parseRowPassage } from "@/lib/format";
 import { evidenceView } from "@/lib/insights-view";
+import { isTabularSource } from "@/lib/labels";
 import type { RelatedLink } from "@/lib/views/insights";
 import { RelatedLinks } from "./insight-parts";
 
@@ -22,6 +24,8 @@ const ROLE_LABEL: Record<EvidenceRef["role"], string> = { support: "Supports", c
 function Passage({ evidence, onOpen }: { evidence: EvidenceRef; onOpen?: (ref: EvidenceRef) => void }) {
   const view = evidenceView(evidence);
   const where = [view.sourceTitle, businessLocator(view.locator)].filter(Boolean).join(" · ");
+  // Spreadsheet and CSV rows read as labelled fields, as in the evidence drawer, not "column: value; ...".
+  const fields = view.quote && isTabularSource(evidence.source.source_type) ? parseRowPassage(view.quote) : null;
   return (
     <li
       className={cx(
@@ -37,7 +41,9 @@ function Passage({ evidence, onOpen }: { evidence: EvidenceRef; onOpen?: (ref: E
         {where}
         {evidence.states_projection && <span> · states a projection</span>}
       </p>
-      {view.quote ? (
+      {fields ? (
+        <RowFields fields={fields} className="mt-1 text-sm!" />
+      ) : view.quote ? (
         <blockquote className="mt-1 text-sm text-primary">&ldquo;{view.quote}&rdquo;</blockquote>
       ) : (
         <p className="mt-1 text-sm text-muted">

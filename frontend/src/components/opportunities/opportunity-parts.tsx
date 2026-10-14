@@ -71,7 +71,7 @@ export function FigureLine({ metric }: { metric: MetricView }) {
         <span className="text-lg font-semibold tabular-nums text-primary">{metric.display}</span>
         <ClaimTag type="derived" size="sm" />
       </div>
-      <p className="mt-0.5 text-sm text-secondary">{metric.label}</p>
+      <p className="mt-0.5 text-sm text-pretty text-secondary">{metric.label}</p>
       {metric.base && (
         <p className="text-xs text-muted">
           {metric.baseLabel} <span className="tabular-nums">{metric.base}</span>

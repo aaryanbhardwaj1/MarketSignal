@@ -82,7 +82,7 @@ export function AnalysisMiniVisual({ analysis }: { analysis: Analysis }) {
           caption={`${measure.label}, top ${bars.length}`}
           valueLabel={measure.label}
           format={(v) => formatListingCell(measure.column, String(v))}
-          labelWidth="9rem"
+          labelWidth="11rem"
         />
       );
     }
@@ -96,7 +96,7 @@ export function AnalysisMiniVisual({ analysis }: { analysis: Analysis }) {
           caption={more > 0 ? `Top ${bars.length} of ${analysis.rows.length}` : undefined}
           valueLabel={unitLabel(analysis.unit)}
           format={fmt}
-          labelWidth="9rem"
+          labelWidth="11rem"
         />
       );
     }
