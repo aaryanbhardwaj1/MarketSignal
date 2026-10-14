@@ -42,9 +42,9 @@ describe("toSavedRunView (research run 6f18725e)", () => {
   it("labels each saved research step in plain language", () => {
     expect(view.steps.map((s) => s.label)).toEqual([
       "Reviewed a dataset",
-      "Searched the evidence library",
+      "Searched the Evidence Library",
       "Computed a figure from Northstar Customer Survey 2026",
-      "Searched the evidence library",
+      "Searched the Evidence Library",
       "Read 4 evidence passages",
     ]);
     expect(view.steps[1].detail).toBe("10 passages found");

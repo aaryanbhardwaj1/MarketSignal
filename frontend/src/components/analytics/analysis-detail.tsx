@@ -227,7 +227,7 @@ export function AnalysisDetailView({ ws, analysis, titles = NO_TITLES }: { ws: s
             href={evidenceLibraryHref(ws, { q: prov.source_title })}
             className="inline-flex items-center gap-1 rounded-sm text-sm font-medium text-accent-text hover:underline"
           >
-            View source in Evidence library <ArrowRight aria-hidden className="size-3.5" />
+            View source in Evidence Library <ArrowRight aria-hidden className="size-3.5" />
           </Link>
         }
       >

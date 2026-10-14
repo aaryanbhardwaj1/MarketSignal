@@ -50,13 +50,13 @@ export function EvidenceCard({
       {fields ? (
         <RowFields
           fields={fields}
-          className={cx("mt-3 border-l-2 pl-3", role === "contradict" ? "border-warn" : "border-border-strong")}
+          className={cx("mt-3 border-l-2 pl-3", role === "contradict" ? "border-contradicting" : "border-border-strong")}
         />
       ) : (
         <blockquote
           className={cx(
             "mt-3 border-l-2 pl-3 text-base leading-relaxed text-secondary",
-            role === "contradict" ? "border-warn" : "border-border-strong",
+            role === "contradict" ? "border-contradicting" : "border-border-strong",
           )}
         >
           {quote}

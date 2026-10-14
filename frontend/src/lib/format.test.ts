@@ -84,7 +84,13 @@ describe("format", () => {
   it("keeps only business parts of an evidence locator", () => {
     expect(businessLocator("Page 4, Block 2")).toBe("Page 4");
     expect(businessLocator("Section 1, Block 6")).toBe("Section 1");
-    expect(businessLocator("Sheet 'Returns', Row 12")).toBe("Sheet 'Returns', Row 12");
+    expect(businessLocator("Sheet 'Returns', Row 12")).toBe("Returns sheet, Row 12");
+    expect(businessLocator("Sheet 'Market_Sizing'")).toBe("Market sizing sheet");
+    expect(businessLocator("Sheet 'SKU_Performance', Row 7")).toBe("SKU performance sheet, Row 7");
+    expect(businessLocator("Sheet 'Plan, 2026', Row 3")).toBe("Plan 2026 sheet, Row 3");
+    expect(businessLocator("Sheet 3, Row 2")).toBe("Sheet 3, Row 2");
+    expect(businessLocator("Slide 14, Block 3")).toBe("Slide 14");
+    expect(businessLocator("Computed result 12")).toBe("Computed result 12");
     expect(businessLocator("Block 6")).toBe("Passage 6");
     expect(businessLocator(null)).toBe("");
   });

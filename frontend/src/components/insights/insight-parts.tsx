@@ -40,7 +40,7 @@ export function EvidenceCount({ supporting, contradicting }: { supporting: numbe
       <p className="text-xs text-secondary tabular-nums">
         {formatCount(supporting, "supporting", "supporting")}
         <span aria-hidden className="text-muted"> · </span>
-        <span className={cx(contradicting > 0 && "font-medium text-status-mixed")}>
+        <span className={cx(contradicting > 0 && "font-medium text-contradicting")}>
           {formatCount(contradicting, "contradicting", "contradicting")}
         </span>
       </p>
@@ -48,7 +48,7 @@ export function EvidenceCount({ supporting, contradicting }: { supporting: numbe
         <div aria-hidden className="mt-1 flex h-1 w-24 gap-px overflow-hidden rounded-full bg-sunken">
           <span className="h-full bg-accent" style={{ width: `${(supporting / total) * 100}%` }} />
           {contradicting > 0 && (
-            <span className="h-full bg-chart-negative" style={{ width: `${(contradicting / total) * 100}%` }} />
+            <span className="h-full bg-contradicting" style={{ width: `${(contradicting / total) * 100}%` }} />
           )}
         </div>
       )}

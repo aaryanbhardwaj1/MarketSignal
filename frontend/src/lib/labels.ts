@@ -185,7 +185,7 @@ export const ROUTE_REASONS: Dict = {
 
 /** Research tool names (tools/contracts.py ToolName) as research-step phrases. */
 export const TOOL_STEPS: Dict = {
-  search_evidence: { label: "Searched the evidence library" },
+  search_evidence: { label: "Searched the Evidence Library" },
   search_evidence_keyword: { label: "Searched for exact terms" },
   get_evidence: { label: "Read an evidence passage" },
   list_sources: { label: "Reviewed available sources" },

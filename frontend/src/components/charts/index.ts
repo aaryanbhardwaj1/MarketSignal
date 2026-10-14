@@ -8,3 +8,4 @@ export { Sparkline } from "./sparkline";
 export { StackedBar, type StackSegment } from "./stacked-bar";
 export { StageBreakdown, stageLayout, type StageTiming } from "./stage-breakdown";
 export * from "./scale";
+export * from "./label-layout";

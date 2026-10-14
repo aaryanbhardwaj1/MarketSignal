@@ -36,8 +36,8 @@ export function EvidenceBalance({
         <span className="text-secondary">
           {labels.supporting} <span className="font-semibold text-primary">{supporting}</span>
         </span>
-        <span className="text-secondary">
-          <span className="font-semibold text-primary">{contradicting}</span> {labels.contradicting}
+        <span className={contradicting > 0 ? "text-contradicting" : "text-secondary"}>
+          <span className="font-semibold">{contradicting}</span> {labels.contradicting}
         </span>
       </div>
       <div aria-hidden className="mt-1.5 flex h-2 w-full gap-0.5 overflow-hidden rounded-full bg-sunken">
@@ -45,7 +45,7 @@ export function EvidenceBalance({
           <>
             {sup.share > 0 && <span className="h-full rounded-l-full bg-accent" style={{ width: `${sup.share * 100}%` }} />}
             {neu.share > 0 && <span className="h-full" style={{ width: `${neu.share * 100}%`, backgroundColor: "var(--color-chart-3)" }} />}
-            {con.share > 0 && <span className="h-full rounded-r-full" style={{ width: `${con.share * 100}%`, backgroundColor: "var(--color-chart-negative)" }} />}
+            {con.share > 0 && <span className="h-full rounded-r-full" style={{ width: `${con.share * 100}%`, backgroundColor: "var(--color-contradicting)" }} />}
           </>
         )}
       </div>

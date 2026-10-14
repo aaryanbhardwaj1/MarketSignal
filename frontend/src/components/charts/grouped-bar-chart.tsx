@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { ChartEmpty, ChartFrame, CHART_TEXT, SERIES_COLORS } from "./chart-frame";
+import { visibleLabels, wrapLabel } from "./label-layout";
 import { bandLayout, defaultFormat, linearScale, niceDomain, ticks } from "./scale";
 import { useChartWidth } from "./use-chart-width";
 
@@ -11,8 +12,10 @@ export interface BarSeries {
 }
 
 const AXIS_W = 40;
-const BOTTOM = 24;
 const TOP = 16;
+/** Space under the plot: gap + one 13px line per category-label line. */
+const LABEL_GAP = 10;
+const LINE_H = 13;
 
 /** Vertical grouped bars: 2-4 series per category, fixed series colour order, legend always shown. */
 export function GroupedBarChart({
@@ -43,11 +46,24 @@ export function GroupedBarChart({
 
   const domain = niceDomain(shown.flatMap((s) => s.values));
   const plotW = Math.max(60, width - AXIS_W);
-  const plotH = height - BOTTOM - TOP;
-  const y = linearScale(domain, [TOP + plotH, TOP]);
   const outer = bandLayout(categories.length, plotW, 0.28);
   const inner = bandLayout(shown.length, outer.bandwidth, 0.12);
+  // Category labels wrap to two lines within their band; anything longer is truncated with a <title>.
+  const categoryLabels = categories.map((c) => wrapLabel(c, Math.max(24, outer.step - 6)));
+  const labelLines = Math.max(1, ...categoryLabels.map((l) => l.lines.length));
+  const bottom = LABEL_GAP + labelLines * LINE_H;
+  const plotH = height - bottom - TOP;
+  const y = linearScale(domain, [TOP + plotH, TOP]);
   const labels = showValues ?? categories.length * shown.length <= 12;
+  // Value labels that would collide with a neighbour (narrow bars) are skipped; the data table keeps every value.
+  const valueLabels = categories.flatMap((_, ci) =>
+    shown.map((s, si) => {
+      const v = s.values[ci];
+      const top = Math.min(y(v), y(0));
+      return { x: AXIS_W + outer.start(ci) + inner.start(si) + inner.bandwidth / 2, y: top - 4, text: Number.isFinite(v) ? format(v) : "" };
+    }),
+  );
+  const valueVisible = labels ? visibleLabels(valueLabels) : [];
 
   const table = {
     columns: ["Category", ...shown.map((s) => s.name)],
@@ -82,7 +98,7 @@ export function GroupedBarChart({
                       <rect x={bx} y={top} width={inner.bandwidth} height={h} rx={2} fill={SERIES_COLORS[si]}>
                         <title>{`${c}, ${s.name}: ${format(v)}`}</title>
                       </rect>
-                      {labels && (
+                      {labels && valueVisible[ci * shown.length + si] && (
                         <text x={bx + inner.bandwidth / 2} y={top - 4} textAnchor="middle" {...CHART_TEXT}>
                           {format(v)}
                         </text>
@@ -90,8 +106,13 @@ export function GroupedBarChart({
                     </g>
                   );
                 })}
-                <text x={gx + outer.bandwidth / 2} y={height - 6} textAnchor="middle" {...CHART_TEXT} fill="var(--color-text-secondary)">
-                  {c}
+                <text x={gx + outer.bandwidth / 2} y={TOP + plotH + LABEL_GAP + 9} textAnchor="middle" {...CHART_TEXT} fill="var(--color-text-secondary)">
+                  {categoryLabels[ci].truncated && <title>{c}</title>}
+                  {categoryLabels[ci].lines.map((line, li) => (
+                    <tspan key={li} x={gx + outer.bandwidth / 2} dy={li === 0 ? 0 : LINE_H}>
+                      {line}
+                    </tspan>
+                  ))}
                 </text>
               </g>
             );

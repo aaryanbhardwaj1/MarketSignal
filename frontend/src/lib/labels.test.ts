@@ -111,6 +111,6 @@ describe("labels", () => {
     expect(opportunityStatus("needs_research").tone).toBe("neutral");
     expect(terminationState("cancelled").tone).toBe("neutral");
     expect(terminationState("completed").tone).toBe("success");
-    expect(toolStep("search_evidence").label).toBe("Searched the evidence library");
+    expect(toolStep("search_evidence").label).toBe("Searched the Evidence Library");
   });
 });

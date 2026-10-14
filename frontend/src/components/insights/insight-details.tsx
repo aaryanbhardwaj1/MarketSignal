@@ -30,11 +30,11 @@ function Passage({ evidence, onOpen }: { evidence: EvidenceRef; onOpen?: (ref: E
     <li
       className={cx(
         "border-l-2 pl-3",
-        evidence.role === "contradict" ? "border-l-chart-negative" : "border-l-accent-muted",
+        evidence.role === "contradict" ? "border-l-contradicting" : "border-l-accent-muted",
       )}
     >
       <p className="text-xs text-muted">
-        <span className={cx("font-medium", evidence.role === "contradict" ? "text-status-mixed" : "text-secondary")}>
+        <span className={cx("font-medium", evidence.role === "contradict" ? "text-contradicting" : "text-secondary")}>
           {ROLE_LABEL[evidence.role]}
         </span>
         <span aria-hidden> · </span>

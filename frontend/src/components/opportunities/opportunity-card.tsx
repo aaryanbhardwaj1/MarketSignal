@@ -23,8 +23,8 @@ export function EvidenceBalanceLine({ opportunity, compact = false }: { opportun
       <span aria-hidden className="text-disabled">
         ·
       </span>
-      <span>
-        <span className="font-semibold tabular-nums text-primary">{b.contradicting}</span> contradicting
+      <span className={b.contradicting > 0 ? "text-contradicting" : undefined}>
+        <span className="font-semibold tabular-nums">{b.contradicting}</span> contradicting
       </span>
       <span aria-hidden className="text-disabled">
         ·

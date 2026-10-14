@@ -15,24 +15,34 @@ function routeText(code: string | null): string {
   return h.known ? h.label : code;
 }
 
-/** Outcome as dot + label; the recorded termination state and extra flags sit underneath. */
+/** Verification result in words, with a regeneration note. */
+function verificationText(row: TelemetryRunRow): { label: string; description?: string } {
+  if (!row.verification_disposition) return { label: "Verification not recorded" };
+  const d = verificationDisposition(row.verification_disposition);
+  return { label: `${d.label}${row.regenerated ? " · Regenerated" : ""}`, description: d.description };
+}
+
+/**
+ * Outcome as dot + label, the verification result underneath (+ a flag badge); the recorded
+ * status, termination state, verification detail and implied flags are in the tooltip.
+ */
 function Status({ row }: { row: TelemetryRunRow }) {
   const key = outcomeOf({ status: row.status, termination_state: row.termination_state, disposition: row.verification_disposition });
   const outcome = outcomeMeta(key);
-  // The termination line adds detail only where the outcome groups several recorded states.
-  const showTerm = key === "limited" || key === "failed" || key === "cancelled";
   const status = runStatus(row.status);
   const term = row.termination_state ? terminationState(row.termination_state) : null;
   const { implied, extra } = outcomeFlags(row.termination_state, row.flags);
+  const verification = verificationText(row);
   const title = [
     `Status: ${status.known ? status.label : row.status}`,
     `Ended as: ${term ? (term.known ? term.label : term.code) : "not recorded"}`,
+    `Verification: ${verification.label}${verification.description ? ` (${verification.description})` : ""}`,
     ...implied.map((f) => `${flagLabel(f)} (${f})`),
   ].join("\n");
   return (
-    <div className="flex min-w-44 flex-col items-start gap-0.5" title={title}>
+    <div className="flex flex-col items-start gap-0.5" title={title}>
       <StatusIndicator tone={outcome.tone} label={outcome.label} className="whitespace-nowrap" />
-      {showTerm && term && term.label !== outcome.label && <span className="pl-3.5 text-xs text-muted">{term.known ? term.label : term.code}</span>}
+      <span className="pl-3.5 text-xs whitespace-nowrap text-muted">{verification.label}</span>
       {extra.length > 0 && (
         <span className="pl-3.5">
           <Badge tone="warn" title={extra.map((f) => `${flagLabel(f)} (${f})`).join("\n")}>
@@ -45,33 +55,35 @@ function Status({ row }: { row: TelemetryRunRow }) {
   );
 }
 
-const shortTime = (iso: string): string => {
+/** Compact run time ("Oct 14, 13:55"); the full date and time are in the tooltip. */
+export const shortTime = (iso: string): string => {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 };
+
+const MODE_LABEL: Readonly<Record<string, string>> = { standard: "Standard", research: "Research" };
+const modeLabel = (mode: string): string => MODE_LABEL[mode] ?? mode;
 
 const columns = (href: (row: TelemetryRunRow) => string): Column<TelemetryRunRow>[] => [
   {
     key: "run",
     header: "Run",
     cell: (r) => (
-      <Link
-        href={href(r)}
-        aria-label={`Open run ${shortId(r.id)} from ${formatDateTime(r.created_at)}`}
-        className="rounded-sm font-mono text-sm text-accent-text underline-offset-2 hover:underline"
-        title={r.id}
-      >
-        {shortId(r.id)}
-      </Link>
-    ),
-  },
-  {
-    key: "time",
-    header: "Time",
-    cell: (r) => (
-      <span className="whitespace-nowrap text-sm text-secondary" title={formatDateTime(r.created_at)}>
-        {shortTime(r.created_at)}
-      </span>
+      <div className="whitespace-nowrap">
+        <Link
+          href={href(r)}
+          aria-label={`Open run ${shortId(r.id)} from ${formatDateTime(r.created_at)}`}
+          className="rounded-sm font-mono text-sm text-accent-text underline-offset-2 hover:underline"
+          title={r.id}
+        >
+          {shortId(r.id)}
+        </Link>
+        <p className="text-xs text-muted tabular-nums" title={formatDateTime(r.created_at)}>
+          {shortTime(r.created_at)}
+        </p>
+      </div>
     ),
   },
   {
@@ -82,57 +94,40 @@ const columns = (href: (row: TelemetryRunRow) => string): Column<TelemetryRunRow
         <p className="truncate text-sm" title={r.question}>
           {r.question}
         </p>
-        <p className="truncate text-xs text-muted">{routeText(r.route_reason)}</p>
+        <p className="truncate text-xs text-muted" title={`${modeLabel(r.mode)} mode · ${routeText(r.route_reason)}`}>
+          {modeLabel(r.mode)} · {routeText(r.route_reason)}
+        </p>
       </div>
     ),
   },
-  { key: "mode", header: "Mode", cell: (r) => <span className="text-sm capitalize">{r.mode}</span> },
-  { key: "status", header: "Outcome", cell: (r) => <Status row={r} /> },
+  { key: "status", header: "Outcome · verification", cell: (r) => <Status row={r} /> },
   { key: "latency", header: "Latency", align: "right", cell: (r) => <span className="whitespace-nowrap text-sm">{formatMs(r.total_ms)}</span> },
   {
-    key: "tokens",
-    header: "Tokens in / out",
+    key: "usage",
+    header: "Tokens · calls",
     align: "right",
     cell: (r) => (
-      <span className="whitespace-nowrap text-sm" title={rowTokens(r) ?? "No model tokens"}>
-        {r.tokens_in === 0 && r.tokens_out === 0 ? muted("—") : `${formatNumber(r.tokens_in)} / ${formatNumber(r.tokens_out)}`}
-      </span>
+      <div
+        className="whitespace-nowrap text-sm tabular-nums"
+        title={`${rowTokens(r) ?? "No model tokens"}\n${r.model_calls == null ? "Model calls not recorded" : `${r.model_calls} model calls`}, ${r.tool_calls} tool calls`}
+      >
+        <p>{r.tokens_in === 0 && r.tokens_out === 0 ? muted("—") : `${formatNumber(r.tokens_in)} / ${formatNumber(r.tokens_out)}`}</p>
+        <p className="text-xs text-muted">
+          {r.model_calls == null ? "—" : formatNumber(r.model_calls)} model · {formatNumber(r.tool_calls)} tool
+        </p>
+      </div>
     ),
   },
-  {
-    key: "calls",
-    header: "Model / tool calls",
-    align: "right",
-    cell: (r) => (
-      <span className="whitespace-nowrap text-sm" title={`${r.model_calls == null ? "Model calls not recorded" : `${r.model_calls} model calls`}, ${r.tool_calls} tool calls`}>
-        {r.model_calls == null ? muted("—") : formatNumber(r.model_calls)} / {formatNumber(r.tool_calls)}
-      </span>
-    ),
-  },
-  { key: "cost", header: "Cost (est.)", align: "right", cell: (r) => <span className="whitespace-nowrap text-sm">{formatUsd(r.est_cost_usd)}</span> },
+  { key: "cost", header: "Cost (est.)", align: "right", cell: (r) => <span className="whitespace-nowrap text-sm tabular-nums">{formatUsd(r.est_cost_usd)}</span> },
   {
     key: "evidence",
-    header: "Evidence cited / pack",
+    header: "Cited / pack",
     align: "right",
     cell: (r) => (
       <span className="whitespace-nowrap text-sm" title={`${r.evidence_count} passages in the pack, ${r.cited_count} cited${r.result_count ? `, ${r.result_count} computed results` : ""}`}>
         {`${formatNumber(r.cited_count)} / ${formatNumber(r.evidence_count)}`}
       </span>
     ),
-  },
-  {
-    key: "verification",
-    header: "Verification",
-    cell: (r) => {
-      if (!r.verification_disposition) return muted("Not recorded");
-      const d = verificationDisposition(r.verification_disposition);
-      return (
-        <span className="whitespace-nowrap text-sm" title={d.description}>
-          {d.label}
-          {r.regenerated && <span className="block text-xs text-muted">regenerated</span>}
-        </span>
-      );
-    },
   },
 ];
 

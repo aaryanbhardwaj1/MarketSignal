@@ -174,16 +174,26 @@ export function tableLabel(table: string): string {
   return humanizeColumn(table.replace(/[^A-Za-z0-9]+/g, "_"));
 }
 
+/** One locator part in plain words: `Sheet 'Market_Sizing'` -> "Market sizing sheet"; others unchanged. */
+function locatorPart(part: string): string {
+  const sheet = /^sheet\s+'(.*)'$/i.exec(part);
+  if (!sheet) return part;
+  const name = tableLabel(sheet[1]);
+  return name ? `${name} sheet` : "Sheet";
+}
+
 /**
  * Business locator for an evidence passage: keeps pages, sections, slides, sheets and rows, and
  * drops parser-internal parts ("Page 4, Block 2" -> "Page 4"). A block-only locator reads as a
- * passage number ("Block 6" -> "Passage 6").
+ * passage number ("Block 6" -> "Passage 6"). Named sheets read as words
+ * ("Sheet 'Market_Sizing', Row 7" -> "Market sizing sheet, Row 7").
  */
 export function businessLocator(label: string | null | undefined): string {
   if (!label) return "";
-  const parts = label.split(/,\s*/).map((p) => p.trim()).filter(Boolean);
+  // A quoted sheet name may itself contain commas, so match it as one part.
+  const parts = (label.match(/sheet\s+'.*?'(?=\s*,|\s*$)|[^,]+/gi) ?? []).map((p) => p.trim()).filter(Boolean);
   const kept = parts.filter((p) => !/^block\s+\d+$/i.test(p));
-  if (kept.length > 0) return kept.join(", ");
+  if (kept.length > 0) return kept.map(locatorPart).join(", ");
   return parts.map((p) => p.replace(/^block\b/i, "Passage")).join(", ");
 }
 

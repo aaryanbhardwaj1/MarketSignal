@@ -4,7 +4,7 @@ import type { TelemetryRunRow, TelemetrySeries, TelemetrySummaryWithOutcomes } f
 import summaryFixture from "@/lib/api/__fixtures__/telemetry-summary.json";
 import runsFixture from "@/lib/api/__fixtures__/telemetry-runs.json";
 import seriesFixture from "@/lib/api/__fixtures__/telemetry-series.json";
-import { RunsTable } from "../runs-table";
+import { RunsTable, shortTime } from "../runs-table";
 import { TelemetryOverview, type SeriesState } from "./telemetry-overview";
 
 vi.mock("next/navigation", () => ({
@@ -85,5 +85,25 @@ describe("RunsTable", () => {
     expect(html).toContain("Ended as: Evidence only (live model unavailable)");
     expect(html).toContain("Cost (est.)");
     expect(html).toContain('tabindex="0"');
+  });
+
+  it("fits seven compact columns and keeps merged details in second lines and tooltips", () => {
+    const html = renderToStaticMarkup(<RunsTable rows={rows} runHref={(r) => `/w/NORTHSTAR/dev/telemetry/runs/${r.id}`} />);
+    expect(html.match(/<th\b/g)).toHaveLength(7);
+    for (const header of ["Run", "Query", "Outcome · verification", "Latency", "Tokens · calls", "Cost (est.)", "Cited / pack"]) {
+      expect(html).toContain(`>${header}<`);
+    }
+    expect(html).not.toContain(">Mode<");
+    expect(html).toMatch(/(Standard|Research) · /);
+    expect(html).toMatch(/model · \d+ tool/);
+    expect(html).toContain("passages in the pack");
+    expect(html).toContain("Verification not recorded");
+  });
+});
+
+describe("shortTime", () => {
+  it("prints a compact 24-hour time and leaves unparseable input alone", () => {
+    expect(shortTime("2026-10-14T13:05:00")).toBe("Oct 14, 13:05");
+    expect(shortTime("not a date")).toBe("not a date");
   });
 });

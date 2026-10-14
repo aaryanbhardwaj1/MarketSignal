@@ -101,7 +101,7 @@ export function AnalyticsView({ ws }: { ws: string }) {
             ) : datasets.isError ? (
               <ErrorState title="Datasets could not be loaded" description="Try again in a moment." error={datasets.error} retry={() => void datasets.refetch()} />
             ) : datasetList.length === 0 ? (
-              <EmptyState title="No datasets yet" description="Spreadsheets and data tables added to the Evidence library appear here once processed." />
+              <EmptyState title="No datasets yet" description="Spreadsheets and data tables added to the Evidence Library appear here once processed." />
             ) : (
               <DatasetsList ws={ws} datasets={datasetList} truncated={datasets.data.truncated} />
             )}

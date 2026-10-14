@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { ChartEmpty, ChartFrame, CHART_TEXT, SERIES_COLORS } from "./chart-frame";
+import { visibleLabels } from "./label-layout";
 import { bandPath, defaultFormat, linePath, linearScale, nearestIndex, niceDomain, ticks, type Point } from "./scale";
 import { useChartWidth } from "./use-chart-width";
 
@@ -67,7 +68,13 @@ export function LineChart({
   const sx = linearScale([Math.min(...xs), Math.max(...xs)], [AXIS_W, width - RIGHT]);
   const sy = linearScale(domain, [height - BOTTOM, TOP]);
   const px = xs.map(sx);
-  const tickIdx = x.length <= 6 ? x.map((_, i) => i) : [0, Math.floor((x.length - 1) / 2), x.length - 1];
+  const tickCandidates = x.length <= 6 ? x.map((_, i) => i) : [0, Math.floor((x.length - 1) / 2), x.length - 1];
+  const tickAnchor = (i: number) => (i === 0 ? "start" : i === x.length - 1 ? "end" : "middle") as "start" | "middle" | "end";
+  // X labels that would overlap a neighbour on a narrow card are skipped (the tooltip and table keep every point).
+  // The first and last labels take priority over the middle ones.
+  const tickOrder = [...new Set([tickCandidates[0], tickCandidates[tickCandidates.length - 1], ...tickCandidates])];
+  const tickShown = visibleLabels(tickOrder.map((i) => ({ x: px[i], y: height - 6, text: formatX(x[i]), anchor: tickAnchor(i) })));
+  const tickIdx = tickOrder.filter((_, k) => tickShown[k]);
 
   const pointsOf = (s: LineSeries): Point[] =>
     s.values.flatMap((v, i) => (v === null || !Number.isFinite(v) ? [] : [[px[i], sy(v)] as Point]));
@@ -118,7 +125,7 @@ export function LineChart({
             </g>
           ))}
           {tickIdx.map((i) => (
-            <text key={i} x={px[i]} y={height - 6} textAnchor={i === 0 ? "start" : i === x.length - 1 ? "end" : "middle"} {...CHART_TEXT}>
+            <text key={i} x={px[i]} y={height - 6} textAnchor={tickAnchor(i)} {...CHART_TEXT}>
               {formatX(x[i])}
             </text>
           ))}

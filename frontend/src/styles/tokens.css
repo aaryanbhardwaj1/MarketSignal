@@ -100,6 +100,8 @@
   --color-chart-band: rgb(35 87 217 / 0.1);
   --color-chart-positive: var(--color-success);
   --color-chart-negative: var(--color-danger);
+  /* Contradicting evidence is a caution, not an error: one amber tone for its text, bars and rules. */
+  --color-contradicting: var(--color-status-mixed);
   --color-chart-reference: #5f6674;
 
   /* ---- focus ---- */
